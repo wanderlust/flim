@@ -1,3 +1,10 @@
+1998-06-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el (mime-entity-set-children): New function.
+
+	* mime-parse.el (mime-parse-multipart): Change interface.
+	(mime-parse-message): Use `mime-entity-set-children'.
+
 1998-06-24  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* mime.el (mime-read-field): Fix typo.
