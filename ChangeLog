@@ -1,5 +1,12 @@
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-lib.el, mime-parse.el: Move `mime-root-entity-p' from
+	mime-parse.el to mime-lib.el.
+
+	* mime-lib.el: Add autoload setting for mime-parse.el.
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-parse.el, mime-def.el: Move `mime-entity-point-min',
 	`mime-entity-point-max', `mime-entity-media-type',
 	`mime-entity-media-subtype', `mime-entity-parameters' and
