@@ -1,5 +1,11 @@
 1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-en.sgml (Content-Disposition parser): Modify description.
+
+	* mime-en.sgml (Content-Type parser): Modify description.
+
+1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-en.sgml (Content-Transfer-Encoding parser): Translate.
 
 
