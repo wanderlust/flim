@@ -237,7 +237,7 @@ TESTS holds a number of instances of `lunit-test'."
 (defmacro lunit-assert (condition-expr)
   "Verify that CONDITION-EXPR returns non-nil; signal an error if not."
   (let ((condition (eval condition-expr)))
-    `(unless ,condition
+    `(when ,(not condition)
        (signal 'lunit-failure (list ',condition-expr)))))
 
 (luna-define-class lunit-test-printer (lunit-test-listener))

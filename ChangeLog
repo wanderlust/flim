@@ -1,3 +1,8 @@
+2004-02-19  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* lunit.el (lunit-assert): Avoid double-eval `condtion-expr'.
+	Use ,(not (not condition)) instead of ,condition.
+
 2004-02-18  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* lunit.el (lunit-make-test-suite-from-class): Restrict test
