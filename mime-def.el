@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "FLIM-FLAM 1.2.1 - \"桜\" 2.5R7.0/7.0")
+  "FLIM-FLAM 1.3.0 - \"肉\" 2.5YR8.0/4.0")
 
 
 ;;; @ variables
@@ -77,8 +77,29 @@
       (substring string (match-end 0))
     string))
 
+(defsubst regexp-* (regexp)
+  (concat regexp "*"))
 
-;;; @ definitions about MIME
+(defsubst regexp-or (&rest args)
+  (concat "\\(" (mapconcat (function identity) args "\\|") "\\)"))
+
+
+;;; @ about STD 11
+;;;
+
+(defconst std11-quoted-pair-regexp "\\\\.")
+(defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
+(defconst std11-qtext-regexp
+  (concat "[^" (char-list-to-string std11-non-qtext-char-list) "]"))
+(defconst std11-quoted-string-regexp
+  (concat "\""
+	  (regexp-*
+	   (regexp-or std11-qtext-regexp std11-quoted-pair-regexp)
+	   )
+	  "\""))
+
+
+;;; @ about MIME
 ;;;
 
 (defconst mime-tspecials "][()<>@,\;:\\\"/?=")
