@@ -1,3 +1,8 @@
+2001-04-15  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* eword-decode.el (eword-lexical-analyze-internal):
+	Fix typo. [cf. <emacs-mime-ja:00425>]
+
 2001-04-10  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* std11.el (std11-lexical-analyze): Fix typo.
