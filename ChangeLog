@@ -1,5 +1,10 @@
 1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* eword-decode.el (eword-decode-encoded-text): Use
+	`decode-mime-charset-string'.
+
+1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmcooked.el (mmcooked-write-entity-body): New function.
 
 	* mmbuffer.el (mmbuffer-write-entity-body): New function.
