@@ -26,7 +26,7 @@
 
 ;;; Code:
 
-(require 'emu)
+(require 'poe)
 (require 'mime-def)
 
 
@@ -106,7 +106,7 @@ external decoder is called."
 		(base64-num-to-char (ash (logand a 3) 4))) "==")
        ))))
 
-(defun base64-encode-string (string)
+(defun-maybe base64-encode-string (string)
   "Encode STRING to base64, and return the result."
   (let ((len (length string))
 	(b 0)(e 57)
@@ -263,7 +263,7 @@ external decoder is called."
 ;;; @ application interfaces
 ;;;
 
-(defun base64-encode-region (start end)
+(defun-maybe base64-encode-region (start end)
   "Encode current region by base64.
 START and END are buffer positions.
 This function calls internal base64 encoder if size of region is
@@ -277,7 +277,7 @@ metamail or XEmacs package)."
       (base64-external-encode-region start end)
     (base64-internal-encode-region start end)))
 
-(defun base64-decode-region (start end)
+(defun-maybe base64-decode-region (start end)
   "Decode current region by base64.
 START and END are buffer positions.
 This function calls internal base64 decoder if size of region is
@@ -291,7 +291,7 @@ metamail or XEmacs package)."
       (base64-external-decode-region start end)
     (base64-internal-decode-region start end)))
 
-(defun base64-decode-string (string)
+(defun-maybe base64-decode-string (string)
   "Decode STRING which is encoded in base64, and return the result.
 This function calls internal base64 decoder if size of STRING is
 smaller than `base64-internal-decoding-limit', otherwise it calls
