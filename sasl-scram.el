@@ -34,7 +34,7 @@
 
 ;; Examples.
 ;;
-;; (sasl-scram-make-security-info nil t 0)
+;; (sasl-scram-md5-make-security-info nil t 0)
 ;; => "^A^@^@^@"
 
 ;;; Code:
@@ -45,17 +45,17 @@
 (defvar sasl-scram-md5-unique-id-function
   sasl-unique-id-function)
 
-(defmacro sasl-scram-security-info-no-security-layer (security-info)
+(defmacro sasl-scram-md5-security-info-no-security-layer (security-info)
   `(eq (logand (aref ,security-info 0) 1) 1))
-(defmacro sasl-scram-security-info-integrity-protection-layer (security-info)
+(defmacro sasl-scram-md5-security-info-integrity-protection-layer (security-info)
   `(eq (logand (aref ,security-info 0) 2) 2))
-(defmacro sasl-scram-security-info-buffer-size (security-info)
+(defmacro sasl-scram-md5-security-info-buffer-size (security-info)
   `(let ((ssecinfo ,security-info))
      (+ (lsh (aref ssecinfo 1) 16)
 	(lsh (aref ssecinfo 2) 8)
 	(aref ssecinfo 3))))
 
-(defun sasl-scram-make-security-info (integrity-protection-layer
+(defun sasl-scram-md5-make-security-info (integrity-protection-layer
 				 no-security-layer buffer-size)
   (let ((csecinfo (make-string 4 0)))
     (when integrity-protection-layer
@@ -69,7 +69,7 @@
       (aset csecinfo 3 (logand buffer-size 255)))
     csecinfo))
 
-(defun sasl-scram-make-unique-nonce ()	; 8*OCTET, globally unique.
+(defun sasl-scram-md5-make-unique-nonce ()	; 8*OCTET, globally unique.
   ;; For example, concatenated string of process-identifier, system-clock,
   ;; sequence-number, random-number, and domain-name.
   (let ((sasl-unique-id-function sasl-scram-md5-unique-id-function)
@@ -80,7 +80,7 @@
 		"@" (system-name) ">")
       (fillarray id 0))))
 
-(defun sasl-scram-xor-string (str1 str2)
+(defun sasl-scram-md5-xor-string (str1 str2)
   ;; (length str1) == (length str2) == (length dst) == 16 (in SCRAM-MD5)
   (let* ((len (length str1))
          (dst (make-string len 0))
@@ -96,7 +96,7 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
   (let (nonce)
     (unwind-protect
 	(concat authorize-id "\0" authenticate-id "\0" 
-		(setq nonce (sasl-scram-make-unique-nonce)))
+		(setq nonce (sasl-scram-md5-make-unique-nonce)))
       (fillarray nonce 0))))
 
 (defun sasl-scram-md5-parse-server-msg-1 (server-msg-1)
@@ -130,7 +130,7 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
       (fillarray buff 0))))
 
 (defun sasl-scram-md5-make-client-proof (client-key shared-key)
-  (sasl-scram-xor-string client-key shared-key))
+  (sasl-scram-md5-xor-string client-key shared-key))
 
 (defun sasl-scram-md5-make-client-msg-2 (client-security-info client-proof)
   (concat client-security-info client-proof))

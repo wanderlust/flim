@@ -34,7 +34,7 @@
   )
 
 (eval-and-compile
-  (defconst mime-library-product ["SLIM" (1 14 5) "安達祐実"]
+  (defconst mime-library-product ["SLIM" (1 14 6) "馬渕英里何"]
     "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)
