@@ -35,8 +35,7 @@
 (defvar uuencode-external-encoder '("uuencode" "-")
   "*list of uuencode encoder program name and its arguments.")
 
-(defvar uuencode-external-decoder
-  (list "sh" "-c" (format "(cd %s; uudecode)" mime-temp-directory))
+(defvar uuencode-external-decoder '("sh" "-c" "uudecode")
   "*list of uuencode decoder program name and its arguments.")
 
 
@@ -76,7 +75,7 @@ variable `uuencode-external-decoder'."
 				(buffer-substring (match-beginning 0)
 						  (match-end 0))
 			      )))))
-	  (default-directory (or (getenv "TMP")(getenv "TEMP") "/tmp")))
+	  (default-directory mime-temp-directory))
       (if filename
 	  (as-binary-process
 	   (apply (function call-process-region)
@@ -126,7 +125,7 @@ START and END are buffer positions."
 			    (buffer-substring (match-beginning 0)
 					      (match-end 0))
 			  )))))
-	  (default-directory (or (getenv "TMP")(getenv "TEMP") "/tmp")))
+	  (default-directory mime-temp-directory))
       (if file
 	  (as-binary-process
 	   (apply (function call-process-region)
