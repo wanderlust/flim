@@ -120,6 +120,32 @@
 	  "][" quoted-printable-hex-chars "]"))
 
 
+;;; @ Content-Type
+;;;
+
+(defsubst make-mime-content-type (type subtype &optional parameters)
+  (list* (cons 'type type)
+	 (cons 'subtype subtype)
+	 (nreverse parameters))
+  )
+
+(defsubst mime-content-type-primary-type (content-type)
+  "Return primary-type of CONTENT-TYPE."
+  (cdr (car content-type)))
+
+(defsubst mime-content-type-subtype (content-type)
+  "Return primary-type of CONTENT-TYPE."
+  (cdr (cadr content-type)))
+
+(defsubst mime-content-type-parameters (content-type)
+  "Return primary-type of CONTENT-TYPE."
+  (cddr content-type))
+
+(defsubst mime-content-type-parameter (content-type parameter)
+  "Return PARAMETER value of CONTENT-TYPE."
+  (cdr (assoc parameter (mime-content-type-parameters content-type))))
+
+
 ;;; @ MIME-entity
 ;;;
 
