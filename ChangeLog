@@ -1,3 +1,15 @@
+1998-07-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.texi, mime-en.sgml: New files.
+
+	* mime-ja.sgml (media-type): Fix typo.
+
+	* mime-ja.sgml (Glossary): Fix order.
+
+	* mime-ja.sgml (Entity Attributes): Use <code> tag for nil.
+
+	* mime-ja.sgml (Entity Attributes): Fix typo.
+
 1998-07-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime.el (mime-entity-encoding): Add new optional argument
