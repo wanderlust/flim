@@ -1,3 +1,9 @@
+Sun Oct 25 01:37:34 GMT 1998
+1998-10-25  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-field-body): New function.
+	(eword-encode-field): Use `eword-encode-field-body'.
+
 1998-10-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel.el, mel-b-el.el, FLIM-ELS: Rename mel-b.el -> mel-b-el.el.

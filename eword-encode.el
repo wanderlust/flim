@@ -592,48 +592,53 @@ Optional argument COLUMN is start-position of the field."
 	(or column eword-encode-default-start-column)
 	(eword-encode-split-string string 'text))))
 
+(defun eword-encode-field-body (field-name field-body)
+  "Encode header field body FIELD-BODY, and return the result.
+A lexical token includes non-ASCII character is encoded as MIME
+encoded-word.  ASCII token is not encoded."
+  (when (symbolp field-name)
+    (setq field-name (symbol-name field-name)))
+  (let* ((field-name-symbol (intern (capitalize field-name))))
+    (cond ((string= field-body "") "")
+	  ((memq field-name-symbol
+		 '(Reply-To
+		   From Sender
+		   Resent-Reply-To Resent-From
+		   Resent-Sender To Resent-To
+		   Cc Resent-Cc Bcc Resent-Bcc
+		   Dcc))
+	   (eword-encode-address-list
+	    field-body (+ (length field-name) 2))
+	   )
+	  ((eq field-name-symbol 'In-Reply-To)
+	   (eword-encode-in-reply-to
+	    field-body (+ (length field-name) 2))
+	   )
+	  ((memq field-name-symbol
+		 '(Mime-Version User-Agent))
+	   (eword-encode-structured-field-body
+	    field-body (+ (length field-name) 2))
+	   )
+	  (t
+	   (eword-encode-unstructured-field-body
+	    field-body (1+ (length field-name)))
+	   ))))
+
 (defun eword-encode-field (string)
   "Encode header field STRING, and return the result.
 A lexical token includes non-ASCII character is encoded as MIME
 encoded-word.  ASCII token is not encoded."
   (setq string (std11-unfold-string string))
-  (let ((ret (string-match std11-field-head-regexp string)))
-    (or (if ret
-	    (let ((field-name (substring string 0 (1- (match-end 0))))
-		  (field-body (eliminate-top-spaces
-			       (substring string (match-end 0))))
-		  field-name-symbol)
-	      (if (setq ret
-			(cond ((string= field-body "") "")
-			      ((memq (setq field-name-symbol
-					   (intern (capitalize field-name)))
-				     '(Reply-To
-				       From Sender
-				       Resent-Reply-To Resent-From
-				       Resent-Sender To Resent-To
-				       Cc Resent-Cc Bcc Resent-Bcc
-				       Dcc))
-                               (eword-encode-address-list
-				field-body (+ (length field-name) 2))
-			       )
-			      ((eq field-name-symbol 'In-Reply-To)
-                               (eword-encode-in-reply-to
-				field-body (+ (length field-name) 2))
-			       )
-			      ((memq field-name-symbol
-				     '(Mime-Version User-Agent))
-                               (eword-encode-structured-field-body
-				field-body (+ (length field-name) 2))
-			       )
-			      (t
-                               (eword-encode-unstructured-field-body
-				field-body (1+ (length field-name)))
-			       ))
-			)
-		  (concat field-name ": " ret)
-		)))
-	(eword-encode-string string 0)
-	)))
+  (if (string-match std11-field-head-regexp string)
+      (let ((field-name (substring string 0 (1- (match-end 0)))))
+	(concat
+	 field-name ": "
+	 (eword-encode-field-body
+	  field-name
+	  (eliminate-top-spaces
+	   (substring string (match-end 0))))))
+    (eword-encode-string string 0)
+    ))
 
 (defun eword-in-subject-p ()
   (let ((str (std11-field-body "Subject")))
