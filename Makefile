@@ -2,9 +2,9 @@
 # Makefile for FLIM.
 #
 
-PACKAGE = flim-chao
+PACKAGE = flim
 API	= 1.14
-RELEASE = 1
+RELEASE = 0
 
 TAR	= tar
 RM	= /bin/rm -f
