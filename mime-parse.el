@@ -184,8 +184,8 @@ If is is not found, return DEFAULT-ENCODING."
 	      (setq ncb (match-end 0))
 	      (save-restriction
 		(narrow-to-region cb ce)
-		(setq ret (mime-parse-message dc-ctl (cons i node-id)
-					      representation-type))
+		(setq ret (mime-parse-message dc-ctl representation-type
+					      entity (cons i node-id)))
 		)
 	      (setq children (cons ret children))
 	      (goto-char (setq cb ncb))
@@ -194,8 +194,8 @@ If is is not found, return DEFAULT-ENCODING."
 	    (setq ce (point-max))
 	    (save-restriction
 	      (narrow-to-region cb ce)
-	      (setq ret (mime-parse-message dc-ctl (cons i node-id)
-					    representation-type))
+	      (setq ret (mime-parse-message dc-ctl representation-type
+					    entity (cons i node-id)))
 	      )
 	    (setq children (cons ret children))
 	    (mime-entity-set-children-internal entity (nreverse children))
@@ -212,13 +212,14 @@ If is is not found, return DEFAULT-ENCODING."
      (narrow-to-region (mime-entity-body-start-internal entity)
 		       (mime-entity-body-end-internal entity))
      (list (mime-parse-message
-	    nil (cons 0 (mime-entity-node-id-internal entity))
-	    (mime-entity-representation-type-internal entity)))
+	    nil (mime-entity-representation-type-internal entity)
+	    entity (cons 0 (mime-entity-node-id-internal entity))))
      ))
   entity)
 
 ;;;###autoload
-(defun mime-parse-message (&optional default-ctl node-id representation-type)
+(defun mime-parse-message (&optional default-ctl representation-type
+				     parent node-id)
   "Parse current-buffer as a MIME message.
 DEFAULT-CTL is used when an entity does not have valid Content-Type
 field.  Its format must be as same as return value of
@@ -247,7 +248,7 @@ mime-{parse|read}-Content-Type."
       )
     (setq entity (make-mime-entity-internal (or representation-type 'buffer)
 					    (current-buffer)
-					    content-type nil node-id
+					    content-type nil parent node-id
 					    (current-buffer)
 					    header-start header-end
 					    body-start body-end))
@@ -273,7 +274,7 @@ If buffer is omitted, it parses current-buffer."
   (save-excursion
     (if buffer (set-buffer buffer))
     (setq mime-message-structure
-	  (mime-parse-message nil nil representation-type))
+	  (mime-parse-message nil representation-type))
     ))
 
 

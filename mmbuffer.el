@@ -25,20 +25,50 @@
 ;;; Code:
 
 (require 'mime)
+(require 'mime-parse)
 
-(defun mmbuffer-open-entity (location)
-  (mime-parse-buffer location)
-  )
+(mm-define-backend buffer)
 
-(defsubst mmbuffer-entity-point-min (entity)
-  (mime-entity-header-start-internal entity)
-  )
+(mm-define-method initialize-instance ((entity buffer))
+  (mime-entity-set-buffer-internal
+   entity (mime-entity-location-internal entity))
+  (save-excursion
+    (set-buffer (mime-entity-buffer-internal entity))
+    (setq mime-message-structure entity)
+    (let ((header-start (point-min))
+	  header-end
+	  body-start
+	  (body-end (point-max)))
+      (goto-char header-start)
+      (if (re-search-forward "^$" nil t)
+	  (setq header-end (match-end 0)
+		body-start (if (= header-end body-end)
+			       body-end
+			     (1+ header-end)))
+	(setq header-end (point-min)
+	      body-start (point-min)))
+      (save-restriction
+	(narrow-to-region header-start header-end)
+	(mime-entity-set-content-type-internal
+	 entity
+	 (let ((str (std11-fetch-field "Content-Type")))
+	   (if str
+	       (mime-parse-Content-Type str)
+	     )))
+	)
+      (mime-entity-set-header-start-internal entity header-start)
+      (mime-entity-set-header-end-internal entity header-end)
+      (mime-entity-set-body-start-internal entity body-start)
+      (mime-entity-set-body-end-internal entity body-end)
+      )))
 
-(defsubst mmbuffer-entity-point-max (entity)
-  (mime-entity-body-end-internal entity)
-  )
+(mm-define-method entity-point-min ((entity buffer))
+  (mime-entity-header-start-internal entity))
 
-(defun mmbuffer-fetch-field (entity field-name)
+(mm-define-method entity-point-max ((entity buffer))
+  (mime-entity-body-end-internal entity))
+
+(mm-define-method fetch-field ((entity buffer) field-name)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (save-restriction
@@ -47,9 +77,25 @@
       (std11-fetch-field field-name)
       )))
 
-(defun mmbuffer-cooked-p () nil)
+(mm-define-method entity-cooked-p ((entity buffer)) nil)
 
-(defun mmbuffer-entity-content (entity)
+(mm-define-method entity-children ((entity buffer))
+  (let* ((content-type (mime-entity-content-type entity))
+	 (primary-type (mime-content-type-primary-type content-type)))
+    (cond ((eq primary-type 'multipart)
+	   (mime-parse-multipart entity)
+	   (mime-entity-children-internal entity)
+	   )
+	  ((and (eq primary-type 'message)
+		(memq (mime-content-type-subtype content-type)
+		      '(rfc822 news external-body)
+		      ))
+	   (mime-parse-encapsulated entity)
+	   (mime-entity-children-internal entity)
+	   )
+	  )))
+
+(mm-define-method entity-content ((entity buffer))
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (mime-decode-string
@@ -57,7 +103,7 @@
 		       (mime-entity-body-end-internal entity))
      (mime-entity-encoding entity))))
 
-(defun mmbuffer-write-entity-content (entity filename)
+(mm-define-method write-entity-content ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (mime-write-decoded-region (mime-entity-body-start-internal entity)
@@ -66,22 +112,44 @@
 			       (or (mime-entity-encoding entity) "7bit"))
     ))
 
-(defun mmbuffer-write-entity (entity filename)
+(mm-define-method write-entity ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
-    (write-region-as-binary (mmbuffer-entity-point-min entity)
-			    (mmbuffer-entity-point-max entity) filename)
+    (write-region-as-binary (mime-entity-header-start-internal entity)
+			    (mime-entity-body-end-internal entity)
+			    filename)
     ))
 
-(defun mmbuffer-write-entity-body (entity filename)
+(mm-define-method write-entity-body ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (write-region-as-binary (mime-entity-body-start-internal entity)
-			    (mime-entity-body-end-internal entity) filename)
+			    (mime-entity-body-end-internal entity)
+			    filename)
     ))
 
-(defun mmbuffer-insert-decoded-header (entity &optional invisible-fields
-					      visible-fields)
+(defun mime-visible-field-p (field-name visible-fields invisible-fields)
+  (or (catch 'found
+	(while visible-fields
+	  (let ((regexp (car visible-fields)))
+	    (if (string-match regexp field-name)
+		(throw 'found t)
+	      ))
+	  (setq visible-fields (cdr visible-fields))
+	  ))
+      (catch 'found
+	(while invisible-fields
+	  (let ((regexp (car invisible-fields)))
+	    (if (string-match regexp field-name)
+		(throw 'found nil)
+	      ))
+	  (setq invisible-fields (cdr invisible-fields))
+	  )
+	t)))
+
+(mm-define-method insert-decoded-header ((entity buffer)
+					 &optional invisible-fields
+					 visible-fields)
   (save-restriction
     (narrow-to-region (point)(point))
     (let ((the-buf (current-buffer))
@@ -99,8 +167,8 @@
 		  field-name (buffer-substring beg (1- p))
 		  len (string-width field-name)
 		  end (std11-field-end))
-	    (when (eword-visible-field-p field-name
-					 visible-fields invisible-fields)
+	    (when (mime-visible-field-p field-name
+					visible-fields invisible-fields)
 	      (setq field (intern (capitalize field-name)))
 	      (save-excursion
 		(set-buffer the-buf)

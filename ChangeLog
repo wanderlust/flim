@@ -1,3 +1,77 @@
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-Chao: Version 1.8.0 (Shij-Dò)-A was released.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmcooked.el: Abolish method `open'.
+
+	* mmbuffer.el (initialize-instance): New method; abolish `open'.
+	(entity-children): New method.
+
+	* mime.el (mime-open-entity): Send `initialize-instance' to
+	created message.
+	(mime-entity-children): New implementation.
+	(mime-entity-parent): New implementation.
+	(mime-root-entity-p): New implementation.
+
+	* mime-parse.el (mime-parse-multipart): Specify current entity as
+	parent.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-message): Change interface to specify parent; modify
+	for `make-mime-entity-internal'.
+	(mime-parse-buffer): Modify for `mime-parse-message'.
+
+	* mime-def.el (make-mime-entity-internal): Change interface; add
+	format of `mime-entity' to add `parent'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmbuffer.el (mime-visible-field-p): Renamed from
+	`eword-visible-field-p'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mm-arglist-to-arguments): New function.
+	(mm-define-generic): New macro.
+	(mime-entity-cooked-p): Use `mm-define-generic'.
+	(mime-entity-point-min): Use `mm-define-generic'.
+	(mime-insert-decoded-header): Use `mm-define-generic'.
+	(mime-entity-content): Use `mm-define-generic'.
+	(mime-write-entity-content): Use `mm-define-generic'.
+	(mime-write-entity): Use `mm-define-generic'.
+	(mime-write-entity-body): Use `mm-define-generic'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmbuffer.el (eword-visible-field-p): Moved from mime.el.
+
+	* mime.el: Move `eword-visible-field-p' to mmbuffer.el.
+	(mime-write-entity-body): Change message to `write-body'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmcooked.el, mmbuffer.el (open): Renamed from `open-entity'.
+
+	* mime.el (mime-open-entity): Change message to `open'.
+
+	* mime-def.el (mm-define-backend): Must `copy-alist'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmcooked.el, mmbuffer.el: Use `mm-define-backend' and
+	`mm-define-method'.
+
+	* mime.el: Move `mime-entity-implementation-alist' to mime-def.el.
+	(mime-find-function): New implementation.
+	(mime-entity-cooked-p): Use `mime-entity-send'.
+
+	* mime-def.el (mime-entity-implementation-alist): Moved from
+	mime.el.
+	(mm-define-backend): New macro.
+	(mm-define-method): New macro.
+
+
 1998-07-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.8.1 (Kutsukawa) was released.
