@@ -1,13 +1,13 @@
 \input texinfo.tex
 @setfilename mime-ja.info
-@settitle{FLIM 1.9 MIME $B5!G=@bL@=q(B}
+@settitle{FLIM 1.10 MIME $B5!G=@bL@=q(B}
 @titlepage
-@title FLIM 1.9 MIME $B5!G=@bL@=q(B
+@title FLIM 1.10 MIME $B5!G=@bL@=q(B
 @author $B<i2,(B $BCNI'(B <morioka@@jaist.ac.jp>
 @subtitle 1998/07/01
 @end titlepage
 @node Top, Introduction, (dir), (dir)
-@top FLIM 1.9 MIME $B5!G=@bL@=q(B
+@top FLIM 1.10 MIME $B5!G=@bL@=q(B
 
 @ifinfo
 
@@ -433,9 +433,38 @@ representation-type $B$NL>A0$N@hF,$K(B @code{mm} $B$rIU$1$?$b$N$K$J$C$F(B
 @node mm-backend module,  , Request for entity, mm-backend
 @subsection mm-backend $B$N:n$jJ}(B
 
-$B!J$9$_$^$;$s!#$=$N$&$A=q$-$^$9(B (^_^;$B!K(B@refill
+@defmac mm-define-backend type &optional  parents
 
-$B!J$H$j$"$($:!"(Bmm*.el $B$r;29M$K$7$F$/$@$5$$!K(B
+Define @var{type} as a mm-backend.@refill
+
+If @var{PARENTS} is specified, @var{type} inherits parents.  Each parent
+must be representation-type.@refill
+
+Example:@refill
+
+@lisp
+(mm-define-backend chao (generic))
+@end lisp
+@end defmac
+
+
+@defmac mm-define-method name args  &rest  body
+
+Define @var{name} as a method function of (nth 1 (car @var{args}))
+backend.@refill
+
+@var{args} is like an argument list of lambda, but (car @var{args}) must
+be specialized parameter.  (car (car @var{args})) is name of variable
+and (nth 1 (car @var{args})) is name of backend
+(representation-type).@refill
+
+Example:@refill
+
+@lisp
+(mm-define-method entity-cooked-p ((entity chao)) nil)
+@end lisp
+@end defmac
+
 
 
 @node Content-Type, Content-Disposition, Entity, Top
@@ -692,12 +721,13 @@ FLIM $B$G$O(B Content-Transfer-Encoding $BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$
 
 @menu
 * Content-Transfer-Encoding parser::  Content-Transfer-Encoding $BMs$N2r@O4o(B
-* Region encoder/decoder::      $BNN0h$NId9f2=!&I|9f2=(B
-* String encoder/decoder::      $BJ8;zNs$NId9f2=!&I|9f2=(B
-* File encoder/decoder::        File $B$NId9f2=!&I|9f2=(B
+* encoder/decoder::             $BId9f2=!&I|9f2=(B
+* Encoding information::        Other utilities
+* mel-backend::                 How to write encoder/decoder module
+* generic function for mel-backend::  How to add encoding/decoding service
 @end menu
 
-@node Content-Transfer-Encoding parser, Region encoder/decoder, Content-Transfer-Encoding, Content-Transfer-Encoding
+@node Content-Transfer-Encoding parser, encoder/decoder, Content-Transfer-Encoding, Content-Transfer-Encoding
 @section Content-Transfer-Encoding $BMs$N2r@O4o(B
 
 @defun mime-parse-Content-Transfer-Encoding string
@@ -717,8 +747,8 @@ Content-Transfer-Encoding $BMs$,B8:_$7$J$$>l9g$O(B@var{default-encoding} $B$r
 
 
 
-@node Region encoder/decoder, String encoder/decoder, Content-Transfer-Encoding parser, Content-Transfer-Encoding
-@section $BNN0h$NId9f2=!&I|9f2=(B
+@node encoder/decoder, Encoding information, Content-Transfer-Encoding parser, Content-Transfer-Encoding
+@section $BId9f2=!&I|9f2=(B
 
 @defun mime-encode-region start end encoding
 
@@ -734,29 +764,6 @@ Decode region @var{start} to @var{end} of current buffer using
 @end defun
 
 
-@defvar mime-encoding-method-alist
-
-Alist of encoding vs. corresponding method to encode region.@refill
-
-Each element looks like @code{(STRING . FUNCTION)} or @code{(STRING
-. nil)}.  @var{string} is content-transfer-encoding.  @code{function} is
-region encoder and @code{nil} means not to encode.
-@end defvar
-
-
-@defvar mime-decoding-method-alist
-
-Alist of encoding vs. corresponding method to decode region.@refill
-
-Each element looks like @code{(STRING . FUNCTION)} or @code{(STRING
-. nil)}.  @var{string} is content-transfer-encoding.  @code{function} is
-region decoder and @code{nil} means not to decode.
-@end defvar
-
-
-
-@node String encoder/decoder, File encoder/decoder, Region encoder/decoder, Content-Transfer-Encoding
-@section $BJ8;zNs$NId9f2=!&I|9f2=(B
 
 @defun mime-decode-string string encoding
 
@@ -764,18 +771,6 @@ region decoder and @code{nil} means not to decode.
 @end defun
 
 
-@defvar mime-string-decoding-method-alist
-
-Alist of encoding vs. corresponding method to decode string.@refill
-
-Each element looks like @code{(STRING . FUNCTION)}.  STRING is
-content-transfer-encoding.  FUNCTION is string decoder.
-@end defvar
-
-
-
-@node File encoder/decoder,  , String encoder/decoder, Content-Transfer-Encoding
-@section File $B$NId9f2=!&I|9f2=(B
 
 @defun mime-insert-encoded-file filename encoding
 
@@ -792,25 +787,100 @@ Decode and write current region encoded by @var{encoding} into
 @end defun
 
 
-@defvar mime-file-encoding-method-alist
 
-Alist of encoding vs. corresponding method to insert encoded
-file.@refill
+@node Encoding information, mel-backend, encoder/decoder, Content-Transfer-Encoding
+@section Other utilities
 
-Each element looks like @code{(STRING . FUNCTION)}.  STRING is
-content-transfer-encoding.  FUNCTION is function to insert encoded file.
-@end defvar
+@defun mime-encoding-list &optional  SERVICE
+
+Return list of Content-Transfer-Encoding.@refill
+
+If @var{service} is specified, it returns available list of
+Content-Transfer-Encoding for it.
+@end defun
 
 
-@defvar mime-file-decoding-method-alist
+@defun mime-encoding-alist &optional  SERVICE
 
-Alist of encoding vs. corresponding method to write decoded region to
-file.@refill
+Return table of Content-Transfer-Encoding for completion.@refill
 
-Each element looks like @code{(STRING . FUNCTION)}.  STRING is
-content-transfer-encoding.  FUNCTION is function to write decoded region
-to file.
-@end defvar
+If @var{service} is specified, it returns available list of
+Content-Transfer-Encoding for it.
+@end defun
+
+
+
+@node mel-backend, generic function for mel-backend, Encoding information, Content-Transfer-Encoding
+@section How to write encoder/decoder module
+
+@defmac mel-define-method name args  &rest  body
+
+Define @var{name} as a method function of (nth 1 (car (last
+@var{args}))) backend.@refill
+
+@var{args} is like an argument list of lambda, but (car (last
+@var{args})) must be specialized parameter.  (car (car (last
+@var{args}))) is name of variable and (nth 1 (car (last @var{args}))) is
+name of backend (encoding).@refill
+
+Example:@refill
+
+@lisp
+(mel-define-method mime-write-decoded-region (start end filename
+						    (nil "base64"))
+  "Decode and write current region encoded by base64 into FILENAME.
+START and END are buffer positions."
+  (interactive
+   (list (region-beginning) (region-end)
+	 (read-file-name "Write decoded region to file: ")))
+  (let ((str (buffer-substring start end)))
+    (with-temp-buffer
+      (insert (decode-base64-string str))
+      (write-region-as-binary (point-min) (point-max) filename)
+      )))
+@end lisp
+@end defmac
+
+
+@defmac mel-define-method-function spec function
+
+Set @var{spec}'s function definition to @var{function}.@refill
+
+First element of @var{spec} is service.@refill
+
+Rest of @var{args} is like an argument list of lambda, but (car (last
+@var{args})) must be specialized parameter.  (car (car (last
+@var{args}))) is name of variable and (nth 1 (car (last @var{args}))) is
+name of backend (encoding).@refill
+
+Example:@refill
+
+@lisp
+(mel-define-method-function (mime-encode-string string (nil "base64"))
+			    'encode-base64-string)
+@end lisp
+@end defmac
+
+
+
+@node generic function for mel-backend,  , mel-backend, Content-Transfer-Encoding
+@section How to add encoding/decoding service
+
+@defmac mel-define-service name &optional  args doc-string
+
+Define @var{name} as a service for Content-Transfer-Encodings.@refill
+
+If @var{args} is specified, @var{name} is defined as a generic function
+for the service.@refill
+
+Example:@refill
+
+@lisp
+(mel-define-service encoded-text-encode-string (string encoding)
+  "Encode STRING as encoded-text using ENCODING.
+ENCODING must be string.")
+@end lisp
+@end defmac
 
 
 

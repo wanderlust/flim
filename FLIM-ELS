@@ -12,7 +12,14 @@
 		     mailcap))
 
 (if (fboundp 'dynamic-link)
-    (setq flim-modules (cons 'mel-dl flim-modules))
+    (setq flim-modules (cons 'mel-b-dl flim-modules))
+  )
+
+(if (and (featurep 'mule)
+	 (not (or (and (boundp 'MULE) MULE)
+		  (and (featurep 'xemacs) (< emacs-major-version 21))
+		  )))
+    (setq flim-modules (cons 'mel-ccl flim-modules))
   )
 
 ;;; FLIM-ELS ends here

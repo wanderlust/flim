@@ -3,7 +3,7 @@
 #
 
 PACKAGE = flim
-VERSION = 1.9.2
+VERSION = 1.10.4
 
 TAR	= tar
 RM	= /bin/rm -f
@@ -16,6 +16,7 @@ FLAGS   = -batch -q -no-site-file -l FLIM-MK
 PREFIX = NONE
 LISPDIR = NONE
 PACKAGEDIR = NONE
+VERSION_SPECIFIC_LISPDIR = NONE
 
 GOMI	= *.elc \
 	  *.cp *.cps *.ky *.kys *.fn *.fns *.vr *.vrs \
@@ -24,10 +25,12 @@ FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 
 elc:
-	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR)
+	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
+		$(VERSION_SPECIFIC_LISPDIR)
 
 install:	elc
-	$(EMACS) $(FLAGS) -f install-flim $(PREFIX) $(LISPDIR)
+	$(EMACS) $(FLAGS) -f install-flim $(PREFIX) $(LISPDIR) \
+		$(VERSION_SPECIFIC_LISPDIR)
 
 
 package:
@@ -55,7 +58,7 @@ tar:
 	sed "s/VERSION/$(VERSION)/" < ftp.in > ftp
 
 release:
-	-$(RM) /pub/GNU/elisp/apel/$(PACKAGE)-$(VERSION).tar.gz
+	-$(RM) /pub/GNU/elisp/flim/$(PACKAGE)-$(VERSION).tar.gz
 	mv /tmp/$(PACKAGE)-$(VERSION).tar.gz /pub/GNU/elisp/flim/
 	cd /pub/GNU/elisp/semi/ ; \
 		ln -s ../flim/$(PACKAGE)-$(VERSION).tar.gz .

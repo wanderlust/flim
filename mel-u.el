@@ -6,7 +6,7 @@
 ;; Created: 1995/10/25
 ;; Keywords: uuencode
 
-;; This file is part of MEL (MIME Encoding Library).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -27,6 +27,9 @@
 
 (require 'emu)
 (require 'mime-def)
+
+
+(mel-define-backend "x-uue")
 
 
 ;;; @ variables
@@ -93,14 +96,32 @@ variable `uuencode-external-decoder'."
 	   ))
       )))
 
-(defalias 'uuencode-encode-region 'uuencode-external-encode-region)
-(defalias 'uuencode-decode-region 'uuencode-external-decode-region)
+(mel-define-method-function (mime-encode-region start end (nil "x-uue"))
+			    'uuencode-external-encode-region)
+(mel-define-method-function (mime-decode-region start end (nil "x-uue"))
+			    'uuencode-external-decode-region)
+
+
+;;; @ encoder/decoder for string
+;;;
+
+(mel-define-method mime-encode-string (string (nil "x-uue"))
+  (with-temp-buffer
+    (insert string)
+    (uuencode-external-encode-region (point-min)(point-max))
+    (buffer-string)))
+
+(mel-define-method mime-decode-string (string (nil "x-uue"))
+  (with-temp-buffer
+    (insert string)
+    (uuencode-external-decode-region (point-min)(point-max))
+    (buffer-string)))
 
 
 ;;; @ uuencode encoder/decoder for file
 ;;;
 
-(defun uuencode-insert-encoded-file (filename)
+(mel-define-method mime-insert-encoded-file (filename (nil "x-uue"))
   "Insert file encoded by unofficial uuencode format.
 This function uses external uuencode encoder which is specified by
 variable `uuencode-external-encoder'."
@@ -109,7 +130,8 @@ variable `uuencode-external-encoder'."
 		(file-name-nondirectory filename))
   )
 
-(defun uuencode-write-decoded-region (start end filename)
+(mel-define-method mime-write-decoded-region (start end filename
+						    (nil "x-gzip64"))
   "Decode and write current region encoded by uuencode into FILENAME.
 START and END are buffer positions."
   (interactive
@@ -139,5 +161,7 @@ START and END are buffer positions."
 ;;;
 
 (provide 'mel-u)
+
+(mel-define-backend "x-uuencode" ("x-uue"))
 
 ;;; mel-u.el ends here

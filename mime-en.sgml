@@ -1,6 +1,6 @@
 <!doctype sinfo system>
 <head>
-<title>FLIM 1.9 Manual about MIME Features
+<title>FLIM 1.10 Manual about MIME Features
 <author>MORIOKA Tomohiko <mail>morioka@jaist.ac.jp</mail>
 <date>1998/07/01
 
@@ -393,12 +393,42 @@ return the result.
 </defun>
 
 
-<h3> How to make mm-backend
+<h3> Definition of mm-backend
 <node> mm-backend module
 <p>
-(It is not written yet, sorry. (^_^;)
+<defmacro name="mm-define-backend">
+<args> type
+<opts> parents
 <p>
-(Please read mm*.el)
+Define <var>type</var> as a mm-backend.
+<p>
+If <var>PARENTS</var> is specified, <var>type</var> inherits parents.
+Each parent must be representation-type.
+<p>
+Example:
+<p>
+<lisp>
+(mm-define-backend chao (generic))
+</lisp>
+</defmacro>
+
+<defmacro name="mm-define-method">
+<args> name args <rest> body
+<p>
+Define <var>name</var> as a method function of (nth 1 (car
+<var>args</var>)) backend.
+<p>
+<var>args</var> is like an argument list of lambda, but (car
+<var>args</var>) must be specialized parameter.  (car (car
+<var>args</var>)) is name of variable and (nth 1 (car
+<var>args</var>)) is name of backend (representation-type).
+<p>
+Example:
+<p>
+<lisp>
+(mm-define-method entity-cooked-p ((entity chao)) nil)
+</lisp>
+</defmacro>
 
 
 <h1> Information of Content-Type field
@@ -636,8 +666,8 @@ Content-Transfer-Encoding 欄が存在しない場合は
 </defun>
 
 
-<h2> Region encoding/decoding
-<node> Region encoder/decoder
+<h2> Encoder/decoder
+<node> encoder/decoder
 <p>
 <defun name="mime-encode-region">
 	    <args> start end encoding
@@ -653,49 +683,14 @@ Decode region <var>start</var> to <var>end</var> of current buffer
 using <var>encoding</var>.
 </defun>
 
-<defvar name="mime-encoding-method-alist">
-<p>
-Alist of encoding vs. corresponding method to encode region.
-<p>
-Each element looks like <code>(STRING . FUNCTION)</code> or
-<code>(STRING . nil)</code>.  <var>string</var> is
-content-transfer-encoding.  <code>function</code> is region encoder
-and <code>nil</code> means not to encode.
-</defvar>
 
-<defvar name="mime-decoding-method-alist">
-<p>
-Alist of encoding vs. corresponding method to decode region.
-<p>
-Each element looks like <code>(STRING . FUNCTION)</code> or
-<code>(STRING . nil)</code>.  <var>string</var> is
-content-transfer-encoding.  <code>function</code> is region decoder
-and <code>nil</code> means not to decode.
-</defvar>
-
-
-<h2> String encoding/decoding
-<node> String encoder/decoder
-<p>
 <defun name="mime-decode-string">
 	      <args> string encoding
 <p>
 <var>string</var> を <var>encoding</var> として復号した結果を返します。
 </defun>
 
-<defvar name="mime-string-decoding-method-alist">
-<p>
-Alist of encoding vs. corresponding method to decode string.
-<p>
-Each element looks like <code>(STRING . FUNCTION)</code>.
-STRING is content-transfer-encoding.
-FUNCTION is string decoder.
-</defvar>
 
-
-<h2> File encoding/decoding
-<node> File encoder/decoder
-<p>
 <defun name="mime-insert-encoded-file">
 	    <args> filename encoding
 <p>
@@ -711,24 +706,102 @@ Decode and write current region encoded by <var>encoding</var> into
 <var>start</var> and <var>end</var> are buffer positions.
 </defun>
 
-<defvar name="mime-file-encoding-method-alist">
-<p>
-Alist of encoding vs. corresponding method to insert encoded file.
-<p>
-Each element looks like <code>(STRING . FUNCTION)</code>.  STRING is
-content-transfer-encoding.  FUNCTION is function to insert encoded
-file.
-</defvar>
 
-<defvar name="mime-file-decoding-method-alist">
+<h2> Other utilities
+<node> Encoding information
 <p>
-Alist of encoding vs. corresponding method to write decoded region to
-file.
+<defun name="mime-encoding-list">
+	    <opts> SERVICE
 <p>
-Each element looks like <code>(STRING . FUNCTION)</code>.  STRING is
-content-transfer-encoding.  FUNCTION is function to write decoded
-region to file.
-</defvar>
+Return list of Content-Transfer-Encoding.
+<p>
+If <var>service</var> is specified, it returns available list of
+Content-Transfer-Encoding for it.
+</defun>
+
+<defun name="mime-encoding-alist">
+	    <opts> SERVICE
+<p>
+Return table of Content-Transfer-Encoding for completion.
+<p>
+If <var>service</var> is specified, it returns available list of
+Content-Transfer-Encoding for it.
+</defun>
+
+
+<h2> How to write encoder/decoder module
+<node> mel-backend
+<p>
+<defmacro name="mel-define-method">
+<args> name args <rest> body
+<p>
+Define <var>name</var> as a method function of (nth 1 (car (last
+<var>args</var>))) backend.
+<p>
+<var>args</var> is like an argument list of lambda, but (car (last
+<var>args</var>)) must be specialized parameter.  (car (car (last
+<var>args</var>))) is name of variable and (nth 1 (car (last
+<var>args</var>))) is name of backend (encoding).
+<p>
+Example:
+<p>
+<lisp>
+(mel-define-method mime-write-decoded-region (start end filename
+						    (nil "base64"))
+  "Decode and write current region encoded by base64 into FILENAME.
+START and END are buffer positions."
+  (interactive
+   (list (region-beginning) (region-end)
+	 (read-file-name "Write decoded region to file: ")))
+  (let ((str (buffer-substring start end)))
+    (with-temp-buffer
+      (insert (decode-base64-string str))
+      (write-region-as-binary (point-min) (point-max) filename)
+      )))
+</lisp>
+</defmacro>
+
+<defmacro name="mel-define-method-function">
+<args> spec function
+<p>
+Set <var>spec</var>'s function definition to <var>function</var>.
+<p>
+First element of <var>spec</var> is service.
+<p>
+Rest of <var>args</var> is like an argument list of lambda, but (car
+(last <var>args</var>)) must be specialized parameter.  (car (car
+(last <var>args</var>))) is name of variable and (nth 1 (car (last
+<var>args</var>))) is name of backend (encoding).
+<p>
+Example:
+<p>
+<lisp>
+(mel-define-method-function (mime-encode-string string (nil "base64"))
+			    'encode-base64-string)
+</lisp>
+</defmacro>
+
+
+<h2> How to add encoding/decoding service
+<node> generic function for mel-backend
+<p>
+<defmacro name="mel-define-service">
+<args> name
+<opts> args doc-string
+<p>
+Define <var>name</var> as a service for Content-Transfer-Encodings.
+<p>
+If <var>args</var> is specified, <var>name</var> is defined as a
+generic function for the service.
+<p>
+Example:
+<p>
+<lisp>
+(mel-define-service encoded-text-encode-string (string encoding)
+  "Encode STRING as encoded-text using ENCODING.
+ENCODING must be string.")
+</lisp>
+</defmacro>
 
 
 <h1> Network representation of header

@@ -60,7 +60,10 @@ external encoder is called."
   :type '(choice (const :tag "Always use internal encoder" nil)
 		 (integer :tag "Size")))
 
-(defcustom base64-internal-decoding-limit 70000
+(defcustom base64-internal-decoding-limit (if (and (featurep 'xemacs)
+						   (featurep 'mule))
+					      1000
+					    7600)
   "*limit size to use internal base64 decoder.
 If size of input to decode is larger than this limit,
 external decoder is called."
@@ -72,8 +75,10 @@ external decoder is called."
 ;;; @ internal base64 encoder
 ;;;	based on base64 decoder by Enami Tsugutomo
 
-(defconst base64-characters
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
+(eval-and-compile
+  (defconst base64-characters
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
+  )
 
 (defmacro base64-num-to-char (n)
   `(aref base64-characters ,n))
@@ -147,13 +152,14 @@ external decoder is called."
 ;;;
 
 (defconst base64-numbers
-  `,(let ((len (length base64-characters))
+  (eval-when-compile
+    (let ((len (length base64-characters))
 	  (vec (make-vector 123 nil))
 	  (i 0))
       (while (< i len)
 	(aset vec (aref base64-characters i) i)
 	(setq i (1+ i)))
-      vec))
+      vec)))
 
 (defmacro base64-char-to-num (c)
   `(aref base64-numbers ,c))
@@ -191,15 +197,30 @@ external decoder is called."
 (defun base64-internal-decode-string (string)
   (base64-internal-decode string (make-string (length string) 0)))
 
-(defsubst base64-decode-string! (string)
-  (base64-internal-decode string string))
+;; (defsubst base64-decode-string! (string)
+;;   (setq string (string-as-unibyte string))
+;;   (base64-internal-decode string string))
 
 (defun base64-internal-decode-region (beg end)
   (save-excursion
-    (let ((str (buffer-substring beg end)))
+    (let ((str (string-as-unibyte (buffer-substring beg end))))
       (delete-region beg end)
       (goto-char beg)
-      (insert (base64-decode-string! str)))))
+      (insert (base64-internal-decode str str)))))
+
+;; (defun base64-internal-decode-region2 (beg end)
+;;   (save-excursion
+;;     (let ((str (buffer-substring beg end)))
+;;       (delete-region beg end)
+;;       (goto-char beg)
+;;       (insert (base64-decode-string! str)))))
+
+;; (defun base64-internal-decode-region3 (beg end)
+;;   (save-excursion
+;;     (let ((str (buffer-substring beg end)))
+;;       (delete-region beg end)
+;;       (goto-char beg)
+;;       (insert (base64-internal-decode-string str)))))
 
 
 ;;; @ external encoder/decoder
@@ -284,6 +305,24 @@ metamail or XEmacs package)."
     (base64-internal-decode-string string)))
 
 
+(mel-define-method-function (mime-encode-string string (nil "base64"))
+			    'base64-encode-string)
+(mel-define-method-function (mime-decode-string string (nil "base64"))
+			    'base64-decode-string)
+(mel-define-method-function (mime-encode-region start end (nil "base64"))
+			    'base64-encode-region)
+(mel-define-method-function (mime-decode-region start end (nil "base64"))
+			    'base64-decode-region)
+
+(mel-define-method-function (encoded-text-encode-string string (nil "B"))
+			    'base64-encode-string)
+
+(mel-define-method encoded-text-decode-string (string (nil "B"))
+  (if (and (string-match B-encoded-text-regexp string)
+	   (string= string (match-string 0 string)))
+      (base64-decode-string string)
+    (error "Invalid encoded-text %s" string)))
+
 (defun base64-insert-encoded-file (filename)
   "Encode contents of file FILENAME to base64, and insert the result.
 It calls external base64 encoder specified by
@@ -298,11 +337,15 @@ mmencode included in metamail or XEmacs package)."
     (insert
      (base64-encode-string
       (with-temp-buffer
+	(set-buffer-multibyte nil)
 	(insert-file-contents-as-binary filename)
 	(buffer-string))))
     (or (bolp)
 	(insert "\n"))
      ))
+
+(mel-define-method-function (mime-insert-encoded-file filename (nil "base64"))
+			    'base64-insert-encoded-file)
 
 (defun base64-write-decoded-region (start end filename)
   "Decode and write current region encoded by base64 into FILENAME.
@@ -322,18 +365,16 @@ START and END are buffer positions."
     (let ((str (buffer-substring start end)))
       (with-temp-buffer
 	(insert (base64-internal-decode-string str))
-	(write-region-as-binary (point-min) (point-max) filename)))))
+	(write-region-as-binary (point-min) (point-max) filename)
+	))))
+
+(mel-define-method-function
+ (mime-write-decoded-region start end filename (nil "base64"))
+ 'base64-write-decoded-region)
 
        
 ;;; @ etc
 ;;;
-
-(defun base64-encoded-length (string)
-  (let ((len (length string)))
-    (* (+ (/ len 3)
-	  (if (= (mod len 3) 0) 0 1)
-	  ) 4)
-    ))
 
 (defun pack-sequence (seq size)
   "Split sequence SEQ into SIZE elements packs,

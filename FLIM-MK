@@ -4,7 +4,7 @@
 ;;;
 
 (defun config-flim ()
-  (let (prefix lisp-dir)
+  (let (prefix lisp-dir version-specific-lisp-dir)
     (and (setq prefix (car command-line-args-left))
 	 (or (string-equal "NONE" prefix)
 	     (defvar PREFIX prefix)
@@ -13,6 +13,14 @@
     (and (setq lisp-dir (car command-line-args-left))
 	 (or (string-equal "NONE" lisp-dir)
 	     (defvar LISPDIR lisp-dir)
+	     ))
+    (setq command-line-args-left (cdr command-line-args-left))
+    (and (setq version-specific-lisp-dir (car command-line-args-left))
+	 (or (string-equal "NONE" version-specific-lisp-dir)
+	     (progn
+	       (defvar VERSION_SPECIFIC_LISPDIR version-specific-lisp-dir)
+	       (princ (format "VERSION_SPECIFIC_LISPDIR=%s\n"
+			      VERSION_SPECIFIC_LISPDIR)))
 	     ))
     (setq command-line-args-left (cdr command-line-args-left))
     (load-file "FLIM-CFG")
