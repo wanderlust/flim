@@ -262,11 +262,12 @@
 ;;; @ children
 ;;;
 
-(defun mmbuffer-parse-multipart (entity)
+(defun mmbuffer-parse-multipart (entity &optional representation-type)
   (with-current-buffer (mime-buffer-entity-buffer-internal entity)
-    (let* ((representation-type
-	    (mime-entity-representation-type-internal entity))
-	   (content-type (mime-entity-content-type-internal entity))
+    (or representation-type
+	(setq representation-type
+	      (mime-entity-representation-type-internal entity)))
+    (let* ((content-type (mime-entity-content-type-internal entity))
 	   (dash-boundary
 	    (concat "--"
 		    (mime-content-type-parameter content-type "boundary")))
@@ -320,7 +321,8 @@
 	  nil)
 	))))
 
-(defun mmbuffer-parse-encapsulated (entity &optional external)
+(defun mmbuffer-parse-encapsulated (entity &optional external
+					   representation-type)
   (mime-entity-set-children-internal
    entity
    (with-current-buffer (mime-buffer-entity-buffer-internal entity)
@@ -332,7 +334,8 @@
 		  (progn
 		    (require 'mmexternal)
 		    'mime-external-entity)
-		(mime-entity-representation-type-internal entity))
+		(or representation-type
+		    (mime-entity-representation-type-internal entity)))
 	      nil
 	      entity (cons 0 (mime-entity-node-id-internal entity))))))))
 
