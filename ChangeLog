@@ -1,5 +1,12 @@
 1999-10-21  Kenichi OKADA <okada@opaopa.org>
 
+	* smtp.el (smtp-via-smtp): Add autoload for
+	`starttls-open-stream', `starttls-negotiate',
+	`sasl-cram-md5' and `sasl-plain'.
+	* smtp.el (smtp-via-smtp): Don't require `sasl' and `starttls'.
+
+1999-10-21  Kenichi OKADA <okada@opaopa.org>
+
 	* starttls.c: New file.
 	* smtp.el (smtp-via-smtp): STARTTLS support.
 	* SLIM-TIPS: New file.

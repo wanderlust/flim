@@ -31,9 +31,13 @@
 (require 'poem)
 (require 'pcustom)
 (require 'mail-utils)			; mail-strip-quoted-names
-(require 'sasl)
-(require 'starttls)
 
+(eval-and-compile
+  (autoload 'starttls-open-stream "starttls")
+  (autoload 'starttls-negotiate "starttls")
+  (autoload 'sasl-cram-md5 "sasl")
+  (autoload 'sasl-plain "sasl"))
+		       
 (eval-when-compile (require 'cl))	; push
 
 (defgroup smtp nil
