@@ -25,7 +25,7 @@
 ;;; Code:
 
 (eval-and-compile
-  (defconst mime-library-product ["FLIM" (1 10 4) "Shin-H.DŽòsono"]
+  (defconst mime-library-product ["FLIM" (1 10 5) "Kizugawadai"]
     "Product name, version number and code name of MIME-library package.")
   )
 
