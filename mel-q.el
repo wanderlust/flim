@@ -27,7 +27,9 @@
 
 (require 'mime-def)
 (require 'path-util)
-
+(eval-when-compile
+  ;; XXX: should provide char-list instead of string-to-char-list.
+  (require 'poem))
 
 ;;; @ Quoted-Printable encoder
 ;;;
