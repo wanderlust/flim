@@ -137,8 +137,8 @@ property of the decoded-value."
     (while params
       (if (and (string-match (eval-when-compile
 			       (concat "^\\(" mime-attribute-char-regexp "+\\)"
-				       "\\(\\*\\([0-9]+\\)\\)?" ; continuation
-				       "\\(\\*\\)?$")) ; charset/language info
+				       "\\(\\*[0-9]+\\)?" ; continuation
+				       "\\(\\*\\)?$")) ; charset/language
 			     (car params))
 	       (> (match-end 0) (match-end 1)))
           (let* ((attribute (downcase
@@ -146,10 +146,11 @@ property of the decoded-value."
                  (section (if (match-beginning 2)
 			      (string-to-int
 			       (substring (car params)
-					  (match-beginning 3)(match-end 3)))
+					  (1+ (match-beginning 2))
+					  (match-end 2)))
 			    0))
 		 ;; EPARAM := (ATTRIBUTE CHARSET LANGUAGE VALUES)
-		 ;; VALUES := [1*VALUE] ; vector of (length params) elements.
+		 ;; VALUES := [1*VALUE] ; vector of LEN elements.
                  (eparam (assoc attribute eparams)))
             (unless eparam
               (setq eparam (cons attribute
@@ -157,38 +158,35 @@ property of the decoded-value."
                     eparams (cons eparam eparams)))
 	    (setq params (cdr params))
 	    ;; if parameter-name ends with "*", it is an extended-parameter.
-            (if (match-beginning 4)
+            (if (match-beginning 3)
                 (if (zerop section)
 		    ;; extended-initial-parameter.
 		    (if (string-match (eval-when-compile
 					(concat
-					 "^\\("
-					 mime-charset-regexp
-					 "\\)?"
-					 "\\('\\("
-					 mime-language-regexp
-					 "\\)?'\\)"
-					 "\\("
-					 mime-attribute-char-regexp
-					 "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+$"))
+					 "^\\(" mime-charset-regexp "\\)?"
+					 "'\\(" mime-language-regexp "\\)?"
+					 "'\\(\\(" mime-attribute-char-regexp
+					 "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+\\)$"))
 				      (car params))
 			(progn
 			  ;; charset
-			  (setcar (cdr eparam) ; (nthcdr 1 eparam)
-				  (downcase
-				   (substring (car params)
-					      0 (match-beginning 2))))
-			  ;; language
-			  (when (match-beginning 3)
-			    (setcar (nthcdr 2 eparam)
+			  (when (match-beginning 1)
+			    (setcar (cdr eparam) ; (nthcdr 1 eparam)
 				    (downcase
 				     (substring (car params)
-						(match-beginning 3)
-						(match-end 3)))))
+						0 (match-end 1)))))
+			  ;; language
+			  (when (match-beginning 2)
+			    (setcar (nthcdr 2 eparam)
+				    (intern
+				     (downcase
+				      (substring (car params)
+						 (match-beginning 2)
+						 (match-end 2))))))
 			  ;; text
 			  (aset (nth 3 eparam) 0
 				(substring (car params)
-					   (match-end 2))))
+					   (match-beginning 3))))
 		      ;; invalid parameter-value.
 		      (aset (nth 3 eparam) 0
 			    (mime-decode-parameter-encode-segment
@@ -196,9 +194,8 @@ property of the decoded-value."
 		  ;; extended-other-parameter.
 		  (if (string-match (eval-when-compile
 				      (concat
-				       "^\\("
-				       mime-attribute-char-regexp
-				       "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+$"))
+				       "^\\(\\(" mime-attribute-char-regexp
+				       "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+\\)$"))
 				    (car params))
 		      (aset (nth 3 eparam) section
 			    (car params))
