@@ -46,6 +46,8 @@
     (iso-8859-7		. "Q")
     (iso-8859-8		. "Q")
     (iso-8859-9		. "Q")
+    (iso-8859-14	. "Q")
+    (iso-8859-15	. "Q")
     (iso-2022-jp	. "B")
     (iso-2022-jp-3	. "B")
     (iso-2022-kr	. "B")
@@ -72,7 +74,6 @@
     (eword-encode-in-reply-to . (In-Reply-To))
     (eword-encode-structured-field-body . (Mime-Version User-Agent))
     (eword-encode-unstructured-field-body)))
-
 
 ;;; @ encoded-text encoder
 ;;;
