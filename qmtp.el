@@ -61,6 +61,7 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
   :group 'qmtp)
 
 (autoload 'binary-open-network-stream "raw-io")
+;;;###autoload
 (defvar qmtp-open-connection-function (function binary-open-network-stream))
 
 (defvar qmtp-error-response-alist
