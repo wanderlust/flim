@@ -41,6 +41,12 @@
   "Read field-body of Content-Type field from current-buffer,
 and return parsed it.")
 
+(autoload 'mime-parse-Content-Disposition "mime-parse"
+  "Parse STRING as field-body of Content-Disposition field.")
+(autoload 'mime-read-Content-Disposition "mime-parse"
+  "Read field-body of Content-Disposition field from current-buffer,
+and return parsed it.")
+
 (autoload 'mime-parse-Content-Transfer-Encoding "mime-parse"
   "Parse STRING as field-body of Content-Transfer-Encoding field.")
 (autoload 'mime-read-Content-Transfer-Encoding "mime-parse"
@@ -52,25 +58,6 @@ current-buffer, and return it.")
 
 (autoload 'mime-parse-buffer "mime-parse"
   "Parse BUFFER as a MIME message.")
-
-
-;;; @ Content-Disposition
-;;;
-
-(autoload 'mime-parse-Content-Disposition "mime-parse"
-  "Parse STRING as field-body of Content-Disposition field.")
-
-(autoload 'mime-read-Content-Disposition "mime-parse"
-  "Read field-body of Content-Disposition field from current-buffer,
-and return parsed it.")
-
-(defsubst mime-content-disposition-parameter (content-disposition parameter)
-  "Return PARAMETER value of CONTENT-DISPOSITION."
-  (cdr (assoc parameter (cdr content-disposition))))
-
-(defsubst mime-content-disposition-filename (content-disposition)
-  "Return filename of CONTENT-DISPOSITION."
-  (mime-content-disposition-parameter content-disposition "filename"))
 
 
 ;;; @ MIME entity
