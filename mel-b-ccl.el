@@ -143,6 +143,8 @@ abcdefghijklmnopqrstuvwxyz\
 
 )
 
+(check-broken-facility ccl-cascading-read)
+
 (if-broken ccl-cascading-read
     (define-ccl-program mel-ccl-decode-b
       `(1
