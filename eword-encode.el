@@ -119,13 +119,15 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
   (let ((len (length string))
 	dest)
     (while (> len 0)
-      (let* ((chr (sref string 0))
+      (let* ((chr (aref string 0))
+             ;; (chr (sref string 0))
 	     (charset (eword-encode-char-type chr))
              (i 1)
 	     ;; (i (char-length chr))
 	     )
 	(while (and (< i len)
-		    (setq chr (sref string i))
+		    (setq chr (aref string i))
+                    ;; (setq chr (sref string i))
 		    (eq charset (eword-encode-char-type chr)))
 	  (setq i (1+ i))
           ;; (setq i (char-next-index chr i))
@@ -312,7 +314,8 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		      (str "") nstr)
 		 (while (and (< p len)
 			     (progn
-			       (setq np (char-next-index (sref string p) p))
+			       (setq np (1+ p))
+			       ;;(setq np (char-next-index (sref string p) p))
 			       (setq nstr (substring string 0 np))
 			       (setq ret (tm-eword::encoded-word-length
 					  (cons nstr (cdr rword))
@@ -401,7 +404,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		   (append dest
 			   (list
 			    (let ((ret (ew-find-charset-rule
-					(find-non-ascii-charset-string str))))
+					(find-charset-string str))))
 			      (make-ew-rword
 			       str (car ret)(nth 1 ret) 'phrase)
 			      )
@@ -464,7 +467,8 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		     (if (or (eq pname 'spaces)
 			     (eq pname 'comment))
 			 (nconc dest (list (list (cdr token) nil nil)))
-		       (nconc (butlast dest)
+		       (nconc (nreverse (cdr (reverse dest)))
+			      ;; (butlast dest)
 			      (list
 			       (list (concat (car (car (last dest)))
 					     (cdr token))
@@ -688,7 +692,7 @@ It refer variable `eword-field-encoding-method-alist'."
 	  (setq bbeg (match-end 0)
 		field-name (buffer-substring (match-beginning 0) (1- bbeg))
 		end (std11-field-end))
-	  (and (find-non-ascii-charset-region bbeg end)
+	  (and (delq 'ascii (find-charset-region bbeg end))
 	       (let ((method (eword-find-field-encoding-method
 			      (downcase field-name))))
 		 (cond ((eq method 'mime)

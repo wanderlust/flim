@@ -1,4 +1,32 @@
+2000-12-17  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mel-g.el (gzip64-external-encode-region): Don't use
+	`as-binary-process'; comment out code to regularize line break
+	code for OS/2 [if it is needed, it is better to implement by
+	coding-system].
+	(gzip64-external-decode-region): Don't use `as-binary-process'.
+	(mime-write-decoded-region): Likewise.
+
+	* mime-parse.el: Require `luna'.
+
 2000-12-16  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el (eword-encode-divide-into-charset-words): Use
+	`aref' instead of `sref'.
+	(ew-encode-rword-1): Use `1+' instead of `char-next-index'.
+	(eword-encode-phrase-to-rword-list): Use `find-charset-string'
+	instead of `find-non-ascii-charset-string'.
+	(eword-encode-addr-seq-to-rword-list): Don't use `butlast'.
+	(eword-encode-header): Use `find-charset-region' instead of
+	`find-non-ascii-charset-string'.
+
+	* mel.el: Require `raw-io'.
+
+	* mime-def.el (binary-insert-file-contents): Moved to raw-io.el.
+	(binary-write-region): Likewise.
+
+	* mmbabyl.el (mime-write-entity): Use `raw-message-write-region'
+	instead of `write-region-as-raw-text-CRLF'.
 
 	* raw-io.el: New file.
 
@@ -16,6 +44,14 @@
 	`binary-open-network-stream' instead of `open-network-stream' as
 	initial value.
 	(qmtp-send-buffer): Don't guard as `binary'.
+
+2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime/eword-decode.el: Don't use
+	`define-obsolete-function-alias'; so `eword-decode-header' is
+	deleted.
+
+	* mime/mmexternal.el: Don't require `pces'.
 
 2000-12-15  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 

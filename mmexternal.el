@@ -26,7 +26,6 @@
 
 (require 'mmgeneric)
 (require 'mime)
-(require 'pces)
 
 (eval-and-compile
   (luna-define-class mime-external-entity (mime-entity)

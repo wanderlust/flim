@@ -26,6 +26,7 @@
 ;;; Code:
 
 (require 'mime-def)
+(require 'raw-io)
 (require 'alist)
 
 (defcustom mime-encoding-list
