@@ -187,7 +187,8 @@ method.  If it is not string, it is treated as BODY.
 
 The optional 5th BODY is the body of the method."
   (let ((method-qualifier (pop definition))
-	args specializer class self clear-cache)
+	(clear-cache (luna-make-clear-method-cache-function name))
+	args specializer class self)
     (if (memq method-qualifier '(:before :after :around))
 	(setq args (pop definition))
       (setq args method-qualifier
@@ -197,8 +198,7 @@ The optional 5th BODY is the body of the method."
 	  self (car specializer)
 	  args (if self
 		   (cons self (cdr args))
-		 (cdr args))
-	  clear-cache (luna-make-clear-method-cache-function name))
+		 (cdr args)))
     (` (let ((func (function
 		    (lambda (, args)
 		      (,@ definition))))
