@@ -1,3 +1,10 @@
+1998-04-17  MORIOKA Tomohiko  <morioka@mousai.jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-divide-into-charset-words): Use
+	'char-length or 'char-next-index instead of 'char-bytes.
+	(tm-eword::encode-string-1): Use 'char-next-index instead of
+	'char-bytes.
+
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel.el (base64-dl-module): Must check base64.so actually exists.
