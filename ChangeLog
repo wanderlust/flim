@@ -1,3 +1,13 @@
+2001-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime.el (mime-entity-read-field): Would capitalize twice.
+
+	* mmbuffer.el (mime-entity-fetch-field): Ditto.
+
+	* mmexternal.el (mime-entity-fetch-field): Ditto.
+
+	* mmgeneric.el (mime-entity-fetch-field): Ditto.
+
 2001-04-15  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* eword-decode.el (eword-lexical-analyze-internal):
