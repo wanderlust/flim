@@ -718,9 +718,10 @@ using <var>encoding</var>.
 
 
 <defun name="mime-decode-string">
-	      <args> string encoding
+	    <args> string encoding
 <p>
-<var>string</var> を <var>encoding</var> として復号した結果を返します。
+Decode <var>string</var> which is encoded in <var>encoding</var>, and
+return the result.
 </defun>
 
 
