@@ -74,6 +74,7 @@ information of entity.  In this document, it is called simply
 * Entity hierarchy::            Features about message tree
 * Entity Attributes::           Functions about attributes of mime-entity
 * Entity-header::               Information of entity header
+* entity formatting::           Text presentation of entity
 * Entity-content::              Contents of Entity
 * Entity buffer::               Entity as buffer representation
 * mm-backend::                  Entity representations and implementations
@@ -256,7 +257,7 @@ code-converted.
 
 
 
-@node Entity-header, Entity-content, Entity Attributes, Entity
+@node Entity-header, entity formatting, Entity Attributes, Entity
 @section Information of entity header
 
 @defun mime-fetch-field field-name  &optional  entity
@@ -294,6 +295,10 @@ If @var{field-name} field is not found, this function returns
 @end defun
 
 
+
+@node entity formatting, Entity-content, Entity-header, Entity
+@section Text presentation of entity
+
 @defun mime-insert-header entity  &optional  invisible-fields visible-fields
 
 Insert before point a decoded contents of header of @var{entity}.@refill
@@ -304,12 +309,27 @@ hide.@refill
 
 If a field-name is matched with some elements of @var{invisible-fields}
 and matched with none of @var{visible-fields}, this function don't
-insert the field.
+insert the field.@refill
+
+Each encoded-word (@ref{encoded-word}) in the header is decoded.  ``Raw
+non us-ascii characters'' are also decoded as
+@var{default-mime-charset}.
 @end defun
 
 
+@defvar default-mime-charset
 
-@node Entity-content, Entity buffer, Entity-header, Entity
+Symbol to indicate default value of MIME-charset
+(@ref{MIME-charset}).@refill
+
+It is used when MIME-charset is not specified.@refill
+
+It is originally variable of APEL.
+@end defvar
+
+
+
+@node Entity-content, Entity buffer, entity formatting, Entity
 @section Contents of Entity
 
 @defun mime-entity-content entity
@@ -950,15 +970,6 @@ MIME 関連機能に関する group.@refill
 
 @code{mail} と @code{news} に属する。
 @end deffn
-
-
-@defvar default-mime-charset
-
-適切な MIME charset (@ref{MIME charset}) が見つからなかった場合に用いら
-れるMIME charset.@refill
-
-本来は APEL の変数である。
-@end defvar
 
 
 @defvar mime-temp-directory

@@ -1,5 +1,11 @@
 1998-10-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-ja.sgml, mime-en.sgml (entity formatting): New node; move
+	`mime-insert-header' from `Entity-header'; move
+	`default-mime-charset' from `custom'.
+
+1998-10-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-en.sgml, mime-ja.sgml (Entity-header): Generic function
 	`mime-insert-decoded-header' was renamed to `mime-insert-header'.
 

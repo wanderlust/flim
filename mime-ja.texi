@@ -77,6 +77,7 @@ FLIM は entity の情報を表現するために@strong{mime-entity} 構
 * Entity hierarchy::            Entity 階層
 * Entity Attributes::           Entity の属性
 * Entity-header::               Entity header の情報
+* entity formatting::           Entity の文字表現
 * Entity-content::              Entity の内容
 * Entity buffer::               Entity の buffer による表現
 * mm-backend::                  Entity の表現と実現
@@ -260,7 +261,7 @@ code-converted.
 
 
 
-@node Entity-header, Entity-content, Entity Attributes, Entity
+@node Entity-header, entity formatting, Entity Attributes, Entity
 @section Entity header の情報
 
 @defun mime-fetch-field field-name  &optional  entity
@@ -293,6 +294,10 @@ code-converted.
 @end defun
 
 
+
+@node entity formatting, Entity-content, Entity-header, Entity
+@section Entity の文字表現
+
 @defun mime-insert-header entity  &optional  invisible-fields visible-fields
 
 現在位置に @var{entity} の復号した header を挿入する。@refill
@@ -303,11 +308,24 @@ code-converted.
 
 @var{invisible-fields} の要素のどれかに match し、かつ、
 @var{visible-fields} の要素のどれにも match しない欄は表示されない。
+@refill
+
+encoded-word (@ref{encoded-word}) は復号される。『生の非 us-ascii 文字』
+は @var{default-mime-charset} として解釈される。
 @end defun
 
 
+@defvar default-mime-charset
 
-@node Entity-content, Entity buffer, Entity-header, Entity
+適切な MIME charset (@ref{MIME charset}) が見つからなかった場合に用いら
+れるMIME charset.@refill
+
+本来は APEL の変数である。
+@end defvar
+
+
+
+@node Entity-content, Entity buffer, entity formatting, Entity
 @section Entity の内容
 
 @defun mime-entity-content entity
@@ -948,15 +966,6 @@ MIME 関連機能に関する group.@refill
 
 @code{mail} と @code{news} に属する。
 @end deffn
-
-
-@defvar default-mime-charset
-
-適切な MIME charset (@ref{MIME charset}) が見つからなかった場合に用いら
-れるMIME charset.@refill
-
-本来は APEL の変数である。
-@end defvar
 
 
 @defvar mime-temp-directory
