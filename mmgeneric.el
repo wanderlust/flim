@@ -59,7 +59,7 @@
 (luna-define-method mime-entity-fetch-field ((entity mime-entity)
 					     field-name)
   (or (symbolp field-name)
-      (setq field-name (intern (capitalize (capitalize field-name)))))
+      (setq field-name (intern (capitalize field-name))))
   (cdr (assq field-name
 	     (mime-entity-original-header-internal entity))))
 

@@ -156,8 +156,7 @@
 	(let ((ret (std11-fetch-field field-name)))
 	  (when ret
 	    (or (symbolp field-name)
-		(setq field-name
-		      (intern (capitalize (capitalize field-name)))))
+		(setq field-name (intern (capitalize field-name))))
 	    (mime-entity-set-original-header-internal
 	     entity
 	     (put-alist field-name ret
