@@ -1,6 +1,6 @@
 ;;; mime.el --- MIME library module
 
-;; Copyright (C) 1998,1999,2000 Free Software Foundation, Inc.
+;; Copyright (C) 1998,1999,2000,2001,2003 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: MIME, multimedia, mail, news
@@ -391,13 +391,16 @@ default value."
 (defun mime-entity-filename (entity)
   "Return filename of ENTITY."
   (or (mime-entity-uu-filename entity)
-      (mime-content-disposition-filename
-       (mime-entity-content-disposition entity))
+      (let ((ret (mime-content-disposition-filename
+		  (mime-entity-content-disposition entity))))
+	(if (and mime-header-accept-quoted-encoded-words
+		 ret)
+	    (eword-decode-string ret)
+	  ret))
       (cdr (let ((param (mime-content-type-parameters
 			 (mime-entity-content-type entity))))
 	     (or (assoc "name" param)
-		 (assoc "x-name" param))
-	     ))))
+		 (assoc "x-name" param))))))
 
 
 (defsubst mime-entity-media-type (entity)
