@@ -111,7 +111,7 @@
 (defvar quoted-printable-internal-encoding-limit
   (if (and (featurep 'xemacs)(featurep 'mule))
       0
-    (require 'file-detect)
+    (require 'path-util)
     (if (exec-installed-p "mmencode")
 	1000
       (message "Don't found external encoder for Quoted-Printable!")

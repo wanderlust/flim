@@ -88,7 +88,10 @@ FUNCTION is region decoder.")
 
 ;;;###autoload
 (defun mime-encode-region (start end encoding)
-  "Encode region START to END of current buffer using ENCODING."
+  "Encode region START to END of current buffer using ENCODING.
+ENCODING must be string.  If ENCODING is found in
+`mime-encoding-method-alist' as its key, this function encodes the
+region by its value."
   (interactive
    (list (region-beginning) (region-end)
 	 (completing-read "encoding: "
@@ -102,7 +105,10 @@ FUNCTION is region decoder.")
 
 ;;;###autoload
 (defun mime-decode-region (start end encoding)
-  "Decode region START to END of current buffer using ENCODING."
+  "Decode region START to END of current buffer using ENCODING.
+ENCODING must be string.  If ENCODING is found in
+`mime-decoding-method-alist' as its key, this function decodes the
+region by its value."
   (interactive
    (list (region-beginning) (region-end)
 	 (completing-read "encoding: "

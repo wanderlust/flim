@@ -35,7 +35,7 @@
 ;;; Code:
 
 (require 'emu)
-(require 'file-detect)
+(require 'path-util)
 
 
 ;;; @ variables
