@@ -99,6 +99,17 @@
 	  "][" quoted-printable-hex-chars "]"))
 
 
+;;; @ utility
+;;;
+
+(defsubst mime-type/subtype-string (type &optional subtype)
+  "Return type/subtype string from TYPE and SUBTYPE."
+  (if type
+      (if subtype
+	  (format "%s/%s" type subtype)
+	(format "%s" type))))
+
+
 ;;; @ end
 ;;;
 
