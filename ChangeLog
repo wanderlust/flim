@@ -1,3 +1,7 @@
+2000-12-12   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el: Rewrite with luna.
+
 2000-12-06   Daiki Ueno  <ueno@unixuser.org>
 
 	* FLIM-ELS: Don't install md5-dl.el, md5-el.el, sha1-dl.el and
