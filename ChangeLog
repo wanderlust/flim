@@ -1,5 +1,31 @@
 2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* mime.el (mime-entity-header-buffer): Mark it as obsolete.
+	(mime-goto-header-start-point): Likewise.
+	(mime-entity-header-start-point): Likewise.
+	(mime-entity-header-end-point): Likewise.
+	(mime-entity-body-start): Use `defalias'; don't recommend to use
+	`mime-entity-body-start-point' instead.
+	(mime-entity-body-end): Use `defalias'; don't recommend to use
+	`mime-entity-body-end-point' instead.
+	(mime-entity-body-buffer): Mark it as obsolete.
+	(mime-goto-body-start-point): Likewise.
+	(mime-goto-body-end-point): Likewise.
+	(mime-entity-body-start-point): Likewise.
+	(mime-entity-body-end-point): Likewise.
+	(mime-entity-buffer): Don't recommend to use
+	`mime-entity-header-buffer' or `mime-entity-body-buffer' instead.
+	(mime-entity-point-min): Don't recommend to use
+	`mime-entity-header-start-point' instead.
+	(mime-entity-point-max): Don't recommend to use
+	`mime-entity-body-end-point' instead.
+
+	* mime-def.el (mime-library-version): update to 1.14.1.
+	- Add autoload setting for `mime-parse-external'.
+
+
+2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* Chao: Version 1.14.0 (Momoyama) released.
 
 2000-01-05  Katsumi Yamaoka   <yamaoka@jpl.org>
