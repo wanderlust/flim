@@ -178,19 +178,19 @@ ENTITY is used."
 
 (defun mime-entity-header-start (entity)
   (or (mime-entity-header-start-internal entity)
-      (mime-entity-send entity 'header-start)))
+      (mime-entity-send entity 'entity-header-start)))
 
 (defun mime-entity-header-end (entity)
   (or (mime-entity-header-end-internal entity)
-      (mime-entity-send entity 'header-end)))
+      (mime-entity-send entity 'entity-header-end)))
 
 (defun mime-entity-body-start (entity)
   (or (mime-entity-body-start-internal entity)
-      (mime-entity-send entity 'body-start)))
+      (mime-entity-send entity 'entity-body-start)))
 
 (defun mime-entity-body-end (entity)
   (or (mime-entity-body-end-internal entity)
-      (mime-entity-send entity 'body-end)))
+      (mime-entity-send entity 'entity-body-end)))
 
 
 ;;; @ Entity Header
