@@ -1,5 +1,89 @@
 1999-05-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
+	* mel.el: Update header.
+	Require 'path-util and don't require 'poem.
+	(mel-use-module): Eliminate local variable `encoding'.
+	(mime-insert-encoded-file for mel-b-builtin):
+	Use built-in `interactive' spec.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+	(mime-encode-region): Capitalize prompt string.
+	(mime-decode-region): Ditto.
+	(mime-insert-encoded-file): Ditto.
+	(mime-write-decoded-region): Ditto.
+
+	* mel-b-ccl.el: Update header.
+	(base64-ccl-encode-region): Use read-only `interactive' spec.
+	(base64-ccl-decode-region): Ditto.
+	(base64-ccl-insert-encoded-file): Use built-in `interactive' spec.
+	(base64-ccl-write-decoded-region): Ditto.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+
+	* mel-b-dl.el: Update header.
+	Don't require 'poe; it is required implicitly via 'mime-def.
+	(base64-dl-handle): Chech whether `base64-dl-module' is string.
+	Defalias `base64-encode-string' and `base64-decode-string' just
+	after `dynamic-call'ing "emacs_base64_init".
+	(base64-encode-region): Use read-only `interactive' spec.
+	Use `base64-encode-string'.
+	Changed order of evaluation to "encode, delete, then insert".
+	(base64-decode-region): Renamed from `decode-base64-region'.
+	Use read-only `interactive' spec.
+	Use `base64-decode-string'.
+	Changed order of evaluation to "decode, delete, then insert".
+	(mime-encode-string): Use `base64-encode-string'.
+	(mime-decode-string): Use `base64-decode-string'.
+	(mime-decode-region): Use `base64-decode-region'.
+	(encoded-text-encode-string): Use `base64-encode-string'.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+	(mime-insert-encoded-file): Use built-in `interactive' spec.
+	(mime-write-decoded-region in comment): Ditto.
+
+	* mel-b-el.el: Update header.
+	Don't require 'poe; it is required implicitly via 'mime-def.
+	(pack-sequence): Moved to top of the function definitions.
+	(base64-encode-string): Calculate padding first.
+	(base64-internal-encode-region): Changed order of evaluation to
+	"encode, delete, then insert".
+	(base64-internal-decode-string): Changed order of evaluation to
+	"decode, delete, then insert".
+	(base64-encode-region): Use read-only `interactive' spec.
+	(base64-decode-region): Ditto.
+	(base64-decode-string): Not interactive.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+	(base64-insert-encoded-file): Use built-in `interactive' spec.
+	(base64-write-decoded-region): Ditto.
+
+	* mel-g.el: Update header.
+	Require 'mime-def instead of 'poem and 'mel.
+	(mime-insert-encoded-file): Use built-in `interactive' spec.
+	(mime-write-decoded-region): Ditto.
+
+	* mel-q-ccl.el: Update header.
+	(quoted-printable-ccl-encode-region):
+	Use read-only `interactive' spec.
+	(quoted-printable-ccl-decode-region): Ditto.
+	(quoted-printable-ccl-insert-encoded-file):
+	Use built-in `interactive' spec.
+	(quoted-printable-ccl-write-decoded-region): Ditto.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+
+	* mel-q.el: Update header.
+	Require 'path-util instead of 'emu.
+	(quoted-printable-internal-encode-region): Rewrite without regexp.
+	(quoted-printable-internal-decode-region): Ditto.
+	(quoted-printable-encode-region): Use read-only `interactive' spec.
+	(quoted-printable-decode-region): Ditto.
+	(mime-insert-encoded-file): Use built-in `interactive' spec.
+	(mime-write-decoded-region): Ditto.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+
+	* mel-u.el: Update header.
+	Require 'path-util instead of 'emu.
+	(mime-insert-encoded-file): Use built-in `interactive' spec.
+	(mime-write-decoded-region): Ditto.
+
+1999-05-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
 	* mime-def.el: Require 'poe, 'poem, and 'pcustom.
 	(mime): Declare `default-mime-charset' as an initial member.
 
