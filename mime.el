@@ -219,27 +219,30 @@ If MESSAGE is specified, it is regarded as root entity."
 		 field-body))
 	   ))))
 
-(defalias 'mime-entity-content-type 'mime-entity-content-type-internal)
+(defun mime-entity-content-type (entity)
+  (or (mime-entity-content-type-internal entity)
+      (let ((ret (mime-fetch-field 'Content-Type entity)))
+	(if ret
+	    (mime-entity-set-content-disposition-internal
+	     entity (mime-parse-Content-Type ret))
+	  ))))
 
 (defun mime-entity-content-disposition (entity)
   (or (mime-entity-content-disposition-internal entity)
       (let ((ret (mime-fetch-field 'Content-Disposition entity)))
 	(if ret
-	    (let ((disposition (mime-parse-Content-Disposition ret)))
-	      (when disposition
-		(mime-entity-set-content-disposition-internal
-		 entity disposition)
-		disposition))))))
+	    (mime-entity-set-content-disposition-internal
+	     entity (mime-parse-Content-Disposition ret))
+	  ))))
 
 (defun mime-entity-encoding (entity &optional default-encoding)
   (or (mime-entity-encoding-internal entity)
-      (let ((encoding
-	     (or (let ((ret (mime-fetch-field
-			     'Content-Transfer-Encoding entity)))
-		   (and ret (mime-parse-Content-Transfer-Encoding ret)))
-		 default-encoding "7bit")))
-	(mime-entity-set-encoding-internal entity encoding)
-	encoding)))
+      (let ((ret (mime-fetch-field 'Content-Transfer-Encoding entity)))
+	(mime-entity-set-encoding-internal
+	 entity
+	 (or (and ret (mime-parse-Content-Transfer-Encoding ret))
+	     default-encoding "7bit"))
+	)))
 
 (defun mime-read-field (field-name &optional entity)
   (or (symbolp field-name)
