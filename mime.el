@@ -379,11 +379,14 @@ If MESSAGE is specified, it is regarded as root entity."
 (mm-define-generic entity-content (entity)
   "Return content of ENTITY as byte sequence (string).")
 
-(mm-define-generic insert-text-content (entity)
-  "Insert decoded text body of ENTITY.")
+(mm-define-generic insert-entity-content (entity)
+  "Insert content of ENTITY at point.")
 
 (mm-define-generic write-entity-content (entity filename)
   "Write content of ENTITY into FILENAME.")
+
+(mm-define-generic insert-text-content (entity)
+  "Insert decoded text body of ENTITY.")
 
 (mm-define-generic insert-entity (entity)
   "Insert header and body of ENTITY at point.")
