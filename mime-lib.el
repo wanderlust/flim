@@ -29,24 +29,26 @@
 (require 'mime-def)
 (require 'eword-decode)
 
+(autoload 'eword-encode-field "eword-encode"
+  "Encode header field STRING, and return the result.")
+(autoload 'eword-encode-header "eword-encode"
+  "Encode header fields to network representation, such as MIME encoded-word.")
+
 
 (autoload 'mime-parse-Content-Type "mime-parse"
   "Parse STRING as field-body of Content-Type field.")
-
 (autoload 'mime-read-Content-Type "mime-parse"
   "Read field-body of Content-Type field from current-buffer,
 and return parsed it.")
 
 (autoload 'mime-parse-Content-Disposition "mime-parse"
   "Parse STRING as field-body of Content-Disposition field.")
-
 (autoload 'mime-read-Content-Disposition "mime-parse"
   "Read field-body of Content-Disposition field from current-buffer,
 and return parsed it.")
 
 (autoload 'mime-parse-Content-Transfer-Encoding "mime-parse"
   "Parse STRING as field-body of Content-Transfer-Encoding field.")
-
 (autoload 'mime-read-Content-Transfer-Encoding "mime-parse"
   "Read field-body of Content-Transfer-Encoding field from
 current-buffer, and return it.")
