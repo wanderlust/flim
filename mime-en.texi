@@ -1533,13 +1533,13 @@ newest FLIM by the following method.
 @example
 (0) cvs login
 
-    % cvs -d :pserver:anonymous@cvs.m17n.org:/cvs/root login
+    % cvs -d :pserver:anonymous@@cvs.m17n.org:/cvs/root login
 
     CVS password: [CR] # NULL string
 
 (1) checkout
 
-    % cvs -d :pserver:anonymous@cvs.m17n.org:/cvs/root checkout
+    % cvs -d :pserver:anonymous@@cvs.m17n.org:/cvs/root checkout
 	checkout [-r TAG] flim
 @end example
 
@@ -1548,7 +1548,7 @@ If you would like to join CVS based development, please send mail to
 
 @itemize @bullet
 @item
- <cvs@cvs.m17n.org>
+ <cvs@@cvs.m17n.org>
 @end itemize
 
 @noindent
