@@ -106,30 +106,22 @@ external decoder is called.")
     (save-restriction
       (narrow-to-region beg end)
       (goto-char (point-min))
-      (while (re-search-forward "^.*$" nil t)
-	(replace-match
-	 (quoted-printable-encode-string
-	  (buffer-substring (match-beginning 0)(match-end 0))
-	  ))
-	))))
-
-(defun quoted-printable-internal-decode-region (beg end)
-  (save-excursion
-    (save-restriction
-      (narrow-to-region beg end)
-      (goto-char (point-min))
-      (while (re-search-forward "=\n" nil t)
-	(replace-match "")
-	)
-      (goto-char (point-min))
-      (let (b e str)
-	(while (re-search-forward quoted-printable-octet-regexp nil t)
-	  (setq b (match-beginning 0))
-	  (setq e (match-end 0))
-	  (setq str (buffer-substring b e))
-	  (delete-region b e)
-	  (insert (quoted-printable-decode-string str))
-	  ))
+      (catch 'tag
+	(let (b e str)
+	  (while t
+	    (beginning-of-line) (setq b (point))
+	    (end-of-line)       (setq e (point))
+	    (if (< b e)
+		(progn
+		  (setq str (buffer-substring b e))
+		  (delete-region b e)
+		  (insert (quoted-printable-encode-string str))
+		  ))
+	    (if (eobp)
+		(throw 'tag nil)
+	      )
+	    (forward-char 1)
+	    )))
       )))
 
 (cond ((boundp 'MULE)
