@@ -1,5 +1,7 @@
 2000-12-15  Katsumi Yamaoka   <yamaoka@jpl.org>
 
+	* smtp.el: Require `pcustom' instead of `custom'.
+
 	* tests/test-sasl.el (test-sasl-digest-md5-acap): Replace #' with
 	`function'.
 	(test-sasl-digest-md5-imap): Ditto.

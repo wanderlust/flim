@@ -32,7 +32,7 @@
 ;;; Code:
 
 (require 'pces)
-(require 'custom)
+(require 'pcustom)
 (require 'mail-utils)			; mail-strip-quoted-names
 (require 'sasl)
 (require 'luna)
