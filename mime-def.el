@@ -268,9 +268,10 @@
 
 (defmacro mm-define-backend (type &optional parents)
   (` (luna-define-class (, (mm-expand-class-name type))
-			(, (nconc (mapcar (lambda (parent)
-					    (mm-expand-class-name parent)
-					    )
+			(, (nconc (mapcar (function
+					   (lambda (parent)
+					     (mm-expand-class-name parent)
+					     ))
 					  parents)
 				  '(mime-entity))))))
 
@@ -380,9 +381,10 @@ service."
 If PARENTS is specified, TYPE inherits PARENTS.
 Each parent must be backend name (string)."
   (cons 'progn
-	(mapcar (lambda (parent)
-		  (` (mel-copy-backend (, parent) (, type)))
-		  )
+	(mapcar (function
+		 (lambda (parent)
+		   (` (mel-copy-backend (, parent) (, type)))
+		   ))
 		parents)))
 
 (defmacro mel-define-method (name args &rest body)
@@ -395,8 +397,9 @@ and (nth 1 (car (last ARGS))) is name of backend (encoding)."
     (` (progn
 	 (mel-define-service (, name))
 	 (fset (intern (, class) (, (intern (format "%s-obarray" name))))
-	       (lambda (, (butlast args))
-		 (,@ body)))))))
+	       (function
+		(lambda (, (butlast args))
+		  (,@ body))))))))
 
 (put 'mel-define-method 'lisp-indent-function 'defun)
 
