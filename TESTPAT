@@ -1465,7 +1465,7 @@ embedded-encoded-word)
 			 (if verbose (message "decode-success: %S" pat))
 			 (setq decode-success (1+ decode-success)))
 		     (progn
-		       (if verbose (message "decode-failure: %S" pat))
+		       (if verbose (message "decode-failure: %S %S" pat dst))
 		       (setq decode-failure (1+ decode-failure))))
 		 (progn
 		   (if verbose (message "decode-giveup: %S" pat))
@@ -1483,7 +1483,7 @@ embedded-encoded-word)
 			 (if verbose (message "encode-success: %S" pat))
 			 (setq encode-success (1+ encode-success)))
 		     (progn
-		       (if verbose (message "encode-failure: %S" pat))
+		       (if verbose (message "encode-failure: %S %S" pat dst))
 		       (setq encode-failure (1+ encode-failure))))
 		 (progn
 		   (if verbose (message "encode-giveup: %S" pat))
