@@ -1,3 +1,12 @@
+1999-07-28  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime-parse.el: Add autoload setting for
+	`mime-entity-body-buffer', `mime-entity-body-start-point' and
+	`mime-entity-body-end-point'.
+
+	* mime.el (mime-entity-point-min): Define as an obsolete function.
+	(mime-entity-point-max): Likewise.
+
 1999-07-27  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mmbuffer.el (entity-point-min): Deleted because it is
