@@ -16,7 +16,9 @@
   )
 
 (if (and (featurep 'mule)
-	 (not (and (boundp 'MULE) MULE)))
+	 (not (or (and (boundp 'MULE) MULE)
+		  (and (featurep 'xemacs) (< emacs-major-version 21))
+		  )))
     (setq flim-modules (cons 'mel-ccl flim-modules))
   )
 
