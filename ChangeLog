@@ -1,5 +1,13 @@
 1998-08-27  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* FLIM-ELS (flime-modules): Add ew-ccl.
+
+	* ew-bq.el: Now it is stub to ew-ccl and mel.
+
+	* ew-ccl: New file (renamed from ew-bq.el).
+
+1998-08-27  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-dec.el (ew-decode-field-test): Now interactive.
 
 	* eword-decode.el (eword-decode-header): Put original field as
