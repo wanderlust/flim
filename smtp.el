@@ -350,7 +350,8 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     (let ((server
 	   (if (functionp smtp-server)
 	       (funcall smtp-server sender recipients)
-	     smtp-server))
+	     (or smtp-server
+		 (error "`smtp-server' not defined"))))
 	  (package
 	   (smtp-make-package sender recipients buffer))
 	  (smtp-open-connection-function
