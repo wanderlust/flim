@@ -406,7 +406,7 @@ abcdefghijklmnopqrstuvwxyz\
   (defun base64-ccl-insert-encoded-file (filename)
     "Encode contents of file FILENAME to base64, and insert the result."
     (interactive (list (read-file-name "Insert encoded file: ")))
-    (insert-file-contents-as-coding-system filename 'mel-ccl-base64-lf-rev))
+    (insert-file-contents-as-coding-system 'mel-ccl-base64-lf-rev filename))
 
   (mel-define-method-function (mime-encode-string string (nil "base64"))
 			      'base64-ccl-encode-string)
@@ -434,7 +434,7 @@ abcdefghijklmnopqrstuvwxyz\
   (interactive
     (list (region-beginning) (region-end)
           (read-file-name "Write decoded region to file: ")))
-  (write-region-as-coding-system start end filename 'mel-ccl-b-rev))
+  (write-region-as-coding-system 'mel-ccl-b-rev start end filename))
 
 (mel-define-method-function (mime-decode-string string (nil "base64"))
 			    'base64-ccl-decode-string)
