@@ -1,4 +1,16 @@
-1999-12-01  Kenichi OKADA <okada@opaopa.org>
+1999-12-13  Kenichi OKADA <okada@opaopa.org>
+
+	* digest-md5.el: New file.
+	(digest-md5-digest-uri): New function.
+	(digest-md5-digest-response): New function.
+
+1999-12-13  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl.el (sasl-scram-md5-authenticate-server): Require salted-pass
+	instead of passphrase.
+	(sasl-scram-md5-client-msg-2): Ditto.
+
+1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-auth-scram-md5): Erase insecure sequences.
 	* sasl.el (sasl-scram-md5-client-msg-2): Erase insecure sequences.
@@ -10,7 +22,7 @@
 	(scram-md5-make-shared-key): Erase buffer.
 	(scram-md5-make-server-msg-2): Ditto.
 
-1999-12-01  Kenichi OKADA <okada@opaopa.org>
+1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-auth-scram-md5): New function.
 	(smtp-authentication-method-alist): Add `scram-md5'.

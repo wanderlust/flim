@@ -36,7 +36,6 @@
 ;;
 ;; (scram-make-security-info nil t 0)
 ;; => "^A^@^@^@"
-;;
 
 ;;; Code:
 
