@@ -1,5 +1,9 @@
 2001-02-17  Kenichi OKADA <okada@opaopa.org>
 
+	* sasl-ntlm.el(sasl-ntlm-response): self-Hash.
+
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
 	* ntlm.el(smb-passwd-hash): Fix `upcase' for XEmacs.
 
 2001-02-17  Kenichi OKADA <okada@opaopa.org>

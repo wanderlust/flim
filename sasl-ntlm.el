@@ -39,8 +39,6 @@
   "A list of functions to be called in sequnece for the NTLM
 authentication steps.  Ther are called by 'sasl-next-step.")
 
-(setq sasl-passwd-hash-function 'ntlm-get-password-hashes)
-
 (defun sasl-ntlm-request (client step)
   "SASL step function to generate a NTLM authentication request to the server.
 Called from 'sasl-next-step.
