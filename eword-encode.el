@@ -33,39 +33,9 @@
 ;;; @ variables
 ;;;
 
-(defgroup eword-encode nil
-  "Encoded-word encoding"
-  :group 'mime)
+;; User options are defined in mime-def.el.
 
-(defcustom eword-field-encoding-method-alist
-  '(("X-Nsubject" . iso-2022-jp-2)
-    ("Newsgroups" . nil)
-    ("Message-ID" . nil)
-    (t            . mime)
-    )
-  "*Alist to specify field encoding method.
-Its key is field-name, value is encoding method.
-
-If method is `mime', this field will be encoded into MIME format.
-
-If method is a MIME-charset, this field will be encoded as the charset
-when it must be convert into network-code.
-
-If method is `default-mime-charset', this field will be encoded as
-variable `default-mime-charset' when it must be convert into
-network-code.
-
-If method is nil, this field will not be encoded."
-  :group 'eword-encode
-  :type '(repeat (cons (choice :tag "Field"
-			       (string :tag "Name")
-			       (const :tag "Default" t))
-		       (choice :tag "Method"
-			       (const :tag "MIME conversion" mime)
-			       (symbol :tag "non-MIME conversion")
-			       (const :tag "no-conversion" nil)))))
-
-(defvar eword-charset-encoding-alist
+(defvar mime-header-charset-encoding-alist
   '((us-ascii		. nil)
     (iso-8859-1		. "Q")
     (iso-8859-2		. "Q")
@@ -88,6 +58,8 @@ If method is nil, this field will not be encoded."
     (iso-2022-int-1	. "B")
     (utf-8		. "B")
     ))
+
+(defvar mime-header-default-charset-encoding "Q")
 
 
 ;;; @ encoded-text encoder
@@ -189,10 +161,10 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 (defun ew-find-charset-rule (charsets)
   (if charsets
       (let* ((charset (find-mime-charset-by-charsets charsets))
-	     (encoding (cdr (or (assq charset eword-charset-encoding-alist)
-				'(nil . "Q")))))
-	(list charset encoding)
-	)))
+	     (encoding
+	      (cdr (or (assq charset mime-header-charset-encoding-alist)
+		       (cons charset mime-header-default-charset-encoding)))))
+	(list charset encoding))))
 
 (defun tm-eword::words-to-ruled-words (wl &optional mode)
   (mapcar (function
@@ -659,10 +631,11 @@ encoded-word.  ASCII token is not encoded."
   (let ((str (std11-field-body "Subject")))
     (if (and str (string-match eword-encoded-word-regexp str))
 	str)))
+(make-obsolete 'eword-in-subject-p "Don't use it.")
 
 (defsubst eword-find-field-encoding-method (field-name)
   (setq field-name (downcase field-name))
-  (let ((alist eword-field-encoding-method-alist))
+  (let ((alist mime-field-encoding-method-alist))
     (catch 'found
       (while alist
 	(let* ((pair (car alist))
@@ -672,13 +645,14 @@ encoded-word.  ASCII token is not encoded."
 	      (throw 'found (cdr pair))
 	    ))
 	(setq alist (cdr alist)))
-      (cdr (assq t eword-field-encoding-method-alist))
+      (cdr (assq t mime-field-encoding-method-alist))
       )))
 
-(defun eword-encode-header (&optional code-conversion)
+;;;###autoload
+(defun mime-encode-header-in-buffer (&optional code-conversion)
   "Encode header fields to network representation, such as MIME encoded-word.
 
-It refer variable `eword-field-encoding-method-alist'."
+It refer variable `mime-field-encoding-method-alist'."
   (interactive "*")
   (save-excursion
     (save-restriction
@@ -711,6 +685,8 @@ It refer variable `eword-field-encoding-method-alist'."
 		 ))
 	  ))
       )))
+(defalias 'eword-encode-header 'mime-encode-header-in-buffer)
+(make-obsolete 'eword-encode-header 'mime-encode-header-in-buffer)
 
 
 ;;; @ end
