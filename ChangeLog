@@ -1,3 +1,7 @@
+1999-10-21  Tsukamoto Tetsuo  <czkmt@remus.dti.ne.jp>
+
+	* eword-decode.el (mime-set-field-decoder): Doc string typo.
+
 1999-10-17  Yoshiki Hayashi  <t90553@mail.ecc.u-tokyo.ac.jp>
 
 	* FLIM-MK (install-flim-package): Delete auto-autoloads.el
