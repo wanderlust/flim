@@ -1,3 +1,17 @@
+1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-u.el: Define method functions of mel.
+	(mime-encode-region): Use `mel-define-method-function'; abolish
+	`uuencode-encode-region'.
+	(mime-decode-region): Use `mel-define-method-function'; abolish
+	`uuencode-decode-region'.
+	(mime-encode-string): New method.
+	(mime-decode-string): New method.
+	(mime-insert-encoded-file): Use `mel-define-method'; abolish
+	`uuencode-insert-encoded-file'.
+	(mime-write-decoded-region): Use `mel-define-method'; abolish
+	`uuencode-write-decoded-region'.
+
 1998-10-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-def.el (mel-define-service): Add DOC.
