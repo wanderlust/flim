@@ -104,7 +104,7 @@ charset algorithm cipher-opts auth-param)."
 	   (encode-hex-string
 	    (md5-binary
 	     (concat "AUTHENTICATE:" digest-uri
-		     (if (string-equal "auth-int" qop)
+		     (if (member qop '("auth-int" "auth-conf"))
 			 ":00000000000000000000000000000000")))))))
       (fillarray passphrase 0))))
 
@@ -117,8 +117,9 @@ charset algorithm cipher-opts auth-param)."
 	 (nonce-count
 	  (or (sasl-client-property client 'nonce-count)
 	       sasl-digest-md5-nonce-count))
-	 (qop-options (plist-get plist 'qop))
-	 (qop (sasl-client-property client 'qop))
+	 (qop
+	  (or (sasl-client-property client 'qop)
+	      (setq qop "auth")))
 	 (digest-uri
 	  (sasl-digest-md5-digest-uri
 	   (sasl-client-service client)(sasl-client-server client)))
@@ -126,10 +127,8 @@ charset algorithm cipher-opts auth-param)."
 	  (or (sasl-client-property client 'cnonce)
 	      (sasl-digest-md5-cnonce))))
     (sasl-client-set-property client 'nonce-count (1+ nonce-count))
-    (if qop-options
-	(setq qop-options (split-string qop-options ",")))
-    (unless (member qop qop-options)
-      (setq qop "auth"))
+    (unless (string= qop "auth")
+      (sasl-error (format "Unsupported \"qop-value\": %s" qop)))
     (concat
      "username=\"" (sasl-client-name client) "\","
      "realm=\"" realm "\","
