@@ -1,3 +1,8 @@
+1999-12-20  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mel-b-el.el (base64-encode-string): Allow the optional second arg
+	`no-line-break'.
+
 1999-12-13  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* README.en,README.ja,mime-en.sgml,mime-en.texi,mime-ja.sgml,
