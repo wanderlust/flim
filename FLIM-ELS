@@ -13,7 +13,7 @@
 		     mime-conf
 		     sasl sasl-cram sasl-digest
 		     md4 ntlm sasl-ntlm sasl-scram
-		     smtp qmtp smtpmail))
+		     smtp qmtp))
 
 (setq flim-version-specific-modules nil)
 

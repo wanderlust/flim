@@ -1,3 +1,7 @@
+2003-09-18  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* FLIM-ELS (flim-modules): Don't install smtpmail.
+
 2003-04-30  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* std11.el (std11-field-end): Return end of field correctly
