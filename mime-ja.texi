@@ -1,4 +1,5 @@
 \input texinfo.tex
+@c This file is generated automatically from mime-ja.sgml by sinfo.
 @setfilename mime-ja.info
 @settitle{FLIM 1.10 MIME 機能説明書}
 @titlepage
