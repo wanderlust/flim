@@ -16,6 +16,7 @@ FLAGS   = -batch -q -no-site-file -l FLIM-MK
 PREFIX = NONE
 LISPDIR = NONE
 PACKAGEDIR = NONE
+VERSION_SPECIFIC_LISPDIR = NONE
 
 GOMI	= *.elc \
 	  *.cp *.cps *.ky *.kys *.fn *.fns *.vr *.vrs \
@@ -24,10 +25,12 @@ FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 
 elc:
-	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR)
+	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
+		$(VERSION_SPECIFIC_LISPDIR)
 
 install:	elc
-	$(EMACS) $(FLAGS) -f install-flim $(PREFIX) $(LISPDIR)
+	$(EMACS) $(FLAGS) -f install-flim $(PREFIX) $(LISPDIR) \
+		$(VERSION_SPECIFIC_LISPDIR)
 
 
 package:
