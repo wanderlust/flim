@@ -1,6 +1,6 @@
 ;;; sha1-el.el --- SHA1 Secure Hash Algorithm in Emacs-Lisp.
 
-;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2001, 2003  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: SHA1, FIPS 180-1
@@ -54,20 +54,38 @@
 
 (require 'hex-util)
 
+(autoload 'executable-find "executable")
+
 ;;;
 ;;; external SHA1 function.
 ;;;
 
-(defvar sha1-maximum-internal-length 500
+(defgroup sha1 nil
+  "Elisp interface for SHA1 hash computation."
+  :group 'extensions)
+
+(defcustom sha1-maximum-internal-length 500
   "*Maximum length of message to use lisp version of SHA1 function.
 If message is longer than this, `sha1-program' is used instead.
 
 If this variable is set to 0, use extarnal program only.
-If this variable is set to nil, use internal function only.")
+If this variable is set to nil, use internal function only."
+  :type 'integer
+  :group 'sha1)
 
-(defvar sha1-program '("openssl" "sha1")
+(defcustom sha1-program '("sha1sum")
   "*Name of program to compute SHA1.
-It must be a string \(program name\) or list of strings \(name and its args\).")
+It must be a string \(program name\) or list of strings \(name and its args\)."
+  :type '(repeat string)
+  :group 'sha1)
+
+(defcustom sha1-use-external (condition-case ()
+				 (executable-find (car sha1-program))
+			       (error))
+  "*Use external SHA1 program.
+If this variable is set to nil, use internal function only."
+  :type 'boolean
+  :group 'sha1)
 
 (defun sha1-string-external (string)
   ;; `with-temp-buffer' is new in v20, so we do not use it.
@@ -396,17 +414,20 @@ It must be a string \(program name\) or list of strings \(name and its args\).")
 ;;;
 
 (defun sha1-region (beg end)
-  (if (and sha1-maximum-internal-length
+  (if (and sha1-use-external
+	   sha1-maximum-internal-length
 	   (> (abs (- end beg)) sha1-maximum-internal-length))
       (sha1-region-external beg end)
     (sha1-region-internal beg end)))
 
 (defun sha1-string (string)
-  (if (and sha1-maximum-internal-length
+  (if (and sha1-use-external
+	   sha1-maximum-internal-length
 	   (> (length string) sha1-maximum-internal-length))
       (sha1-string-external string)
     (sha1-string-internal string)))
 
+;;;###autoload
 (defun sha1 (object &optional beg end)
   "Return the SHA1 (Secure Hash Algorithm) of an object.
 OBJECT is either a string or a buffer.

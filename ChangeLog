@@ -1,3 +1,27 @@
+2003-12-16  Simon Josefsson  <jas@extundo.com>
+
+	* sha1-el.el (autoload): Don't use ignore-errors.
+	(sha1-use-external): Use condition-case.  Suggested by Katsumi
+	Yamaoka <yamaoka@jpl.org>.
+
+2003-12-15  Simon Josefsson  <jas@extundo.com>
+
+	* sha1-el.el (autoload): Ignore errors for
+	executable-find. (XEmacs ecrypto does not require sh-script where
+	executable.el is located.)
+	(sha1-use-external): Likewise.
+
+	* sha1-el.el (sha1): Add defgroup.
+	(sha1-maximum-internal-length, sha1-program, sha1-use-external)
+	(sha1-program): Use 'sha1sum' from GNU CoreUtils instead of OpenSSL.
+	(sha1): Autoload.
+
+2001-12-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* sha1-el.el (sha1-use-external): New variable.
+	(sha1-region): Use it.
+	(sha1-string): Ditto.
+
 2004-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* ntlm.el (ntlm-string-as-unibyte): New macro.
