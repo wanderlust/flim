@@ -1,3 +1,22 @@
+2000-12-16  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* raw-io.el: New file.
+
+	* smtpmail.el: - Require `raw-io'.
+	- Delete definition of obsolete variable aliases for XEmacs.
+	(smtpmail-send-queued-mail): Use `binary-find-file-noselect'
+	instead of `find-file-noselect-as-binary'.
+
+	* smtp.el (smtp-open-connection-function): Use
+	`binary-open-network-stream' instead of `open-network-stream' as
+	initial value.
+	(smtp-open-connection): Don't guard as `binary'.
+
+	* qmtp.el (qmtp-open-connection-function): Use
+	`binary-open-network-stream' instead of `open-network-stream' as
+	initial value.
+	(qmtp-send-buffer): Don't guard as `binary'.
+
 2000-12-15  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* Makefile (tar): Use `cvs tag -R' instead of `cvs tag -RF'.
