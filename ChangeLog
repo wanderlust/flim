@@ -1,5 +1,9 @@
 1999-12-02  Kenichi OKADA <okada@opaopa.org>
 
+	* smtp.el (smtp-via-smtp): Enclose by `as-binary-process'.
+
+1999-12-02  Kenichi OKADA <okada@opaopa.org>
+
 	* smtp.el (smtp-via-smtp): Fix.
 
 1999-12-02  Kenichi OKADA <okada@opaopa.org>

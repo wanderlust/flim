@@ -126,14 +126,15 @@ don't define this value."
 		  smtp-server))
 	process response extensions)
     (save-excursion
-      (set-buffer
-       (get-buffer-create
-	(format "*trace of SMTP session to %s*" server)))
-      (erase-buffer)
-      (make-local-variable 'smtp-read-point)
-      (setq smtp-read-point (point-min))
-
-      (unwind-protect
+      (as-binary-process
+       (set-buffer
+	(get-buffer-create
+	 (format "*trace of SMTP session to %s*" server)))
+       (erase-buffer)
+       (make-local-variable 'smtp-read-point)
+       (setq smtp-read-point (point-min))
+       
+       (unwind-protect
 	  (catch 'done
 	    (setq process 
 		  (if smtp-connection-type
@@ -141,27 +142,26 @@ don't define this value."
 		       "SMTP" (current-buffer) server smtp-service)
 		    (open-network-stream-as-binary
 		     "SMTP" (current-buffer) server smtp-service)))
-	    (or process (throw 'done nil))
-
+	 
 	    (set-process-filter process 'smtp-process-filter)
-
+       
 	    (if (eq smtp-connection-type 'force)
 		(starttls-negotiate process))
-
+       
 	    ;; Greeting
 	    (setq response (smtp-read-response process))
 	    (if (or (null (car response))
-		    (not (integerp (car response)))
-		    (>= (car response) 400))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
 		(throw 'done (car (cdr response))))
-
+       
 	    ;; EHLO
 	    (smtp-send-command process
 			       (format "EHLO %s" (smtp-make-fqdn)))
 	    (setq response (smtp-read-response process))
 	    (if (or (null (car response))
-		    (not (integerp (car response)))
-		    (>= (car response) 400))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
 		(progn
 		  ;; HELO
 		  (smtp-send-command process
@@ -173,37 +173,37 @@ don't define this value."
 		      (throw 'done (car (cdr response)))))
 	      (let ((extension-lines (cdr (cdr response)))
 		    extension)
-		(while extension-lines
-		  (if (string-match
-		       "^auth "
-		       (setq extension
-			     (downcase (substring (car extension-lines) 4))))
-		      (while (string-match "\\([^ ]+\\)" extension (match-end 1))
-			(push (intern (match-string 1 extension)) extensions))
-		    (push (intern extension) extensions))
-		  (setq extension-lines (cdr extension-lines)))))
-
+	      (while extension-lines
+		(if (string-match
+		     "^auth "
+		     (setq extension
+			   (downcase (substring (car extension-lines) 4))))
+		    (while (string-match "\\([^ ]+\\)" extension (match-end 1))
+		      (push (intern (match-string 1 extension)) extensions))
+		  (push (intern extension) extensions))
+		(setq extension-lines (cdr extension-lines)))))
+       
 	    ;; STARTTLS --- begin a TLS negotiation (RFC 2595)
 	    (when (and smtp-connection-type 
-		       (null (eq smtp-connection-type 'force))
-		       (memq 'starttls extensions))
+	    (null (eq smtp-connection-type 'force))
+	    (memq 'starttls extensions))
 	      (smtp-send-command process "STARTTLS")
 	      (setq response (smtp-read-response process))
 	      (if (or (null (car response))
 		      (not (integerp (car response)))
 		      (>= (car response) 400))
-		  (throw 'done (car (cdr response))))
+	      (throw 'done (car (cdr response))))
 	      (starttls-negotiate process))
 
 	    ;; AUTH --- SMTP Service Extension for Authentication (RFC2554)
 	    (when smtp-authentication-type
 	      (let ((auth (intern smtp-authentication-type)) method)
-		(if (and 
-		     (memq auth extensions)
-		     (setq method (nth 1 (assq auth smtp-authentication-method-alist))))
-		    (funcall method process)
-		  (throw 'smtp-error
-			 (format "AUTH mechanism %s not available" auth)))))
+	      (if (and 
+		   (memq auth extensions)
+		   (setq method (nth 1 (assq auth smtp-authentication-method-alist))))
+		  (funcall method process)
+		(throw 'smtp-error
+		       (format "AUTH mechanism %s not available" auth)))))
 
 	    ;; ONEX --- One message transaction only (sendmail extension?)
 ;;;	    (if (or (memq 'onex extensions)
@@ -242,54 +242,54 @@ don't define this value."
 	    (smtp-send-command
 	     process
 	     (format "MAIL FROM:<%s>%s%s"
-		     sender
-		     ;; SIZE --- Message Size Declaration (RFC1870)
-		     (if (memq 'size extensions)
-			 (format " SIZE=%d"
-				 (save-excursion
-				   (set-buffer smtp-text-buffer)
-				   (+ (- (point-max) (point-min))
-				      ;; Add one byte for each change-of-line
-				      ;; because or CR-LF representation:
-				      (count-lines (point-min) (point-max))
-				      ;; For some reason, an empty line is
-				      ;; added to the message.	Maybe this
-				      ;; is a bug, but it can't hurt to add
-				      ;; those two bytes anyway:
-				      2)))
-		       "")
-		     ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
-		     (if (and (memq '8bitmime extensions)
-			      smtp-use-8bitmime)
-			 " BODY=8BITMIME"
-		       "")))
+	     sender
+	     ;; SIZE --- Message Size Declaration (RFC1870)
+	     (if (memq 'size extensions)
+		 (format " SIZE=%d"
+			 (save-excursion
+			   (set-buffer smtp-text-buffer)
+			   (+ (- (point-max) (point-min))
+			      ;; Add one byte for each change-of-line
+			      ;; because or CR-LF representation:
+			      (count-lines (point-min) (point-max))
+			      ;; For some reason, an empty line is
+			      ;; added to the message.	Maybe this
+			      ;; is a bug, but it can't hurt to add
+			      ;; those two bytes anyway:
+			      2)))
+	       "")
+	     ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
+	     (if (and (memq '8bitmime extensions)
+		      smtp-use-8bitmime)
+		 " BODY=8BITMIME"
+	       "")))
 	    (setq response (smtp-read-response process))
 	    (if (or (null (car response))
-		    (not (integerp (car response)))
-		    (>= (car response) 400))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
 		(throw 'done (car (cdr response))))
 
 	    ;; RCPT TO:<recipient>
 	    (while recipients
 	      (smtp-send-command process
-				 (format
-				  (if smtp-notify-success
-				      "RCPT TO:<%s> NOTIFY=SUCCESS" 
-				    "RCPT TO:<%s>")
-				  (car recipients)))
+	      (format
+	       (if smtp-notify-success
+		   "RCPT TO:<%s> NOTIFY=SUCCESS" 
+		 "RCPT TO:<%s>")
+	       (car recipients)))
 	      (setq recipients (cdr recipients))
 	      (setq response (smtp-read-response process))
 	      (if (or (null (car response))
 		      (not (integerp (car response)))
 		      (>= (car response) 400))
-		  (throw 'done (car (cdr response)))))
+	      (throw 'done (car (cdr response)))))
 
 	    ;; DATA
 	    (smtp-send-command process "DATA")
 	    (setq response (smtp-read-response process))
 	    (if (or (null (car response))
-		    (not (integerp (car response)))
-		    (>= (car response) 400))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
 		(throw 'done (car (cdr response))))
 
 	    ;; Mail contents
@@ -299,19 +299,19 @@ don't define this value."
 	    (smtp-send-command process ".")
 	    (setq response (smtp-read-response process))
 	    (if (or (null (car response))
-		    (not (integerp (car response)))
-		    (>= (car response) 400))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
 		(throw 'done (car (cdr response))))
-
+       
 	    t)
 
-	(if (and process
-		 (eq (process-status process) 'open))
-	    (progn
-	      ;; QUIT
-	      (smtp-send-command process "QUIT")
-	      (smtp-read-response process)
-	      (delete-process process)))))))
+	 (if (and process
+		  (eq (process-status process) 'open))
+	     (progn
+	       ;; QUIT
+	       (smtp-send-command process "QUIT")
+	       (smtp-read-response process)
+	       (delete-process process))))))))
 
 (defun smtp-process-filter (process output)
   (save-excursion
