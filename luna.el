@@ -132,9 +132,13 @@ It must be plist and each slot name must have prefix `:'."
   `(luna-class-slot-index (luna-find-class (luna-class-name ,entity))
 			  ,slot-name))
 
-(defsubst luna-slot-value (entity slot-name)
-  "Return value of SLOT-NAME of ENTITY."
-  (aref entity (luna-slot-index entity slot-name)))
+(defsubst luna-slot-value (entity slot)
+  "Return the value of SLOT of ENTITY."
+  (aref entity (luna-slot-index entity slot)))
+
+(defsubst luna-set-slot-value (entity slot value)
+  "Store VALUE into SLOT of ENTITY."
+  (aset entity (luna-slot-index entity slot) value))
 
 (defmacro luna-define-method (name args &rest body)
   "Define NAME as a method function of (nth 1 (car ARGS)) backend.
