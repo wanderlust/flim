@@ -65,12 +65,6 @@
 
 (eval-when-compile (require 'hmac-def))
 (require 'hex-util)			; (decode-hex-string STRING)
-;; Kludge for Emacs pretest 21.0.90 - 21.0.100 !!!
-;; they have `md5' as a built-in function but do not provide 'md5.
-(eval-and-compile
-  (if (and (fboundp 'md5)
-	   (subrp (symbol-function 'md5)))
-      (provide 'md5)))
 (require 'md5)				; expects (md5 STRING)
 
 ;; To share *.elc files between Emacs w/ and w/o DL patch,
