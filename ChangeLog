@@ -1,5 +1,10 @@
 1999-02-19  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* eword-encode.el (eword-encode-field-body): Use
+	`eword-encode-structured-field-body' for "Content-Type" field.
+
+1999-02-19  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mel-b-ccl.el (base64-ccl-encode-string): New argument `no-line-break'.
 	(base64-ccl-encode-region): Ditto.
 

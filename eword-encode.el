@@ -616,7 +616,7 @@ encoded-word.  ASCII token is not encoded."
 	    ((eq field-name 'In-Reply-To)
 	     (eword-encode-in-reply-to field-body start)
 	     )
-	    ((memq field-name '(Mime-Version User-Agent))
+	    ((memq field-name '(Mime-Version User-Agent Content-Type))
 	     (eword-encode-structured-field-body field-body start)
 	     )
 	    (t
