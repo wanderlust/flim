@@ -26,7 +26,7 @@
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel-b.el (base64-internal-decode-string): Renamed from
-	`base64-internal-decode-string'.
+	`base64-decode-string'.
 	(base64-decode-string): New alias for
 	`base64-internal-decode-string'.
 
