@@ -1,3 +1,7 @@
+1998-08-21  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* TESTPAT: Specify coding-system.
+
 1998-08-21  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: Change quoted-encoded-word to embedded-encoeded-word.
