@@ -406,6 +406,7 @@ abcdefghijklmnopqrstuvwxyz\
     (if no-line-break
 	(decode-coding-string string 'mel-ccl-b-rev)
       (decode-coding-string string 'mel-ccl-base64-lf-rev)))
+  (defalias-maybe 'base64-encode-string 'base64-ccl-encode-string)
 
   (defun base64-ccl-encode-region (start end &optional no-line-break)
     "Encode region from START to END with base64 encoding."
@@ -413,6 +414,7 @@ abcdefghijklmnopqrstuvwxyz\
     (if no-line-break
 	(decode-coding-region start end 'mel-ccl-b-rev)
       (decode-coding-region start end 'mel-ccl-base64-lf-rev)))
+  (defalias-maybe 'base64-encode-region 'base64-ccl-encode-region)
 
   (defun base64-ccl-insert-encoded-file (filename)
     "Encode contents of file FILENAME to base64, and insert the result."
@@ -434,11 +436,13 @@ abcdefghijklmnopqrstuvwxyz\
 (defun base64-ccl-decode-string (string)
   "Decode base64 encoded STRING"
   (encode-coding-string string 'mel-ccl-b-rev))
+(defalias-maybe 'base64-decode-string 'base64-ccl-decode-string)
 
 (defun base64-ccl-decode-region (start end)
   "Decode base64 encoded the region from START to END."
   (interactive "*r")
   (encode-coding-region start end 'mel-ccl-b-rev))
+(defalias-maybe 'base64-decode-region 'base64-ccl-decode-region)
 
 (defun base64-ccl-write-decoded-region (start end filename)
   "Decode the region from START to END and write out to FILENAME."

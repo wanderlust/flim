@@ -1,5 +1,12 @@
 1999-05-24  Tanaka Akira  <akr@jaist.ac.jp>
 
+	* mel-b-ccl.el (base64-encode-string): New alias.
+	(base64-encode-region): Ditto.
+	(base64-decode-string): Ditto.
+	(base64-decode-region): Ditto.
+
+1999-05-24  Tanaka Akira  <akr@jaist.ac.jp>
+
 	* mel-b-ccl.el, mel-q-ccl.el: Sync up with doodle-1.12.5.
 
 1999-05-24  MORIOKA Tomohiko  <tomo@m17n.org>
