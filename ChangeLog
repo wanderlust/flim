@@ -1,3 +1,7 @@
+1998-10-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS (flim-modules): Don't install mel-b-el for Emacs 20.4.
+
 1998-10-25  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-field-body): Refine implementation.
