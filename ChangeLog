@@ -1,13 +1,22 @@
 2001-02-16  Kenichi OKADA <okada@opaopa.org>
 
+	* SLIM-TIPS: Fix.
+	* sasl.el(sasl-mechanisms): Add NTLM.
+	(sasl-mechanism-alist): Add NTLM.
+
+2001-02-16  Kenichi OKADA <okada@opaopa.org>
+
 	* mime-def.el (mime-library-product): Up.
-	* md4.el: New file.
-	* ntlm.el: New file.
-	* sasl-ntlm.el: New file.
 	* test/test-hmac-md5.el: New file.
 	* test/test-hmac-sha1.el: New file.
 	* test/test-sasl.el: New file.
 	* lunit.el: New file.
+
+2001-02-16  Taro Kawagishi <taro.kawagishi@nokia.com>
+
+	* md4.el: New file.
+	* ntlm.el: New file.
+	* sasl-ntlm.el: New file.
 
 2000-12-23  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
