@@ -1,3 +1,8 @@
+2002-09-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* luna.el (luna-define-method): Clear method cache of child
+	classes.
+
 2002-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mime-ja.texi (CVS): Escape @.
