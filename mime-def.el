@@ -212,6 +212,10 @@
 
 (require 'luna)
 
+(autoload 'mime-entity-content-type "mime")
+(autoload 'mime-parse-multipart "mime-parse")
+(autoload 'mime-parse-encapsulated "mime-parse")
+
 (luna-define-class mime-entity ()
 		   (location
 		    content-type children parent
@@ -231,6 +235,20 @@
       (setq field-name (intern (capitalize (capitalize field-name)))))
   (cdr (assq field-name
 	     (mime-entity-original-header-internal entity))))
+
+(luna-define-method mime-entity-children ((entity mime-entity))
+  (let* ((content-type (mime-entity-content-type entity))
+	 (primary-type (mime-content-type-primary-type content-type)))
+    (cond ((eq primary-type 'multipart)
+	   (mime-parse-multipart entity)
+	   )
+	  ((and (eq primary-type 'message)
+		(memq (mime-content-type-subtype content-type)
+		      '(rfc822 news external-body)
+		      ))
+	   (mime-parse-encapsulated entity)
+	   ))
+    ))
 
 
 ;;; @ for mm-backend
