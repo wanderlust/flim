@@ -8,7 +8,8 @@
 		     luna mime-def
 		     mel mel-q mel-u mel-g
 		     eword-decode eword-encode
-		     mime mime-parse mmbuffer mmcooked mmdbuffer
+		     mime mime-parse mmgeneric
+		     mmbuffer mmcooked mmdbuffer mmexternal
 		     mailcap
 		     smtp smtpmail))
 

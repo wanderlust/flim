@@ -1,8 +1,6 @@
 ;;; mmdual.el --- MIME entity module for dual buffers
 
-;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
-;; Copyright (C) 1999 Electrotechnical Laboratory, JAPAN.
-;; Licensed to the Free Software Foundation.
+;; Copyright (C) 1998,1999,2000 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: MIME, multimedia, mail, news
@@ -38,83 +36,22 @@
 
 (luna-define-method initialize-instance :after ((entity mime-dual-entity)
 						&rest init-args)
-  (let (buf)
-    (setq buf (mime-dual-entity-header-buffer-internal entity))
+  (let ((buf (mime-dual-entity-header-buffer-internal entity)))
     (if buf
 	(with-current-buffer buf
-	  (if (mime-root-entity-p entity)
-	      (setq mime-message-structure entity))
 	  (or (mime-entity-content-type-internal entity)
 	      (mime-entity-set-content-type-internal
 	       entity
 	       (let ((str (std11-fetch-field "Content-Type")))
 		 (if str
 		     (mime-parse-Content-Type str)
-		   ))))))
-    (setq buf (mime-dual-entity-body-buffer-internal entity))
-    (if buf
-	(with-current-buffer buf
-	  (if (mime-root-entity-p entity)
-	      (setq mime-message-structure entity))))
-    ) entity)
+		   )))))))
+  entity)
 
 (luna-define-method mime-entity-name ((entity mime-dual-entity))
   (buffer-name (mime-dual-entity-header-buffer-internal entity))
   )
 
-
-(defun mime-visible-field-p (field-name visible-fields invisible-fields)
-  (or (catch 'found
-	(while visible-fields
-	  (let ((regexp (car visible-fields)))
-	    (if (string-match regexp field-name)
-		(throw 'found t)
-	      ))
-	  (setq visible-fields (cdr visible-fields))
-	  ))
-      (catch 'found
-	(while invisible-fields
-	  (let ((regexp (car invisible-fields)))
-	    (if (string-match regexp field-name)
-		(throw 'found nil)
-	      ))
-	  (setq invisible-fields (cdr invisible-fields))
-	  )
-	t)))
-
-(defun mime-insert-header-from-buffer (buffer start end
-					      &optional invisible-fields
-					      visible-fields)
-  (let ((the-buf (current-buffer))
-	(mode-obj (mime-find-field-presentation-method 'wide))
-	field-decoder
-	f-b p f-e field-name len field field-body)
-    (save-excursion
-      (set-buffer buffer)
-      (save-restriction
-	(narrow-to-region start end)
-	(goto-char start)
-	(while (re-search-forward std11-field-head-regexp nil t)
-	  (setq f-b (match-beginning 0)
-		p (match-end 0)
-		field-name (buffer-substring f-b p)
-		len (string-width field-name)
-		f-e (std11-field-end))
-	  (when (mime-visible-field-p field-name
-				      visible-fields invisible-fields)
-	    (setq field (intern
-			 (capitalize (buffer-substring f-b (1- p))))
-		  field-body (buffer-substring p f-e)
-		  field-decoder (inline (mime-find-field-decoder-internal
-					 field mode-obj)))
-	    (with-current-buffer the-buf
-	      (insert field-name)
-	      (insert (if field-decoder
-			  (funcall field-decoder field-body len)
-			;; Don't decode
-			field-body))
-	      (insert "\n")
-	      )))))))
 
 (luna-define-method mime-insert-header ((entity mime-dual-entity)
 					&optional invisible-fields

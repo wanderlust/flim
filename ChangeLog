@@ -1,11 +1,195 @@
+2000-08-28  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* eword-encode.el (eword-encode-mailboxes-to-rword-list):
+	New inline function.
+	(eword-encode-address-to-rword-list): Ditto.
+	(eword-encode-addresses-to-rword-list):
+	Use `eword-encode-address-to-rword-list' instead of
+	`eword-encode-mailbox-to-rword-list'.
+
+	* std11.el (std11-address-string): Fix for group list.
+
+2000-08-10  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmgeneric.el: Enclose definition of class `mime-entity' and its
+	internal accessors by `eval-and-compile'.
+
+	* luna.el: Define `luna-class-name' before it is used in macros.
+
+
+2000-07-12  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM-Chao: Version 1.14.1 (Rokujiz-Dò) released.-A
+
+2000-07-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmexternal.el (initialize-instance): Deleted.
+	(mmexternal-require-file-name): New function.
+	(mmexternal-require-buffer): Use `mmexternal-require-file-name'.
+
+2000-06-30  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-entity-read-field): Fix a bug when FIELD-NAME is a
+	string.
+
+2000-06-23  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmexternal.el (initialize-instance): New method.
+	(mime-entity-name): Fixed.
+	(mmexternal-require-buffer): New function.
+	(mime-insert-entity): New implementation.
+	(mime-write-entity): Likewise.
+	(mime-entity-body): New method.
+	(mime-insert-entity-body): New method.
+	(mime-write-entity-body): New implementation.
+	(mime-entity-content): Likewise.
+	(mime-insert-entity-content): Likewise.
+	(mime-write-entity-content): Likewise.
+	(mime-entity-fetch-field): Likewise.
+	(mime-insert-header): Likewise.
+
+	* mmbuffer.el (initialize-instance): Store buffer instead of name
+	of buffer to `buffer' slot.
+
+2000-06-21  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmgeneric.el (mime-entity-children): Deleted.
+
+	* mmbuffer.el (mime-insert-entity-body): New method.
+	(mmbuffer-parse-multipart): New function.
+	(mmbuffer-parse-encapsulated): New function.
+	(mime-entity-children): New function.
+
+2000-06-21  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-find-root-entity): New function.
+	(mime-entity-header-buffer): Comment out.
+	(mime-goto-header-start-point): Likewise.
+	(mime-entity-header-start-point): Likewise.
+	(mime-entity-header-end-point): Likewise.
+	(mime-entity-body-buffer): Likewise.
+	(mime-goto-body-start-point): Likewise.
+	(mime-goto-body-end-point): Likewise.
+	(mime-entity-body-start-point): Likewise.
+	(mime-entity-body-end-point): Likewise.
+	(mime-entity-body-start): Likewise.
+	(mime-entity-body-end): Likewise.
+	(mime-entity-buffer): Likewise.
+	(mime-entity-point-min): Likewise.
+	(mime-entity-point-max): Likewise.
+	(mime-insert-entity-body): New generic function.
+	(mime-entity-uu-filename): Use `mime-insert-entity-body'.
+	(mime-entity-set-content-type): New function.
+	(mime-entity-set-encoding): New function.
+
+	* mime-parse.el (mime-parse-multipart): Comment out.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-external): Likewise.
+
+	* mmbuffer.el (mime-entity-header-buffer): Comment out.
+	(mime-goto-header-start-point): Likewise.
+	(mime-entity-header-start-point): Likewise.
+	(mime-entity-header-end-point): Likewise.
+	(mime-entity-body-buffer): Likewise.
+	(mime-goto-body-start-point): Likewise.
+	(mime-goto-body-end-point): Likewise.
+	(mime-entity-body-start-point): Likewise.
+	(mime-entity-body-end-point): Likewise.
+	(mime-entity-buffer): Likewise.
+	(mime-entity-point-min): Likewise.
+	(mime-entity-point-max): Likewise.
+
+2000-05-30  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el (eword-charset-encoding-alist): Add
+	`iso-2022-jp-3'.
+
 2000-05-25  Tanaka Akira      <akr@m17n.org>
 
         * mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
-
+	
 2000-05-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtp.el (smtp-deduce-address-list): Set `case-fold-search' to `t'
 	in the working buffer.
+
+2000-04-26  Yoshiki Hayashi  <yoshiki@xemacs.org>
+
+	* mime.el (mime-entity-body): New function.
+	* mmbuffer.el (mime-entity-body): Implement it.
+
+2000-03-03  Keiichi Suzuki  <keiichi@nanap.org>
+
+	* mime.el (mime-entity-node-id): Change to function.
+
+2000-03-03  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmdbuffer.el, mmbuffer.el (initialize-instance): Don't setup
+	`mime-message-structure'.
+
+	* mime-parse.el (mime-parse-buffer): Don't setup
+	`mime-message-structure'.
+
+2000-03-02  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmgeneric.el (mime-visible-field-p): Moved from mmbuffer.el.
+	(mime-insert-header-from-buffer): Moved from mmbuffer.el.
+
+	* mmexternal.el, mmdbuffer.el, mmbuffer.el (mime-visible-field-p):
+	Moved to mmgeneric.el.
+	(mime-insert-header-from-buffer): Moved to mmgeneric.el.
+
+2000-03-02  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* FLIM-ELS (flim-modules): Add `mmgeneric'.
+
+	* mmgeneric.el: New file.
+
+	* mmbuffer.el: Require `mmgeneric'.
+
+	* mime.el: Require `mmgeneric' when compiling.
+
+	* mime-def.el: Move mime-entity related definitions to
+	mmgeneric.el.
+
+2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime.el (mime-find-entity-from-number): Now second argument
+	`message' is not an optional argument.
+	(mime-find-entity-from-node-id): Likewise.
+	(mime-find-entity-from-content-id): Likewise.
+	(mime-fetch-field): Delete obsolete function.
+	(mime-read-field): Likewise.
+
+2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime.el (mime-entity-header-buffer): Mark it as obsolete.
+	(mime-goto-header-start-point): Likewise.
+	(mime-entity-header-start-point): Likewise.
+	(mime-entity-header-end-point): Likewise.
+	(mime-entity-body-start): Use `defalias'; don't recommend to use
+	`mime-entity-body-start-point' instead.
+	(mime-entity-body-end): Use `defalias'; don't recommend to use
+	`mime-entity-body-end-point' instead.
+	(mime-entity-body-buffer): Mark it as obsolete.
+	(mime-goto-body-start-point): Likewise.
+	(mime-goto-body-end-point): Likewise.
+	(mime-entity-body-start-point): Likewise.
+	(mime-entity-body-end-point): Likewise.
+	(mime-entity-buffer): Don't recommend to use
+	`mime-entity-header-buffer' or `mime-entity-body-buffer' instead.
+	(mime-entity-point-min): Don't recommend to use
+	`mime-entity-header-start-point' instead.
+	(mime-entity-point-max): Don't recommend to use
+	`mime-entity-body-end-point' instead.
+
+	* mime-def.el (mime-library-version): update to 1.14.1.
+	- Add autoload setting for `mime-parse-external'.
+
+
+2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* Chao: Version 1.14.0 (Momoyama) released.
 
 2000-01-05  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -20,10 +204,21 @@
 	(base64-internal-encode-region): Likewise.
 	(base64-encode-string): Likewise.
 
+1999-12-16  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* FLIM-ELS (flim-modules): Add `mmexternal'.
+
+	* mime-parse.el (mime-parse-external): New function.
+
+	* mime-def.el (mime-entity-children [mime-entity]): Use
+	`mime-parse-external' for message/external-body.
+
+	* mmexternal.el: New module.
+
 1999-12-13  Katsumi Yamaoka   <yamaoka@jpl.org>
 
-	* README.en,README.ja,mime-en.sgml,mime-en.texi,mime-ja.sgml,
-	mime-ja.texi: Update for the recent ML address and ftp site.
+	* README.en, README.ja, mime-en.sgml, mime-ja.sgml: Update for the
+	recent ML address and ftp site.
 
 1999-10-17  Yoshiki Hayashi  <t90553@mail.ecc.u-tokyo.ac.jp>
 
@@ -442,7 +637,7 @@
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.7 (Y-Dþzaki)-A released.
+	* FLIM: Version 1.12.7 (Y-Dþzaki) released.-A
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -617,7 +812,7 @@
 
 1999-05-11  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.6 (Family-K-Dòenmae)-A released.
+	* FLIM: Version 1.12.6 (Family-K-Dòenmae) released.-A
 
 1999-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
@@ -734,7 +929,7 @@
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama)-A released.
+	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama) released.-A
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -777,7 +972,7 @@
 
 1999-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.2 (Kuj-Dò)-A released.
+	* FLIM: Version 1.12.2 (Kuj-Dò) released.-A
 
 1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -963,7 +1158,7 @@
 
 1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.1 (Nishinoky-Dò)-A released.
+	* FLIM: Version 1.12.1 (Nishinoky-Dò) released.-A
 
 1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1181,7 +1376,7 @@
 
 1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.11.2 (Heij-Dò)-A was released.
+	* FLIM: Version 1.11.2 (Heij-Dò) was released.-A
 
 	* NEWS (Abolish variable `mime-temp-directory'): New subsection.
 
@@ -1461,7 +1656,7 @@
 
 1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.4 (Shin-H-Dòsono)-A was released.
+	* FLIM: Version 1.10.4 (Shin-H-Dòsono) was released.-A
 
 1998-10-12  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -1646,7 +1841,7 @@
 
 1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.0 (K-Dòdo)-A was released.
+	* FLIM: Version 1.10.0 (K-Dòdo) was released.-A
 
 	* README.en (What's FLIM): Add mel-ccl.el.
 
@@ -1933,7 +2128,7 @@
 
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.9.1 (Tonosh-Dò)-A was released.
+	* FLIM: Version 1.9.1 (Tonosh-Dò) was released.-A
 
 	* mime-en.sgml (mm-backend): Translate a little.
 
@@ -2076,7 +2271,7 @@
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.8.0 (Shij-Dò)-A was released.
+	* FLIM-Chao: Version 1.8.0 (Shij-Dò) was released.-A
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2188,7 +2383,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-DÒkubo)-A was released.
+	* FLIM: Version 1.8.0 (-DÒkubo) was released.-A
 
 	* README.en: Delete `How to use'.
 
@@ -2313,7 +2508,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (Goj-Dò)-A was released.
+	* FLIM-Chao: Version 1.7.0 (Goj-Dò) was released.-A
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2572,7 +2767,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae)-A was released.
+	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae) was released.-A
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2692,7 +2887,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J-Dþjò)-A was released.
+	* FLIM: Version 1.2.0 (J-Dþjò) was released.-A
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -2743,7 +2938,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Dòji)-A was released.
+	* FLIM: Version 1.1.0 (T-Dòji) was released.-A
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2779,7 +2974,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
+	* FLIM: Version 1.0.1 (Ky-Dòto) was released.-A
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
