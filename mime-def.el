@@ -537,10 +537,13 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
        )))
 
 (defvar base64-dl-module
-  (and (fboundp 'dynamic-link)
-       (let ((path (expand-file-name "base64.so" exec-directory)))
-	 (and (file-exists-p path)
-	      path))))
+  (if (subrp 'base64-encode-string)
+      nil
+    (if (fboundp 'dynamic-link)
+	(let ((path (expand-file-name "base64.so" exec-directory)))
+	  (and (file-exists-p path)
+	       path)
+	  ))))
 
 
 ;;; @ end
