@@ -520,7 +520,7 @@
 
 	* mime.el: Delete autoload setting for `eword-encode-field'.
 
-1999-04-22  MORIOKA Tomohiko  <tomo@etl.go.jp>
+1999-04-22  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* eword-encode.el: Require `poem' instead of `emu'.
 	Don't use `cl' for `caar'.
