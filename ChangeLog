@@ -1,5 +1,17 @@
 1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-parse.el (mime-lexical-analyzer): New user option.
+	(mime-analyze-tspecial): New function.
+	(mime-analyze-token): New function.
+	(mime-parse-Content-Transfer-Encoding): Use
+	`std11-lexical-analyze' with `mime-lexical-analyzer'.
+
+	* mime-def.el (mime-tspecial-char-list): Renamed from
+	`mime-tspecials'; changed from string to list.
+	(mime-token-regexp): Use `eval-when-compile'.
+
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* eword-decode.el (eword-lexical-analyzer): Modify DOC-string
 	about interface change.
 	(eword-analyze-comment): Renamed from `eword-parse-comment';
