@@ -53,9 +53,6 @@ and return parsed it.")
   "Read field-body of Content-Transfer-Encoding field from
 current-buffer, and return it.")
 
-(autoload 'mime-parse-message "mime-parse"
-  "Parse current-buffer as a MIME message.")
-
 (autoload 'mime-parse-buffer "mime-parse"
   "Parse BUFFER as a MIME message.")
 
