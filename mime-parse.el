@@ -149,42 +149,38 @@ be the result."
 ;;;
 
 (defun mime-decode-parameter-value (text charset language)
-  (let ((start 0))
-    (while (string-match "%[0-9A-Fa-f][0-9A-Fa-f]" text start)
-      (setq text (replace-match
-		  (char-to-string
-		   (string-to-int (substring text
-					     (1+ (match-beginning 0))
-					     (match-end 0))
-				  16))
-		  t t text)
-	    start (1+ (match-beginning 0))))
-    ;; I believe that `decode-mime-charset-string' of mcs-e20.el should
-    ;; be independent of the value of `enable-multibyte-characters'.
-    ;; (when charset
-    ;;   (setq text (decode-mime-charset-string text charset)))
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert text)
+    (goto-char (point-min))
+    (while (re-search-forward "%[0-9A-Fa-f][0-9A-Fa-f]" nil t)
+      (insert (prog1 (int-char
+                      (string-to-int
+                       (buffer-substring (point)(- (point) 2))
+                       16))
+                (delete-region (point)(- (point) 3)))))
+    (setq text (buffer-string))
     (when charset
-      (with-temp-buffer
-	(set-buffer-multibyte t)
-	(setq text (decode-mime-charset-string text charset))))
+      (setq text (with-temp-buffer
+		   (set-buffer-multibyte t)
+		   (decode-mime-charset-string text charset))))
     (when language
       (put-text-property 0 (length text) 'mime-language language text))
     text))
 
 (defun mime-decode-parameter-encode-segment (segment)
-  (if (string-match (eval-when-compile
-		      (concat "^" mime-attribute-char-regexp "+$"))
-		    segment)
-      ;; shortcut
-      segment
-    ;; XXX: make too many temporary strings.
-    (mapconcat
-     (function
-      (lambda (chr)
-	(if (string-match mime-attribute-char-regexp (char-to-string chr))
-	    (char-to-string chr)
-	  (format "%%%02X" chr))))
-     segment "")))
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert segment)
+    (goto-char (point-min))
+    (while (progn
+             (when (looking-at (eval-when-compile
+                                 (concat mime-attribute-char-regexp "+")))
+               (goto-char (match-end 0)))
+             (not (eobp)))
+      (insert (prog1 (format "%%%02X" (char-int (char-after)))
+                (delete-region (point)(1+ (point))))))
+    (buffer-string)))
 
 (defun mime-decode-parameter-plist (params)
   "Decode PARAMS as a property list of MIME parameter values.
@@ -248,11 +244,12 @@ property of the decoded-value."
 				   (substring (car params)
 					      0 (match-beginning 2))))
 			  ;; language
-			  (setcar (nthcdr 2 eparam)
-				  (downcase
-				   (substring (car params)
-					      (1+ (match-beginning 2))
-					      (1- (match-end 2)))))
+			  (when (match-beginning 3)
+			    (setcar (nthcdr 2 eparam)
+				    (downcase
+				     (substring (car params)
+						(match-beginning 3)
+						(match-end 3)))))
 			  ;; text
 			  (aset (nth 3 eparam) 0
 				(substring (car params)
