@@ -1,5 +1,14 @@
 1998-06-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-def.el (mime-library-version-string): Renamed from
+	`mime-spadework-module-version-string'.
+
+	* mime-parse.el: New file; moved from SEMI layer.
+
+	* FLIM-ELS (flim-modules): Add `mime-parse'.
+
+1998-06-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* FLIM-ELS (flim-modules): Add `mime-lib'.
 
 	* mime-lib.el: New module.
