@@ -31,4 +31,39 @@ LISPDIR=%s\n" PREFIX LISPDIR))
   (install-elisp-modules flim-modules "./" FLIM_DIR)
   )
 
+(defun config-flim-package ()
+  (let (package-dir)
+    (and (setq package-dir (car command-line-args-left))
+	 (or (string= "NONE" package-dir)
+	     (defvar PACKAGEDIR package-dir)
+	     ))
+    (setq command-line-args-left (cdr command-line-args-left))
+    (load-file "FLIM-CFG")
+    (load-file "FLIM-ELS")
+    (setq flim-modules (append flim-modules
+			       '(auto-autoloads custom-load)))
+    (princ (format "PACKAGEDIR=%s\n" PACKAGEDIR))
+    ))
+
+(defun compile-flim-package ()
+  (config-flim-package)
+  (compile-elisp-modules flim-modules ".")
+  ;; (setq autoload-package-name "flim")
+  ;; (add-to-list 'command-line-args-left ".")
+  ;; (batch-update-directory)
+  ;; (add-to-list 'command-line-args-left ".")
+  ;; (Custom-make-dependencies)
+  ;; (byte-compile-file "auto-autoloads.el")
+  ;; (byte-compile-file "custom-load.el")
+  )
+
+(defun install-flim-package ()
+  (config-flim-package)
+  (install-elisp-modules flim-modules
+			 "./"
+			 (expand-file-name FLIM_PREFIX
+					   (expand-file-name "lisp"
+							     PACKAGEDIR)))
+  )
+
 ;;; FLIM-MK ends here
