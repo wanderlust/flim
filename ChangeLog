@@ -1,5 +1,11 @@
 1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* std11.el (std11-special-char-list): Evaluate when it is
+	compiled.
+	(std11-atom-regexp): Use `eval-when-compile'.
+
+1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* std11.el (std11-space-chars): Must evaluate when it is compiled.
 	(std11-analyze-spaces): Don't use `std11-spaces-regexp'; abolist
 	constant `std11-spaces-regexp'.
