@@ -145,7 +145,6 @@
 
 	* smtp.el: New implementation; don't use `tram.el' and `luna.el'.
 
-
 2000-08-28  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* eword-encode.el (eword-encode-mailboxes-to-rword-list):
