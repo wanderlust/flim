@@ -1,5 +1,9 @@
 1999-11-28  Kenichi OKADA <okada@opaopa.org>
 
+	* mime-def.el (mime-library-product): Up.
+
+1999-11-28  Kenichi OKADA <okada@opaopa.org>
+
 	* ChangeLog: Fix.
 	* sasl.el (sasl-cram-md5): Rename `username' from `user'.
 	Rename `challenge' from `response'.
