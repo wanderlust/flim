@@ -55,7 +55,7 @@ tar:
 	sed "s/VERSION/$(VERSION)/" < ftp.in > ftp
 
 release:
-	-$(RM) /pub/GNU/elisp/apel/$(PACKAGE)-$(VERSION).tar.gz
+	-$(RM) /pub/GNU/elisp/flim/$(PACKAGE)-$(VERSION).tar.gz
 	mv /tmp/$(PACKAGE)-$(VERSION).tar.gz /pub/GNU/elisp/flim/
 	cd /pub/GNU/elisp/semi/ ; \
 		ln -s ../flim/$(PACKAGE)-$(VERSION).tar.gz .
