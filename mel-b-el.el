@@ -124,7 +124,9 @@ external decoder is called."
     buf))
 
 (defun-maybe base64-encode-string (string &optional no-line-break)
-  "Encode STRING to base64, and return the result."
+  "Encode STRING to base64, and return the result.
+Optional second argument NO-LINE-BREAK means do not break long lines
+into shorter lines."
   (let* ((len (length string))
 	 (b 0)(e 57)
 	 (dest ""))
