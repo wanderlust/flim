@@ -1,3 +1,7 @@
+1999-03-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-charset-encoding-alist): Add `tis-620'.
+
 1999-03-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel.el (mime-decode-string): Return STRING if return value of
@@ -2150,4 +2154,3 @@
  	eword-encode.el: Copied from MEL, SEMI (mime-def.el
  	eword-decode.el eword-encode.el) and APEL (std11-parse.el
  	std11.el).
->
