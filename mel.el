@@ -32,7 +32,7 @@
 ;;; @ encoder/decoder selection framework
 ;;;
 
-(defconst mel-stems '(dl ccl int-ext external internal)
+(defconst mel-stems '(dl ccl int-ext internal external)
   "List of encoder/decoder stems. First stem is most prefered.")
 
 (defmacro mel-call-next (fun formal-args)
@@ -48,7 +48,6 @@
 
 (put 'mel-defgeneric 'lisp-indent-function 4)
 (defmacro mel-defgeneric (prefix suffix formal-args
-				 &optional stems
 				 &rest docstring-interactive)
   "Define a generic function named PREFIX-SUFFIX for mel.
 Arguments for the function is specified as FORMAL-ARGS as usual.
@@ -57,20 +56,22 @@ interactive specification placed at front of a function body.
 
 Before a generic function is called, at least one methods must be
 defined by `mel-defmethod'.  If more than one methods is defined,
-preferest one is choosed by `STEMS' and called.
-If STEMS is nil, `mel-stems' is used."
+preferest implementation is choosed by `mel-defpreference' and
+`mel-stems'."
   (let ((name (intern (format "%s-%s" prefix suffix)))
         (tmp (make-symbol "tmp")))
     (put name 'prefix prefix)
     (put name 'suffix suffix)
     `(progn
-       (put ',name 'stems ,(if stems `',stems 'mel-stems))
        (put ',name 'prefix ',prefix)
        (put ',name 'suffix ',suffix)
        (defun ,name ,formal-args
 	 ,@docstring-interactive
 	 (catch 'return
-	   (let ((,tmp (get ',name 'stems)) method)
+	   (let ((,tmp (or (get ',name 'stems)
+                           (get ',prefix 'stems)
+                           mel-stems))
+                 method)
 	     (while ,tmp
 	       (when (setq method (get ',name (car ,tmp)))
 		 (fset ',name method)
@@ -78,134 +79,151 @@ If STEMS is nil, `mel-stems' is used."
 	       (setq ,tmp (cdr ,tmp))))
 	   (error ,(format "%s: no method" name)))))))
 
-(defmacro mel-defmodule (prefix stem &optional file)
-  "Declare that FILE defines functions PREFIX-STEM-*.
-If FILE is nil, `mel-PREFIX-STEM' is assumed."
-  (unless file
-    (setq file (format "mel-%s-%s" prefix stem)))
-  (put prefix stem file)
-  `(put ',prefix ',stem ,file))
+(defun mel-defpreference (stems prefix &optional suffix)
+  "Define a preference for a generic functions PREFIX-*
+(or PREFIX-SUFFIX if SUFFIX is non-nil) as STEMS."
+  (let ((name (if suffix (intern (format "%s-%s" prefix suffix)) prefix)))
+    (put name 'stems stems)))
 
-(defmacro mel-defmethod (name stem &optional file)
+(defmacro mel-usemodule (file prefix stem &optional condition)
+  "Declare that FILE defines functions PREFIX-STEM-*.
+
+If the form CONDITION is non-nil, it is evaluated for each methods
+PREFIX-STEM-*.  If the value of CONDITION is nil, the method is NOT
+defined.  In CONDITION, five variables `prefix', `stem', `suffix',
+`prefix-stem' and `prefix-stem-suffix' is available."
+  (let ((prefix-stem (intern (format "%s-%s" prefix stem))))
+    `(progn
+      (put ',prefix-stem 'mel-condition ',(or condition t))
+      (put ',prefix ',stem ,file))))
+
+(defmacro mel-defmethod (name stem &optional condition file)
   "Declare that NAME is implemented by STEM in FILE.
-If FILE is nil, module declared with `mel-defmoeudle' is used."
+
+If the form CONDITION is non-nil and evaluated to nil, 
+the method is NOT declared.  In CONDITION, five variables `prefix',
+`stem', `suffix', `prefix-stem' and `prefix-stem-suffix' is available.
+
+If FILE is nil, module declared with `mel-usemodule' is used."
   (let* ((prefix (get name 'prefix))
          (suffix (get name 'suffix))
-         (qualified (intern (format "%s-%s-%s" prefix stem suffix))))
-    (unless file
-      (setq file (get prefix stem)))
-    (unless file
-      (error "No file defines %s." qualified))
-    `(progn
-       (autoload ',qualified ,file)
-       (put ',name ',stem ',qualified))))
+         (prefix-stem (intern (format "%s-%s" prefix stem)))
+         (prefix-stem-suffix (intern (format "%s-%s-%s" prefix stem suffix))))
+    `(when (let ((prefix ',prefix)
+                 (suffix ',suffix)
+                 (stem ',stem)
+                 (prefix-stem ',prefix-stem)
+                 (prefix-stem-suffix ',prefix-stem-suffix))
+            (and ,(or condition 't)
+                 (eval (get prefix-stem 'mel-condition))))
+       (autoload ',prefix-stem-suffix ,(or file `(get ',prefix ',stem)))
+       (put ',name ',stem ',prefix-stem-suffix))))
 
 
 ;;; @ generic
 ;;;
 
-(mel-defgeneric base64 encode-string (string) nil
+(mel-defgeneric base64 encode-string (string)
   "Encode STRING with base64.")
-(mel-defgeneric base64 decode-string (string) nil
+(mel-defgeneric base64 decode-string (string)
   "Decode STRING with base64.")
-(mel-defgeneric base64 encode-region (start end) nil
+(mel-defgeneric base64 encode-region (start end)
   "Encode current region with base64."
   (interactive "r"))
-(mel-defgeneric base64 decode-region (start end) nil
+(mel-defgeneric base64 decode-region (start end)
   "Decode current region with base64."
   (interactive "r"))
-(mel-defgeneric base64 insert-encoded-file (filename) nil
+(mel-defgeneric base64 insert-encoded-file (filename)
   "Insert a file named FILENAME as base64 encoded form."
   (interactive (list (read-file-name "Insert encoded file: "))))
-(mel-defgeneric base64 write-decoded-region (start end filename) nil
+(mel-defgeneric base64 write-decoded-region (start end filename)
   "Decode and write base64 encoded current region to a file named FILENAME."
   (interactive
    (list (region-beginning) (region-end)
 	 (read-file-name "Write decoded region to file: "))))
-(mel-defgeneric base64 encoded-length (string) nil)
+(mel-defgeneric base64 encoded-length (string))
 
-(mel-defgeneric quoted-printable encode-string (string) nil
+(mel-defgeneric quoted-printable encode-string (string)
   "Encode STRING with quoted-printable.")
-(mel-defgeneric quoted-printable decode-string (string) nil
+(mel-defgeneric quoted-printable decode-string (string)
   "Decode STRING with quoted-printable.")
-(mel-defgeneric quoted-printable encode-region (start end) nil
+(mel-defgeneric quoted-printable encode-region (start end)
   "Encode current region with quoted-printable."
   (interactive "r"))
-(mel-defgeneric quoted-printable decode-region (start end) nil
+(mel-defgeneric quoted-printable decode-region (start end)
   "Decode current region with quoted-printable."
   (interactive "r"))
-(mel-defgeneric quoted-printable insert-encoded-file (filename) nil
+(mel-defgeneric quoted-printable insert-encoded-file (filename)
   "Insert a file named FILENAME as quoted-printable encoded form."
   (interactive (list (read-file-name "Insert encoded file: "))))
-(mel-defgeneric quoted-printable write-decoded-region (start end filename) nil
+(mel-defgeneric quoted-printable write-decoded-region (start end filename)
   "Decode and write quoted-printable encoded current region to a file
 named FILENAME."
   (interactive
    (list (region-beginning) (region-end)
 	 (read-file-name "Write decoded region to file: "))))
 
-(mel-defgeneric q-encoding encode-string (string &optional mode) nil
+(mel-defgeneric q-encoding encode-string (string &optional mode)
   "Encode STRING with Q-encoding.
 If MODE is `text', `comment' or `phrase', the result is appropriate for
 unstructured field, comment or phrase in structured field.
 If MODE is nil, the result is appropriate for phrase.")
-(mel-defgeneric q-encoding decode-string (string) nil
+(mel-defgeneric q-encoding decode-string (string)
   "Decode STRING with Q-encoding.")
-(mel-defgeneric q-encoding encoded-length (string mode) nil)
+(mel-defgeneric q-encoding encoded-length (string &optional mode))
 
-(mel-defgeneric uuencode encode-region (start end) nil
+(mel-defgeneric uuencode encode-region (start end)
   "Encode current region by unofficial uuencode format."
   (interactive "*r"))
-(mel-defgeneric uuencode decode-region (start end) nil
+(mel-defgeneric uuencode decode-region (start end)
   "Decode current region by unofficial uuencode format."
   (interactive "*r"))
-(mel-defgeneric uuencode insert-encoded-file (filename) nil
+(mel-defgeneric uuencode insert-encoded-file (filename)
   "Insert file encoded by unofficial uuencode format."
   (interactive (list (read-file-name "Insert encoded file: "))))
-(mel-defgeneric uuencode write-decoded-region (start end filename) nil
+(mel-defgeneric uuencode write-decoded-region (start end filename)
   "Decode and write current region encoded by uuencode into FILENAME."
   (interactive
    (list (region-beginning) (region-end)
          (read-file-name "Write decoded region to file: "))))
 
-(mel-defgeneric gzip64 encode-region (start end) nil
+(mel-defgeneric gzip64 encode-region (start end)
   "Encode current region by unofficial gzip64 format."
   (interactive "*r"))
-(mel-defgeneric gzip64 decode-region (start end) nil
+(mel-defgeneric gzip64 decode-region (start end)
   "Decode current region by unofficial gzip64 format."
   (interactive "*r"))
-(mel-defgeneric gzip64 insert-encoded-file (filename) nil
+(mel-defgeneric gzip64 insert-encoded-file (filename)
   "Insert file encoded by unofficial gzip64 format."
   (interactive (list (read-file-name "Insert encoded file: "))))
-(mel-defgeneric gzip64 write-decoded-region (start end filename) nil
+(mel-defgeneric gzip64 write-decoded-region (start end filename)
   "Decode and write current region encoded by gzip64 into FILENAME."
   (interactive
    (list (region-beginning) (region-end)
          (read-file-name "Write decoded region to file: "))))
 
+
 ;;; @ method
 ;;;
 
 ;; mel-dl
-(mel-defmodule base64 dl "mel-dl")
-
 (defvar base64-dl-module
   (and (fboundp 'dynamic-link)
        (let ((path (expand-file-name "base64.so" exec-directory)))
 	 (and (file-exists-p path)
 	      path))))
 
-(when base64-dl-module
-  (mel-defmethod base64-encode-string dl)
-  (mel-defmethod base64-decode-string dl)
-  (mel-defmethod base64-encode-region dl)
-  (mel-defmethod base64-decode-region dl)
-  )
+(mel-usemodule "mel-dl" base64 dl base64-dl-module)
+
+(mel-defmethod base64-encode-string dl)
+(mel-defmethod base64-decode-string dl)
+(mel-defmethod base64-encode-region dl)
+(mel-defmethod base64-decode-region dl)
 
 ;; mel-b
-(mel-defmodule base64 internal "mel-b")
-(mel-defmodule base64 external "mel-b")
-(mel-defmodule base64 int-ext "mel-b")
+(mel-usemodule "mel-b" base64 internal)
+(mel-usemodule "mel-b" base64 external)
+(mel-usemodule "mel-b" base64 int-ext)
 
 (mel-defmethod base64-encode-string internal)
 (mel-defmethod base64-decode-string internal)
@@ -230,10 +248,10 @@ If MODE is nil, the result is appropriate for phrase.")
 (mel-defmethod base64-write-decoded-region int-ext)
 
 ;; mel-q
-(mel-defmodule quoted-printable internal "mel-q")
-(mel-defmodule quoted-printable external "mel-q")
-(mel-defmodule quoted-printable int-ext "mel-q")
-(mel-defmodule q-encoding internal "mel-q")
+(mel-usemodule "mel-q" quoted-printable internal)
+(mel-usemodule "mel-q" quoted-printable external)
+(mel-usemodule "mel-q" quoted-printable int-ext)
+(mel-usemodule "mel-q" q-encoding internal)
 
 (mel-defmethod quoted-printable-encode-string internal)
 (mel-defmethod quoted-printable-decode-string internal)
@@ -255,7 +273,7 @@ If MODE is nil, the result is appropriate for phrase.")
 (mel-defmethod q-encoding-encoded-length internal)
 
 ;; mel-u
-(mel-defmodule uuencode external "mel-u")
+(mel-usemodule "mel-u" uuencode external)
 
 (mel-defmethod uuencode-encode-region external)
 (mel-defmethod uuencode-decode-region external)
@@ -263,7 +281,7 @@ If MODE is nil, the result is appropriate for phrase.")
 (mel-defmethod uuencode-write-decoded-region external)
 
 ;; mel-g
-(mel-defmodule gzip64 external "mel-g")
+(mel-usemodule "mel-g" gzip64 external)
 
 (mel-defmethod gzip64-encode-region external)
 (mel-defmethod gzip64-decode-region external)
@@ -271,37 +289,32 @@ If MODE is nil, the result is appropriate for phrase.")
 (mel-defmethod gzip64-write-decoded-region external)
 
 ;; mel-ccl
-(mel-defmodule base64 ccl "mel-ccl")
-(mel-defmodule quoted-printable ccl "mel-ccl")
-(mel-defmodule q-encoding ccl "mel-ccl")
+(mel-usemodule "mel-ccl" base64 ccl (fboundp 'make-ccl-coding-system))
+(mel-usemodule "mel-ccl" quoted-printable ccl (fboundp 'make-ccl-coding-system))
+(mel-usemodule "mel-ccl" q-encoding ccl (fboundp 'make-ccl-coding-system))
 
-(when (fboundp 'make-ccl-coding-system)
-  (unless (and (boundp 'ccl-encoder-eof-block-is-broken)
-               ccl-encoder-eof-block-is-broken)
-    (mel-defmethod base64-encode-string ccl)
-    (mel-defmethod base64-encode-region ccl)
-    (mel-defmethod base64-insert-encoded-file ccl)
+(defvar ccl-encoder-eof-block-is-broken nil)
 
-    (mel-defmethod quoted-printable-encode-string ccl)
-    (mel-defmethod quoted-printable-encode-region ccl)
-    (mel-defmethod quoted-printable-insert-encoded-file ccl)
-    )
+(mel-defmethod base64-encode-string ccl (not ccl-encoder-eof-block-is-broken))
+(mel-defmethod base64-encode-region ccl (not ccl-encoder-eof-block-is-broken))
+(mel-defmethod base64-insert-encoded-file ccl (not ccl-encoder-eof-block-is-broken))
 
-  (mel-defmethod base64-decode-string ccl)
-  (mel-defmethod base64-decode-region ccl)
-  (mel-defmethod base64-write-decoded-region ccl)
+(mel-defmethod quoted-printable-encode-string ccl (not ccl-encoder-eof-block-is-broken))
+(mel-defmethod quoted-printable-encode-region ccl (not ccl-encoder-eof-block-is-broken))
+(mel-defmethod quoted-printable-insert-encoded-file ccl (not ccl-encoder-eof-block-is-broken))
 
-  (mel-defmethod quoted-printable-decode-string ccl)
-  (mel-defmethod quoted-printable-decode-region ccl)
-  (mel-defmethod quoted-printable-write-decoded-region ccl)
+(mel-defmethod base64-decode-string ccl)
+(mel-defmethod base64-decode-region ccl)
+(mel-defmethod base64-write-decoded-region ccl)
 
-  (mel-defmethod q-encoding-encode-string ccl)
-  (mel-defmethod q-encoding-decode-string ccl)
+(mel-defmethod quoted-printable-decode-string ccl)
+(mel-defmethod quoted-printable-decode-region ccl)
+(mel-defmethod quoted-printable-write-decoded-region ccl)
 
-  (unless running-xemacs
-    (mel-defmethod q-encoding-encoded-length ccl)
-    )
-  )
+(mel-defmethod q-encoding-encode-string ccl)
+(mel-defmethod q-encoding-decode-string ccl)
+
+(mel-defmethod q-encoding-encoded-length ccl (not running-xemacs))
 
 
 ;;; @ region

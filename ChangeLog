@@ -1,5 +1,15 @@
 1998-09-17  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* mel.el (mel-defgeneric): Remove `stems' argument.
+	(mel-stems): Exchange order between `external' and `internal'.
+	(mel-defgeneric): Obtain preference dynamicaly.
+	(mel-defpreference): New function
+	(mel-usemodule): Renamed from `mel-defmodule' and add a argument
+	`condition'.
+	(mel-defmethod): Add a argument `condition'.
+
+1998-09-17  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mel.el: Reindented.
 	(mel-defgeneric): Add `stems' argument.
 
