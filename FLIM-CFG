@@ -10,14 +10,12 @@
     nil
   ;; Emacs 19.29 emulating function.
   (defun add-to-list (list-var element)
-    (set list-var (cons element (symbol-value list-var))))
-  )
+    (set list-var (cons element (symbol-value list-var)))))
 
 (if (boundp 'data-directory)
     nil
   ;; Emacs 19 emulating variable.
-  (defvar data-directory exec-directory)
-  )
+  (defvar data-directory exec-directory))
 
 (add-to-list 'load-path
 	     (expand-file-name "../../site-lisp/apel" data-directory))
@@ -26,8 +24,7 @@
     (progn
       (add-to-list 'default-load-path LISPDIR)
       (add-to-list 'load-path LISPDIR)
-      (add-to-list 'load-path (expand-file-name "apel" LISPDIR))
-      ))
+      (add-to-list 'load-path (expand-file-name "apel" LISPDIR))))
 
 (if (boundp 'VERSION_SPECIFIC_LISPDIR)
     (add-to-list 'load-path VERSION_SPECIFIC_LISPDIR))

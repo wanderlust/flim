@@ -37,7 +37,7 @@ FLIM とは？
 導入 (install)
 ==============
 
-(0) 導入 (install) する前に、APEL (9.19 以降) を導入してください。APEL 
+(0) 導入 (install) する前に、APEL (10.3 以降) を導入してください。APEL 
     は以下のところで取得できます:
 
 	ftp://ftp.m17n.org/pub/mule/apel/
@@ -82,6 +82,7 @@ FLIM とは？
   クトリー木が作成されます。
 
 	/usr/local/share/emacs/site-lisp/flim/	--- FLIM
+	/usr/local/share/emacs/19.34/site-lisp/flim/	--- FLIM
 
   Emacs Lisp プログラムのための lisp ディレクトリーを指定することがで
   きます。例えば、:

@@ -39,7 +39,7 @@ What's FLIM
 Installation
 ============
 
-(0) before installing it, please install APEL (9.22 or later) package.
+(0) before installing it, please install APEL (10.3 or later) package.
     APEL package is available at:
 
 	ftp://ftp.m17n.org/pub/mule/apel/
@@ -81,6 +81,7 @@ Installation
   will create the following directory tree:
 
 	/usr/local/share/emacs/site-lisp/flim/   --- FLIM
+	/usr/local/share/emacs/19.34/site-lisp/flim/	--- FLIM
 
   You can specify site-lisp directory, for example
 
