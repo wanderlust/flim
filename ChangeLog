@@ -1,3 +1,12 @@
+2001-11-03  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hmac-md5.el: Removed kludge for Emacs 21 prerelease versions.
+
+2001-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Work even if the first line of
+	the subject field has no content (synch with Emacs 20.3).
+
 2001-09-21  Kenichi OKADA  <okada@opaopa.org>
 
 	* smtp.el(smtp-submit-package): Check extensions for starttls.
