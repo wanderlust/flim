@@ -1,3 +1,7 @@
+2000-12-25  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.2 (Yagi-Nishiguchi) released.
+
 2000-12-23  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* smtpmail.el (smtpmail-send-it): Use
