@@ -668,7 +668,7 @@ It refer variable `mime-field-encoding-method-alist'."
 	    bbeg end field-name)
 	(while (re-search-forward std11-field-head-regexp nil t)
 	  (setq bbeg (match-end 0)
-		field-name (buffer-substring (match-beginning 0) (1- bbeg))
+		field-name (buffer-substring-no-properties (match-beginning 0) (1- bbeg))
 		end (std11-field-end))
 	  (and (delq 'ascii (find-charset-region bbeg end))
 	       (let ((method (eword-find-field-encoding-method
