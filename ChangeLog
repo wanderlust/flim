@@ -1,5 +1,9 @@
 1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* eword-encode.el (eword-charset-encoding-alist): Add utf-8.
+
+1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel.el (mime-content-transfer-encoding-list): New user option.
 	(mime-encode-region): Use `mime-content-transfer-encoding-list'
 	for completion.
