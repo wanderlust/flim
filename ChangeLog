@@ -1,5 +1,12 @@
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* NEWS (Function `std11-parse-in-reply-to'): New subsection.
+	(New function `std11-parse-msg-id-string'): Likewise.
+	(New function `std11-parse-msg-ids-string'): Likewise.
+	(New generic function `mime-insert-entity'): Likewise.
+
+1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime.el (mime-field-parser-alist): Change to set parser for
 	tokens instead of parser for string.
 	(mime-read-field): Use `eword-lexical-analyze' before parsing.
