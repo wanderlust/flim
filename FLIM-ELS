@@ -11,7 +11,8 @@
 		     mime mime-parse mmgeneric mmbuffer mmcooked
 		     mailcap))
 
-(or (subrp 'base64-encode-string)
+(or (and (fboundp 'base64-encode-string)
+	 (subrp (symbol-function 'base64-encode-string)))
     (if (fboundp 'dynamic-link)
 	(setq flim-modules (cons 'mel-b-dl flim-modules))
       ))
