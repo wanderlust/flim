@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'mime-conf)
+(require 'poe) ; define-obsolete-function-alias
 
 (define-obsolete-function-alias
   'mailcap-parse-buffer 'mime-parse-mailcap-buffer)
