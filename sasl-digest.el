@@ -1,9 +1,9 @@
 ;;; sasl-digest.el --- DIGEST-MD5 module for the SASL client framework
 
-;; Copyright (C) 2000 Daiki Ueno
+;; Copyright (C) 2000 Free Software Foundation, Inc.
 
-;; Author: Kenichi OKADA <okada@opaopa.org>
-;;	Daiki Ueno <ueno@unixuser.org>
+;; Author: Daiki Ueno <ueno@unixuser.org>
+;;	Kenichi OKADA <okada@opaopa.org>
 ;; Keywords: SASL, DIGEST-MD5
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
