@@ -46,7 +46,7 @@
 (require 'smtp)
 (require 'sendmail)
 (require 'time-stamp)
-(require 'mel)
+(require 'mel) ; binary-write-decoded-region, binary-find-file-noselect
 
 (eval-when-compile (require 'static))
 
