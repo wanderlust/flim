@@ -1,3 +1,8 @@
+1999-09-14  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Remove needless `concat'.
+
+
 1999-09-13  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* CLIME: Version 1.13.4 (Shin-Terai) released.
@@ -6,7 +11,7 @@
 
 	* README.en (Installation): Modify for APEL 9.22; modify location
 	of APEL.
-	
+
 1999-09-01  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtpmail.el (smtpmail-send-it): Make directory
