@@ -121,18 +121,18 @@ Usage of this macro follows:
 
 NAME is the name of method.
 
-Optional argument METHOD-QUALIFIER must be :after.  If it is :after,
-the method is called after a method of parent class is finished.
-ARGLIST is like an argument list of lambda, but (car ARGLIST) must be
-specialized parameter.  (car (car ARGLIST)) is name of variable and
-\(nth 1 (car ARGLIST)) is name of class.
+Optional argument METHOD-QUALIFIER must be :before or :after.  If it
+is :before / :after, the method is called before / after a method of
+parent class is finished.  ARGLIST is like an argument list of lambda,
+but (car ARGLIST) must be specialized parameter.  (car (car ARGLIST))
+is name of variable and \(nth 1 (car ARGLIST)) is name of class.
 
 Optional argument DOCSTRING is the documentation of method.
 
 BODY is the body of method."
   (let ((method-qualifier (pop definition))
 	args specializer class self)
-    (if (eq method-qualifier :after)
+    (if (memq method-qualifier '(:before :after))
 	(setq args (pop definition))
       (setq args method-qualifier
 	    method-qualifier nil)
@@ -153,7 +153,7 @@ BODY is the body of method."
 (put 'luna-define-method 'lisp-indent-function 'defun)
 
 (def-edebug-spec luna-define-method
-  (&define name [&optional ":after"]
+  (&define name [&optional &or ":before" ":after"]
 	   ((arg symbolp)
 	    [&rest arg]
 	    [&optional ["&optional" arg &rest arg]]
@@ -174,11 +174,17 @@ BODY is the body of method."
 (defun luna-class-find-functions (class service)
   (let ((sym (luna-class-find-member class service)))
     (if (fboundp sym)
-	(if (eq (get sym 'luna-method-qualifier) :after)
-	    (nconc (luna-class-find-parents-functions class service)
-		   (list (symbol-function sym)))
-	  (list (symbol-function sym))
-	  )
+	(cond ((eq (get sym 'luna-method-qualifier) :before)
+	       (cons (symbol-function sym)
+		     (luna-class-find-parents-functions class service))
+	       )
+	      ((eq (get sym 'luna-method-qualifier) :after)
+	       (nconc (luna-class-find-parents-functions class service)
+		      (list (symbol-function sym)))
+	       )
+	      (t
+	       (list (symbol-function sym))
+	       ))
       (luna-class-find-parents-functions class service)
       )))
 
