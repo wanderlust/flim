@@ -164,27 +164,6 @@ It calls external quoted-printable encoder specified by
 	((<= ?0 chr) (- chr ?0))
 	))
 
-(defun quoted-printable-decode-string (string)
-  "Decode STRING which is encoded in quoted-printable, and return the result."
-  (let (q h l)
-    (mapconcat (function
-		(lambda (chr)
-		  (cond ((eq chr ?=)
-			 (setq q t)
-			 "")
-			(q (setq h (quoted-printable-hex-char-to-num chr))
-			   (setq q nil)
-			   "")
-			(h (setq l (quoted-printable-hex-char-to-num chr))
-			   (prog1
-			       (char-to-string (logior (ash h 4) l))
-			     (setq h nil)
-			     )
-			   )
-			(t (char-to-string chr))
-			)))
-	       string "")))
-
 (defun quoted-printable-internal-decode-region (start end)
   (save-excursion
     (save-restriction
@@ -242,6 +221,13 @@ the program (maybe mmencode included in metamail or XEmacs package)."
       (quoted-printable-external-decode-region start end)
     (quoted-printable-internal-decode-region start end)
     ))
+
+(defun quoted-printable-decode-string (string)
+  "Decode STRING which is encoded in quoted-printable, and return the result."
+  (with-temp-buffer
+    (insert string)
+    (quoted-printable-decode-region (point-min)(point-max))
+    (buffer-string)))
 
 
 (defvar quoted-printable-external-decoder-option-to-specify-file '("-o")
