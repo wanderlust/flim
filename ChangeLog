@@ -1,3 +1,8 @@
+1998-11-13  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-structured-field-body): Abolish
+	non-used local variable.
+
 1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* mel-b-ccl.el (mel-ccl-decode-b): Check `ccl-cascading-read' to
