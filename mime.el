@@ -68,6 +68,7 @@ current-buffer, and return it.")
 (defalias 'mime-entity-node-id 'mime-entity-node-id-internal)
 
 (defsubst mime-entity-number (entity)
+  "Return entity-number of ENTITY."
   (reverse (mime-entity-node-id-internal entity)))
 
 (defun mime-find-entity-from-number (entity-number &optional message)
@@ -108,16 +109,20 @@ ENTITY is used."
 ;;; @ Entity Buffer
 ;;;
 
-(defalias 'mime-entity-buffer    'mime-entity-buffer-internal)
-(defalias 'mime-entity-point-min 'mime-entity-header-start-internal)
-(defalias 'mime-entity-point-max 'mime-entity-body-end-internal)
+(defalias 'mime-entity-buffer		'mime-entity-buffer-internal)
+
+(defalias 'mime-entity-point-min	'mime-entity-header-start-internal)
+(defalias 'mime-entity-point-max	'mime-entity-body-end-internal)
+
+(defalias 'mime-entity-header-start	'mime-entity-header-start-internal)
+(defalias 'mime-entity-header-end	'mime-entity-header-end-internal)
+
+(defalias 'mime-entity-body-start	'mime-entity-body-start-internal)
+(defalias 'mime-entity-body-end		'mime-entity-body-end-internal)
 
 
 ;;; @ Entity Header
 ;;;
-
-(defalias 'mime-entity-header-start 'mime-entity-header-start-internal)
-(defalias 'mime-entity-header-end   'mime-entity-header-end-internal)
 
 (defun mime-fetch-field (field-name &optional entity)
   (or (symbolp field-name)
@@ -285,21 +290,7 @@ ENTITY is used."
 		  )))))))))
 
 
-;;; @ Entity Content
-;;;
-
-(defalias 'mime-entity-body-start 'mime-entity-body-start-internal)
-(defalias 'mime-entity-body-end   'mime-entity-body-end-internal)
-
-(defun mime-entity-content (entity)
-  (save-excursion
-    (set-buffer (mime-entity-buffer entity))
-    (mime-decode-string (buffer-substring (mime-entity-body-start entity)
-					  (mime-entity-body-end entity))
-			(mime-entity-encoding entity))))
-
-
-;;; @ Another Entity Information
+;;; @ Entity Attributes
 ;;;
 
 (defun mime-entity-uu-filename (entity)
@@ -334,6 +325,17 @@ ENTITY is used."
 (defsubst mime-entity-type/subtype (entity-info)
   (mime-type/subtype-string (mime-entity-media-type entity-info)
 			    (mime-entity-media-subtype entity-info)))
+
+
+;;; @ Entity Content
+;;;
+
+(defun mime-entity-content (entity)
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (mime-decode-string (buffer-substring (mime-entity-body-start entity)
+					  (mime-entity-body-end entity))
+			(mime-entity-encoding entity))))
 
 
 ;;; @ end
