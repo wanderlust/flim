@@ -1,3 +1,7 @@
+1998-10-25  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-field-body): Refine implementation.
+
 1998-10-24  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mel-b-ccl.el, mel-q-ccl.el, mel.el, FLIM-ELS: Divide mel-ccl.el

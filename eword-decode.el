@@ -308,12 +308,12 @@ Non MIME encoded-word part in FILED-BODY is decoded with
 `default-mime-charset'."
   (when (eq max-column t)
     (setq max-column fill-column))
-  (let ((field-name-symbol (if (symbolp field-name)
-                               field-name
-                             (intern (capitalize field-name))))
-        (len (1+ (string-width field-name))))
-    (when (symbolp field-name)
-      (setq field-name (symbol-name field-name)))
+  (let (field-name-symbol len)
+    (if (symbolp field-name)
+        (setq field-name-symbol field-name
+              len (1+ (string-width (symbol-name field-name))))
+      (setq field-name-symbol (intern (capitalize field-name))
+            len (1+ (string-width field-name))))
     (if (memq field-name-symbol eword-decode-ignored-field-list)
         ;; Don't decode
         (if max-column
