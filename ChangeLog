@@ -1,3 +1,7 @@
+2000-10-20  Kenichi OKADA   <okada@opaopa.org>
+
+	* SLIM: Version 1.14.3 released.
+
 2000-09-21  Kenichi OKADA   <okada@opaopa.org>
 
 	* smtp.el (smtp-via-smtp): Cause an error if `smtp-notify-success'
@@ -37,6 +41,7 @@
 
 	* mime-def.el (mime-library-product): Up.
 	* SLIM-VERSION: Up.
+
 
 2000-08-12  Kenichi OKADA   <okada@opaopa.org>
 
