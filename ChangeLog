@@ -1,5 +1,28 @@
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mmcooked.el: Abolish method `open'.
+
+	* mmbuffer.el (initialize-instance): New method; abolish `open'.
+	(entity-children): New method.
+
+	* mime.el (mime-open-entity): Send `initialize-instance' to
+	created message.
+	(mime-entity-children): New implementation.
+	(mime-entity-parent): New implementation.
+	(mime-root-entity-p): New implementation.
+
+	* mime-parse.el (mime-parse-multipart): Specify current entity as
+	parent.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-message): Change interface to specify parent; modify
+	for `make-mime-entity-internal'.
+	(mime-parse-buffer): Modify for `mime-parse-message'.
+
+	* mime-def.el (make-mime-entity-internal): Change interface; add
+	format of `mime-entity' to add `parent'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmbuffer.el (mime-visible-field-p): Renamed from
 	`eword-visible-field-p'.
 
