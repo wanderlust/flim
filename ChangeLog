@@ -1,7 +1,31 @@
-2000-12-27  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+2001-02-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
-	* mime-conf.el (mime-mailcap-file): Turn to non user option.
+	MIME Parameter Value decoder support.
+	
+	* mime-def.el (std11-quoted-pair-regexp, std11-non-qtext-char-list,
+	std11-qtext-regexp, std11-quoted-string-regexp): Removed.
+	(mime-media-type/subtype-regexp): Ditto.
+	(mime-attribute-char-regexp, mime-language-regexp,
+	mime-encoding-regexp): New constants.
 
+	* mime-parse.el (mime-lexical-analyze): New function.
+	(mime/content-parameter-value-regexp, mime::parameter-regexp):
+	Removed.
+	(mime-parse-parameter): Ditto.
+	(mime-decode-parameter-value, mime-decode-parameter-plist,
+	mime-parse-alist-to-plist, mime-decode-parameter-alist):
+	New functions.
+	(mime-parse-parameters-from-list): New alias for
+	`mime-decode-parameter-plist'.
+	(mime-decode-parameters): New alias for
+	`mime-decode-parameter-alist'.
+	(mime-parse-parameters): New function.
+	(mime-disposition-type-regexp): Removed.
+	(mime-parse-Content-Type, mime-parse-Content-Disposition,
+	mime-parse-Content-Transfer-Encoding): New implementation.
+	(mime-read-Content-Type, mime-read-Content-Disposition,
+	mime-read-Content-Transfer-Encoding): Ditto.
+	
 
 2000-12-25  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
