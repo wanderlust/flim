@@ -51,7 +51,7 @@
 (defconst mime-library-version
   (eval-when-compile
     (concat (mime-product-name mime-library-product) " "
-	    (mapconcat (function number-to-string)
+	    (mapconcat (function int-to-string)
 		       (mime-product-version mime-library-product) ".")
 	    " - \"" (mime-product-code-name mime-library-product) "\"")))
 
