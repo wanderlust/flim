@@ -87,21 +87,6 @@
   )
 
 
-(luna-define-method mime-entity-children ((entity mime-buffer-entity))
-  (let* ((content-type (mime-entity-content-type entity))
-	 (primary-type (mime-content-type-primary-type content-type)))
-    (cond ((eq primary-type 'multipart)
-	   (mime-parse-multipart entity)
-	   )
-	  ((and (eq primary-type 'message)
-		(memq (mime-content-type-subtype content-type)
-		      '(rfc822 news external-body)
-		      ))
-	   (mime-parse-encapsulated entity)
-	   ))
-    ))
-
-
 (defun mime-visible-field-p (field-name visible-fields invisible-fields)
   (or (catch 'found
 	(while visible-fields
