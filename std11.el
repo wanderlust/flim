@@ -396,7 +396,7 @@ be the result."
 			  (null (setq r (funcall func string start))))
 		(setq rest (cdr rest)))
 	      (or r
-		  (list (cons 'error (substring string start)) (1+ len)))
+		  (cons (cons 'error (substring string start)) (1+ len)))
 	      ))
       (setq dest (cons (car ret) dest)
 	    start (cdr ret))

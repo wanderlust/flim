@@ -27,15 +27,10 @@
 ;;; Code:
 
 (provide 'sha1-dl)			; beware of circular dependency.
-(eval-when-compile
-  (require 'sha1)			; sha1-dl-module.
-  (defun-maybe dynamic-link (a))
-  (defun-maybe dynamic-call (a b)))
+(eval-when-compile (require 'sha1))	; sha1-dl-module.
 
-(defvar sha1-dl-handle
-  (and (stringp sha1-dl-module)
-       (file-exists-p sha1-dl-module)
-       (dynamic-link sha1-dl-module)))
+;;; This file is loaded (from "sha1.el") only when sha1-dl-module exists.
+(defvar sha1-dl-handle (dynamic-link sha1-dl-module))
 
 ;;; sha1-dl-module provides `sha1-string' and `sha1-binary'.
 (dynamic-call "emacs_sha1_init" sha1-dl-handle)

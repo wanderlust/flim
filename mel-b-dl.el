@@ -26,14 +26,12 @@
 
 (require 'mime-def)
 
-(eval-and-compile
-  (defvar base64-dl-handle
-    (and (stringp base64-dl-module)
-	 (file-exists-p base64-dl-module)
-	 (dynamic-link base64-dl-module)))
+(defvar base64-dl-handle
+  (and (stringp base64-dl-module)
+       (file-exists-p base64-dl-module)
+       (dynamic-link base64-dl-module)))
 
-  (dynamic-call "emacs_base64_init" base64-dl-handle)
-  )
+(dynamic-call "emacs_base64_init" base64-dl-handle)
 
 ;; base64-dl-module provides `encode-base64-string' and `decode-base64-string'.
 (defalias 'base64-encode-string 'encode-base64-string)
