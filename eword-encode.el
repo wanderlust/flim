@@ -598,7 +598,7 @@ A lexical token includes non-ASCII character is encoded as MIME
 encoded-word.  ASCII token is not encoded."
   (when (symbolp field-name)
     (setq field-name (symbol-name field-name)))
-  (let* ((field-name-symbol (intern (capitalize field-name))))
+  (let ((field-name-symbol (intern (capitalize field-name))))
     (cond ((string= field-body "") "")
 	  ((memq field-name-symbol
 		 '(Reply-To
