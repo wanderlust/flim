@@ -1,5 +1,9 @@
 1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-def.el (mel-define-method-function): Don't override.
+
+1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel.el, mel-ccl.el, FLIM-ELS: Add mel-ccl.el.
 
 1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
