@@ -80,11 +80,6 @@ don't define this value."
   :type '(choice (const nil) string)
   :group 'smtp)
 
-(defcustom smtp-debug-info nil
-  "*smtp debug info printout. messages and process buffer."
-  :type 'boolean
-  :group 'smtp)
-
 (defcustom smtp-notify-success nil
   "If non-nil, notification for successful mail delivery is returned 
  to user (RFC1891)."
@@ -138,7 +133,11 @@ don't define this value."
 	  (smtp-transaction-process-internal trans))))
     (or (smtp-check-response response)
 	(net-transaction-error trans 'ehlo))
-    (smtp-transaction-set-extensions-internal trans (cdr response))
+    (smtp-transaction-set-extensions-internal
+     trans (mapcar
+	    (lambda (extension)
+	      (car (read-from-string (downcase extension))))
+	    (cdr response)))
     trans))
 
 (luna-define-method smtp-helo ((trans smtp-transaction))
@@ -285,52 +284,25 @@ don't define this value."
 
 (defun smtp-read-response (process)
   (let ((case-fold-search nil)
-	(response-strings nil)
+	response
 	(response-continue t)
-	(return-value '(nil ()))
 	match-end)
-
     (while response-continue
       (goto-char smtp-read-point)
       (while (not (search-forward "\r\n" nil t))
 	(accept-process-output process)
 	(goto-char smtp-read-point))
-
       (setq match-end (point))
-      (setq response-strings
-	    (cons (buffer-substring smtp-read-point (- match-end 2))
-		  response-strings))
-	
+      (setq response
+	    (nconc response
+		   (list (buffer-substring (+ 4 smtp-read-point)
+					   (- match-end 2)))))
       (goto-char smtp-read-point)
-      (if (looking-at "[0-9]+ ")
-	  (let ((begin (match-beginning 0))
-		(end (match-end 0)))
-	    (if smtp-debug-info
-		(message "%s" (car response-strings)))
-
-	    (setq smtp-read-point match-end)
-
-	    ;; ignore lines that start with "0"
-	    (if (looking-at "0[0-9]+ ")
-		nil
-	      (setq response-continue nil)
-	      (setq return-value
-		    (cons (string-to-int
-			   (buffer-substring begin end))
-			  (nreverse response-strings)))))
-	
-	(if (looking-at "[0-9]+-")
-	    (progn (if smtp-debug-info
-		     (message "%s" (car response-strings)))
-		   (setq smtp-read-point match-end)
-		   (setq response-continue t))
-	  (progn
-	    (setq smtp-read-point match-end)
-	    (setq response-continue nil)
-	    (setq return-value
-		  (cons nil (nreverse response-strings)))))))
-    (setq smtp-read-point match-end)
-    return-value))
+      (when (looking-at "[1-5][0-9][0-9] ")
+	(setq response-continue nil)
+	(push (read (point-marker)) response))
+      (setq smtp-read-point match-end))
+    response))
 
 (defun smtp-check-response (response)
   (> (car response) 200))
@@ -344,8 +316,6 @@ don't define this value."
 
 (defun smtp-send-data-1 (process data)
   (goto-char (point-max))
-  (if smtp-debug-info
-      (insert data "\r\n"))
   (setq smtp-read-point (point))
   ;; Escape "." at start of a line.
   (if (eq (string-to-char data) ?.)
