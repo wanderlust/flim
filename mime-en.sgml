@@ -563,15 +563,14 @@ Return value of <var>parameter</var> of <var>content-type</var>.
 <node> Content-Type parser
 <p>
 <defun name="mime-parse-Content-Type">
-	  <args> string
+	    <args> string
 <p>
-Parse <var>string</var> as field-body of Content-Type field.
+Parse <var>string</var> as a field-body of Content-Type field.
 </defun>
 
 <defun name="mime-read-Content-Type">
 <p>
-Read field-body of Content-Type field from current-buffer,
-and return parsed it.
+Parse Content-Type field of the current buffer, and return the result.
 <p>
 Return <code>nil</code> if Content-Type field is not found.
 </defun>
@@ -581,7 +580,7 @@ Return <code>nil</code> if Content-Type field is not found.
 <node> Content-Type utility
 <p>
 <defun name="mime-type/subtype-string">
-	  <args> type <opts> subtype
+	    <args> type <opts> subtype
 <p>
 Return type/subtype string from <var>type</var> and
 <var>subtype</var>.
@@ -596,10 +595,10 @@ specify presentation of an entity or attributes of an entity, such as
 file name.
 
 <rfc number="2183" type="Standards Track"
-	      author="S. Dorner, K. Moore and R. Troost"
-	      title="Communicating Presentation Information in
-	      Internet Messages: The Content-Disposition Header"
-	      date="August 1997">
+	  author="S. Dorner, K. Moore and R. Troost"
+	  title="Communicating Presentation Information in Internet
+	  Messages: The Content-Disposition Header" date="August
+	  1997">
 <p>
 FLIM provides parser for Content-Disposition field and structure
 <concept>mime-content-disposition</concept> to store information of
@@ -678,19 +677,21 @@ Content-Transfer-Encoding.
 <node> Content-Transfer-Encoding parser
 <p>
 <defun name="mime-parse-Content-Transfer-Encoding">
-	  <args> string
+	    <args> string
 <p>
-<var>string</var> を content-transfer-encoding として解析した結果を返す。
+Parse <var>string</var> as a field-body of Content-Transfer-Encoding
+field, and return the result.
 </defun>
 
 <defun name="mime-read-Content-Transfer-Encoding">
-	  <opts>default-encoding
+	    <opts>default-encoding
 <p>
-現在の buffer の Content-Transfer-Encoding 欄を読み取り、解析した結果を
-返す。
+Parse Content-Transfer-Encoding field of the current buffer, and
+return the result.
 <p>
-Content-Transfer-Encoding 欄が存在しない場合は
-<var>default-encoding</var> を返す。
+Return <var>default-encoding</var> if Content-Transfer-Encoding field
+is not found.  If it is not specified, <code>nil</code> is used as the
+default value.
 </defun>
 
 
