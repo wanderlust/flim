@@ -778,7 +778,10 @@ represents addr-spec of RFC 822. [std11.el]"
 				  (std11-strip-quoted-pair (cdr token))
 				  )
 				 ((eq type 'comment)
-				  (std11-comment-value-to-string (cdr token))
+				  (concat "("
+					  (std11-comment-value-to-string
+					   (cdr token))
+					  ")")
 				  )
 				 (t
 				  (cdr token)
