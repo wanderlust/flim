@@ -97,10 +97,9 @@ be the result."
     (insert text)
     (goto-char (point-min))
     (while (re-search-forward "%[0-9A-Fa-f][0-9A-Fa-f]" nil t)
-      (insert (prog1 (int-char
-                      (string-to-int
-                       (buffer-substring (point)(- (point) 2))
-                       16))
+      (insert (prog1 (string-to-int
+		      (buffer-substring (point)(- (point) 2))
+		      16)
                 (delete-region (point)(- (point) 3)))))
     (setq text (buffer-string))
     (when charset
