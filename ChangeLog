@@ -1,5 +1,7 @@
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* FLIM: Version 1.1.1 (J-Dþjò) was released.-A
+
 	* eword-decode.el (eword-decode-encoded-word-error-handler): New
 	variable.
 	(eword-decode-encoded-word-default-error-handler): New function.
@@ -44,7 +46,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Dòji)-A was released.
+	* FLIM: Version 1.1.0 (T-Dòji) was released.-A
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -80,7 +82,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
+	* FLIM: Version 1.0.1 (Ky-Dòto) was released.-A
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
