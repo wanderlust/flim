@@ -1184,7 +1184,7 @@ abcdefghijklmnopqrstuvwxyz\
   (defun base64-ccl-insert-encoded-file (filename)
     "Encode contents of file FILENAME to base64, and insert the result."
     (interactive (list (read-file-name "Insert encoded file: ")))
-    (let ((coding-system-for-read 'mel-ccl-b-rev))
+    (let ((coding-system-for-read 'mel-ccl-base64-lf-rev))
       (insert-file-contents filename)))
 
   )

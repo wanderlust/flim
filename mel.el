@@ -314,7 +314,7 @@ If MODE is nil, the result is appropriate for phrase.")
 (mel-defmethod q-encoding-encode-string ccl)
 (mel-defmethod q-encoding-decode-string ccl)
 
-(mel-defmethod q-encoding-encoded-length ccl (not running-xemacs))
+(mel-defmethod q-encoding-encoded-length ccl (not (featurep 'xemacs)))
 
 
 ;;; @ region
