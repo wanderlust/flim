@@ -1,3 +1,20 @@
+1999-04-05  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* FLIM-CFG: Make easier to install in VERSION_SPECIFIC_LISPDIR.
+
+1999-03-29  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime.el (mime-read-field): Correct argument of
+	`mime-decode-field-body'; 'native -> 'plain.
+
+1999-03-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* eword-encode.el (TopLevel): Require 'cl when compiling.
+	(eword-encode-rword-list): Suppress insertion of extra spaces.
+	(eword-encode-msg-id-to-rword-list): Treat surrounding angle
+	brackets atomically.
+	([tm-ja:4244] by Kazuhiro Ohta <ohta@ele.cst.nihon-u.ac.jp>)
+
 1999-03-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-encode.el (eword-charset-encoding-alist): Add `tis-620'.
@@ -377,7 +394,7 @@
 
 1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
 
-	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): workaround 
+	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): workaround
 	for mule-2.3@19.34.
 
 1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
@@ -899,7 +916,7 @@
 
 	* Move variable `mel-encoding-module-alist' from mel.el to
 	mime-def.el.
-	
+
 	* mel.el (mel-find-function): Use function
 	`mel-find-function-from-obarray'.
 	Use `mel-define-backend' to define "7bit", "8bit" and "binary";
@@ -1068,7 +1085,7 @@
 	(mime-insert-encoded-file): Use `mel-define-method'; abolish
 	`base64-insert-encoded-file'.
 	(mime-write-decoded-region): Use `mel-define-method'; abolish
-	`base64-write-decoded-region'.	
+	`base64-write-decoded-region'.
 	- Move `base64-encoded-length' to mel.el.
 
 	* mel-dl.el (base64-encode-region): Define directly (abolish
@@ -2104,7 +2121,7 @@
 
 	* eword-decode.el (eword-decode-ignored-field-list): Add
 	`received'.
-	
+
 	* mel.el (mime-temp-directory): Use TMPDIR, TMP, or TEMP
 	environment variables.
 
