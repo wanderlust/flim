@@ -26,19 +26,18 @@
 
 (require 'mime)
 
-(defun mmbuffer-open-entity (location)
-  (mime-parse-buffer location)
-  )
+(mm-define-backend buffer)
 
-(defsubst mmbuffer-entity-point-min (entity)
-  (mime-entity-header-start-internal entity)
-  )
+(mm-define-method open-entity ((nil buffer) location)
+  (mime-parse-buffer location))
 
-(defsubst mmbuffer-entity-point-max (entity)
-  (mime-entity-body-end-internal entity)
-  )
+(mm-define-method point-min ((entity buffer))
+  (mime-entity-header-start-internal entity))
 
-(defun mmbuffer-fetch-field (entity field-name)
+(mm-define-method point-max ((entity buffer))
+  (mime-entity-body-end-internal entity))
+
+(mm-define-method fetch-field ((entity buffer) field-name)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (save-restriction
@@ -47,9 +46,9 @@
       (std11-fetch-field field-name)
       )))
 
-(defun mmbuffer-cooked-p () nil)
+(mm-define-method cooked-p ((entity buffer)) nil)
 
-(defun mmbuffer-entity-content (entity)
+(mm-define-method entity-content ((entity buffer))
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (mime-decode-string
@@ -57,7 +56,7 @@
 		       (mime-entity-body-end-internal entity))
      (mime-entity-encoding entity))))
 
-(defun mmbuffer-write-entity-content (entity filename)
+(mm-define-method write-entity-content ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (mime-write-decoded-region (mime-entity-body-start-internal entity)
@@ -66,22 +65,25 @@
 			       (or (mime-entity-encoding entity) "7bit"))
     ))
 
-(defun mmbuffer-write-entity (entity filename)
+(mm-define-method write-entity ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
-    (write-region-as-binary (mmbuffer-entity-point-min entity)
-			    (mmbuffer-entity-point-max entity) filename)
+    (write-region-as-binary (mime-entity-header-start-internal entity)
+			    (mime-entity-body-end-internal entity)
+			    filename)
     ))
 
-(defun mmbuffer-write-entity-body (entity filename)
+(mm-define-method write-entity-body ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (write-region-as-binary (mime-entity-body-start-internal entity)
-			    (mime-entity-body-end-internal entity) filename)
+			    (mime-entity-body-end-internal entity)
+			    filename)
     ))
 
-(defun mmbuffer-insert-decoded-header (entity &optional invisible-fields
-					      visible-fields)
+(mm-define-method insert-decoded-header ((entity buffer)
+					 &optional invisible-fields
+					 visible-fields)
   (save-restriction
     (narrow-to-region (point)(point))
     (let ((the-buf (current-buffer))
