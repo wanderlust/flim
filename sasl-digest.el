@@ -35,12 +35,11 @@
 (require 'sasl)
 (require 'hmac-md5)
 
-(defvar sasl-digest-md5-challenge nil)
 (defvar sasl-digest-md5-nonce-count 1)
 (defvar sasl-digest-md5-unique-id-function
   sasl-unique-id-function)
 
-(defvar sasl-digest-md5-parse-digest-challenge-syntax-table
+(defvar sasl-digest-md5-syntax-table
   (let ((table (make-syntax-table)))
     (modify-syntax-entry ?= "." table)
     (modify-syntax-entry ?, "." table)
@@ -52,118 +51,107 @@
     sasl-digest-md5-response
     ignore))				;""
 
-;;; @ low level functions
-;;;
-;;; Examples in `draft-leach-digest-sasl-05.txt'.
-;;;
-;;; (sasl-digest-md5-parse-digest-challenge 
-;;;   "realm=\"elwood.innosoft.com\",nonce=\"OA6MG9tEQGm2hh\",qop=\"auth\",algorithm=md5-sess,charset=utf-8")
-;;; => (realm "elwood.innosoft.com" nonce "OA6MG9tEQGm2hh" qop "auth" algorithm md5-sess charset utf-8)
-
-;;; (sasl-digest-md5-build-response-value
-;;;   "chris" "elwood.innosoft.com" "secret" "OA6MG9tEQGm2hh"
-;;;   "OA6MHXh6VqTrRk" 1 "imap/elwood.innosoft.com" "auth")
-;;; => "d388dad90d4bbd760a152321f2143af7"
-
-(defun sasl-digest-md5-parse-digest-challenge (digest-challenge)
-  "Return a property list parsed DIGEST-CHALLENGE.
+(defun sasl-digest-md5-parse-string (string)
+  "Parse STRING and return a property list.
 The value is a cons cell of the form \(realm nonce qop-options stale maxbuf
 charset algorithm cipher-opts auth-param)."
-  (save-excursion
-    (with-temp-buffer
-      (set-syntax-table sasl-digest-md5-parse-digest-challenge-syntax-table)
-      (insert digest-challenge)
+  (with-temp-buffer
+    (set-syntax-table sasl-digest-md5-syntax-table)
+    (save-excursion
+      (insert string)
       (goto-char (point-min))
       (insert "(")
       (while (progn (forward-sexp) (not (eobp)))
 	(delete-char 1)
 	(insert " "))
       (insert ")")
-      (condition-case nil
-	  (setplist 'sasl-digest-md5-challenge (read (point-min-marker)))
-	(end-of-file
-	 (error "Parse error in digest-challenge."))))))
+      (read (point-min-marker)))))
 
 (defun sasl-digest-md5-digest-uri (serv-type host &optional serv-name)
   (concat serv-type "/" host
 	  (if (and serv-name
-		   (null (string= host serv-name)))
+		   (not (string= host serv-name)))
 	      (concat "/" serv-name))))
 
 (defun sasl-digest-md5-cnonce ()
   (let ((sasl-unique-id-function sasl-digest-md5-unique-id-function))
     (sasl-unique-id)))
 
-(defmacro sasl-digest-md5-challenge (prop)
-  (list 'get ''sasl-digest-md5-challenge prop))
-
-(defmacro sasl-digest-md5-build-response-value-1
-  (username realm passwd nonce cnonce nonce-count digest-uri qop)
-  `(encode-hex-string
-    (md5-binary
-     (concat
-      (encode-hex-string
-       (md5-binary (concat (md5-binary 
-			    (concat ,username 
-				    ":" ,realm
-				    ":" ,passwd))
-			   ":" ,nonce
-			   ":" ,cnonce
-			   (let ((authzid (sasl-digest-md5-challenge 'authzid)))
-			     (if authzid (concat ":" authzid) nil)))))
-      ":" ,nonce
-      ":" (format "%08x" ,nonce-count) ":" ,cnonce ":" ,qop ":"
-      (encode-hex-string
-       (md5-binary
-	(concat "AUTHENTICATE:" ,digest-uri
-		(if (string-equal "auth-int" ,qop)
-		    ":00000000000000000000000000000000"
-		  nil))))))))
-
-(defun sasl-digest-md5-build-response-value
-  (username realm passwd nonce cnonce nonce-count digest-uri
-	    &optional charset qop maxbuf cipher authzid)
-  (concat
-   "username=\"" username "\","
-   "realm=\"" realm "\","
-   "nonce=\"" nonce "\","
-   (format "nc=%08x," nonce-count)
-   "cnonce=\"" cnonce "\","
-   "digest-uri=\"" digest-uri "\","
-   "response=" 
-   (sasl-digest-md5-build-response-value-1
-    username realm passwd nonce cnonce nonce-count digest-uri
-    (or qop "auth"))
-   ","
-   (mapconcat 
-    #'identity
-    (delq nil 
-	  (mapcar (lambda (prop)
-		    (if (sasl-digest-md5-challenge prop)
-			(format "%s=%s"
-				prop (sasl-digest-md5-challenge prop))))
-		  '(charset qop maxbuf cipher authzid)))
-    ",")))
-
-(defun sasl-digest-md5-response (client step)
-  (sasl-digest-md5-parse-digest-challenge (sasl-step-data step))
+(defun sasl-digest-md5-response-value (username
+				       realm
+				       nonce
+				       cnonce
+				       nonce-count
+				       qop
+				       digest-uri
+				       authzid)
   (let ((passphrase
 	 (sasl-read-passphrase
 	  (format "DIGEST-MD5 passphrase for %s: "
-		  (sasl-client-name client)))))
+		  username))))
     (unwind-protect
-	(sasl-digest-md5-build-response-value
-	 (sasl-client-name client)
-	 (or (sasl-client-property client 'realm)
-	     (sasl-digest-md5-challenge 'realm))	;need to check
-	 passphrase
-	 (sasl-digest-md5-challenge 'nonce)
-	 (sasl-digest-md5-cnonce)
-	 sasl-digest-md5-nonce-count
-	 (sasl-digest-md5-digest-uri
-	  (sasl-client-service client)
-	  (sasl-client-server client)))
+	(encode-hex-string
+	 (md5-binary
+	  (concat
+	   (encode-hex-string
+	    (md5-binary (concat (md5-binary 
+				 (concat username ":" realm ":" passphrase))
+				":" nonce ":" cnonce
+				(if authzid 
+				    (concat ":" authzid)))))
+	   ":" nonce
+	   ":" (format "%08x" nonce-count) ":" cnonce ":" qop ":"
+	   (encode-hex-string
+	    (md5-binary
+	     (concat "AUTHENTICATE:" digest-uri
+		     (if (string-equal "auth-int" qop)
+			 ":00000000000000000000000000000000")))))))
       (fillarray passphrase 0))))
+
+(defun sasl-digest-md5-response (client step)
+  (let* ((plist
+	  (sasl-digest-md5-parse-string (sasl-step-data step)))
+	 (realm
+	  (or (sasl-client-property client 'realm)
+	      (plist-get plist 'realm))) ;need to check
+	 (nonce-count
+	  (or (sasl-client-property client 'nonce-count)
+	       sasl-digest-md5-nonce-count))
+	 (digest-uri
+	  (sasl-digest-md5-digest-uri
+	   (sasl-client-service client)(sasl-client-server client)))
+	 (cnonce
+	  (or (sasl-client-property client 'cnonce)
+	      (sasl-digest-md5-cnonce))))
+    (sasl-client-set-property client 'nonce-count (1+ nonce-count))
+    (concat
+     "username=\"" (sasl-client-name client) "\","
+     "realm=\"" realm "\","
+     "nonce=\"" (plist-get plist 'nonce) "\","
+     "cnonce=\"" cnonce "\","
+     (format "nc=%08x," nonce-count)
+     "digest-uri=\"" digest-uri "\","
+     "response=\""
+     (sasl-digest-md5-response-value
+      (sasl-client-name client)
+      realm
+      (plist-get plist 'nonce)
+      cnonce
+      nonce-count
+      (or (plist-get plist 'qop)
+	  "auth")
+      digest-uri
+      (plist-get plist 'authzid))
+     "\","
+     (mapconcat 
+      #'identity
+      (delq nil 
+	    (mapcar (lambda (prop)
+		      (let ((value (sasl-client-property client prop)))
+			(if value
+			    (format "%s=%s" prop value))))
+		    '(maxbuf charset cipher authzid)))
+      ","))))
 
 (put 'sasl-digest 'sasl-mechanism
      (sasl-make-mechanism "DIGEST-MD5" sasl-digest-md5-steps))

@@ -1,5 +1,20 @@
 2000-11-10   Daiki Ueno  <ueno@unixuser.org>
 
+	* sasl-digest.el (sasl-digest-md5-challenge): Abolish.
+	(sasl-digest-md5-syntax-table): Rename from
+	`sasl-digest-md5-parse-digest-challenge-syntax-table'.
+	(sasl-digest-md5-parse-string): Rename from
+	`sasl-digest-md5-parse-digest-challenge'; only return a property list.
+	(sasl-digest-md5-challenge): Abolish.
+	(sasl-digest-md5-build-response-value-1): Abolish.
+	(sasl-digest-md5-response-value): Define as function.
+	(sasl-digest-md5-response): Rewrite.
+
+	* tests/test-sasl.el (test-sasl-digest-md5-imap): New testcase.
+	(test-sasl-digest-md5-acap): New testcase.
+
+2000-11-10   Daiki Ueno  <ueno@unixuser.org>
+
 	* lunit.el (lunit-make-test-suite-from-class): New function.
 	(lunit-class): Abolish.
 	(lunit-test-results-buffer): Abolish.
