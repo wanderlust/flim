@@ -269,13 +269,15 @@ Return a property list, which is a list of the form
 \(PARAMETER-NAME1 VALUE1 PARAMETER-NAME2 VALUE2...)."
   (let (params attribute)
     (while (and tokens
-		(equal (car tokens) '(tspecials . ";"))
+		(eq (car (car tokens)) 'tspecials)
+		(string= (cdr (car tokens)) ";")
 		(setq tokens (cdr tokens))
 		(eq (car (car tokens)) 'mime-token)
 		(progn
 		  (setq attribute (cdr (car tokens)))
 		  (setq tokens (cdr tokens)))
-		(equal (car tokens) '(tspecials . "="))
+		(eq (car (car tokens)) 'tspecials)
+		(string= (cdr (car tokens)) "=")
 		(setq tokens (cdr tokens))
 		(memq (car (car tokens)) '(mime-token quoted-string)))
       (setq params (cons (if (eq (car (car tokens)) 'quoted-string)
@@ -299,7 +301,8 @@ and `mime-content-type-parameter' to deal with it."
     (when (eq (car (car tokens)) 'mime-token)
       (let ((primary-type (cdr (car tokens))))
 	(setq tokens (cdr tokens))
-	(when (and (equal (car tokens) '(tspecials . "/"))
+	(when (and (eq (car (car tokens)) 'tspecials)
+		   (string= (cdr (car tokens)) "/")
 		   (setq tokens (cdr tokens))
 		   (eq (car (car tokens)) 'mime-token))
 	  (make-mime-content-type
