@@ -8,10 +8,10 @@
 	access-type=anon-ftp;
 	site="ftp.etl.go.jp";
 	directory="/pub/mule/flim/flim-API";
-	name="flim-VERSION.tar.gz";
+	name="PACKAGE-VERSION.tar.gz";
 	mode=image]]
 Content-Type: application/octet-stream;
-	name="flim-VERSION.tar.gz";
+	name="PACKAGE-VERSION.tar.gz";
 	type=tar;
 	conversions=gzip
 --}-<<alternative>>
