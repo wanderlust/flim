@@ -1,3 +1,15 @@
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl-scram.el: Add comment.
+	(sasl-scram-md5-steps): New variable.
+	(sasl-scram-md5-make-client-msg-1): Add optional nonce.
+	(sasl-scram-md5-make-client-msg-2): New function.
+	(sasl-scram-md5-make-server-msg-2): Rewrite.
+	(sasl-scram-md5-response-1): New function.
+	(sasl-scram-md5-response-2): New function.
+	(sasl-scram-md5-authenticate-server): New function.
+	* test/test-sasl.el(test-sasl-scram-md5-imap): New function.
+
 2001-02-16  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl-scram.el: rename from scram-md5.el

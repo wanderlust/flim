@@ -36,6 +36,25 @@
 ;;
 ;; (sasl-scram-md5-make-security-info nil t 0)
 ;; => "^A^@^@^@"
+;;
+;; (base64-encode-string
+;;  (sasl-scram-md5-make-client-msg-2
+;;   (base64-decode-string "dGVzdHNhbHQBAAAAaW1hcEBlbGVhbm9yLmlubm9zb2Z0LmNvbQBqaGNOWmxSdVBiemlGcCt2TFYrTkN3")
+;;   (base64-decode-string "AGNocmlzADx0NG40UGFiOUhCMEFtL1FMWEI3MmVnQGVsZWFub3IuaW5ub3NvZnQuY29tPg==")
+;;   (sasl-scram-md5-make-salted-pass
+;;    "secret stuff" "testsalt")
+;;   (sasl-scram-md5-make-security-info nil t 0)))
+;; => "AQAAAMg9jU8CeB4KOfk7sUhSQPs="
+;;
+;; (base64-encode-string
+;;  (sasl-scram-md5-make-server-msg-2
+;;   (base64-decode-string "dGVzdHNhbHQBAAAAaW1hcEBlbGVhbm9yLmlubm9zb2Z0LmNvbQBqaGNOWmxSdVBiemlGcCt2TFYrTkN3")
+;;   (base64-decode-string "AGNocmlzADx0NG40UGFiOUhCMEFtL1FMWEI3MmVnQGVsZWFub3IuaW5ub3NvZnQuY29tPg==")
+;;   (sasl-scram-md5-make-security-info nil t 0)
+;;   "testsalt"
+;;   (sasl-scram-md5-make-salted-pass
+;;    "secret stuff" "testsalt")))
+;; => "U0odqYw3B7XIIW0oSz65OQ=="
 
 ;;; Code:
 
@@ -44,6 +63,12 @@
 
 (defvar sasl-scram-md5-unique-id-function
   sasl-unique-id-function)
+
+(defconst sasl-scram-md5-steps
+  '(ignore				;no initial response
+    sasl-scram-md5-response-1
+    sasl-scram-md5-response-2
+    sasl-scram-md5-authenticate-server))
 
 (defmacro sasl-scram-md5-security-info-no-security-layer (security-info)
   `(eq (logand (aref ,security-info 0) 1) 1))
@@ -56,7 +81,7 @@
 	(aref ssecinfo 3))))
 
 (defun sasl-scram-md5-make-security-info (integrity-protection-layer
-				 no-security-layer buffer-size)
+					  no-security-layer buffer-size)
   (let ((csecinfo (make-string 4 0)))
     (when integrity-protection-layer
       (aset csecinfo 0 2))
@@ -90,14 +115,12 @@
       (setq pos (1+ pos)))
     dst))
 
-(defun sasl-scram-md5-make-client-msg-1 (authenticate-id &optional authorize-id)
+(defun sasl-scram-md5-make-client-msg-1 (authenticate-id &optional authorize-id nonce)
   "Make an initial client message from AUTHENTICATE-ID and AUTHORIZE-ID.
 If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
-  (let (nonce)
-    (unwind-protect
-	(concat authorize-id "\0" authenticate-id "\0" 
-		(setq nonce (sasl-scram-md5-make-unique-nonce)))
-      (fillarray nonce 0))))
+  (concat authorize-id "\0" authenticate-id "\0"
+	  (or nonce
+	      (sasl-scram-md5-make-unique-nonce))))
 
 (defun sasl-scram-md5-parse-server-msg-1 (server-msg-1)
   "Parse SERVER-MSG-1 and return a list of (SALT SECURITY-INFO SERVICE-ID)."
@@ -118,9 +141,9 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
   (md5-binary client-key))
 
 (defun sasl-scram-md5-make-shared-key (server-msg-1
-				  client-msg-1
-				  client-security-info
-				  client-verifier)
+				       client-msg-1
+				       client-security-info
+				       client-verifier)
   (let (buff)
     (unwind-protect
 	(hmac-md5
@@ -132,16 +155,42 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
 (defun sasl-scram-md5-make-client-proof (client-key shared-key)
   (sasl-scram-md5-xor-string client-key shared-key))
 
-(defun sasl-scram-md5-make-client-msg-2 (client-security-info client-proof)
-  (concat client-security-info client-proof))
+(defun sasl-scram-md5-make-client-msg-2 (server-msg-1
+					 client-msg-1
+					 salted-pass
+					 client-security-info)
+  (let (client-proof client-key shared-key client-verifier)
+    (setq client-key
+          (sasl-scram-md5-make-client-key salted-pass))
+    (setq client-verifier
+          (sasl-scram-md5-make-client-verifier client-key))
+    (setq shared-key
+          (unwind-protect
+              (sasl-scram-md5-make-shared-key
+               server-msg-1
+               client-msg-1
+               client-security-info
+               client-verifier)
+            (fillarray client-verifier 0)))
+    (setq client-proof
+          (unwind-protect
+              (sasl-scram-md5-make-client-proof
+               client-key shared-key)
+            (fillarray client-key 0)
+            (fillarray shared-key 0)))
+    (unwind-protect
+        (concat
+         client-security-info
+         client-proof)
+      (fillarray client-proof 0))))
 
 (defun sasl-scram-md5-make-server-msg-2 (server-msg-1
-				    client-msg-1
-				    client-security-info
-				    salt salted-pass)
-  (let (buff server-salt)
-    (setq server-salt
-	  (hmac-md5 salt salted-pass))
+					 client-msg-1
+					 client-security-info
+					 salt salted-pass)
+  (let ((server-salt
+	(hmac-md5 salt salted-pass))
+	buff)
     (unwind-protect
 	(hmac-md5
 	 (setq buff
@@ -152,6 +201,57 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
 	 server-salt)
       (fillarray server-salt 0)
       (fillarray buff 0))))
+
+(defun sasl-scram-md5-response-1 (client step)
+  (sasl-client-set-property
+   client 'client-msg-1
+   (sasl-scram-md5-make-client-msg-1
+    (sasl-client-name client)
+    (sasl-client-property client 'authorize-id)
+    (sasl-client-property client 'nonce))))
+
+(defun sasl-scram-md5-response-2 (client step)
+  (sasl-client-set-property
+      client 'server-msg-1
+      (sasl-step-data step))
+  (sasl-client-set-property
+      client 'salted-pass
+      (sasl-scram-md5-make-salted-pass
+       (sasl-read-passphrase
+	(format "SCRAM-MD5 passphrase for %s: "
+		(sasl-client-name client)))
+       (substring
+	(sasl-client-property client 'server-msg-1) 0 8)))
+  (sasl-client-set-property
+   client 'client-msg-2
+   (sasl-scram-md5-make-client-msg-2
+    (sasl-client-property client 'server-msg-1)
+    (sasl-client-property client 'client-msg-1)
+    (sasl-client-property client 'salted-pass)
+    (or (sasl-client-property client 'client-security-info)
+	(sasl-scram-md5-make-security-info nil t 0)))))
+
+(defun sasl-scram-md5-authenticate-server (client step)
+  (let ((server-msg-2
+	 (sasl-client-set-property
+	  client 'server-msg-2
+	  (sasl-step-data step)))
+	(server-msg-1
+	 (sasl-client-property client 'server-msg-1)))
+    (if (string= server-msg-2
+		     (sasl-scram-md5-make-server-msg-2
+		      server-msg-1
+		      (sasl-client-property client 'client-msg-1)
+		      (or (sasl-client-property client 'client-security-info)
+			  (sasl-scram-md5-make-security-info nil t 0))
+		      (car
+		       (sasl-scram-md5-parse-server-msg-1 server-msg-1))
+		      (sasl-client-property client 'salted-pass)))
+	" "
+      (sasl-error "SCRAM-MD5:  authenticate server failed."))))
+
+(put 'sasl-scram 'sasl-mechanism
+     (sasl-make-mechanism "SCRAM-MD5" sasl-scram-md5-steps))
 
 (provide 'sasl-scram)
 

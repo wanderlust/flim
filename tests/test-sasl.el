@@ -58,3 +58,28 @@ algorithm=md5-sess,charset=utf-8")
     (lunit-assert
      (string=
       (plist-get response 'response) "6084c6db3fede7352c551284490fd0fc"))))
+
+(luna-define-method test-sasl-scram-md5-imap ((case test-sasl))
+  (let* ((sasl-mechanisms '("SCRAM-MD5"))
+	 (mechanism
+	  (sasl-find-mechanism '("SCRAM-MD5")))
+	 (client
+	  (sasl-make-client mechanism "chris" "imap" "eleanor.innosoft.com"))
+	 (sasl-read-passphrase
+	  #'(lambda (prompt)
+	      "secret stuff"))
+	 step
+	 response)
+    (sasl-client-set-property client 'nonce
+			      "<t4n4Pab9HB0Am/QLXB72eg@eleanor.innosoft.com>")
+    (setq step (sasl-next-step client nil))
+    (sasl-step-set-data step "")
+    (setq step (sasl-next-step client step))
+    (sasl-step-set-data
+     step
+     (base64-decode-string
+      "dGVzdHNhbHQBAAAAaW1hcEBlbGVhbm9yLmlubm9zb2Z0LmNvbQBqaGNOWmxSdVBiemlGcCt2TFYrTkN3"))
+    (setq step (sasl-next-step client step))
+    (lunit-assert
+     (string= (sasl-step-data step)
+           (base64-decode-string "AQAAAMg9jU8CeB4KOfk7sUhSQPs=")))))
