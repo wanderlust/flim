@@ -30,11 +30,11 @@
   (mime-parse-buffer location)
   )
 
-(defun mmbuffer-entity-point-min (entity)
+(defsubst mmbuffer-entity-point-min (entity)
   (mime-entity-header-start-internal entity)
   )
 
-(defun mmbuffer-entity-point-max (entity)
+(defsubst mmbuffer-entity-point-max (entity)
   (mime-entity-body-end-internal entity)
   )
 
@@ -68,16 +68,16 @@
 
 (defun mmbuffer-write-entity (entity filename)
   (save-excursion
-    (set-buffer (mime-entity-buffer entity))
-    (write-region-as-binary (mime-entity-point-min entity)
-			    (mime-entity-point-max entity) filename)
+    (set-buffer (mime-entity-buffer-internal entity))
+    (write-region-as-binary (mmbuffer-entity-point-min entity)
+			    (mmbuffer-entity-point-max entity) filename)
     ))
 
 (defun mmbuffer-write-entity-body (entity filename)
   (save-excursion
-    (set-buffer (mime-entity-buffer entity))
-    (write-region-as-binary (mime-entity-body-start entity)
-			    (mime-entity-body-end entity) filename)
+    (set-buffer (mime-entity-buffer-internal entity))
+    (write-region-as-binary (mime-entity-body-start-internal entity)
+			    (mime-entity-body-end-internal entity) filename)
     ))
 
 (defun mmbuffer-insert-decoded-header (entity &optional invisible-fields
@@ -85,12 +85,12 @@
   (save-restriction
     (narrow-to-region (point)(point))
     (let ((the-buf (current-buffer))
-	  (src-buf (mime-entity-buffer entity))
-	  (h-end (mime-entity-header-end entity))
+	  (src-buf (mime-entity-buffer-internal entity))
+	  (h-end (mime-entity-header-end-internal entity))
 	  beg p end field-name len field)
       (save-excursion
 	(set-buffer src-buf)
-	(goto-char (mime-entity-header-start entity))
+	(goto-char (mime-entity-header-start-internal entity))
 	(save-restriction
 	  (narrow-to-region (point) h-end)
 	  (while (re-search-forward std11-field-head-regexp nil t)
