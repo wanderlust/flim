@@ -1,3 +1,7 @@
+1999-05-24  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* mel-b-ccl.el, mel-q-ccl.el: Sync up with doodle-1.12.5.
+
 1999-05-24  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* eword-encode.el (ew-space-process): Renamed from

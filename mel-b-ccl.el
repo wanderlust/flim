@@ -288,9 +288,10 @@ abcdefghijklmnopqrstuvwxyz\
   (&optional quantums-per-line output-crlf terminate-with-newline)
   `(2
     ((r3 = 0)
+     (r2 = 0)
+     (read r1)
      (loop
-      (r2 = 0)
-      (read-branch
+      (branch
        r1
        ,@(mapcar
           (lambda (r1)
@@ -331,6 +332,8 @@ abcdefghijklmnopqrstuvwxyz\
                      (nth r1 mel-ccl-64-to-256-table))
                    mel-ccl-64-table)))
       (r3 += 1)
+      (r2 = 0)
+      (read r1)
       ,@(when quantums-per-line
 	  `((if (r3 == ,quantums-per-line)
 		((write ,(if output-crlf "\r\n" "\n"))
@@ -398,14 +401,18 @@ abcdefghijklmnopqrstuvwxyz\
 
 (unless-broken ccl-execute-eof-block-on-decoding-some
 
-  (defun base64-ccl-encode-string (string)
+  (defun base64-ccl-encode-string (string &optional no-line-break)
     "Encode STRING with base64 encoding."
-    (decode-coding-string string 'mel-ccl-base64-lf-rev))
+    (if no-line-break
+	(decode-coding-string string 'mel-ccl-b-rev)
+      (decode-coding-string string 'mel-ccl-base64-lf-rev)))
 
-  (defun base64-ccl-encode-region (start end)
+  (defun base64-ccl-encode-region (start end &optional no-line-break)
     "Encode region from START to END with base64 encoding."
     (interactive "*r")
-    (decode-coding-region start end 'mel-ccl-base64-lf-rev))
+    (if no-line-break
+	(decode-coding-region start end 'mel-ccl-b-rev)
+      (decode-coding-region start end 'mel-ccl-base64-lf-rev)))
 
   (defun base64-ccl-insert-encoded-file (filename)
     "Encode contents of file FILENAME to base64, and insert the result."
