@@ -1,4 +1,4 @@
-;;; mel-dl.el: Base64 encoder/decoder using DL module
+;;; mel-b-dl.el: Base64 encoder/decoder using DL module
 
 ;; Copyright (C) 1998 Free Software Foundation, Inc.
 
@@ -35,10 +35,18 @@
 
 (dynamic-call "emacs_base64_init" base64-dl-handle)
 
-(defalias 'base64-dl-encode-string 'encode-base64-string)
-(defalias 'base64-dl-decode-string 'decode-base64-string)
 
-(defun base64-dl-encode-region (start end)
+;;; @ for string
+;;;
+
+(defalias 'base64-encode-string 'encode-base64-string)
+(defalias 'base64-decode-string 'decode-base64-string)
+
+
+;;; @ for region
+;;;
+
+(defun base64-encode-region (start end)
   "Encode current region by base64.
 START and END are buffer positions."
   (interactive "r")
@@ -50,7 +58,7 @@ START and END are buffer positions."
       (insert "\n"))
   )
 
-(defun base64-dl-decode-region (start end)
+(defun base64-decode-region (start end)
   "Decode current region by base64.
 START and END are buffer positions."
   (interactive "r")
@@ -61,23 +69,9 @@ START and END are buffer positions."
       (error (message (nth 1 err)))
       )))
 
-(defalias 'base64-encode-string 'encode-base64-string)
-(defalias 'base64-decode-string 'decode-base64-string)
-(defalias 'base64-encode-region 'base64-dl-encode-region)
-(defalias 'base64-decode-region 'base64-dl-decode-region)
 
-
-;;; @ base64 encoder/decoder for file
+;;; @ for file
 ;;;
-
-(defvar base64-external-encoder '("mmencode")
-  "*list of base64 encoder program name and its arguments.")
-
-(defvar base64-external-decoder '("mmencode" "-u")
-  "*list of base64 decoder program name and its arguments.")
-
-(defvar base64-external-decoder-option-to-specify-file '("-o")
-  "*list of options of base64 decoder program to specify file.")
 
 (defun base64-insert-encoded-file (filename)
   "Encode contents of file FILENAME to base64, and insert the result.
@@ -85,40 +79,29 @@ It calls external base64 encoder specified by
 `base64-external-encoder'.  So you must install the program (maybe
 mmencode included in metamail or XEmacs package)."
   (interactive (list (read-file-name "Insert encoded file: ")))
-  (apply (function call-process) (car base64-external-encoder)
-	 filename t nil (cdr base64-external-encoder))
+  (insert (encode-base64-string
+	   (with-temp-buffer
+	     (insert-file-contents-as-binary filename)
+	     (buffer-string))))
+  (or (bolp)
+      (insert "\n"))
   )
 
 (defun base64-write-decoded-region (start end filename)
   "Decode and write current region encoded by base64 into FILENAME.
 START and END are buffer positions."
-  (interactive
-   (list (region-beginning) (region-end)
-	 (read-file-name "Write decoded region to file: ")))
-  (as-binary-process
-   (apply (function call-process-region)
-	  start end (car base64-external-decoder)
-	  nil nil nil
-	  (append (cdr base64-external-decoder)
-		  base64-external-decoder-option-to-specify-file
-		  (list filename))
-	  )))
-
-
-;;; @ etc
-;;;
-
-(defun base64-encoded-length (string)
-  (let ((len (length string)))
-    (* (+ (/ len 3)
-	  (if (= (mod len 3) 0) 0 1)
-	  ) 4)
-    ))
+  (interactive (list (region-beginning) (region-end)
+		     (read-file-name "Write decoded region to file: ")))
+  (let ((str (buffer-substring start end)))
+    (with-temp-buffer
+      (insert (decode-base64-string str))
+      (write-region-as-binary (point-min) (point-max) filename)
+      )))
 
 
 ;;; @ end
 ;;;
 
-(provide 'mel-dl)
+(provide 'mel-b-dl)
 
-;;; mel-dl.el ends here.
+;;; mel-b-dl.el ends here.
