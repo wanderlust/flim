@@ -245,19 +245,30 @@ If MESSAGE is specified, it is regarded as root entity."
 	)))
 
 (defvar mime-field-parser-alist
-  '((From		. std11-parse-addresses-string)
-    (Resent-From	. std11-parse-addresses-string)
-    (To			. std11-parse-addresses-string)
-    (Resent-To		. std11-parse-addresses-string)
-    (Cc			. std11-parse-addresses-string)
-    (Resent-Cc		. std11-parse-addresses-string)
-    (Bcc		. std11-parse-addresses-string)
-    (Resent-Bcc		. std11-parse-addresses-string)
-    (Reply-To 		. std11-parse-addresses-string)
-    (Resent-Reply-To	. std11-parse-addresses-string)
+  '((Return-Path	. std11-parse-route-addr)
+    
+    (Reply-To 		. std11-parse-addresses)
+    
+    (Sender		. std11-parse-mailbox)
+    (From		. std11-parse-addresses)
 
-    (Sender		. std11-parse-address-string)
-    (Resent-Sender	. std11-parse-address-string)
+    (Resent-Reply-To	. std11-parse-addresses)
+    
+    (Resent-Sender	. std11-parse-mailbox)
+    (Resent-From	. std11-parse-addresses)
+
+    (To			. std11-parse-addresses)
+    (Resent-To		. std11-parse-addresses)
+    (Cc			. std11-parse-addresses)
+    (Resent-Cc		. std11-parse-addresses)
+    (Bcc		. std11-parse-addresses)
+    (Resent-Bcc		. std11-parse-addresses)
+    
+    (Message-Id		. std11-parse-msg-id)
+    (Recent-Message-Id	. std11-parse-msg-id)
+    
+    (In-Reply-To	. std11-parse-msg-ids)
+    (References		. std11-parse-msg-ids)
     ))
 
 (defun mime-read-field (field-name &optional entity)
@@ -285,7 +296,8 @@ If MESSAGE is specified, it is regarded as root entity."
 			 (cdr (assq field-name mime-field-parser-alist)))
 		   (setq field
 			 (if parser
-			     (funcall parser field-body)
+			     (funcall parser
+				      (eword-lexical-analyze field-body))
 			   (mime-decode-field-body
 			    field-body field-name 'native)
 			   ))
