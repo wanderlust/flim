@@ -289,6 +289,48 @@ Each field name must be symbol."
   :group 'eword-decode
   :type '(repeat symbol))
 
+(defun eword-decode-field-body
+  (field-body field-name &optional unfolded max-column)
+  "Decode FIELD-BODY as FIELD-NAME, and return the result.
+
+If UNFOLDED is non-nil, it is assumed that FIELD-BODY is
+already unfolded.
+
+If MAX-COLUMN is non-nil, the result is folded with MAX-COLUMN
+or `fill-column' if MAX-COLUMN is t.
+Otherwise, the result is unfolded.
+
+MIME encoded-word in FIELD-BODY is recognized according to
+`eword-decode-ignored-field-list',
+`eword-decode-structured-field-list' and FIELD-NAME.
+
+Non MIME encoded-word part in FILED-BODY is decoded with
+`default-mime-charset'."
+  (when (eq max-column t)
+    (setq max-column fill-column))
+  (let ((field-name-symbol (if (symbolp field-name)
+                               field-name
+                             (intern (capitalize field-name))))
+        (len (1+ (string-width field-name))))
+    (when (symbolp field-name)
+      (setq field-name (symbol-name field-name)))
+    (if (memq field-name-symbol eword-decode-ignored-field-list)
+        ;; Don't decode
+        (if max-column
+            field-body
+          (std11-unfold-string field-body))
+      (if (memq field-name-symbol eword-decode-structured-field-list)
+          ;; Decode as structured field
+          (if max-column
+              (eword-decode-and-fold-structured-field
+               field-body len max-column t)
+            (eword-decode-and-unfold-structured-field field-body))
+        ;; Decode as unstructured field
+        (if max-column
+            (eword-decode-unstructured-field-body field-body len)
+          (eword-decode-unstructured-field-body
+           (std11-unfold-string field-body) len))))))
+
 (defun eword-decode-header (&optional code-conversion separator)
   "Decode MIME encoded-words in header fields.
 If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
