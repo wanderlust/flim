@@ -58,6 +58,7 @@
 ;;; @ Content-Type
 ;;;
 
+;;;###autoload
 (defun mime-parse-Content-Type (string)
   "Parse STRING as field-body of Content-Type field.
 Return value is
@@ -81,6 +82,7 @@ are string."
 				(nreverse dest))
 	)))
 
+;;;###autoload
 (defun mime-read-Content-Type ()
   "Read field-body of Content-Type field from current-buffer,
 and return parsed it.  Format of return value is as same as
@@ -96,6 +98,7 @@ and return parsed it.  Format of return value is as same as
 
 (defconst mime-disposition-type-regexp mime-token-regexp)
 
+;;;###autoload
 (defun mime-parse-Content-Disposition (string)
   "Parse STRING as field-body of Content-Disposition field."
   (setq string (std11-unfold-string string))
@@ -112,6 +115,7 @@ and return parsed it.  Format of return value is as same as
 	      (nreverse dest))
 	)))
 
+;;;###autoload
 (defun mime-read-Content-Disposition ()
   "Read field-body of Content-Disposition field from current-buffer,
 and return parsed it."
@@ -119,22 +123,6 @@ and return parsed it."
     (if str
 	(mime-parse-Content-Disposition str)
       )))
-
-(defsubst mime-content-disposition-type (content-disposition)
-  "Return disposition-type of CONTENT-DISPOSITION."
-  (cdr (car content-disposition)))
-
-(defsubst mime-content-disposition-parameters (content-disposition)
-  "Return disposition-parameters of CONTENT-DISPOSITION."
-  (cdr content-disposition))
-
-(defsubst mime-content-disposition-parameter (content-disposition parameter)
-  "Return PARAMETER value of CONTENT-DISPOSITION."
-  (cdr (assoc parameter (cdr content-disposition))))
-
-(defsubst mime-content-disposition-filename (content-disposition)
-  "Return filename of CONTENT-DISPOSITION."
-  (mime-content-disposition-parameter content-disposition "filename"))
 
 
 ;;; @ Content-Transfer-Encoding
