@@ -567,62 +567,79 @@ don't define this value."
  
 (defun smtp-auth-scram-md5 (process)
   ;; now tesing
-  (let ((secure-word (copy-sequence smtp-authentication-passphrase))
-	server-msg-1 server-msg-2 client-msg-1
-	response)
+  (let (server-msg-1 server-msg-2 client-msg-1 salted-pass
+		     response secure-word)
     (smtp-send-command process "AUTH SCRAM-MD5")
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))
 	    (>= (car response) 400))
-	(progn
-	  (fillarray secure-word 0)
-	  (throw 'done (car (cdr response)))))
-    (smtp-send-command
-     process
-     (base64-encode-string
-      (setq client-msg-1
-	    (sasl-scram-md5-client-msg-1 user))) t)
+	(throw 'done (car (cdr response))))
+    (unwind-protect
+	(smtp-send-command
+	 process
+	 (setq secure-word
+	       (base64-encode-string
+		(setq client-msg-1
+		      (sasl-scram-md5-client-msg-1 
+		       smtp-authentication-user)))) t)
+      (fillarray secure-word 0))
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))
 	    (>= (car response) 400))
-	(progn 
-	  (fillarray secure-word 0)
+	(progn
 	  (fillarray client-msg-1 0)
 	  (throw 'done (car (cdr response)))))
+    (setq secure-word
+	  (unwind-protect
+	      (substring (car (cdr response)) 4)
+	    (fillarray (car (cdr response)) 0)))
     (setq server-msg-1
-	  (base64-decode-string
-	   (substring (car (cdr response)) 4)))
-    (smtp-send-command
-     process
-     (base64-encode-string
-      (sasl-scram-md5-client-msg-2
-       server-msg-1
-       client-msg-1
-       secure-word)) t)
+	  (unwind-protect
+	      (base64-decode-string secure-word)
+	    (fillarray secure-word 0)))
+    (setq secure-word
+	  (sasl-scram-md5-client-msg-2
+	   server-msg-1 client-msg-1 
+	   (setq salted-pass
+		 (scram-md5-make-salted-pass
+		  smtp-authentication-passphrase
+		  (car
+		   (scram-md5-parse-server-msg-1 server-msg-1))))))
+    (setq secure-word
+	  (unwind-protect
+	      (base64-encode-string secure-word)
+	    (fillarray secure-word 0)))
+    (unwind-protect
+	(smtp-send-command process secure-word t)
+      (fillarray secure-word 0))
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))
 	    (>= (car response) 400))
 	(progn 
-	  (fillarray secure-word 0)
+	  (fillarray salted-pass 0)
 	  (fillarray server-msg-1 0)
 	  (fillarray client-msg-1 0)
 	  (throw 'done (car (cdr response)))))
     (setq server-msg-2
-	  (base64-decode-string
-	   (substring (car (cdr response)) 4)))
-    (if (null (prog1
-		  (sasl-scram-md5-authenticate-server
-		   server-msg-1
-		   server-msg-2
-		   client-msg-1
-		   secure-word)
-		(fillarray secure-word 0)
-		(fillarray server-msg-1 0)
-		(fillarray server-msg-2 0)
-		(fillarray client-msg-1 0)))
+	  (unwind-protect
+	      (base64-decode-string
+	       (setq secure-word
+		     (substring (car (cdr response)) 4)))
+	    (fillarray secure-word 0)))
+    (if (null
+	 (unwind-protect
+	     (sasl-scram-md5-authenticate-server
+	      server-msg-1
+	      server-msg-2
+	      client-msg-1
+	      salted-pass)
+	   (fillarray salted-pass 0)
+	   (fillarray server-msg-1 0)
+	   (fillarray server-msg-2 0)
+	   (fillarray client-msg-1 0)))
 	(throw 'done nil))
     (smtp-send-command process "")
     (setq response (smtp-read-response process))

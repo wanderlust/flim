@@ -1,5 +1,17 @@
 1999-12-01  Kenichi OKADA <okada@opaopa.org>
 
+	* smtp.el (smtp-auth-scram-md5): Erase insecure sequences.
+	* sasl.el (sasl-scram-md5-client-msg-2): Erase insecure sequences.
+	(TopLevel): Add example for `scram-md5'.
+	* scram.el (scram-md5-make-server-msg-2): Rename from `scram-md5-authenticate-server'.
+	(scram-md5-make-salted-pass): Don't erase passphrase.
+	(scram-make-unique-nonce): Erase unique-id.
+	(scram-md5-make-client-msg-1): Erase nonce.
+	(scram-md5-make-shared-key): Erase buffer.
+	(scram-md5-make-server-msg-2): Ditto.
+
+1999-12-01  Kenichi OKADA <okada@opaopa.org>
+
 	* smtp.el (smtp-auth-scram-md5): New function.
 	(smtp-authentication-method-alist): Add `scram-md5'.
 

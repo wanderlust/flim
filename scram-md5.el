@@ -3,6 +3,7 @@
 ;; Copyright (C) 1999 Shuhei KOBAYASHI
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;;	Kenichi OKADA <okada@opaopa.org>
 ;; Keywords: SCRAM-MD5, HMAC-MD5, SASL, IMAP, POP, ACAP
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -30,8 +31,12 @@
 ;; base64-encode responses in IMAP4 AUTHENTICATE command.
 ;;
 ;; Passphrase should be longer than 16 bytes. (See RFC 2195)
+
+;; Examples.
 ;;
-;; TODO: Provide higher-level (SASL) APIs.
+;; (scram-make-security-info nil t 0)
+;; => "^A^@^@^@"
+;;
 
 ;;; Code:
 
@@ -64,8 +69,13 @@
 (defun scram-make-unique-nonce ()	; 8*OCTET, globally unique.
   ;; For example, concatenated string of process-identifier, system-clock,
   ;; sequence-number, random-number, and domain-name.
-  (concat "<" (sasl-unique-id) "@" (system-name) ">"))
-  
+  (let (id)
+    (unwind-protect
+	(concat "<" 
+		(setq id (sasl-unique-id))
+		"@" (system-name) ">")
+      (fillarray id 0))))
+
 (defun scram-xor-string (str1 str2)
   ;; (length str1) == (length str2) == (length dst) == 16 (in SCRAM-MD5)
   (let* ((len (length str1))
@@ -79,7 +89,11 @@
 (defun scram-md5-make-client-msg-1 (authenticate-id &optional authorize-id)
   "Make an initial client message from AUTHENTICATE-ID and AUTHORIZE-ID.
 If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
-  (concat authorize-id "\0" authenticate-id "\0" (scram-make-unique-nonce)))
+  (let (nonce)
+    (unwind-protect
+	(concat authorize-id "\0" authenticate-id "\0" 
+		(setq nonce (scram-make-unique-nonce)))
+      (fillarray nonce 0))))
 
 (defun scram-md5-parse-server-msg-1 (server-msg-1)
   "Parse SERVER-MSG-1 and return a list of (SALT SECURITY-INFO SERVICE-ID)."
@@ -91,11 +105,7 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
 		     12 (1- (match-end 0))))))
 
 (defun scram-md5-make-salted-pass (passphrase salt)
-  (unwind-protect
-      (hmac-md5 salt passphrase)
-    ;; immediately erase plaintext passphrase from memory.
-    ;;    (fillarray passphrase 0)))
-    ))
+  (hmac-md5 salt passphrase))
 
 (defun scram-md5-make-client-key (salted-pass)
   (md5-binary salted-pass))
@@ -107,8 +117,13 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
 				  client-msg-1
 				  client-security-info
 				  client-verifier)
-  (hmac-md5 (concat server-msg-1 client-msg-1 client-security-info)
-	    client-verifier))
+  (let (buff)
+    (unwind-protect
+	(hmac-md5
+	 (setq buff
+	       (concat server-msg-1 client-msg-1 client-security-info))
+	 client-verifier)
+      (fillarray buff 0))))
 
 (defun scram-md5-make-client-proof (client-key shared-key)
   (scram-xor-string client-key shared-key))
@@ -116,14 +131,23 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
 (defun scram-md5-make-client-msg-2 (client-security-info client-proof)
   (concat client-security-info client-proof))
 
-(defun scram-md5-authenticate-server (server-msg-1
-				      server-msg-2
-				      client-msg-1
-				      client-security-info
-				      salt salted-pass)
-  (string= (hmac-md5 (concat client-msg-1 server-msg-1 client-security-info)
-		     (hmac-md5 salt salted-pass))
-	   server-msg-2))
+(defun scram-md5-make-server-msg-2 (server-msg-1
+				    client-msg-1
+				    client-security-info
+				    salt salted-pass)
+  (let (buff server-salt)
+    (setq server-salt
+	  (hmac-md5 salt salted-pass))
+    (unwind-protect
+	(hmac-md5
+	 (setq buff
+	       (concat
+		client-msg-1
+		server-msg-1
+		client-security-info))
+	 server-salt)
+      (fillarray server-salt 0)
+      (fillarray buff 0))))
 
 (provide 'scram-md5)
 

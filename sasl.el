@@ -22,6 +22,28 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
+;;; Commentary:
+
+;; Example.
+;;
+;; (base64-encode-string
+;;  (sasl-scram-md5-client-msg-2
+;;   (base64-decode-string "dGVzdHNhbHQBAAAAaW1hcEBlbGVhbm9yLmlubm9zb2Z0LmNvbQBqaGNOWmxSdVBiemlGcCt2TFYrTkN3")
+;;   (base64-decode-string "AGNocmlzADx0NG40UGFiOUhCMEFtL1FMWEI3MmVnQGVsZWFub3IuaW5ub3NvZnQuY29tPg==")
+;;   (scram-md5-make-salted-pass
+;;    "secret stuff" "testsalt")))
+;; => "AQAAAMg9jU8CeB4KOfk7sUhSQPs="
+;;
+;; (base64-encode-string
+;;  (scram-md5-make-server-msg-2
+;;   (base64-decode-string "dGVzdHNhbHQBAAAAaW1hcEBlbGVhbm9yLmlubm9zb2Z0LmNvbQBqaGNOWmxSdVBiemlGcCt2TFYrTkN3")
+;;   (base64-decode-string "AGNocmlzADx0NG40UGFiOUhCMEFtL1FMWEI3MmVnQGVsZWFub3IuaW5ub3NvZnQuY29tPg==")
+;;   (scram-make-security-info nil t 0)
+;;   "testsalt"
+;;   (scram-md5-make-salted-pass
+;;    "secret stuff" "testsalt")))
+;; => "U0odqYw3B7XIIW0oSz65OQ=="
+
 ;;; Code:
 
 (require 'hmac-md5)
@@ -51,38 +73,44 @@
 (defun sasl-scram-md5-client-msg-1 (authenticate-id &optional authorize-id)
   (scram-md5-make-client-msg-1 authenticate-id authorize-id))
 
-(defun sasl-scram-md5-client-msg-2 (server-msg-1 client-msg-1 passphrase)
-  (let (client-key)
-    (scram-md5-make-client-msg-2
-     sasl-scram-md5-client-security-info
-     (scram-md5-make-client-proof
-      (setq client-key
-	    (scram-md5-make-client-key
-	     (scram-md5-make-salted-pass
-	      passphrase
-	      (car ; salt
-	       (scram-md5-parse-server-msg-1 server-msg-1)))))
-      (scram-md5-make-shared-key
-       server-msg-1
-       client-msg-1
-       sasl-scram-md5-client-security-info
-       (scram-md5-make-client-verifier client-key))))))
-
-(defun sasl-scram-md5-authenticate-server (server-msg-1
+(defun sasl-scram-md5-client-msg-2 (server-msg-1 client-msg-1 salted-pass)
+  (let (client-proof client-key shared-key client-verifier)
+    (setq client-key
+	  (scram-md5-make-client-key salted-pass))
+    (setq client-verifier
+	  (scram-md5-make-client-verifier client-key))
+    (setq shared-key
+	  (unwind-protect
+	      (scram-md5-make-shared-key
+	       server-msg-1
+	       client-msg-1
+	       sasl-scram-md5-client-security-info
+	       client-verifier)
+	    (fillarray client-verifier 0)))
+    (setq client-proof
+	  (unwind-protect
+	      (scram-md5-make-client-proof
+	       client-key shared-key)
+	    (fillarray client-key 0)
+	    (fillarray shared-key 0)))
+    (unwind-protect
+	(scram-md5-make-client-msg-2
+	 sasl-scram-md5-client-security-info
+	 client-proof)
+      (fillarray client-proof 0))))
+	     
+(defun sasl-scram-md5-authenticate-server (server-msg-1 
 					   server-msg-2
 					   client-msg-1
-					   passphrase)
-  (scram-md5-authenticate-server
-   server-msg-1
-   server-msg-2
-   client-msg-1
-   sasl-scram-md5-client-security-info
-   (car ; salt
-    (scram-md5-parse-server-msg-1 server-msg-1))
-   (scram-md5-make-salted-pass
-    passphrase
-    (car ; salt
-     (scram-md5-parse-server-msg-1 server-msg-1)))))
+					   salted-pass)
+  (string= server-msg-2
+	   (scram-md5-make-server-msg-2
+	    server-msg-1
+	    client-msg-1
+	    sasl-scram-md5-client-security-info
+	    (car
+	     (scram-md5-parse-server-msg-1 server-msg-1))
+	    salted-pass)))
 
 ;;; unique-ID
 (defun sasl-number-base36 (num len)
