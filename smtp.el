@@ -34,6 +34,7 @@
 (require 'pcustom)
 (require 'mail-utils)			; mail-strip-quoted-names
 
+(eval-when-compile (require 'sasl))
 (eval-and-compile
   (autoload 'starttls-open-stream "starttls")
   (autoload 'starttls-negotiate "starttls")
@@ -110,7 +111,7 @@ don't define this value."
   "*SMTP connection type."
   :type '(choice (const nil) (const :tag "TLS" starttls))
   :group 'smtp)
- 
+
 (defvar smtp-read-point nil)
 
 (defun smtp-make-fqdn ()
@@ -658,7 +659,7 @@ don't define this value."
 
 (defun smtp-auth-digest-md5 (process)
   "Login to server using the AUTH DIGEST-MD5 method."
-  (let (user realm responce)
+  (let (user realm response)
     (smtp-send-command process "AUTH DIGEST-MD5")
     (setq response (smtp-read-response process))
     (if (or (null (car response))
