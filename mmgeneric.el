@@ -37,18 +37,20 @@
 ;; (autoload 'mime-parse-external "mime-parse")
 (autoload 'mime-entity-content "mime")
 
-(luna-define-class mime-entity ()
-		   (location
-		    content-type children parent
-		    node-id
-		    content-disposition encoding
-		    ;; for other fields
-		    original-header parsed-header))
+(eval-and-compile
+  (luna-define-class mime-entity ()
+		     (location
+		      content-type children parent
+		      node-id
+		      content-disposition encoding
+		      ;; for other fields
+		      original-header parsed-header))
+
+  (luna-define-internal-accessors 'mime-entity)
+  )
 
 (defalias 'mime-entity-representation-type-internal 'luna-class-name)
 (defalias 'mime-entity-set-representation-type-internal 'luna-set-class-name)
-
-(luna-define-internal-accessors 'mime-entity)
 
 (luna-define-method mime-entity-fetch-field ((entity mime-entity)
 					     field-name)
