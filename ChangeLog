@@ -1,5 +1,10 @@
 1998-08-24  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-bq.el (ew-ccl-decode-quoted-printable): New CCL program.
+	(ew-ccl-quoted-printable): New coding-system.
+
+1998-08-24  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* DOODLE-TIPS: Add a notice about ew-ccl-b.
 
 	* ew-bq.el (ew-bq-use-mel): New variable.

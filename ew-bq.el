@@ -640,6 +640,109 @@
 	))
       )))
 
+(define-ccl-program ew-ccl-decode-quoted-printable
+  (eval-when-compile
+    `(1
+      ((read r0)
+       (loop
+	(branch
+	 r0
+	 ,@(mapcar
+	    (lambda (r0)
+	      (let ((tmp (aref ew-ccl-qp-table r0)))
+		(cond
+		 ((or (eq tmp 'raw) (eq tmp 'wsp)) `(write-read-repeat r0))
+		 ((eq r0 ?=)
+		  ;; r0='='
+		  `((read r0)
+		    ;; '=' r0
+		    (r1 = (r0 == ?\t))
+		    (if ((r0 == ? ) | r1)
+			;; '=' r0:[\t ]
+			;; Skip transport-padding.
+			;; It should check CR LF after
+			;; transport-padding.
+			(loop
+			 (read-if (r0 == ?\t)
+				  (repeat)
+				  (if (r0 == ? )
+				      (repeat)
+				    (break)))))
+		    ;; '=' [\t ]* r0:[^\t ]
+		    (branch
+		     r0
+		     ,@(mapcar
+			(lambda (r0)
+			  (cond
+			   ((eq r0 ?\r)
+			    ;; '=' [\t ]* r0='\r'
+			    `((read r0)
+			      ;; '=' [\t ]* '\r' r0
+			      (if (r0 == ?\n)
+				  ;; '=' [\t ]* '\r' r0='\n'
+				  ;; soft line break found.
+				  ((read r0)
+				   (repeat))
+				;; '=' [\t ]* '\r' r0:[^\n]
+				;; invalid input ->
+				;; output "=\r" and rescan from r0.
+				((write "=\r")
+				 (repeat)))))
+			   ((setq tmp (nth r0 ew-ccl-256-to-16-table))
+			    ;; '=' [\t ]* r0:[0-9A-F]
+			    `(r0 = ,tmp))
+			   (t
+			    ;; '=' [\t ]* r0:[^\r0-9A-F]
+			    ;; invalid input ->
+			    ;; output "=" and rescan from r0.
+			    `((write ?=)
+			      (repeat)))))
+			ew-ccl-256-table))
+		    ;; '=' [\t ]* r0:[0-9A-F]
+		    (read-branch
+		     r1
+		     ,@(mapcar
+			(lambda (r1)
+			  (if (setq tmp (nth r1 ew-ccl-256-to-16-table))
+			      ;; '=' [\t ]* [0-9A-F] r1:[0-9A-F]
+			      `(write-read-repeat
+				r0
+				,(vconcat
+				  (mapcar
+				   (lambda (r0)
+				     (logior (lsh r0 4) tmp))
+				   ew-ccl-16-table)))
+			    ;; '=' [\t ]* [0-9A-F] r1:[^0-9A-F]
+			    ;; invalid input
+			    `(r2 = 0)	; nop
+			    ))
+			ew-ccl-256-table))
+		    (write ?=)
+		    (write r0 ,(vconcat ew-ccl-16-to-256-table))
+		    (write r1)
+		    (read r0)
+		    (repeat)))
+		 ((eq tmp 'cr)
+		  ;; r0='\r'
+		  `((read r0)
+		    ;; '\r' r0
+		    (if (r0 == ?\n)
+			;; '\r' r0='\n'
+			;; hard line break found.
+			((write ?\r)
+			 (write-read-repeat r0))
+		      ;; '\r' r0:[^\n]
+		      ;; invalid control character (bare CR) found.
+		      ;; -> ignore it and rescan from r0.
+		      (repeat))))
+		 (t
+		  ;; r0:[^\t\r -~]
+		  ;; invalid character found.
+		  ;; -> ignore.
+		  `((read r0)
+		    (repeat))))))
+	    ew-ccl-256-table)))))))
+
 ;;;
 
 (make-coding-system 'ew-ccl-uq 4 ?Q "MIME Q-encoding in unstructured field"
@@ -656,6 +759,11 @@
 
 (make-coding-system 'ew-ccl-base64 4 ?B "MIME Base64-encoding"
 		    (cons ew-ccl-decode-b ew-ccl-encode-base64))
+
+(make-coding-system 'ew-ccl-quoted-printable 4 ?B
+		    "MIME Quoted-Printable-encoding"
+		    (cons ew-ccl-decode-quoted-printable
+			  ew-ccl-encode-quoted-printable))
 
 ;;;
 
