@@ -52,20 +52,8 @@ If size of input to decode is larger than this limit,
 external decoder is called.")
 
 
-;;; @ internal base64 decoder/encoder
-;;;	based on base64 decoder by Enami Tsugutomo
-
-;;; @@ convert from/to base64 char
+;;; @ internal base64 decoder
 ;;;
-
-(defun base64-num-to-char (n)
-  (cond ((eq n nil) ?=)
-	((< n 26) (+ ?A n))
-	((< n 52) (+ ?a (- n 26)))
-	((< n 62) (+ ?0 (- n 52)))
-	((= n 62) ?+)
-	((= n 63) ?/)
-	(t (error "not a base64 integer %d" n))))
 
 (defun base64-char-to-num (c)
   (cond ((and (<= ?A c) (<= c ?Z)) (- c ?A))
@@ -76,9 +64,58 @@ external decoder is called.")
 	((= c ?=) nil)
 	(t (error "not a base64 character %c" c))))
 
+(defun base64-internal-decode-string (string)
+  (let* ((len (length string))
+	 (i 0)
+	 (dest (make-string len 0))
+	 (j 0))
+    (catch 'tag
+      (while (< i len)
+	(let ((c (aref string i)))
+	  (setq i (1+ i))
+	  (unless (memq c '(?\x0d ?\x0a))
+	    (let ((v1 (base64-char-to-num c))
+		  (v2 (base64-char-to-num (aref string (prog1 i
+							 (setq i (1+ i))))))
+		  (v3 (base64-char-to-num (aref string (prog1 i
+							 (setq i (1+ i)))))))
+	      (aset dest j (logior (lsh v1 2)(lsh v2 -4)))
+	      (setq j (1+ j))
+	      (if v3
+		  (let ((v4 (base64-char-to-num (aref string i))))
+		    (setq i (1+ i))
+		    (aset dest j (logior (lsh (logand v2 15) 4)(lsh v3 -2)))
+		    (setq j (1+ j))
+		    (if v4
+			(aset dest (prog1 j (setq j (1+ j)))
+			      (logior (logand (lsh (logand v3 15) 6) 255)
+				      v4))
+		      (throw 'tag nil)
+		      ))
+		(throw 'tag nil)
+		))))))
+    (substring dest 0 j)
+    ))
 
-;;; @@ encode/decode one base64 unit
-;;;
+(defun base64-internal-decode-region (beg end)
+  (save-excursion
+    (let ((str (buffer-substring beg end)))
+      (delete-region beg end)
+      (goto-char beg)
+      (insert (base64-internal-decode-string str)))))
+
+
+;;; @ internal base64 encoder
+;;;	based on base64 decoder by Enami Tsugutomo
+
+(defun base64-num-to-char (n)
+  (cond ((eq n nil) ?=)
+	((< n 26) (+ ?A n))
+	((< n 52) (+ ?a (- n 26)))
+	((< n 62) (+ ?0 (- n 52)))
+	((= n 62) ?+)
+	((= n 63) ?/)
+	(t (error "not a base64 integer %d" n))))
 
 (defun base64-encode-1 (pack)
   (let ((a (car pack))
@@ -102,24 +139,6 @@ external decoder is called.")
        (concat (char-to-string
 		(base64-num-to-char (ash (logand a 3) 4))) "==")
        ))))
-
-(defun base64-decode-unit (a b &optional c d)
-  (condition-case err
-      (concat
-       (char-to-string (logior (ash (base64-char-to-num a) 2)
-			       (ash (setq b (base64-char-to-num b)) -4)))
-       (if (and c (setq c (base64-char-to-num c)))
-	   (concat (char-to-string
-		    (logior (ash (logand b 15) 4) (ash c -2)))
-		   (if (and d (setq d (base64-char-to-num d)))
-		       (char-to-string (logior (ash (logand c 3) 6) d))
-		     ))))
-    (error (message (nth 1 err))
-	   "")))
-
-
-;;; @@ base64 encoder/decoder for string
-;;;
 
 (defun base64-encode-string (string)
   "Encode STRING to base64, and return the result."
@@ -149,48 +168,6 @@ external decoder is called.")
 			    ))
       )))
 
-(defun base64-internal-decode-string (string)
-  (let ((len (length string))
-	(i 0)
-	dest)
-    (while (< i len)
-      (let ((a (aref string i)))
-	(setq i (1+ i))
-	(unless (eq a ?\n)
-	  (let ((b (aref string i)))
-	    (setq i (1+ i))
-	    (cond
-	     ((eq b ?\n)
-	      ;; invalid
-	      )
-	     ((>= i len)
-	      (setq dest (concat dest (base64-decode-unit a b) ))
-	      )
-	     (t
-	      (let ((c (aref string i)))
-		(setq i (1+ i))
-		(cond
-		 ((eq c ?\n)
-		  (setq dest (concat dest (base64-decode-unit a b)))
-		  )
-		 ((>= i len)
-		  (setq dest (concat dest (base64-decode-unit a b c)))
-		  )
-		 (t
-		  (let ((d (aref string i)))
-		    (setq i (1+ i))
-		    (setq dest
-			  (concat dest
-				  (if (eq c ?\n)
-				      (base64-decode-unit a b c)
-				    (base64-decode-unit a b c d))))
-		    ))))))))))
-    dest))
-
-
-;;; @ base64 encoder/decoder for region
-;;;
-
 (defun base64-internal-encode-region (beg end)
   (save-excursion
     (save-restriction
@@ -204,12 +181,9 @@ external decoder is called.")
 	  )
       )))
 
-(defun base64-internal-decode-region (beg end)
-  (save-excursion
-    (let ((str (buffer-substring beg end)))
-      (delete-region beg end)
-      (goto-char beg)
-      (insert (base64-internal-decode-string str)))))
+
+;;; @ base64 encoder/decoder for region
+;;;
 
 (defun base64-external-encode-region (beg end)
   (save-excursion
