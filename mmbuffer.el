@@ -80,6 +80,57 @@
 			    (mime-entity-body-end entity) filename)
     ))
 
+(defun mmbuffer-insert-decoded-header (entity &optional invisible-fields
+					      visible-fields)
+  (save-restriction
+    (narrow-to-region (point)(point))
+    (let ((the-buf (current-buffer))
+	  (src-buf (mime-entity-buffer entity))
+	  (h-end (mime-entity-header-end entity))
+	  beg p end field-name len field)
+      (save-excursion
+	(set-buffer src-buf)
+	(goto-char (mime-entity-header-start entity))
+	(save-restriction
+	  (narrow-to-region (point) h-end)
+	  (while (re-search-forward std11-field-head-regexp nil t)
+	    (setq beg (match-beginning 0)
+		  p (match-end 0)
+		  field-name (buffer-substring beg (1- p))
+		  len (string-width field-name)
+		  end (std11-field-end))
+	    (when (eword-visible-field-p field-name
+					 visible-fields invisible-fields)
+	      (setq field (intern (capitalize field-name)))
+	      (save-excursion
+		(set-buffer the-buf)
+		(insert field-name)
+		(insert ":")
+		(cond ((memq field eword-decode-ignored-field-list)
+		       ;; Don't decode
+		       (insert-buffer-substring src-buf p end)
+		       )
+		      ((memq field eword-decode-structured-field-list)
+		       ;; Decode as structured field
+		       (let ((body (save-excursion
+				     (set-buffer src-buf)
+				     (buffer-substring p end)
+				     )))
+			 (insert (eword-decode-and-fold-structured-field
+				  body (1+ len)))
+			 ))
+		      (t
+		       ;; Decode as unstructured field
+		       (let ((body (save-excursion
+				     (set-buffer src-buf)
+				     (buffer-substring p end)
+				     )))
+			 (insert (eword-decode-unstructured-field-body
+				  body (1+ len)))
+			 )))
+		(insert "\n")
+		))))))))
+
 
 ;;; @ end
 ;;;
