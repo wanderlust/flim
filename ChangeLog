@@ -1,5 +1,13 @@
 1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel.el (mel-ccl-module): New variable; use it to check mel-ccl
+	is available.
+
+	* FLIM-ELS: Don't install mel-ccl for anything older than MULE
+	2.3.
+
+1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel-u.el: Use `mel-define-backend' to define "x-uue".
 	Define "x-uuencode" as a clone of "x-uue".
 
