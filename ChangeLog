@@ -1,3 +1,7 @@
+1999-12-04  Kenichi OKADA <okada@opaopa.org>
+
+	* SLIM-VERION: Add code name.
+
 1999-12-03  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-via-smtp): Fix.
