@@ -1,3 +1,7 @@
+2000-11-09   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el: New file.
+
 2000-11-07   Kenichi OKADA  <okada@opaopa.org>
 
 	* sasl.el (sasl-login-response-1): Fix.
