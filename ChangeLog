@@ -1,3 +1,7 @@
+2004-03-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* sha1-el.el (sha1-maximum-internal-length): Doc fix.
+
 2004-02-23  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* lunit.el (lunit-make-test-suite-from-class): Fix regexp.
