@@ -1,5 +1,10 @@
 1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime.el (mime-entity-buffer): Register return value from method
+	function.
+
+1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime.el (mime-entity-content-type): New implementation.
 	(mime-entity-content-disposition): New implementation.
 	(mime-entity-encoding): New implementation.
@@ -7,6 +12,8 @@
 	* mime-def.el: Change `make-mime-entity-internal',
 	`mime-entity-*-internal' and `mime-entity-set-*-internal' to
 	macro.
+
+1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime.el (mime-fetch-field): Refer internal slots for Date,
 	Message-Id and References fields.
