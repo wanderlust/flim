@@ -1,5 +1,9 @@
 1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel.el, mel-ccl.el, FLIM-ELS: Add mel-ccl.el.
+
+1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel-dl.el, README.en, FLIM-ELS: Rename mel-dl.el to mel-b-dl.el.
 
 	* mel.el: - Rename mel-dl.el to mel-b-dl.el.
