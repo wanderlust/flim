@@ -1,13 +1,13 @@
 \input texinfo.tex
 @setfilename mime-ja.info
-@settitle{FLIM 1.8 MIME 機能説明書}
+@settitle{FLIM 1.9 MIME 機能説明書}
 @titlepage
-@title FLIM 1.8 MIME 機能説明書
+@title FLIM 1.9 MIME 機能説明書
 @author 守岡 知彦 <morioka@@jaist.ac.jp>
 @subtitle 1998/07/01
 @end titlepage
 @node Top, Introduction, (dir), (dir)
-@top FLIM 1.8 MIME 機能説明書
+@top FLIM 1.9 MIME 機能説明書
 
 @ifinfo
 
@@ -132,18 +132,15 @@ on representation-type.
 @end defun
 
 
-@defun mime-parse-message &optional  default-ctl node-id
-
-現在の buffer を message として構文解析し、その結果の mime-entity を返す。
-@end defun
-
-
-@defun mime-parse-buffer &optional  buffer
+@defun mime-parse-buffer &optional  buffer representation-type
 
 @var{buffer} を message として構文解析し、その結果の mime-entity を 
 @var{buffer} の@code{mime-message-structure} に格納する。@refill
 
-@var{buffer} が省略された場合、現在の buffer を構文解析する。
+@var{buffer} が省略された場合、現在の buffer を構文解析する。@refill
+
+@var{representation-type} が指定された場合、その値を生成される
+mime-entity の表象型として用いる。省略された場合は @var{buffer} となる。
 @end defun
 
 
