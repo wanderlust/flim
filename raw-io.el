@@ -25,12 +25,10 @@
 ;;; Code:
 
 (eval-when-compile (require 'static))
+
 (require 'pces)
 
-(static-if (and (featurep 'xemacs)
-		(not (featurep 'utf-2000)))
-    (defalias 'binary-insert-file-contents 'insert-file-contents-as-binary)
-  (defalias 'binary-insert-file-contents 'insert-file-contents-literally))
+(defalias 'binary-insert-file-contents 'insert-file-contents-as-binary)
 
 (defalias 'binary-write-region 'write-region-as-binary)
 
