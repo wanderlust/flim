@@ -31,7 +31,6 @@
 
 ;;; Code:
 
-(require 'pces)
 (require 'custom)
 (require 'mail-utils)			; mail-strip-quoted-names
 (require 'sasl)
@@ -112,8 +111,9 @@ don't define this value."
   :group 'smtp-extensions)
 
 (defvar sasl-mechanisms)
-  
-(defvar smtp-open-connection-function #'open-network-stream)
+
+(autoload 'binary-open-network-stream "raw-io")
+(defvar smtp-open-connection-function #'binary-open-network-stream)
 
 (defvar smtp-read-point nil)
 
@@ -234,12 +234,10 @@ to connect to.  SERVICE is name of the service desired."
 Return a newly allocated connection-object.
 BUFFER is the buffer to associate with the connection.  SERVER is name
 of the host to connect to.  SERVICE is name of the service desired."
-  (let* ((coding-system-for-read  'binary)
-	 (coding-system-for-write 'binary)
-	 (process
-	  (funcall smtp-open-connection-function
-		   "SMTP" buffer  server service))
-	 connection)
+  (let ((process
+	 (funcall smtp-open-connection-function
+		  "SMTP" buffer  server service))
+	connection)
     (when process
       (setq connection (smtp-make-connection process server service))
       (set-process-filter process 'smtp-process-filter)

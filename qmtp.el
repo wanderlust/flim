@@ -60,7 +60,8 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
   :type 'integer
   :group 'qmtp)
 
-(defvar qmtp-open-connection-function (function open-network-stream))
+(autoload 'binary-open-network-stream "raw-io")
+(defvar qmtp-open-connection-function (function binary-open-network-stream))
 
 (defvar qmtp-error-response-alist
   '((?Z "Temporary failure")
@@ -124,8 +125,7 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
     (setq qmtp-read-point (point-min))
     (let (process)
       (unwind-protect
-	  (let ((coding-system-for-read  'binary)
-		(coding-system-for-write 'binary))
+	  (progn
 	    (setq process
 		  (funcall qmtp-open-connection-function
 			   "QMTP" (current-buffer) qmtp-server qmtp-service))

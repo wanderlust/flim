@@ -46,6 +46,7 @@
 (require 'smtp)
 (require 'sendmail)
 (require 'time-stamp)
+(require 'raw-io)
 
 (eval-when-compile (require 'static))
 
@@ -280,7 +281,7 @@ This is relative to `smtpmail-queue-dir'.")
 						   (end-of-line)
 						   (point))))
 	(load file-msg)
-	(setq tembuf (find-file-noselect-as-binary file-msg))
+	(setq tembuf (binary-find-file-noselect file-msg))
 	(if smtpmail-recipient-address-list
 	    (smtp-send-buffer user-mail-address
 			      smtpmail-recipient-address-list tembuf)
