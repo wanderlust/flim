@@ -25,11 +25,42 @@
 ;;; Code:
 
 (require 'mime)
+(require 'mime-parse)
 
 (mm-define-backend buffer)
 
-(mm-define-method open ((nil buffer) location)
-  (mime-parse-buffer location))
+(mm-define-method initialize-instance ((entity buffer))
+  (mime-entity-set-buffer-internal
+   entity (mime-entity-location-internal entity))
+  (save-excursion
+    (set-buffer (mime-entity-buffer-internal entity))
+    (setq mime-message-structure entity)
+    (let ((header-start (point-min))
+	  header-end
+	  body-start
+	  (body-end (point-max)))
+      (goto-char header-start)
+      (if (re-search-forward "^$" nil t)
+	  (setq header-end (match-end 0)
+		body-start (if (= header-end body-end)
+			       body-end
+			     (1+ header-end)))
+	(setq header-end (point-min)
+	      body-start (point-min)))
+      (save-restriction
+	(narrow-to-region header-start header-end)
+	(mime-entity-set-content-type-internal
+	 entity
+	 (let ((str (std11-fetch-field "Content-Type")))
+	   (if str
+	       (mime-parse-Content-Type str)
+	     )))
+	)
+      (mime-entity-set-header-start-internal entity header-start)
+      (mime-entity-set-header-end-internal entity header-end)
+      (mime-entity-set-body-start-internal entity body-start)
+      (mime-entity-set-body-end-internal entity body-end)
+      )))
 
 (mm-define-method entity-point-min ((entity buffer))
   (mime-entity-header-start-internal entity))
@@ -47,6 +78,22 @@
       )))
 
 (mm-define-method entity-cooked-p ((entity buffer)) nil)
+
+(mm-define-method entity-children ((entity buffer))
+  (let* ((content-type (mime-entity-content-type entity))
+	 (primary-type (mime-content-type-primary-type content-type)))
+    (cond ((eq primary-type 'multipart)
+	   (mime-parse-multipart entity)
+	   (mime-entity-children-internal entity)
+	   )
+	  ((and (eq primary-type 'message)
+		(memq (mime-content-type-subtype content-type)
+		      '(rfc822 news external-body)
+		      ))
+	   (mime-parse-encapsulated entity)
+	   (mime-entity-children-internal entity)
+	   )
+	  )))
 
 (mm-define-method entity-content ((entity buffer))
   (save-excursion
