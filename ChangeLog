@@ -1,3 +1,7 @@
+1999-01-05  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* eword-decode.el (mime-decode-header-in-region): Typo fix.
+
 1999-01-04  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up to flim-1_12_1 from flim-1_11_3.

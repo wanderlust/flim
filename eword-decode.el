@@ -701,7 +701,7 @@ default-mime-charset."
 		    default-mime-charset))))
 	(if default-charset
 	    (let ((mode-obj (mime-find-field-presentation-method 'wide))
-		  beg p end field-name-sym len field-decoder
+		  beg p end len field-decoder
                   field-name field-body)
 	      (goto-char (point-min))
 	      (while (re-search-forward std11-field-head-regexp nil t)
@@ -709,10 +709,10 @@ default-mime-charset."
 		      p (match-end 0)
 		      field-name (buffer-substring beg (1- p))
 		      len (string-width field-name)
-		      field-name-sym (intern (capitalize field-name))
 		      field-decoder (inline
 				      (mime-find-field-decoder-internal
-				       field-name-sm mode-obj)))
+				       (intern (capitalize field-name))
+                                       mode-obj)))
 		(when field-decoder
 		  (setq end (std11-field-end)
 			field-body (buffer-substring p end))
