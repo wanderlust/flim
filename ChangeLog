@@ -1,5 +1,24 @@
 1998-08-17  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* DOODLE-TIPS: Use `ew-decode-field' directly instead of
+	`eword-decode-unstructured-field-body' and
+	`eword-decode-and-unfold-structured-field'.
+
+	* FLAM-VERSION: New file (renamed from VERSION.FLAM).
+
+	* eword-decode.el (eword-decode-header): Convert CRLF to LF in
+	a result of `ew-decode-field'.
+	(eword-decode-structured-field-body) Ditto.
+	(eword-decode-unstructured-field-body) Ditto.
+
+	* mime.el (mime-read-field): Use `ew-decode-field' instead of
+	`eword-decode-unstructured-field-body'.
+
+	* mmbuffer.el (insert-decoded-header): Use `ew-decode-field'
+	directly.
+
+1998-08-17  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* DOODLE-TIPS: New file.
 
 	* TESTPAT: Separator of field-name and field-body is now not special.

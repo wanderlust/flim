@@ -271,8 +271,8 @@ If MESSAGE is specified, it is regarded as root entity."
 			  (setq field (eword-decode-structured-field-body
 				       field-body)))
 			 (t
-			  (setq field (eword-decode-unstructured-field-body
-				       field-body))
+			  (setq field (ew-decode-field (symbol-name field-name)
+						       field-body))
 			  ))
 		   (mime-entity-set-parsed-header-internal
 		    entity (put-alist field-name field header))

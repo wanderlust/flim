@@ -172,28 +172,14 @@
 		(set-buffer the-buf)
 		(insert field-name)
 		(insert ":")
-		(cond ((memq field eword-decode-ignored-field-list)
-		       ;; Don't decode
-		       (insert-buffer-substring src-buf p end)
-		       )
-		      ((memq field eword-decode-structured-field-list)
-		       ;; Decode as structured field
-		       (let ((body (save-excursion
-				     (set-buffer src-buf)
-				     (buffer-substring p end)
-				     )))
-			 (insert (eword-decode-and-fold-structured-field
-				  body (1+ len)))
-			 ))
-		      (t
-		       ;; Decode as unstructured field
-		       (let ((body (save-excursion
-				     (set-buffer src-buf)
-				     (buffer-substring p end)
-				     )))
-			 (insert (eword-decode-unstructured-field-body
-				  body (1+ len)))
-			 )))
+		(insert (ew-crlf-to-lf
+			 (ew-decode-field
+			  field-name
+			  (ew-lf-crlf-to-crlf
+			   (save-excursion
+			     (set-buffer src-buf)
+			     (buffer-substring p end)
+			     )))))
 		(insert "\n")
 		))))))))
 

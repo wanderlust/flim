@@ -6,15 +6,17 @@ Especialy ew-line.el, ew-scan-m.el, ew-scan-s.el and ew-scan-u.el that are requi
 
 * Multiline field-bodies fetched from XOVER is already concatinated,
 you should set ew-ignore-76bytes-limit to true.
+Currentry Gnus use these variables to decode and "Subject" and "From",
+tell it here. Unless doing it, DOODLE does not decode atoms in phrase
+because DOODLE cannot decide whether an atom is in phrase or not without
+field name information.
 
 (setq gnus-unstructured-field-decoder
   (lambda (string)
     (let ((ew-ignore-76bytes-limit t))
-      (eword-decode-unstructured-field-body
-        (std11-unfold-string string)
-        (quote must-unfold)))))
+      (ew-cut-cr-lf (ew-decode-field "Subject" (ew-lf-to-crlf string))))))
 
 (setq gnus-structured-field-decoder
   (lambda (string)
     (let ((ew-ignore-76bytes-limit t))
-      (eword-decode-and-unfold-structured-field string))))
+      (ew-cut-cr-lf (ew-decode-field "From" (ew-lf-to-crlf string))))))

@@ -420,6 +420,7 @@ If SEPARATOR is not nil, it is used as header separator."
   (save-excursion
     (save-restriction
       (std11-narrow-to-header separator)
+      (rotate-memo header-eword-decode-header (buffer-substring (point-min) (point-max)))
       (if code-conversion
 	  (let (beg p end field-name field-body len)
 	    (goto-char (point-min))
@@ -430,7 +431,9 @@ If SEPARATOR is not nil, it is used as header separator."
 		    end (std11-field-end)
 		    field-body (buffer-substring p end))
 	      (delete-region p end)
-	      (insert (ew-decode-field field-name (ew-lf-crlf-to-crlf field-body)))
+	      (insert (ew-crlf-to-lf
+		       (ew-decode-field field-name
+					(ew-lf-crlf-to-crlf field-body))))
 	      ))
 	(eword-decode-region (point-min) (point-max) t nil nil)
 	))))
@@ -780,13 +783,13 @@ such as a version of Net$cape)."
 	     (decoded (ew-decode-field (make-string (1- start-column) ?X)
 				       (ew-lf-crlf-to-crlf string)
 				       (if must-unfold 'ew-cut-cr-lf))))
-	(if must-unfold (ew-cut-cr-lf decoded) decoded))
+	(if must-unfold (ew-cut-cr-lf decoded) (ew-crlf-to-lf decoded)))
     ;; Don't fold
     (let* ((ew-decode-field-default-syntax '(ew-scan-unibyte-std11))
 	   (decoded (ew-decode-field ""
 				     (ew-lf-crlf-to-crlf string)
 				     (if must-unfold 'ew-cut-cr-lf))))
-      (if must-unfold (ew-cut-cr-lf decoded) decoded))))
+      (if must-unfold (ew-cut-cr-lf decoded) (ew-crlf-to-lf decoded)))))
 
 (defun eword-decode-unstructured-field-body (string &optional must-unfold)
   "Decode non us-ascii characters in STRING as unstructured field body.
@@ -807,9 +810,7 @@ such as a version of Net$cape)."
   (let ((decoded (ew-decode-field ""
 				  (ew-lf-crlf-to-crlf string)
 				  (if must-unfold 'ew-cut-cr-lf))))
-    (if must-unfold
-	(ew-cut-cr-lf decoded)
-      decoded)))
+    (if must-unfold (ew-cut-cr-lf decoded) (ew-crlf-to-lf decoded))))
 
 (defun eword-extract-address-components (string)
   "Extract full name and canonical address from STRING.
