@@ -1,5 +1,11 @@
 1998-10-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel-g.el: Require mel.
+
+	* mel-g.el: Require poem instead of emu.
+
+1998-10-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime.el (mime-insert-text-content): New generic function.
 
 	* mmcooked.el, mmgeneric.el (insert-text-content): New method.
