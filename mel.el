@@ -26,9 +26,8 @@
 ;;; Code:
 
 (require 'mime-def)
-(require 'poem)
+(require 'raw-io)
 (require 'alist)
-(require 'path-util)
 
 (defcustom mime-encoding-list
   '("7bit" "8bit" "binary" "base64" "quoted-printable")
@@ -87,10 +86,10 @@ Content-Transfer-Encoding for it."
 (mel-define-method mime-encode-region (start end (nil "7bit")))
 (mel-define-method mime-decode-region (start end (nil "7bit")))
 (mel-define-method-function (mime-insert-encoded-file filename (nil "7bit"))
-			    'insert-file-contents-as-binary)
+			    'binary-insert-file-contents)
 (mel-define-method-function (mime-write-decoded-region
 			     start end filename (nil "7bit"))
-			    'write-region-as-binary)
+			    'binary-write-region)
 
 (mel-define-backend "8bit" ("7bit"))
 
@@ -119,12 +118,12 @@ mmencode included in metamail or XEmacs package)."
     (insert (base64-encode-string
 	     (with-temp-buffer
 	       (set-buffer-multibyte nil)
-	       (insert-file-contents-as-binary filename)
+	       (binary-insert-file-contents filename)
 	       (buffer-string))))
     (or (bolp) (insert ?\n)))
     
-  (mel-define-method-function (encoded-text-encode-string string (nil "B"))
-			      'base64-encode-string)
+  ;; (mel-define-method-function (encoded-text-encode-string string (nil "B"))
+  ;;                             'base64-encode-string)
   (mel-define-method encoded-text-decode-string (string (nil "B"))
     (if (string-match (eval-when-compile
 			(concat "\\`" B-encoded-text-regexp "\\'"))
@@ -199,17 +198,22 @@ ENCODING must be string.  If ENCODING is found in
 the STRING by its value."
   (let ((f (mel-find-function 'mime-decode-string encoding)))
     (if f
-	(condition-case nil
-	    (funcall f string)
-	  (error
-	   (message "Wrong Content-Transfer-Encoding: %s"
-		    encoding)
-	   string))
+	(funcall f string)
       string)))
 
 
-(mel-define-service encoded-text-encode-string (string encoding)
-  "Encode STRING as encoded-text using ENCODING.  ENCODING must be string.")
+(mel-define-service encoded-text-encode-string)
+(defun encoded-text-encode-string (string encoding &optional mode)
+  "Encode STRING as encoded-text using ENCODING.
+ENCODING must be string.
+Optional argument MODE allows `text', `comment', `phrase' or nil.
+Default value is `phrase'."
+  (if (string= encoding "B")
+      (base64-encode-string string 'no-line-break)
+    (let ((f (mel-find-function 'encoded-text-encode-string encoding)))
+      (if f
+	  (funcall f string mode)
+	string))))
 
 (mel-define-service encoded-text-decode-string (string encoding)
   "Decode STRING as encoded-text using ENCODING.  ENCODING must be string.")

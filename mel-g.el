@@ -59,25 +59,26 @@
 (defun gzip64-external-encode-region (beg end)
   (interactive "*r")
   (save-excursion
-    (as-binary-process
-     (apply (function call-process-region)
-	    beg end (car gzip64-external-encoder)
-	    t t nil
-	    (cdr gzip64-external-encoder)))
+    (let ((coding-system-for-write 'binary))
+      (apply (function call-process-region)
+	     beg end (car gzip64-external-encoder)
+	     t t nil
+	     (cdr gzip64-external-encoder)))
     ;; for OS/2
     ;;   regularize line break code
-    (goto-char (point-min))
-    (while (re-search-forward "\r$" nil t)
-      (replace-match ""))))
+    ;;(goto-char (point-min))
+    ;;(while (re-search-forward "\r$" nil t)
+    ;;  (replace-match ""))
+    ))
 
 (defun gzip64-external-decode-region (beg end)
   (interactive "*r")
   (save-excursion
-    (as-binary-process
-     (apply (function call-process-region)
-	    beg end (car gzip64-external-decoder)
-	    t t nil
-	    (cdr gzip64-external-decoder)))))
+    (let ((coding-system-for-read 'binary))
+      (apply (function call-process-region)
+	     beg end (car gzip64-external-decoder)
+	     t t nil
+	     (cdr gzip64-external-decoder)))))
 
 (mel-define-method-function (mime-encode-region start end (nil "x-gzip64"))
 			    'gzip64-external-encode-region)
@@ -116,13 +117,14 @@
   "Decode and write current region encoded by gzip64 into FILENAME.
 START and END are buffer positions."
   (interactive "*r\nFWrite decoded region to file: ")
-  (as-binary-process
-   (apply (function call-process-region)
-	  start end (car gzip64-external-decoder)
-	  nil nil nil
-	  (let ((args (cdr gzip64-external-decoder)))
-	    (append (butlast args)
-		    (list (concat (car (last args)) ">" filename)))))))
+  (let ((coding-system-for-read 'binary)
+	(coding-system-for-write 'binary))
+    (apply (function call-process-region)
+	   start end (car gzip64-external-decoder)
+	   nil nil nil
+	   (let ((args (cdr gzip64-external-decoder)))
+	     (append (butlast args)
+		     (list (concat (car (last args)) ">" filename)))))))
 
 
 ;;; @ end

@@ -51,11 +51,12 @@ This function uses external uuencode encoder which is specified by
 variable `uuencode-external-encoder'."
   (interactive "*r")
   (save-excursion
-    (as-binary-process
-     (apply (function call-process-region)
-	    start end (car uuencode-external-encoder)
-	    t t nil
-	    (cdr uuencode-external-encoder)))
+    (let ((coding-system-for-read  'binary)
+	  (coding-system-for-write 'binary))
+      (apply (function call-process-region)
+	     start end (car uuencode-external-encoder)
+	     t t nil
+	     (cdr uuencode-external-encoder)))
     ;; for OS/2
     ;;   regularize line break code
     (goto-char (point-min))
@@ -78,19 +79,20 @@ variable `uuencode-external-decoder'."
 						  (match-end 0)))))))
 	  (default-directory temporary-file-directory))
       (if filename
-	  (as-binary-process
-	   (apply (function call-process-region)
-		  start end (car uuencode-external-decoder)
-		  t nil nil
-		  (cdr uuencode-external-decoder))
-	   (as-binary-input-file (insert-file-contents filename))
-	   ;; The previous line causes the buffer to be made read-only, I
-	   ;; do not pretend to understand the control flow leading to this
-	   ;; but suspect it has something to do with image-mode. -slb
-	   ;;	Use `inhibit-read-only' to avoid to force
-	   ;;	buffer-read-only nil. - tomo.
-	   (let ((inhibit-read-only t))
-	     (delete-file filename)))))))
+	  (let ((coding-system-for-read  'binary)
+		(coding-system-for-write 'binary))
+	    (apply (function call-process-region)
+		   start end (car uuencode-external-decoder)
+		   t nil nil
+		   (cdr uuencode-external-decoder))
+	    (insert-file-contents filename)
+	    ;; The previous line causes the buffer to be made read-only, I
+	    ;; do not pretend to understand the control flow leading to this
+	    ;; but suspect it has something to do with image-mode. -slb
+	    ;;	Use `inhibit-read-only' to avoid to force
+	    ;;	buffer-read-only nil. - tomo.
+	    (let ((inhibit-read-only t))
+	      (delete-file filename)))))))
 
 (mel-define-method-function (mime-encode-region start end (nil "x-uue"))
 			    'uuencode-external-encode-region)
@@ -142,12 +144,13 @@ START and END are buffer positions."
 					      (match-end 0)))))))
 	  (default-directory temporary-file-directory))
       (if file
-	  (as-binary-process
-	   (apply (function call-process-region)
-		  start end (car uuencode-external-decoder)
-		  nil nil nil
-		  (cdr uuencode-external-decoder))
-	   (rename-file file filename 'overwrites))))))
+	  (let ((coding-system-for-read  'binary)
+		(coding-system-for-write 'binary))
+	    (apply (function call-process-region)
+		   start end (car uuencode-external-decoder)
+		   nil nil nil
+		   (cdr uuencode-external-decoder))
+	    (rename-file file filename 'overwrites))))))
 
 
 ;;; @ end

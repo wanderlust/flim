@@ -42,11 +42,11 @@
 
 ;;; Code:
 
-(require 'poe)
-(require 'pcustom)
+(require 'custom)
 (require 'smtp)
 (require 'sendmail)
 (require 'time-stamp)
+(require 'raw-io)
 
 (eval-when-compile (require 'static))
 
@@ -245,7 +245,7 @@ This is relative to `smtpmail-queue-dir'.")
 		(insert-buffer tembuf)
 		(or (file-directory-p smtpmail-queue-dir)
 		    (make-directory smtpmail-queue-dir t))
-		(write-region-as-binary (point-min) (point-max) file-data)
+		(binary-write-region (point-min) (point-max) file-data)
 		(set-buffer buffer-elisp)
 		(erase-buffer)
 		(insert (concat
@@ -281,7 +281,7 @@ This is relative to `smtpmail-queue-dir'.")
 						   (end-of-line)
 						   (point))))
 	(load file-msg)
-	(setq tembuf (find-file-noselect-as-binary file-msg))
+	(setq tembuf (binary-find-file-noselect file-msg))
 	(if smtpmail-recipient-address-list
 	    (smtp-send-buffer user-mail-address
 			      smtpmail-recipient-address-list tembuf)

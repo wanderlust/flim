@@ -1,3 +1,378 @@
+2000-12-22  Keiichi Suzuki  <keiichi@mdcnet.co.jp>
+
+	* mel-q.el: Require `poem' for `string-to-char-list' when
+	compiling.
+
+2000-12-22  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-decode.el (eword-decode-header): Revert to obsolete alias.
+
+2000-12-22  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmgeneric.el: Add comment for eword-decode.
+
+2000-12-21  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mailcap.el: Require `poe' for `define-obsolete-function-alias'.
+
+2000-12-21   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-send-buffer): Add DOC.
+	(smtp-via-smtp): Add DOC.
+
+	* FLIM-API.en (QMTP): Remove section.
+	(smtp-send-buffer): Add description.
+	(smtp-via-smtp): Likewise.
+
+
+2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.0 (Ninokuchi) released.
+
+	* mime.el (mime-entity-media-type): Add DOC.
+	(mime-entity-media-subtype): Add DOC.
+	(mime-entity-parameters): Add DOC.
+	(mime-entity-type/subtype): Add DOC.
+
+	* FLIM-API.en: Add some usages.
+	(mime-entity-media-type): New description.
+	(mime-entity-media-subtype): Likewise.
+	(mime-entity-type/subtype): Likewise.
+	(mime-entity-parameters): Likewise.
+
+2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el (eword-encode-text): Specify `mode' of
+	`encoded-text-encode-string'.
+
+	* mel.el (encoded-text-encode-string): Add optional argument
+	`mode'; use `base64-encode-string' directly for "B"-encoding.
+
+2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM-API.en: Renamed from FLIM-1.14-API.en; reordered and add
+	some sections.
+
+	* mime.el (mime-entity-set-content-type): Add DOC.
+	(mime-entity-set-encoding): Add DOC.
+
+	* mime-def.el (mime-content-type-subtype): Fix DOC.
+	(mime-content-type-parameters): Fix DOC.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM-1.14-API.en: New file.
+
+	* smtp.el (smtp-open-connection-function): Add autoload cookie.
+
+	* qmtp.el (qmtp-open-connection-function): Add autoload cookie.
+
+	* mime.el (mime-entity-children): Add DOC.
+	(mime-entity-node-id): Add DOC.
+	(mime-entity-content-type): Add DOC.
+	(mime-entity-content-disposition): Add DOC.
+	(mime-entity-encoding): Add DOC.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-encode-field-body): Add autoload setting.
+
+	* eword-encode.el (mime-encode-field-body): Renamed from
+	`eword-encode-field-body'; declare `eword-encode-field-body' as
+	obsolete alias.
+	(mime-encode-header-in-buffer): Use `mime-encode-field-body'
+	instead of `eword-encode-field-body'.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-encode-header-in-buffer): Renamed from
+	`eword-encode-header'.
+
+	* mmdbuffer.el: Deleted.
+
+	* mime-def.el (mime-header): New group.
+	(mime-field-decoding-max-size): New user option [moved from
+	eword-decode.el].
+	(mime-field-encoding-method-alist): New user option [moved from
+	eword-encode.el].
+
+	* eword-encode.el (eword-field-encoding-method-alist): Moved to
+	mime-def.el and renamed to `mime-field-encoding-method-alist'.
+	(mime-header-charset-encoding-alist): Renamed from
+	`eword-charset-encoding-alist'.
+	(mime-header-default-charset-encoding): New variable.
+	(ew-find-charset-rule): Use
+	`mime-header-default-charset-encoding'.
+	(eword-in-subject-p): Declare as obsolete function.
+	(mime-encode-header-in-buffer): Renamed from
+	`eword-encode-header'; declare `eword-encode-header' as obsolete
+	alias.
+
+	* eword-decode.el (eword-max-size-to-decode): Moved to mime-def.el
+	and renamed to `mime-field-decoding-max-size'.
+	(mime-header-lexical-analyzer): Renamed from
+	`eword-lexical-analyzer'; switch to variable.
+
+	* FLIM-ELS (flim-modules): Add `raw-io'.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el (eword-encode-default-start-column): Switch to
+	variable.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* raw-io.el (start-process): New function.
+	(binary-start-process-shell-command): New function.
+
+2000-12-17  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mel-g.el (gzip64-external-encode-region): Don't use
+	`as-binary-process'; comment out code to regularize line break
+	code for OS/2 [if it is needed, it is better to implement by
+	coding-system].
+	(gzip64-external-decode-region): Don't use `as-binary-process'.
+	(mime-write-decoded-region): Likewise.
+
+	* mime-parse.el: Require `luna'.
+
+2000-12-16  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el (eword-encode-divide-into-charset-words): Use
+	`aref' instead of `sref'.
+	(ew-encode-rword-1): Use `1+' instead of `char-next-index'.
+	(eword-encode-phrase-to-rword-list): Use `find-charset-string'
+	instead of `find-non-ascii-charset-string'.
+	(eword-encode-addr-seq-to-rword-list): Don't use `butlast'.
+	(eword-encode-header): Use `find-charset-region' instead of
+	`find-non-ascii-charset-string'.
+
+	* mel.el: Require `raw-io'.
+
+	* mime-def.el (binary-insert-file-contents): Moved to raw-io.el.
+	(binary-write-region): Likewise.
+
+	* mmbabyl.el (mime-write-entity): Use `raw-message-write-region'
+	instead of `write-region-as-raw-text-CRLF'.
+
+	* raw-io.el: New file.
+
+	* smtpmail.el: - Require `raw-io'.
+	- Delete definition of obsolete variable aliases for XEmacs.
+	(smtpmail-send-queued-mail): Use `binary-find-file-noselect'
+	instead of `find-file-noselect-as-binary'.
+
+	* smtp.el (smtp-open-connection-function): Use
+	`binary-open-network-stream' instead of `open-network-stream' as
+	initial value.
+	(smtp-open-connection): Don't guard as `binary'.
+
+	* qmtp.el (qmtp-open-connection-function): Use
+	`binary-open-network-stream' instead of `open-network-stream' as
+	initial value.
+	(qmtp-send-buffer): Don't guard as `binary'.
+
+2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime/eword-decode.el: Don't use
+	`define-obsolete-function-alias'; so `eword-decode-header' is
+	deleted.
+
+	* mime/mmexternal.el: Don't require `pces'.
+
+2000-12-15  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* Makefile (tar): Use `cvs tag -R' instead of `cvs tag -RF'.
+
+2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-def.el (char-int): New alias.
+
+	* eword-encode.el (eword-encode-divide-into-charset-words): Don't
+	use `char-length' and `char-next-index'.
+
+2000-12-15  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* eword-decode.el: Fix typo in doc-string of
+	`mime-set-field-decoder'.
+
+2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mel.el: Don't require `path-util'.
+
+2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* std11.el, smtpmail.el, mime-def.el: Don't require `poe'.
+
+	* mel.el: Don't require `poem'.
+
+2000-12-14  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmexternal.el (mime-write-entity): Don't use
+	`write-region-as-raw-text-CRLF'.
+	(mmexternal-require-buffer): Use `binary-insert-file-contents'
+	instead of `insert-file-contents-as-binary'.
+	(mime-write-entity-body): Use `binary-write-region' instead of
+	`write-region-as-binary'.
+
+	* smtpmail.el (smtpmail-send-it): Use `binary-write-region'
+	instead of `write-region-as-binary'.
+
+	* smtp.el (smtp-open-connection): Don't use `as-binary-process'.
+
+	* mel.el (mime-insert-encoded-file of "base64"): Use
+	`binary-insert-file-contents' instead of
+	`insert-file-contents-as-binary'.
+	(mime-insert-encoded-file of "7bit"): Use
+	`binary-insert-file-contents' instead of
+	`insert-file-contents-as-binary'.
+	(mime-write-decoded-region of "7bit"): Use `binary-write-region'
+	instead of `write-region-as-binary'.
+
+	* mmbuffer.el (mime-write-entity-body): Use `binary-write-region'
+	instead of `write-region-as-binary'.
+	(mime-write-entity): Don't use `write-region-as-raw-text-CRLF'.
+	
+	* mime-def.el: Don't require `poem'.
+	(binary-insert-file-contents): New function.
+	(binary-write-region): New function.
+
+	* mel-u.el (uuencode-external-encode-region): Don't use
+	`as-binary-process'.
+	(uuencode-external-decode-region): Don't use `as-binary-process'
+	and `as-binary-input-file'.
+	(mime-write-decoded-region): Don't use `as-binary-process'.
+
+	* mel-q-ccl.el (quoted-printable-ccl-insert-encoded-file): Don't
+	use `insert-file-contents-as-coding-system'.
+	(quoted-printable-ccl-write-decoded-region): Don't use
+	`write-region-as-coding-system'.
+
+	* mel-b-ccl.el (base64-ccl-insert-encoded-file): Don't use
+	`insert-file-contents-as-coding-system'.
+	(base64-ccl-write-decoded-region): Don't use
+	`write-region-as-coding-system'.
+
+	* std11.el: Don't require `poem'.
+	(std11-parse-ascii-token): Don't use
+	`find-non-ascii-charset-string'.
+
+	* qmtp.el: Don't require `poem'.
+	(qmtp-send-buffer): Don't use `as-binary-process'.
+
+2000-12-14  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-def.el, qmtp.el, smtp.el, smtpmail.el, std11.el: Require
+	`custom' instead of `pcustom'.
+
+2000-12-12   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el: Rewrite with luna.
+
+2000-12-06   Daiki Ueno  <ueno@unixuser.org>
+
+	* FLIM-ELS: Don't install md5-dl.el, md5-el.el, sha1-dl.el and
+	sha1-el.el if the running emacs has builtin message digest
+	functions.
+
+	* md5-dl.el, sha1-dl.el: Don't bind `dynamic-link' and
+	`dynamic-call'.
+
+	* md5.el (md5-dl-module): Moved from md5-dl.el.
+	* sha1.el: Don't bind `sha1-string'.
+
+2000-12-04   Daiki Ueno  <ueno@unixuser.org>
+
+	* README.ja, README.en (load-path): Remove section.
+	(What's FLIM): Specify prerequisite version of Emacsen.
+
+2000-11-21   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-client-set-encoder): New function.
+	(sasl-client-set-decoder): New function.
+	(sasl-client-encoder): New function.
+	(sasl-client-decoder): New function.
+
+	* sasl-digest.el: Require 'cl' when compiling.
+	(sasl-digest-md5-signing-encode-magic): New constant.
+	(sasl-digest-md5-signing-decode-magic): New constant.
+	(sasl-digest-md5-htonl-string): New function.
+	(sasl-digest-md5-make-integrity-encoder): New function.
+	(sasl-digest-md5-make-integrity-decoder): New function.
+	(sasl-digest-md5-ha1): New function.
+	(sasl-digest-md5-response-value): Accept the 1st argument `ha1'.
+	(sasl-digest-md5-response): Use `sasl-digest-md5-ha1'.
+	- Set integrity encoder and decoder of the client.
+
+	* smtp.el: Require `luna'.
+	(smtp-read-response): Accept `smtp-connection' object rather than
+	process-object.
+	(smtp-send-command): Likewise.
+	(smtp-send-data): Likewise.
+
+2000-11-10   Daiki Ueno  <ueno@unixuser.org>
+
+	* tests/test-sasl.el (test-sasl-digest-md5-imap): New testcase.
+	(test-sasl-digest-md5-acap): New testcase.
+
+2000-11-10   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el (lunit-make-test-suite-from-class): New function.
+	(lunit-class): Abolish.
+	(lunit-test-results-buffer): Abolish.
+
+	* FLIM-ELS (check-flim): New function.
+
+	* Makefile (check): New target.
+
+	* tests: New directory.
+
+2000-11-09   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el (lunit-test-method-regexp): New variable.
+	(lunit-class): New function.
+
+2000-11-09   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el: New file.
+
+2000-12-13  Kenichi Handa     <handa@etl.go.jp>
+
+	* luna.el: Fix and add DOCs and comments; fix coding style.
+
+2000-12-09  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmbuffer.el (mmbuffer-parse-multipart): Add new optional
+	argument `representation-type'.
+	(mmbuffer-parse-encapsulated): Likewise.
+
+2000-12-07  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmexternal.el: Must require `mmgeneric'.
+
+	* sha1.el: Don't use `defun-maybe'.
+
+2000-12-04   Daiki Ueno  <ueno@unixuser.org>
+
+	* luna.el (luna-class-find-functions): Don't quote colon keywords.
+	(luna-send): Ditto.
+	(luna-call-next-method): Ditto.
+
+2000-11-28   Daiki Ueno  <ueno@unixuser.org>
+
+	* luna.el: Don't require `static'.
+	(luna-define-class-function): Don't bind colon keywords.
+	(luna-class-find-functions): Quote colon keywords.
+	(luna-send): Likewise.
+	(luna-call-next-method): Likewise.
+
+2000-11-12   Daiki Ueno  <ueno@unixuser.org>
+
+	* luna.el (luna-define-method): Clear method cache.
+	(luna-apply-generic): New function.
+	(luna-define-generic): Use `luna-apply-generic' instead of
+	`luna-send'.
+
 2000-12-04   Daiki Ueno  <ueno@unixuser.org>
 
         * smtpmail.el (smtpmail-send-it): Use `smtp-send-buffer' instead of
@@ -6,70 +381,207 @@
 
 2000-11-24  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-      * FLIM-MK (compile-flim): Compile `flim-version-specific-modules'.
-      (install-flim): Install `flim-version-specific-modules' to
-      `FLIM_VERSION_SPECIFIC_DIR'.
-      (compile-flim-package): Compile `flim-version-specific-modules'.
-      (install-flim-package): Install `flim-version-specific-modules'.
-  
-      * FLIM-ELS (flim-modules): Add `mime-conf' instead of `mailcap'.
-      (flim-version-specific-modules): New variable; specify `mailcap'.
-  
-      * FLIM-CFG (FLIM_VERSION_SPECIFIC_DIR): New variable.
+	* FLIM-MK (compile-flim): Compile `flim-version-specific-modules'.
+	(install-flim): Install `flim-version-specific-modules' to
+	`FLIM_VERSION_SPECIFIC_DIR'.
+	(compile-flim-package): Compile `flim-version-specific-modules'.
+	(install-flim-package): Install `flim-version-specific-modules'.
 
-      * mailcap.el: Completely rewrote to use mime-conf.el.
-  
-      * mime-conf.el: New file.
+	* FLIM-ELS (flim-modules): Add `mime-conf' instead of `mailcap'.
+	(flim-version-specific-modules): New variable; specify `mailcap'.
 
-2000-11-26  Kenichi OKADA   <okada@opaopa.org>
+	* FLIM-CFG (FLIM_VERSION_SPECIFIC_DIR): New variable.
 
-	* SLIM: Version 1.14.4 released.
-	* mime-def.el (mime-library-product): Up.
-	* SLIM-VERSION: Added.
+	* mailcap.el: Completely rewrote to use mime-conf.el.
 
-2000-11-22  Kenichi OKADA   <okada@opaopa.org>
+	* mime-conf.el: New file.
 
-	* smtp.el (smtp-primitive-starttls): Call `smtp-primitive-helo'
-	after `starttls-negotiate'.
-
-2000-11-20  Kenichi OKADA   <okada@opaopa.org>
+2000-11-16  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl-digest.el (sasl-digest-md5-response): Fix typo.
 
-2000-11-20  Kenichi OKADA   <okada@opaopa.org>
+2000-11-12   Daiki Ueno  <ueno@unixuser.org>
 
-	* FLIM-ELS (flim-modules): Add `sasl-cram', `sasl-digest' , `qmtp'.
-	Remove `digest-md5'.
-	* sasl.el: sync up with flim-1_14.
-	* smtp.el: sync up with flim-1_14.
-	* qmtp.el: New file.
-	* sasl-cram.el: New file.
+	* smtp.el (smtp-primitive-data): Use `beginning-of-line' instead of
+	`forward-char'.
+	(smtp-read-response): Don't bind `case-fold-search'.
+	(smtp-send-data): Don't save excursion.
+
+2000-11-10   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl-digest.el (sasl-digest-md5-challenge): Abolish.
+	(sasl-digest-md5-syntax-table): Rename from
+	`sasl-digest-md5-parse-digest-challenge-syntax-table'.
+	(sasl-digest-md5-parse-string): Rename from
+	`sasl-digest-md5-parse-digest-challenge'; only return a property
+	list.
+	(sasl-digest-md5-challenge): Abolish.
+	(sasl-digest-md5-build-response-value-1): Abolish.
+	(sasl-digest-md5-response-value): Define as function.
+	(sasl-digest-md5-response): Rewrite.
+
+2000-11-07   Kenichi OKADA  <okada@opaopa.org>
+
+	* sasl.el (sasl-login-response-1): Fix.
+	(sasl-login-response-2): Fix.
+
+2000-11-07   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-sasl-properties): New user option.
+	(smtp-sasl-user-realm): Abolish.
+
+2000-11-05   Daiki Ueno  <ueno@unixuser.org>
+
+	* qmtp.el (qmtp-send-package): Don't check "K" reply per recipient.
+	(qmtp-via-smtp): Mark as obsolete.
+	(qmtp-send-buffer): New function.
+
+	* sasl.texi: New file.
+
+2000-11-05   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-step-data): New function.
+	(sasl-step-set-data): New function.
+
+2000-11-04   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el: Don't require 'poe'
+	- Rename `sasl-*instantiator*' to `sasl-*client*'.
+	- Rename `sasl-*authenticator*' to `sasl-*mechanism*'.
+	- Rename `sasl-*continuations*' to `sasl-*steps*'.
+	(sasl-make-client): Accept 1st argument `mechanism'.
+	(sasl-next-step): Rename from `sasl-evaluate-challenge'.
+
+2000-11-04   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-make-instantiator): Define as function.
+	(sasl-instantiator-name): Ditto.
+	(sasl-instantiator-service): Ditto.
+	(sasl-instantiator-server): Ditto.
+	(sasl-instantiator-set-properties): Ditto.
+	(sasl-instantiator-set-property): Ditto.
+	(sasl-instantiator-property): Ditto.
+	(sasl-instantiator-properties): Ditto.
+	(sasl-authenticator-mechanism): Ditto.
+	(sasl-authenticator-continuations): Ditto.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el: Rename `sasl-*principal*' to `sasl-*instantiator*'.
+	(sasl-make-instantiator): Abolish optional 4th argument.
+	(sasl-instantiator-set-properties): New function.
+	(sasl-instantiator-put-property): New function.
+	(sasl-instantiator-property): New function.
+	(sasl-instantiator-properties): New function.
+
+	* smtp.el (smtp-sasl-user-name): Rename from
+	`smtp-sasl-principal-user'.
+	(smtp-sasl-user-realm): Rename from `smtp-sasl-principal-realm'.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-mechanisms): Add `LOGIN' and `ANONYMOUS'.
+	(sasl-mechanism-alist): Likewise.
+	(sasl-error): Define.
+	(sasl-login-continuations): New variable.
+	(sasl-login-response-1): New function.
+	(sasl-login-response-2): New function.
+	(sasl-anonymous-continuations): New variable.
+	(sasl-anonymous-response): New function.
+
+	* smtp.el (smtp-error): Define.
+	(smtp-via-smtp): Use it.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-via-smtp): Mark as obsolete.
+	(smtp-send-buffer): Rename from `smtp-via-smtp'.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-make-authenticator): Allocate a freshly generated
+	symbol for each continuation.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl-digest.el (sasl-digest-md5-response-1): Rename from
+	`sasl-digest-md5-digest-response'.
+	(sasl-digest-md5-response-2): New alias.
+	(sasl-digest-md5-parse-digest-challenge): Save excursion.
+
+	* sasl.el (sasl-mechanism-alist): Rename from `sasl-mechanisms'.
+	(sasl-mechanisms): New variable.
+	(sasl-find-authenticator): Check `sasl-mechanisms' rather than
+	`sasl-mechanism-alist'.
+
+	* smtp.el (smtp-submit-package): Use `smtp-primitive-ehlo'.
+	(smtp-primitive-auth): Check authenticator.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* FLIM-ELS (hmac-modules): New variable.
+	(flim-modules): Move HMAC modules to `hmac-modules'
+	- Add `sasl-digest'.
+
+	* smtp.el (smtp-sasl-principal-realm): New user option.
+
+	* sasl.el (sasl-plain-response): New function.
+	(sasl-mechanisms): Add `DIGEST-MD5' and `PLAIN'.
+	(sasl-unique-id-function): New variable.
+	(sasl-plain-continuations): New variable.
+	(sasl-unique-id): New function.
+	(sasl-unique-id-char): New variable.
+
 	* sasl-digest.el: New file.
-	* digest-md5.el: Delete.
 
-
-2000-10-20  Kenichi OKADA   <okada@opaopa.org>
+2000-11-01   Daiki Ueno  <ueno@unixuser.org>
 
-	* SLIM: Version 1.14.3 released.
+	* smtp.el: Bind `sasl-mechanisms'; add autoload settings for
+	`sasl-make-principal', `sasl-find-authenticator',
+	`sasl-authenticator-mechanism-internal' and
+	`sasl-evaluate-challenge'.
+	(smtp-use-sasl): New user option.
+	(smtp-sasl-principal-name): New user option.
+	(smtp-sasl-mechanisms): New user option.
+	(smtp-submit-package): Call `smtp-primitive-starttls' and
+	`smtp-primitive-auth'.
+	(smtp-primitive-ehlo): Don't modify the rest of a extension line.
+	(smtp-primitive-auth): New function.
+	(smtp-primitive-starttls): Check the response code.
 
-2000-09-21  Kenichi OKADA   <okada@opaopa.org>
+	* sasl.el: New implementation.
 
-	* smtp.el (smtp-via-smtp): Cause an error if `smtp-notify-success'
-	is not available.
+	* sasl-cram.el: New file.
 
-2000-09-18  KUSANO Takayuki  <AE5T-KSN@asahi-net.or.jp>
+	* FLIM-ELS (flim-modules): Add `md5', `md5-el', `md5-dl',
+	`hex-util', `hmac-def', `hmac-md5', `sasl' and `sasl-cram'.
 
-	* smtp.el (smtp-via-smtp): Check `service extensions' for DSN.
+2000-11-01   Daiki Ueno  <ueno@unixuser.org>
 
-2000-09-21  Kenichi OKADA <okada@opaopa.org>
+	* smtp.el: Add autoload settings for `starttls-open-stream' and
+	`starttls-negotiate'.
+	(smtp-connection-set-extensions-internal): New macro.
+	(smtp-connection-extensions-internal): New macro.
+	(smtp-make-connection): Set the `extension' slot to nil.
+	(smtp-primitive-ehlo): New function.
+	(smtp-submit-package): Rename from `smtp-commit'.
+	(smtp-submit-package-function): Rename from `smtp-commit-function'.
+	(smtp-primitive-starttls): New function.
+	(smtp-extensions): New group.
+	(smtp-use-8bitmime): New variable.
+	(smtp-use-size): New variable.
+	(smtp-use-starttls): New variable.
+	(smtp-via-smtp): Bind `smtp-open-connection-function'.
 
-	* mime-def.el (mime-library-product): Up.
-	* SLIM-VERSION: Up.
+2000-10-31   Daiki Ueno  <ueno@unixuser.org>
 
-
-2000-09-16  Kenichi OKADA   <okada@opaopa.org>
+	* smtp.el: New implementation.
 
-	* SLIM: Version 1.14.2 released.
+2000-08-16   Daiki Ueno  <ueno@unixuser.org>
+
+	* FLIM-ELS (flim-modules): Add `qmtp'.
+
+	* qmtp.el: New file.
 
 2000-08-28  Yuuichi Teranishi  <teranisi@gohome.org>
 
@@ -82,49 +594,17 @@
 
 	* std11.el (std11-address-string): Fix for group list.
 
-2000-08-23  Kenichi OKADA <okada@opaopa.org>
+2000-08-10  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* smtp.el (smtp-fqdn): New variable.
-	(smtp-make-fqdn): Use `smtp-fqdn' if non-nil.
+	* mmgeneric.el: Enclose definition of class `mime-entity' and its
+	internal accessors by `eval-and-compile'.
 
-2000-08-23  Kenichi OKADA <okada@opaopa.org>
-
-	* mime-def.el (mime-library-product): Up.
-	* SLIM-VERSION: Up.
+	* luna.el: Define `luna-class-name' before it is used in macros.
 
 
-2000-08-12  Kenichi OKADA   <okada@opaopa.org>
+2000-07-12  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-	* SLIM: Version 1.14.1 released.
-	SLIM-TIPS: Update.
-
-2000-08-12  Kenichi OKADA   <okada@opaopa.org>
-
-	* starttls.el (starttls-open-stream): Put `starttls-extra-args' on
-	the last arg.
-
-2000-08-11  Kenichi OKADA   <okada@opaopa.org>
-
-	* starttls.el (starttls-open-ssl-stream): New function.
-	(starttls-open-stream): Move `starttls-extra-args'.
-
-2000-07-12  Kenichi OKADA <okada@opaopa.org>
-
-	* mime-def.el (mime-library-product): Up.
-
-
-2000-07-12  Kenichi OKADA <okada@opaopa.org>
-
-	* SLIM: Version 1.14.0 released.
-	(Sync with FLIM-Chao 1.14.1).
-
-2000-07-12  Kenichi OKADA <okada@opaopa.org>
-
-	* md5-dl.el (TopLevel): Define-maybe
-	`md5-string', `dynamic-link' and `dynamic-call'.
-	* sha1-dl.el (TopLevel): Define-maybe `dynamic-link' and `dynamic-call'.
-	* md5-el.el (TopLevel): Provide `md5-el' instead of `md5'.
-	* md5.el (TopLevel): Require `md5-el' and `md5-dl'.
+	* FLIM-Chao: Version 1.14.1 (Rokujiz-Dò)-A released.
 
 2000-07-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -136,22 +616,6 @@
 
 	* mime.el (mime-entity-read-field): Fix a bug when FIELD-NAME is a
 	string.
-
-2000-06-27  Kenichi OKADA <okada@opaopa.org>
-
-	* smtp.el (smtp-via-smtp): additional HELO for sendmail warning.
-
-2000-06-25  Kenichi OKADA <okada@opaopa.org>
-
-	* SLIM-VERION: Add code name.
-
-2000-06-24  Kenichi OKADA <okada@opaopa.org>
-
-	* mime-def.el (mime-library-product): Fix.
-
-2000-06-24  Kenichi OKADA <okada@opaopa.org>
-
-	* mime-def.el (mime-library-product): Up.
 
 2000-06-23  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -1216,7 +1680,7 @@
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.7 (Y-D~zaki) released.
+	* FLIM: Version 1.12.7 (Y-Dþzaki)-A released.
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -1391,7 +1855,7 @@
 
 1999-05-11  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.6 (Family-K-Drenmae) released.
+	* FLIM: Version 1.12.6 (Family-K-Dòenmae)-A released.
 
 1999-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
@@ -1508,7 +1972,7 @@
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.3 (Kintetsu-K-Drriyama) released.
+	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama)-A released.
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1551,7 +2015,7 @@
 
 1999-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.2 (Kuj-Dr) released.
+	* FLIM: Version 1.12.2 (Kuj-Dò)-A released.
 
 1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1737,7 +2201,7 @@
 
 1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.1 (Nishinoky-Dr) released.
+	* FLIM: Version 1.12.1 (Nishinoky-Dò)-A released.
 
 1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1955,7 +2419,7 @@
 
 1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.11.2 (Heij-Dr) was released.
+	* FLIM: Version 1.11.2 (Heij-Dò)-A was released.
 
 	* NEWS (Abolish variable `mime-temp-directory'): New subsection.
 
@@ -2235,7 +2699,7 @@
 
 1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.4 (Shin-H-Drsono) was released.
+	* FLIM: Version 1.10.4 (Shin-H-Dòsono)-A was released.
 
 1998-10-12  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -2420,7 +2884,7 @@
 
 1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.0 (K-Drdo) was released.
+	* FLIM: Version 1.10.0 (K-Dòdo)-A was released.
 
 	* README.en (What's FLIM): Add mel-ccl.el.
 
@@ -2707,7 +3171,7 @@
 
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.9.1 (Tonosh-Dr) was released.
+	* FLIM: Version 1.9.1 (Tonosh-Dò)-A was released.
 
 	* mime-en.sgml (mm-backend): Translate a little.
 
@@ -2850,7 +3314,7 @@
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.8.0 (Shij-Dr) was released.
+	* FLIM-Chao: Version 1.8.0 (Shij-Dò)-A was released.
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2962,7 +3426,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-DRkubo) was released.
+	* FLIM: Version 1.8.0 (-DÒkubo)-A was released.
 
 	* README.en: Delete `How to use'.
 
@@ -3087,7 +3551,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (Goj-Dr) was released.
+	* FLIM-Chao: Version 1.7.0 (Goj-Dò)-A was released.
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3346,7 +3810,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-Gory-Drmae) was released.
+	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae)-A was released.
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3466,7 +3930,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J-D~jr) was released.
+	* FLIM: Version 1.2.0 (J-Dþjò)-A was released.
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -3517,7 +3981,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Drji) was released.
+	* FLIM: Version 1.1.0 (T-Dòji)-A was released.
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3553,7 +4017,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Drto) was released.
+	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.

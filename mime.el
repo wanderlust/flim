@@ -33,7 +33,7 @@
 
 (eval-and-compile
 
-(autoload 'eword-encode-header "eword-encode"
+(autoload 'mime-encode-header-in-buffer "eword-encode"
   "Encode header fields to network representation, such as MIME encoded-word.")
 
 (autoload 'mime-parse-Content-Type "mime-parse"
@@ -65,6 +65,10 @@ current-buffer, and return it.")
 
 )
 
+(autoload 'mime-encode-field-body "eword-encode"
+  "Encode FIELD-BODY as FIELD-NAME, and return the result.")
+
+
 ;;; @ Entity Representation and Implementation
 ;;;
 
@@ -87,10 +91,12 @@ representation-type."
 ;;;
 
 (defun mime-entity-children (entity)
+  "Return list of entities included in the ENTITY."
   (or (mime-entity-children-internal entity)
       (luna-send entity 'mime-entity-children entity)))
 
 (defun mime-entity-node-id (entity)
+  "Return node-id of ENTITY."
   (mime-entity-node-id-internal entity))
 
 (defun mime-entity-number (entity)
@@ -263,6 +269,7 @@ If MESSAGE is specified, it is regarded as root entity."
 ;; (make-obsolete 'mime-fetch-field 'mime-entity-fetch-field)
 
 (defun mime-entity-content-type (entity)
+  "Return content-type of ENTITY."
   (or (mime-entity-content-type-internal entity)
       (let ((ret (mime-entity-fetch-field entity "Content-Type")))
 	(if ret
@@ -271,6 +278,7 @@ If MESSAGE is specified, it is regarded as root entity."
 	  ))))
 
 (defun mime-entity-content-disposition (entity)
+  "Return content-disposition of ENTITY."
   (or (mime-entity-content-disposition-internal entity)
       (let ((ret (mime-entity-fetch-field entity "Content-Disposition")))
 	(if ret
@@ -279,6 +287,10 @@ If MESSAGE is specified, it is regarded as root entity."
 	  ))))
 
 (defun mime-entity-encoding (entity &optional default-encoding)
+  "Return content-transfer-encoding of ENTITY.
+If the ENTITY does not have Content-Transfer-Encoding field, this
+function returns DEFAULT-ENCODING.  If it is nil, \"7bit\" is used as
+default value."
   (or (mime-entity-encoding-internal entity)
       (let ((ret (mime-entity-fetch-field entity "Content-Transfer-Encoding")))
 	(mime-entity-set-encoding-internal
@@ -390,19 +402,28 @@ If MESSAGE is specified, it is regarded as root entity."
 
 
 (defsubst mime-entity-media-type (entity)
+  "Return primary media-type of ENTITY."
   (mime-content-type-primary-type (mime-entity-content-type entity)))
+
 (defsubst mime-entity-media-subtype (entity)
+  "Return media-subtype of ENTITY."
   (mime-content-type-subtype (mime-entity-content-type entity)))
+
 (defsubst mime-entity-parameters (entity)
+  "Return parameters of Content-Type of ENTITY."
   (mime-content-type-parameters (mime-entity-content-type entity)))
+
 (defsubst mime-entity-type/subtype (entity-info)
+  "Return type/subtype of Content-Type of ENTITY."
   (mime-type/subtype-string (mime-entity-media-type entity-info)
 			    (mime-entity-media-subtype entity-info)))
 
 (defun mime-entity-set-content-type (entity content-type)
+  "Set ENTITY's content-type to CONTENT-TYPE."
   (mime-entity-set-content-type-internal entity content-type))
 
 (defun mime-entity-set-encoding (entity encoding)
+  "Set ENTITY's content-transfer-encoding to ENCODING."
   (mime-entity-set-encoding-internal entity encoding))
 
 

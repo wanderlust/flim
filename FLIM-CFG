@@ -13,8 +13,7 @@
     (progn
       (add-to-list 'default-load-path LISPDIR)
       (add-to-list 'load-path LISPDIR)
-      (add-to-list 'load-path (expand-file-name "apel" LISPDIR))
-      ))
+      (add-to-list 'load-path (expand-file-name "apel" LISPDIR))))
 
 (if (boundp 'VERSION_SPECIFIC_LISPDIR)
     (add-to-list 'load-path VERSION_SPECIFIC_LISPDIR))
