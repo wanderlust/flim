@@ -1,3 +1,15 @@
+1999-12-16  Keiichi Suzuki  <keiichi@nanap.org>
+
+	* eword-decode.el (eword-decode-structured-field-body): When error
+	occures while parsing structure, force decode field body as
+	unstructured field.
+	(eword-decode-and-unfold-structured-field-body): Likewise.
+	(eword-decode-and-unfold-structured-field-body): Likewise.
+	(eword-decode-and-fold-structured-field-body): Likewise.
+
+	* mime-parse.el: Add author.
+	* mime-def.el: Ditto.
+
 1999-12-13  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* README.en,README.ja,mime-en.sgml,mime-en.texi,mime-ja.sgml,
