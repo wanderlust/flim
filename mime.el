@@ -158,7 +158,7 @@ If MESSAGE is specified, it is regarded as root entity."
 (defun mime-entity-buffer (entity)
   (or (mime-entity-buffer-internal entity)
       (mime-entity-set-buffer-internal
-       (mime-entity-send entity 'entity-buffer))))
+       entity (mime-entity-send entity 'entity-buffer))))
 
 (mm-define-generic entity-point-min (entity)
   "Return the start point of ENTITY in the buffer which contains ENTITY.")
