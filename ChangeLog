@@ -1,5 +1,7 @@
 1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* FLIM: Version 1.7.0 (Iseda) was released.
+
 	* mime-ja.sgml (Entity creation): Add description of
 	`mime-open-entity'.
 	(Entity Attributes): Add description of `mime-entity-cooked-p'.
