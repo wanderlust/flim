@@ -195,6 +195,7 @@ ENTITY is used."
 	      )))))
 
 (defun mime-entity-filename (entity)
+  "Return filename of ENTITY."
   (or (mime-entity-uu-filename entity)
       (mime-content-disposition-filename
        (mime-entity-content-disposition entity))
