@@ -1,5 +1,11 @@
 2000-08-15   Daiki Ueno  <ueno@unixuser.org>
 
+	* FLIM-ELS (flim-modules): Add `qmtp'.
+
+	* qmtp.el: New file.
+
+	* smtp.el (smtp-check-response): Rewrite.
+
 	* net-trans.el (net-transaction-fold-left): Rename.
 
 2000-08-14   Daiki Ueno  <ueno@unixuser.org>
