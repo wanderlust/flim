@@ -1,6 +1,6 @@
 ;;; mime.el --- MIME library module
 
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: MIME, multimedia, mail, news
@@ -340,6 +340,9 @@ If MESSAGE is specified, it is regarded as root entity."
 
 (mm-define-generic write-entity-content (entity filename)
   "Write content of ENTITY into FILENAME.")
+
+(mm-define-generic insert-entity (entity)
+  "Insert header and body of ENTITY at point.")
 
 (mm-define-generic write-entity (entity filename)
   "Write header and body of ENTITY into FILENAME.")
