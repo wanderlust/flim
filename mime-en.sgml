@@ -650,14 +650,16 @@ Return filename of <var>content-disposition</var>.
 	    <args> string
 <p>
 Parse <var>string</var> as field-body of Content-Disposition field,
-and return the result.
+and return the result as <dref>mime-content-disposition</dref>
+structure.
 </defun>
 
 <defun name="mime-read-Content-Disposition">
 <p>
-Read field-body of Content-Disposition field from current-buffer,
+Parse Content-Disposition field of the current buffer, and return the
+result as <dref>mime-content-disposition</dref> structure.
 <p>
-Return nil if Content-Disposition field is not found.
+Return <code>nil</code> if Content-Disposition field is not found.
 </defun>
 
 
