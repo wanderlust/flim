@@ -190,20 +190,26 @@ It calls external quoted-printable encoder specified by
     (save-restriction
       (narrow-to-region start end)
       (goto-char (point-min))
-      (while (re-search-forward "=\n" nil t)
-	(replace-match "")
-	)
-      (goto-char (point-min))
-      (let (b e str)
-	(while (re-search-forward quoted-printable-octet-regexp nil t)
-	  (setq b (match-beginning 0))
-	  (setq e (match-end 0))
-	  (setq str (buffer-substring b e))
-	  (delete-region b e)
-	  (insert (string-as-multibyte (quoted-printable-decode-string str)))
-	  ))
-      )))
-
+      (while (search-forward "=" nil t)
+	(let ((beg (match-beginning 0)))
+	  (cond ((looking-at "\n")
+		 (delete-region beg (match-end 0))
+		 )
+		((looking-at
+		  `,(concat "[" quoted-printable-hex-chars
+			    "][" quoted-printable-hex-chars "]"))
+		 (let* ((end (match-end 0))
+			(hex (buffer-substring (match-beginning 0) end)))
+		   (delete-region beg end)
+		   (insert
+		    (logior
+		     (ash (quoted-printable-hex-char-to-num (aref hex 0)) 4)
+		     (quoted-printable-hex-char-to-num (aref hex 1))))
+		   ))
+		(t
+		 ;; invalid
+		 ))
+	  )))))
 
 (defvar quoted-printable-external-decoder '("mmencode" "-q" "-u")
   "*list of quoted-printable decoder program name and its arguments.")
