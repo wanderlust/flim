@@ -189,7 +189,7 @@ external decoder is called."
 (defun base64-internal-decode-string (string)
   (base64-internal-decode string (make-string (length string) 0)))
 
-(defsubst base64-internal-decode-string! (string)
+(defsubst base64-decode-string! (string)
   (base64-internal-decode string string))
 
 (defun base64-internal-decode-region (beg end)
@@ -197,10 +197,10 @@ external decoder is called."
     (let ((str (buffer-substring beg end)))
       (delete-region beg end)
       (goto-char beg)
-      (insert (base64-internal-decode-string! str)))))
+      (insert (base64-decode-string! str)))))
 
 
-;;; @ base64 encoder/decoder for region
+;;; @ external encoder/decoder
 ;;;
 
 (defun base64-external-encode-region (beg end)
@@ -236,6 +236,9 @@ external decoder is called."
 	    t t nil (cdr base64-external-decoder)))
     (buffer-string)))
 
+
+;;; @ application interfaces
+;;;
 
 (defun base64-encode-region (start end)
   "Encode current region by base64.
@@ -279,9 +282,6 @@ metamail or XEmacs package)."
     (base64-internal-decode-string string)))
 
 
-;;; @ base64 encoder/decoder for file
-;;;
-
 (defun base64-insert-encoded-file (filename)
   "Encode contents of file FILENAME to base64, and insert the result.
 It calls external base64 encoder specified by
@@ -321,6 +321,7 @@ START and END are buffer positions."
       (with-temp-buffer
 	(insert (base64-internal-decode-string str))
 	(write-region-as-binary (point-min) (point-max) filename)))))
+
        
 ;;; @ etc
 ;;;
