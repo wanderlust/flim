@@ -18,6 +18,7 @@
 
 (require 'install)
 
+(add-path "custom")
 (add-path default-directory)
 
 (or (fboundp 'write-region-as-binary)
