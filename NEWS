@@ -80,6 +80,15 @@ Function `std11-parse-in-reply-to' was defined as obsolete alias.
 ** New function `std11-parse-msg-ids-string'
 
 
+** New function `mime-find-entity-from-content-id'
+
+
+** New function `mime-parse-msg-id'
+
+
+** New function `mime-uri-parse-cid'
+
+
 ** New generic function `mime-insert-entity'
 
 Add new generic function `mime-insert-entity' to insert header and
