@@ -147,13 +147,14 @@ external decoder is called."
 ;;;
 
 (defconst base64-numbers
-  `,(let ((len (length base64-characters))
+  (eval-when-compile
+    (let ((len (length base64-characters))
 	  (vec (make-vector 123 nil))
 	  (i 0))
       (while (< i len)
 	(aset vec (aref base64-characters i) i)
 	(setq i (1+ i)))
-      vec))
+      vec)))
 
 (defmacro base64-char-to-num (c)
   `(aref base64-numbers ,c))
