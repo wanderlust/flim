@@ -26,7 +26,7 @@ each line is separated by CRLF."
 	 (tmp (assoc key ew-decode-field-cache-buf)))
     (if tmp
 	(cdr tmp)
-      (progn
+      (let ((decoded (ew-decode-field-no-cache field-name field-body)))
 	(setq tmp (nthcdr ew-decode-field-cache-num
 			  ew-decode-field-cache-buf))
 	(if (cdr tmp)
@@ -38,9 +38,7 @@ each line is separated by CRLF."
 		(cons (cons nil nil)
 		      ew-decode-field-cache-buf)))
 	(setcar (car ew-decode-field-cache-buf) key)
-	(setcdr (car ew-decode-field-cache-buf)
-		(ew-decode-field-no-cache
-		 field-name field-body))
+	(setcdr (car ew-decode-field-cache-buf) decoded)
 	(cdar ew-decode-field-cache-buf)))))
 
 (defun ew-analyze-field-to-decode (field-name field-body)

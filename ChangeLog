@@ -1,5 +1,10 @@
 1998-09-09  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-dec.el (ew-decode-field): Call `ew-decode-field-no-cache'
+	before modifing cache.
+
+1998-09-09  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mel-ccl.el (mel-ccl-28-table): New compile time constant.
 	(mel-ccl-64-to-256-table): Ditto.
 	(mel-ccl-qp-table): Mark LF.
