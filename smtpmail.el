@@ -46,7 +46,7 @@
 (require 'smtp)
 (require 'sendmail)
 (require 'time-stamp)
-(require 'raw-io)
+(require 'mel)
 
 (eval-when-compile (require 'static))
 
@@ -245,7 +245,7 @@ This is relative to `smtpmail-queue-dir'.")
 		(insert-buffer tembuf)
 		(or (file-directory-p smtpmail-queue-dir)
 		    (make-directory smtpmail-queue-dir t))
-		(binary-write-region (point-min) (point-max) file-data)
+		(binary-write-decoded-region (point-min) (point-max) file-data)
 		(set-buffer buffer-elisp)
 		(erase-buffer)
 		(insert (concat
