@@ -97,16 +97,18 @@
 	      (make-mime-content-type 'message 'rfc822)
 	    (make-mime-content-type 'text 'plain)
 	    ))
-	 (header-end (mime-buffer-entity-header-end-internal entity))
+	 (body-start (mime-buffer-entity-body-start-internal entity))
 	 (body-end (mime-buffer-entity-body-end-internal entity)))
     (save-restriction
       (goto-char body-end)
-      (narrow-to-region header-end
+      (narrow-to-region body-start
 			(if (re-search-backward close-delimiter nil t)
 			    (match-beginning 0)
 			  body-end))
-      (goto-char header-end)
-      (if (re-search-forward rsep nil t)
+      (goto-char body-start)
+      (if (re-search-forward
+	   (concat "^" (regexp-quote dash-boundary) "[ \t]*\n")
+	   nil t)
 	  (let ((cb (match-end 0))
 		ce ncb ret children
 		(node-id (mime-entity-node-id-internal entity))
