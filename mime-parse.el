@@ -394,7 +394,16 @@ Format of return value is same as that of `mime-parse-Content-Type'."
 
 ;;;###autoload
 (defun mime-parse-Content-Disposition (field-body)
-  "Parse FIELD-BODY as Content-Disposition field.  FIELD-BODY is a string."
+  "Parse FIELD-BODY as Content-Disposition field.  FIELD-BODY is a string.
+
+Return value is
+
+    ((type . DISPOSITION-TYPE)
+     (ATTRIBUTE1 . VALUE1)(ATTRIBUTE2 . VALUE2) ...)
+
+or nil.
+
+DISPOSITION-TYPE is a symbol, and other elements are strings."
   (let ((tokens (mime-lexical-analyze field-body)))
     (when (eq (car (car tokens)) 'mime-token)
       (make-mime-content-disposition
@@ -416,7 +425,8 @@ Format of return value is same as that of `mime-parse-Content-Type'."
 
 ;;;###autoload
 (defun mime-parse-Content-Transfer-Encoding (field-body)
-  "Parse FIELD-BODY as Content-Transfer-Encoding field.  FIELD-BODY is a string."
+  "Parse FIELD-BODY as Content-Transfer-Encoding field.  FIELD-BODY is a string.
+Return value is a string."
   (let ((tokens (mime-lexical-analyze field-body)))
     (when (eq (car (car tokens)) 'mime-token)
       (downcase (cdr (car tokens))))))
