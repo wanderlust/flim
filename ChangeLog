@@ -1,3 +1,42 @@
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-encoded-word-regexp): Must define when
+	this module is compiled.
+	(eword-decode-structured-field-body): Add new optional argument
+	`start'.
+	(eword-decode-and-unfold-structured-field-body): Likewise.
+	(eword-decode-and-fold-structured-field-body): Likewise.
+	(eword-analyze-quoted-string): Add new argument `start'; return
+	`(<parsed result> . <end position>)' instead of `(<parsed result>
+	. <rest string>)'.
+	(std11-analyze-domain-literal): Likewise.
+	(eword-analyze-domain-literal): Likewise.
+	(eword-analyze-comment): Changed to alias of
+	`eword-parse-comment'.
+	(eword-analyze-spaces): Add new argument `start'; return `(<parsed
+	result> . <end position>)' instead of `(<parsed result> . <rest
+	string>)'.
+	(std11-analyze-domain-literal): Likewise.
+	(eword-analyze-special): Likewise.
+	(eword-analyze-encoded-word): Likewise.
+	(eword-analyze-atom): Likewise.
+	(eword-lexical-analyze-internal): Add new argument `start'.
+	(eword-lexical-analyze): Change interface to add new optional
+	argument `start'.
+	(eword-extract-address-components): Add new optional argument
+	`start'.
+
+	* std11.el (std11-atom-regexp): Modify to match non-top atom.
+	(std11-analyze-spaces): Add new argument `start'; return `(<parsed
+	result> . <end position>)' instead of `(<parsed result> . <rest
+	string>)'.
+	(std11-analyze-special): Likewise.
+	(std11-analyze-atom): Likewise.
+	(std11-analyze-quoted-string): Likewise.
+	(std11-analyze-domain-literal): Likewise.
+	(std11-analyze-comment): Likewise.
+	(std11-lexical-analyze): Add new optional argument `start'.
+
 1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11.el (std11-fetch-field): Add autoload cookie.
