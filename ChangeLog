@@ -1,3 +1,8 @@
+2000-11-07   Kenichi OKADA  <okada@opaopa.org>
+
+	* sasl.el (sasl-login-response-1): Fix.
+	(sasl-login-response-2): Fix.
+
 2000-11-05   Daiki Ueno  <ueno@unixuser.org>
 
 	* qmtp.el (qmtp-send-package): Don't check "K" reply per recipient.

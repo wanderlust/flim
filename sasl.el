@@ -235,12 +235,12 @@ It contain at least 64 bits of entropy."
     sasl-login-response-2))
 
 (defun sasl-login-response-1 (client step)
-  (unless (string= (sasl-step-data step) "Username:")
+  (unless (string-match "^user ?name." (sasl-step-data step)) ;; XXX
     (sasl-error (format "Unexpected response: %s" (sasl-step-data step))))
   (sasl-client-name client))
 
 (defun sasl-login-response-2 (client step)
-  (unless (string= (sasl-step-data step) "Password:")
+  (unless (string-match "^password." (sasl-step-data step))  ;; XXX
     (sasl-error (format "Unexpected response: %s" (sasl-step-data step))))
   (sasl-read-passphrase
    (format "LOGIN passphrase for %s: " (sasl-client-name client))))
