@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(require 'emu)
+;;(require 'emu)
 (require 'std11)
 (require 'mime-def)
 
