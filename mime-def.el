@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(defconst mime-library-version-string "FLIM 1.6.0 - \"Ogura\"")
+(defconst mime-library-version-string "Chao 1.6.0 - \"Kuj,Dr(B\"")
 
 
 ;;; @ variables
@@ -205,7 +205,9 @@
 (defsubst mime-entity-parsed-header (entity)       (aref entity 11))
 
 (defsubst mime-entity-set-original-header (entity header)
-  (aset entity 9 header))
+  (aset entity  9 header))
+(defsubst mime-entity-set-children (entity children)
+  (aset entity 10 children))
 (defsubst mime-entity-set-parsed-header (entity header)
   (aset entity 11 header))
 
