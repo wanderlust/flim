@@ -25,10 +25,10 @@
 
 (add-path default-directory)
 
-(or (fboundp 'write-region-as-binary)
-    (error "Please install latest APEL 7.3 or later."))
-(or (fboundp 'insert-file-contents-as-binary)
-    (error "Please install latest APEL 7.3 or later."))
+;; (or (fboundp 'write-region-as-binary)
+;;     (error "Please install latest APEL 7.3 or later."))
+;; (or (fboundp 'insert-file-contents-as-binary)
+;;     (error "Please install latest APEL 7.3 or later."))
 
 
 ;;; @ Please specify prefix of install directory.
