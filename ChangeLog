@@ -1,5 +1,19 @@
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel-b.el (base64-internal-decode-string): Renamed from
+	`base64-internal-decode-string'.
+	(base64-decode-string): New alias for
+	`base64-internal-decode-string'.
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64-decode-unit): New function; abolish
+	`base64-decode-1'.
+	(base64-decode-string): New implementation.
+	(base64-internal-decode-region): New implementation.
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-parse.el (mime-message-structure): New variable.
 	(mime-parse-buffer): New function.
 
