@@ -345,10 +345,8 @@ If is is not found, return DEFAULT-ENCODING."
 If buffer is omitted, it parses current-buffer."
   (save-excursion
     (if buffer (set-buffer buffer))
-    (setq mime-message-structure
-	  (mime-parse-message (or representation-type
-				  'mime-buffer-entity) nil))
-    ))
+    (mime-parse-message (or representation-type
+			    'mime-buffer-entity) nil)))
 
 
 ;;; @ end
