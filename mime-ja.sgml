@@ -1,6 +1,6 @@
 <!doctype sinfo system>
 <head>
-<title>FLIM 1.5 MIME $B5!G=@bL@=q(B
+<title>FLIM 1.6 MIME $B5!G=@bL@=q(B
 <author>$B<i2,(B $BCNI'(B <mail>morioka@jaist.ac.jp</mail>
 <date>1998/06/23
 
@@ -34,7 +34,7 @@ FLIM $B$NDs6!$9$k(B MIME $B5!G=$r;H$&$?$a$K$O(B
 <lisp>
 (require 'mime)
 </lisp>
-<p>
+
 <noindent>$B$rI>2A$7$F$/$@$5$$!#(B
 
 
@@ -222,18 +222,23 @@ buffer $B$K$*$1$k(B <code>mime-message-structure</code> $B$NCM$rMQ$$$k!#(B
 <h2> Entity header $B$N>pJs(B
 <node> Entity-header
 <p>
-<defun name="mime-entity-fetch-field">
-	    <args> entity field-name
+<defun name="mime-fetch-field">
+	    <args> field-name
+	    <opts> entity
 <p>
 <var>entity</var> $B$N(B header $BCf$N(B <var>field-name</var> $BMs$N(B body $B$rJV$9!#(B
 <p>
 $B7k2L$NJ8;zNs$O(B network $BI=8=$N$^$^$G$"$k!#(B
 <p>
+<var>entity</var> $B$,>JN,$5$l$?>l9g$O!"(B
+<code>mime-message-structure</code> $B$NCM$rMQ$$$k!#(B
+<p>
 <var>field-name</var> $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
 </defun>
 
-<defun name="mime-entity-read-field">
-	    <args> entity field-name
+<defun name="mime-read-field">
+	    <args> field-name
+	    <opts> entity
 <p>
 <var>entity</var> $B$N(B header $BCf$N(B <var>field-name</var> $BMs$r9=J82r@O$7$?(B
 $B7k2L$rJV$9!#(B
@@ -242,6 +247,9 @@ buffer $B$K$*$1$k(B <code>mime-message-structure</code> $B$NCM$rMQ$$$k!#(B
 $B$O$=$N7A<0$K=>$C$?(B list $B$rJV$9!#(B
 <p>
 $B7k2LCf$NJ8;zNs$O(B Emacs $B$NFbItI=8=$KJQ49$5$l$k!#(B
+<p>
+<var>entity</var> $B$,>JN,$5$l$?>l9g$O!"(B
+<code>mime-message-structure</code> $B$NCM$rMQ$$$k!#(B
 <p>
 <var>field-name</var> $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
 </defun>
@@ -486,7 +494,7 @@ FLIM $B$G$O(B Content-Transfer-Encoding $BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$
 <node> Content-Transfer-Encoding parser
 <p>
 <defun name="mime-parse-Content-Transfer-Encoding">
-	  <args>string
+	  <args> string
 <p>
 <var>string</var> $B$r(B content-transfer-encoding $B$H$7$F2r@O$7$?7k2L$rJV$9!#(B
 </defun>
@@ -502,10 +510,7 @@ Content-Transfer-Encoding $BMs$,B8:_$7$J$$>l9g$O(B
 </defun>
 
 
-<h2> Content-Transfer-Encoding $B$NId9f2=!&I|9f2=(B
-<node> encoder/decoder
-
-<h3> $BNN0h$NId9f2=!&I|9f2=(B
+<h2> $BNN0h$NId9f2=!&I|9f2=(B
 <node> Region encoder/decoder
 <p>
 <defun name="mime-encode-region">
@@ -543,7 +548,7 @@ and <code>nil</code> means not to decode.
 </defvar>
 
 
-<h3> $BJ8;zNs$NId9f2=!&I|9f2=(B
+<h2> $BJ8;zNs$NId9f2=!&I|9f2=(B
 <node> String encoder/decoder
 <p>
 <defun name="mime-decode-string">
@@ -562,7 +567,7 @@ FUNCTION is string decoder.
 </defvar>
 
 
-<h3> File $B$NId9f2=!&I|9f2=(B
+<h2> File $B$NId9f2=!&I|9f2=(B
 <node> File encoder/decoder
 <p>
 <defun name="mime-insert-encoded-file">
@@ -642,6 +647,34 @@ encoded-word.
 It refer variable <code>eword-field-encoding-method-alist</code>.
 </defun>
 
+
+<h1> $B0lHL@_Dj(B
+<node> custom
+<p>
+<define type="group" name="mime">
+<p>
+MIME $B4XO"5!G=$K4X$9$k(B group.
+<p>
+<code>mail</code> $B$H(B <code>news</code> $B$KB0$9$k!#(B
+</define>
+
+<defvar name="default-mime-charset">
+<p>
+$BE,@Z$J(B <dref>MIME charset</dref> $B$,8+$D$+$i$J$+$C$?>l9g$KMQ$$$i$l$k(B
+MIME charset.
+<p>
+$BK\Mh$O(B APEL $B$NJQ?t$G$"$k!#(B
+</defvar>
+
+<defvar name="mime-temp-directory">
+<p>
+MIME $B5!G=$K4X$9$k<BAu$,0l;~E*$K;HMQ$9$k(B file $B$r:n@.$9$k(B directory.
+<p>
+$B4D6-JQ?t(B <code>MIME_TMP_DIR</code>, <code>TM_TMP_DIR</code>,
+<code>TMPDIR</code>, <code>TMP</code> $B$b$7$/$O(B <code>TEMP</code> $B$,@_Dj(B
+$B$5$l$F$$$?>l9g!"$=$l$r=i4|CM$H$7$FMQ$$$k!#2?$b@_Dj$5$l$F$$$J$$>l9g!"(B
+<code>"/tmp/"</code> $B$rMQ$$$k!#(B
+</defvar>
 
 
 <h1> $BIUO?(B
