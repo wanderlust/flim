@@ -579,10 +579,8 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ application interfaces
 ;;;
 
-(defcustom eword-encode-default-start-column 10
-  "Default start column if it is omitted."
-  :group 'eword-encode
-  :type 'integer)
+(defvar eword-encode-default-start-column 10
+  "Default start column if it is omitted.")
 
 (defun eword-encode-string (string &optional column mode)
   "Encode STRING as encoded-words, and return the result.
