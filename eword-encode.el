@@ -1,8 +1,8 @@
 ;;; eword-encode.el --- RFC 2047 based encoded-word encoder for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
 
-;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -61,6 +61,18 @@
 
 (defvar mime-header-default-charset-encoding "Q")
 
+(defvar mime-header-encode-method-alist
+  '((eword-encode-address-list
+     . (Reply-To
+	From Sender
+	Resent-Reply-To Resent-From
+	Resent-Sender To Resent-To
+	Cc Resent-Cc Bcc Resent-Bcc
+	Dcc))
+    (eword-encode-in-reply-to . (In-Reply-To))
+    (eword-encode-structured-field-body . (Mime-Version User-Agent))
+    (eword-encode-unstructured-field-body)))
+
 
 ;;; @ encoded-text encoder
 ;;;
@@ -96,16 +108,12 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	     (i (char-length chr)))
 	(while (and (< i len)
 		    (setq chr (sref string i))
-		    (eq charset (eword-encode-char-type chr))
-		    )
-	  (setq i (char-next-index chr i))
-	  )
+		    (eq charset (eword-encode-char-type chr)))
+	  (setq i (char-next-index chr i)))
 	(setq dest (cons (cons charset (substring string 0 i)) dest)
 	      string (substring string i)
-	      len (- len i)
-	      )))
-    (nreverse dest)
-    ))
+	      len (- len i))))
+    (nreverse dest)))
 
 
 ;;; @ word
@@ -592,6 +600,7 @@ Optional argument COLUMN is start-position of the field."
 	(or column eword-encode-default-start-column)
 	(eword-encode-split-string string 'text))))
 
+;;;###autoload
 (defun mime-encode-field-body (field-body field-name)
   "Encode FIELD-BODY as FIELD-NAME, and return the result.
 A lexical token includes non-ASCII character is encoded as MIME
@@ -599,25 +608,22 @@ encoded-word.  ASCII token is not encoded."
   (setq field-body (std11-unfold-string field-body))
   (if (string= field-body "")
       ""
-    (let (start)
+    (let ((method-alist mime-header-encode-method-alist)
+	  start ret)
       (if (symbolp field-name)
 	  (setq start (1+ (length (symbol-name field-name))))
 	(setq start (1+ (length field-name))
 	      field-name (intern (capitalize field-name))))
-      (cond ((memq field-name
-		   '(Reply-To
-		     From Sender
-		     Resent-Reply-To Resent-From
-		     Resent-Sender To Resent-To
-		     Cc Resent-Cc Bcc Resent-Bcc
-		     Dcc))
-	     (eword-encode-address-list field-body start))
-	    ((eq field-name 'In-Reply-To)
-	     (eword-encode-in-reply-to field-body start))
-	    ((memq field-name '(Mime-Version User-Agent))
-	     (eword-encode-structured-field-body field-body start))
-	    (t
-	     (eword-encode-unstructured-field-body field-body start))))))
+      (while (car method-alist)
+	(if (or (not (cdr (car method-alist)))
+		(memq field-name
+		      (cdr (car method-alist))))
+	    (progn
+	      (setq ret
+		    (apply (caar method-alist) (list field-body start)))
+	      (setq method-alist nil)))
+	(setq method-alist (cdr method-alist)))
+      ret)))
 (defalias 'eword-encode-field-body 'mime-encode-field-body)
 (make-obsolete 'eword-encode-field-body 'mime-encode-field-body)
 
@@ -662,12 +668,16 @@ It refer variable `mime-field-encoding-method-alist'."
 	       (let ((method (eword-find-field-encoding-method
 			      (downcase field-name))))
 		 (cond ((eq method 'mime)
-			(let ((field-body
-			       (buffer-substring-no-properties bbeg end)
-			       ))
-			  (delete-region bbeg end)
-			  (insert (mime-encode-field-body field-body
-							  field-name))))
+			(let* ((field-body
+			       (buffer-substring-no-properties bbeg end))
+			       (encoded-body
+				(mime-encode-field-body
+				 field-body field-name)))
+			  (if (not encoded-body)
+			      (error "Cannot encode %s:%s"
+				     field-name field-body)
+			    (delete-region bbeg end)
+			    (insert encoded-body))))
 		       (code-conversion
 			(let ((cs
 			       (or (mime-charset-to-coding-system
