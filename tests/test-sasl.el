@@ -18,8 +18,9 @@
 	 (client
 	  (sasl-make-client mechanism "chris" "imap" "elwood.innosoft.com"))
 	 (sasl-read-passphrase
-	  #'(lambda (prompt)
-	      "secret"))
+	  (function
+	   (lambda (prompt)
+	     "secret")))
 	 step
 	 response)
     (sasl-client-set-property client 'realm "elwood.innosoft.com")
@@ -42,8 +43,9 @@ qop=\"auth\",algorithm=md5-sess,charset=utf-8")
 	 (client
 	  (sasl-make-client mechanism "chris" "acap" "elwood.innosoft.com"))
 	 (sasl-read-passphrase
-	  #'(lambda (prompt)
-	      "secret"))
+	  (function
+	   (lambda (prompt)
+	     "secret")))
 	 step
 	 response)
     (sasl-client-set-property client 'realm "elwood.innosoft.com")
