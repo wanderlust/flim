@@ -199,7 +199,12 @@ ENCODING must be string.  If ENCODING is found in
 the STRING by its value."
   (let ((f (mel-find-function 'mime-decode-string encoding)))
     (if f
-	(funcall f string)
+	(condition-case nil
+	    (funcall f string)
+	  (error
+	   (message "Wrong Content-Transfer-Encoding: %s"
+		    encoding)
+	   string))
       string)))
 
 

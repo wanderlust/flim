@@ -1,3 +1,8 @@
+2000-04-17  Yoshiki Hayashi  <yoshiki@xemacs.org>
+
+	* mel.el (mime-decode-string): Return original string
+	when it failed to decode.
+
 2000-04-16  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.13.7 released.
