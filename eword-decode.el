@@ -12,7 +12,7 @@
 ;;	Renamed: 1997/02/22 from tm-ew-d.el
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
 
-;; This file is part of SEMI (Spadework for Emacs MIME Interfaces).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -625,17 +625,77 @@ be the result."
 (defun eword-analyze-domain-literal (string &optional must-unfold)
   (std11-analyze-domain-literal string))
 
+(defun eword-parse-comment (string &optional from must-unfold)
+  (let ((len (length string))
+	(i (or from 0))
+	dest last-str
+	chr ret)
+    (when (and (> len i)
+	       (eq (aref string i) ?\())
+      (setq i (1+ i)
+	    from i)
+      (catch 'tag
+	(while (< i len)
+	  (setq chr (aref string i))
+	  (cond ((eq chr ?\\)
+		 (setq i (1+ i))
+		 (if (>= i len)
+		     (throw 'tag nil)
+		   )
+		 (setq last-str (concat last-str
+					(substring string from (1- i))
+					(char-to-string (aref string i)))
+		       i (1+ i)
+		       from i)
+		 )
+		((eq chr ?\))
+		 (setq ret (concat last-str
+				   (substring string from i)))
+		 (throw 'tag (cons
+			      (cons 'comment
+				    (nreverse
+				     (if (string= ret "")
+					 dest
+				       (cons
+					(eword-decode-string
+					 (decode-mime-charset-string
+					  ret default-mime-charset)
+					 must-unfold)
+					dest)
+				       )))
+			      (1+ i)))
+		 )
+		((eq chr ?\()
+		 (if (setq ret (eword-parse-comment string i must-unfold))
+		     (setq last-str
+			   (concat last-str
+				   (substring string from i))
+			   dest
+			   (if (string= last-str "")
+			       (cons (car ret) dest)
+			     (list* (car ret)
+				    (eword-decode-string
+				     (decode-mime-charset-string
+				      last-str default-mime-charset)
+				     must-unfold)
+				    dest)
+			     )
+			   i (cdr ret)
+			   from i
+			   last-str "")
+		   (throw 'tag nil)
+		   ))
+		(t
+		 (setq i (1+ i))
+		 ))
+	  )))))
+
 (defun eword-analyze-comment (string &optional must-unfold)
-  (let ((p (std11-check-enclosure string ?\( ?\) t)))
-    (if p
-	(cons (cons 'comment
-		    (eword-decode-string
-		     (decode-mime-charset-string
-		      (std11-strip-quoted-pair (substring string 1 (1- p)))
-		      default-mime-charset)
-		     must-unfold))
-	      (substring string p))
-      )))
+  (let ((ret (eword-parse-comment string 0 must-unfold)))
+    (if ret
+	(cons (car ret)
+	      (substring string (cdr ret))
+	      ))))
 
 (defun eword-analyze-spaces (string &optional must-unfold)
   (std11-analyze-spaces string))
@@ -716,7 +776,18 @@ characters encoded as encoded-words or invalid \"raw\" format.
     (cond ((eq type 'quoted-string)
 	   (std11-wrap-as-quoted-string value))
 	  ((eq type 'comment)
-	   (concat "(" (std11-wrap-as-quoted-pairs value '(?( ?))) ")"))
+	   (let ((dest ""))
+	     (while value
+	       (setq dest (concat dest
+				  (if (stringp (car value))
+				      (std11-wrap-as-quoted-pairs
+				       (car value) '(?( ?)))
+				    (eword-decode-token (car value))
+				    ))
+		     value (cdr value))
+	       )
+	     (concat "(" dest ")")
+	     ))
 	  (t value))))
 
 (defun eword-extract-address-components (string)
