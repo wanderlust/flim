@@ -193,6 +193,21 @@ STRING is content-transfer-encoding.
 FUNCTION is function to insert encoded file.")
 
 ;;;###autoload
+(defvar mime-file-decoding-method-alist
+  '(("base64"           . base64-write-decoded-region)
+    ("quoted-printable" . quoted-printable-write-decoded-region)
+    ("x-uue"            . uuencode-write-decoded-region)
+    ("x-gzip64"         . gzip64-write-decoded-region)
+    ("7bit"		. write-region-as-binary)
+    ("8bit"		. write-region-as-binary)
+    ("binary"		. write-region-as-binary)
+    )
+  "Alist of encoding vs. corresponding method to write decoded region to file.
+Each element looks like (STRING . FUNCTION).
+STRING is content-transfer-encoding.
+FUNCTION is function to write decoded region to file.")
+
+;;;###autoload
 (defun mime-insert-encoded-file (filename encoding)
   "Insert file FILENAME encoded by ENCODING format."
   (interactive
@@ -204,6 +219,20 @@ FUNCTION is function to insert encoded file.")
   (let ((f (cdr (assoc encoding mime-file-encoding-method-alist))))
     (if f
 	(funcall f filename)
+      )))
+
+;;;###autoload
+(defun mime-write-decoded-region (start end filename encoding)
+  "Decode and write current region encoded by ENCODING into FILENAME.
+START and END are buffer positions."
+  (list (region-beginning) (region-end)
+	(read-file-name "Write decoded region to file: ")
+	(completing-read "encoding: "
+			 mime-file-decoding-method-alist
+			 nil t "base64"))
+  (let ((f (cdr (assoc encoding mime-file-decoding-method-alist))))
+    (if f
+	(funcall f start end filename)
       )))
 
 
