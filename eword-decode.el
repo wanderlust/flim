@@ -112,14 +112,12 @@ such as a version of Net$cape)."
 (defun eword-decode-structured-field-body (string
 					   &optional start-column max-column)
   (let ((tokens (eword-lexical-analyze string 'must-unfold))
-	(result ""))
+	(result "")
+	token)
     (while tokens
-      (let* ((token (car tokens))
-	     (type (car token)))
-	(setq tokens (cdr tokens))
-	(setq result
-	      (concat result (eword-decode-token token)))
-	))
+      (setq token (car tokens))
+      (setq result (concat result (eword-decode-token token)))
+      (setq tokens (cdr tokens)))
     result))
 
 (defun eword-decode-and-unfold-structured-field-body (string
