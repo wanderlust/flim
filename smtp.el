@@ -27,7 +27,7 @@
 
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
@@ -61,7 +61,7 @@ called from `smtp-via-smtp' with arguments SENDER and RECIPIENTS."
 (defcustom smtp-service "smtp"
   "SMTP service port number.  \"smtp\" or 25."
   :type '(choice (integer :tag "25" 25)
-                 (string :tag "smtp" "smtp"))
+		 (string :tag "smtp" "smtp"))
   :group 'smtp)
 
 (defcustom smtp-local-domain nil
@@ -121,6 +121,17 @@ don't define this value."
 (defvar smtp-connection-alist nil)
 
 (defvar smtp-submit-package-function #'smtp-submit-package)
+
+(defvar smtp-end-of-line "\r\n"
+  "*String to use on the end of lines when talking to the SMTP server.
+This is \"\\r\\n\" by default, but should be \"\\n\" when using and
+indirect connection method, e.g. bind `smtp-open-connection-function'
+to a custom function as shown below:
+
+\(setq smtp-open-connection-function
+      (lambda (name buffer host service)
+	(start-process name buffer \"ssh\" \"-C\" host
+		       \"telnet\" \"-8\" host service)))")
 
 ;;; @ SMTP package
 ;;; A package contains a mail message, an envelope sender address,
@@ -502,13 +513,13 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	response)
     (while response-continue
       (goto-char smtp-read-point)
-      (while (not (search-forward "\r\n" nil t))
+      (while (not (search-forward smtp-end-of-line nil t))
 	(accept-process-output (smtp-connection-process-internal connection))
 	(goto-char smtp-read-point))
       (if decoder
 	  (let ((string (buffer-substring smtp-read-point (- (point) 2))))
 	    (delete-region smtp-read-point (point))
-	    (insert (funcall decoder string) "\r\n")))
+	    (insert (funcall decoder string) smtp-end-of-line)))
       (setq response
 	    (nconc response
 		   (list (buffer-substring
@@ -530,7 +541,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	   (smtp-connection-encoder-internal connection)))
       (set-buffer (process-buffer process))
       (goto-char (point-max))
-      (setq command (concat command "\r\n"))
+      (setq command (concat command smtp-end-of-line))
       (insert command)
       (setq smtp-read-point (point))
       (if encoder
@@ -544,8 +555,8 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	 (smtp-connection-encoder-internal connection)))
     ;; Escape "." at start of a line.
     (if (eq (string-to-char data) ?.)
-	(setq data (concat "." data "\r\n"))
-      (setq data (concat data "\r\n")))
+	(setq data (concat "." data smtp-end-of-line))
+      (setq data (concat data smtp-end-of-line)))
     (if encoder
 	(setq data (funcall encoder data)))
     (process-send-string process data)))

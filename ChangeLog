@@ -1,3 +1,11 @@
+2002-07-24  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtp.el (smtp-end-of-line): New variable.
+	(smtp-read-response): Use it.
+	(smtp-send-command): Use it.
+	(smtp-send-data): Use it.
+
+
 2002-06-03  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.4 (Kashiharajing-Dþ-mae) released.-A
@@ -293,7 +301,7 @@
 2001-02-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	MIME Parameter Value decoder support.
-	
+
 	* mime-def.el (std11-quoted-pair-regexp, std11-non-qtext-char-list,
 	std11-qtext-regexp, std11-quoted-string-regexp): Removed.
 	(mime-media-type/subtype-regexp): Ditto.
@@ -317,7 +325,7 @@
 	mime-parse-Content-Transfer-Encoding): New implementation.
 	(mime-read-Content-Type, mime-read-Content-Disposition,
 	mime-read-Content-Transfer-Encoding): Ditto.
-	
+
 2001-02-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* hmac-md5.el, hmac-sha1.el: Modify comments.
@@ -475,7 +483,7 @@
 	* qmtp.el (qmtp-open-connection-function): Revert initial value to
 	`open-network-stream'.
 	(qmtp-send-buffer): Use `binary-funcall'.
-	
+
 2000-12-23  OKAZAKI Tetsurou  <okazaki@be.to>
 
 	* FLIM-ELS (flim-modules): Delete `mmdbuffer'.
@@ -719,7 +727,7 @@
 	* mmbuffer.el (mime-write-entity-body): Use `binary-write-region'
 	instead of `write-region-as-binary'.
 	(mime-write-entity): Don't use `write-region-as-raw-text-CRLF'.
-	
+
 	* mime-def.el: Don't require `poem'.
 	(binary-insert-file-contents): New function.
 	(binary-write-region): New function.
@@ -862,9 +870,9 @@
 
 2000-12-04   Daiki Ueno  <ueno@unixuser.org>
 
-        * smtpmail.el (smtpmail-send-it): Use `smtp-send-buffer' instead of
-        `smtp-via-smtp'.
-        (smtpmail-send-queued-mail): Ditto.
+	* smtpmail.el (smtpmail-send-it): Use `smtp-send-buffer' instead of
+	`smtp-via-smtp'.
+	(smtpmail-send-queued-mail): Ditto.
 
 2000-11-24  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -1178,8 +1186,8 @@
 
 2000-05-25  Tanaka Akira      <akr@m17n.org>
 
-        * mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
-	
+	* mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
+
 2000-05-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtp.el (smtp-deduce-address-list): Set `case-fold-search' to `t'
