@@ -1,5 +1,11 @@
 1998-10-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* NEWS (Behavior change of `mime-insert-header'): New subsection.
+
+	* mmgeneric.el (insert-header): Include `:' in field-name.
+
+1998-10-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-def.el (std11-qtext-regexp): Use `eval-when-compile'; don't
 	use `char-list-to-string'.
 	(std11-quoted-string-regexp): Use `eval-when-compile'.
