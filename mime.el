@@ -87,7 +87,7 @@ current-buffer, and return it.")
 TYPE is representation-type.
 LOCATION is location of entity.  Specification of it is depended on
 representation-type."
-  (funcall (mime-find-function 'open-entity type) location))
+  (funcall (mime-find-function 'open type) location))
 
 (defun mime-entity-cooked-p (entity)
   "Return non-nil if contents of ENTITY has been already code-converted."
