@@ -496,7 +496,7 @@ abcdefghijklmnopqrstuvwxyz\
               (write ,(if output-crlf "=\r\n" "=\n"))
               (write r0)
               (write "=0D")
-              (r0 = r1)
+              (r0 = (r1 + 0)) ; "+ 0" is workaround for mule 2.3@19.34.
               (break))
              ;; r0:r3=ENC CR r1:noLF
              ((r6 = 6)
@@ -505,7 +505,7 @@ abcdefghijklmnopqrstuvwxyz\
               (write r0 ,mel-ccl-high-table)
               (write r0 ,mel-ccl-low-table)
               (write "=0D")
-              (r0 = r1)
+              (r0 = (r1 + 0))
               (break))))
           ;; r0:r3={RAW,ENC} r1:noCR
           ;; r0:r3={RAW,ENC} r1:noCRLF
@@ -517,7 +517,7 @@ abcdefghijklmnopqrstuvwxyz\
               (r5 = 0)
               (write ,(if output-crlf "=\r\n" "=\n"))
               (write r0)
-              (r0 = r1)
+              (r0 = (r1 + 0))
               (break))
              ;; r0:r3=ENC r1:noCR
              ;; r0:r3=ENC r1:noCRLF
@@ -526,7 +526,7 @@ abcdefghijklmnopqrstuvwxyz\
               (write ,(if output-crlf "=\r\n=" "=\n="))
               (write r0 ,mel-ccl-high-table)
               (write r0 ,mel-ccl-low-table)
-              (r0 = r1)
+              (r0 = (r1 + 0))
               (break)))))))
       (repeat)))
     ;; EOF
@@ -712,7 +712,7 @@ abcdefghijklmnopqrstuvwxyz\
                          ((setq tmp (nth r0 mel-ccl-256-to-16-table))
                           ;; '=' [\t ]* r0:[0-9A-F]
                           ;; upper nibble of hexadecimal digit found.
-                          `((r1 = r0)
+                          `((r1 = (r0 + 0))
 			    (r0 = ,tmp)))
                          (t
                           ;; '=' [\t ]* r0:[^\r0-9A-F]
@@ -744,7 +744,7 @@ abcdefghijklmnopqrstuvwxyz\
                   ;; invalid input ->
                   ;; output "=" with hex digit and rescan from r2.
                   (write ?=)
-                  (r0 = r2)
+                  (r0 = (r2 + 0))
                   (write-repeat r1)))
                (t
                 ;; r0:[^\t\r -~]
