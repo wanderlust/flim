@@ -659,29 +659,35 @@ don't define this value."
 
 (defun smtp-auth-digest-md5 (process)
   "Login to server using the AUTH DIGEST-MD5 method."
-  (let (responce)
+  (let (user realm responce)
     (smtp-send-command process "AUTH DIGEST-MD5")
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))
 	    (>= (car response) 400))
 	(throw 'done (car (cdr response))))
-    (digest-md5-parse-digest-challenge
+    (sasl-digest-md5-parse-digest-challenge
      (base64-decode-string
       (substring (car (cdr response)) 4)))
+    (if (string-match "^\\([^@]*\\)@\\([^@]*\\)"
+		      smtp-authenticate-user)
+	(setq user (match-string 1 smtp-authenticate-user)
+	      realm (match-string 2 smtp-authenticate-user))
+      (setq user smtp-authenticate-user
+	    realm nil))
     (smtp-send-command process
-     (base64-encode-string 
-      (digest-md5-digest-response
-       smtp-authenticate-user
-       smtp-authenticate-passphrase
-       (digest-md5-digest-uri
-	"smtp" (digest-md5-challenge 'realm)))
-      'no-line-break))
+		       (base64-encode-string
+			(sasl-digest-md5-digest-response
+			 user
+			 smtp-authenticate-passphrase
+			 "smtp" smtp-server realm)
+			'no-line-break))
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))
 	    (>= (car response) 400))
-	(throw 'done (car (cdr response))))))
+	(throw 'done (car (cdr response))))
+    (smtp-send-command process "")))
     
 (provide 'smtp)
 

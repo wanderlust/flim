@@ -134,6 +134,25 @@
 	     (scram-md5-parse-server-msg-1 server-msg-1))
 	    salted-pass)))
 
+;;; DIGEST-MD5
+
+(defvar sasl-digest-md5-nonce-count 1)
+
+(defun sasl-digest-md5-digest-response (username passwd 
+						 serv-type host &optional realm)
+  (digest-md5-digest-response
+   username
+   (or realm (digest-md5-challenge 'realm)) ;; need to check.
+   passwd
+   (digest-md5-challenge 'nonce)
+   (digest-md5-cnonce)
+   sasl-digest-md5-nonce-count
+   (digest-md5-digest-uri serv-type host) ;; MX host
+   ))
+
+(defun sasl-digest-md5-parse-digest-challenge (digest-challenge)
+  (digest-md5-parse-digest-challenge digest-challenge))
+
 (provide 'sasl)
 
 ;;; sasl.el ends here

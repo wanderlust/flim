@@ -1,3 +1,13 @@
+2000-01-21  Kenichi OKADA <okada@opaopa.org>
+
+	* digest-md5.el (TopLevel): Delete `digest-md5-nonce-count'.
+	(digest-md5-build-response-value): Add `realm', `nonce' and `nonce-count'.
+	(digest-md5-digest-response): Add options as RFC.
+	* sasl.el (TopLevel): New variable `sasl-digest-md5-nonce-count'.
+	New functions `sasl-digest-md5-digest-response' and
+	`sasl-digest-md5-parse-digest-challenge'.
+	* smtp.el (TopLevel): New function `smtp-auth-digest-md5'.
+
 2000-01-06  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl.el (TopLevel): Autoload 'scram-md5' for `scram-make-security-info'.

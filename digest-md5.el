@@ -48,7 +48,7 @@
 (require 'unique-id)
 
 (defvar digest-md5-challenge nil)
-(defvar digest-md5-nonce-count 1)
+;(defvar digest-md5-nonce-count 1)
 
 (defvar digest-md5-parse-digest-challenge-syntax-table
   (let ((table (make-syntax-table)))
@@ -90,22 +90,22 @@
 (defmacro digest-md5-challenge (prop)
   (list 'get ''digest-md5-challenge prop))
 
-(defmacro digest-md5-build-response-value 
-  (username passwd cnonce digest-uri qop)
+(defmacro digest-md5-build-response-value
+  (username realm passwd nonce cnonce nonce-count digest-uri qop)
   `(encode-hex-string
     (md5-binary
      (concat
       (encode-hex-string
        (md5-binary (concat (md5-binary 
 			    (concat ,username 
-				    ":" (digest-md5-challenge 'realm)
+				    ":" ,realm
 				    ":" ,passwd))
-			   ":" (digest-md5-challenge 'nonce)
+			   ":" ,nonce
 			   ":" ,cnonce
 			   (let ((authzid (digest-md5-challenge 'authzid)))
 			     (if authzid (concat ":" authzid) nil)))))
-      ":" (digest-md5-challenge 'nonce)
-      ":" (format "%08x" digest-md5-nonce-count) ":" ,cnonce ":" ,qop ":"
+      ":" ,nonce
+      ":" (format "%08x" ,nonce-count) ":" ,cnonce ":" ,qop ":"
       (encode-hex-string
        (md5-binary
 	(concat "AUTHENTICATE:" ,digest-uri
@@ -114,28 +114,30 @@
 		  nil))))))))
 
 ;;;###autoload
-(defun digest-md5-digest-response (username passwd digest-uri &optional qop)
-  (let ((cnonce (digest-md5-cnonce)))
-    (concat
-     "username=\"" username "\","
-     "realm=\"" (digest-md5-challenge 'realm) "\","
-     "nonce=\"" (digest-md5-challenge 'nonce) "\","
-     (format "nc=%08x," digest-md5-nonce-count)
-     "cnonce=\"" cnonce "\","
-     "digest-uri=\"" digest-uri "\","
-     "response=" 
-     (digest-md5-build-response-value username passwd cnonce digest-uri 
-				      (or qop "auth"))
-     ","
-     (mapconcat 
-      #'identity
-      (delq nil 
-	    (mapcar (lambda (prop)
-		      (if (digest-md5-challenge prop)
-			  (format "%s=%s"
-				  prop (digest-md5-challenge prop))))
-		    '(charset qop maxbuf cipher authzid)))
-      ","))))
+(defun digest-md5-digest-response
+  (username realm passwd nonce cnonce nonce-count digest-uri
+	    &optional charset qop maxbuf cipher authzid)
+  (concat
+   "username=\"" username "\","
+   "realm=\"" realm "\","
+   "nonce=\"" nonce "\","
+   (format "nc=%08x," nonce-count)
+   "cnonce=\"" cnonce "\","
+   "digest-uri=\"" digest-uri "\","
+   "response=" 
+   (digest-md5-build-response-value
+    username realm passwd nonce cnonce nonce-count digest-uri
+    (or qop "auth"))
+   ","
+   (mapconcat 
+    #'identity
+    (delq nil 
+	  (mapcar (lambda (prop)
+		    (if (digest-md5-challenge prop)
+			(format "%s=%s"
+				prop (digest-md5-challenge prop))))
+		  '(charset qop maxbuf cipher authzid)))
+    ",")))
   
 (provide 'digest-md5)
 
