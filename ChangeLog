@@ -1,5 +1,9 @@
 1998-10-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* std11.el (std11-unfold-string): New implementation.
+
+1998-10-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmgeneric.el: New module.
 
 	* mmbuffer.el: Use `generic' as mother backend.
