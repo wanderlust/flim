@@ -1,5 +1,34 @@
 1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* smtpmail.el (smtpmail-send-it): Add autoload cookie; use
+	`smtpmail-do-bcc' instead of `smtp-do-bcc'; modify for interface
+	change of `smtp-via-smtp'.
+	(smtpmail-do-bcc): New function (moved and renamed from
+	`smtp-do-bcc' of smtp.el).
+
+1998-08-06  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* lisp/smtp.el: Do not insert empty line at the end of message.
+
+1998-06-18  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* lisp/smtp.el (smtp-use-8bitmime): New variable.
+	(smtp-debug-info): Internal variable, now.
+	(smtp-make-fqdn): Renamed from `smtp-fqdn'.
+	(smtp-via-smtp): New implementation.
+	(smtp-send-command): Treat "PASS" as usual.
+	(smtp-do-bcc): Removed.
+
+1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* smtpmail.el: New module (copied from Semi-gnus 6.8).
+
+	* smtp.el: New module (copied from Semi-gnus 6.8).
+
+	* FLIM-ELS: Add smtp.el and smtpmail.el.
+
+1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-def.el: Abolish function `eliminate-top-spaces' because it
 	is not used in FLIM.
 
