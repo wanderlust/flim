@@ -215,14 +215,15 @@ ENTITY is used."
 		 entity disposition)
 		disposition))))))
 
-(defun mime-entity-encoding (entity)
+(defun mime-entity-encoding (entity &optional default-encoding)
   (or (mime-entity-encoding-internal entity)
-      (let ((ret (mime-fetch-field 'Content-Transfer-Encoding entity)))
-	(if ret
-	    (let ((encoding (mime-parse-Content-Transfer-Encoding ret)))
-	      (when encoding
-		(mime-entity-set-encoding-internal entity encoding)
-		encoding))))))
+      (let ((encoding
+	     (or (let ((ret (mime-fetch-field
+			     'Content-Transfer-Encoding entity)))
+		   (and ret (mime-parse-Content-Transfer-Encoding ret)))
+		 default-encoding "7bit")))
+	(mime-entity-set-encoding-internal entity encoding)
+	encoding)))
 
 (defun mime-read-field (field-name &optional entity)
   (or (symbolp field-name)
