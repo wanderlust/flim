@@ -121,18 +121,19 @@ Usage of this macro follows:
 
 NAME is the name of method.
 
-Optional argument METHOD-QUALIFIER must be :before or :after.  If it
-is :before / :after, the method is called before / after a method of
-parent class is finished.  ARGLIST is like an argument list of lambda,
-but (car ARGLIST) must be specialized parameter.  (car (car ARGLIST))
-is name of variable and \(nth 1 (car ARGLIST)) is name of class.
+Optional argument METHOD-QUALIFIER must be :before, :after or :around.
+If it is :before / :after, the method is called before / after a
+method of parent class is finished.  ARGLIST is like an argument list
+of lambda, but (car ARGLIST) must be specialized parameter.  (car (car
+ARGLIST)) is name of variable and \(nth 1 (car ARGLIST)) is name of
+class.
 
 Optional argument DOCSTRING is the documentation of method.
 
 BODY is the body of method."
   (let ((method-qualifier (pop definition))
 	args specializer class self)
-    (if (memq method-qualifier '(:before :after))
+    (if (memq method-qualifier '(:before :after :around))
 	(setq args (pop definition))
       (setq args method-qualifier
 	    method-qualifier nil)
@@ -153,7 +154,7 @@ BODY is the body of method."
 (put 'luna-define-method 'lisp-indent-function 'defun)
 
 (def-edebug-spec luna-define-method
-  (&define name [&optional &or ":before" ":after"]
+  (&define name [&optional &or ":before" ":after" ":around"]
 	   ((arg symbolp)
 	    [&rest arg]
 	    [&optional ["&optional" arg &rest arg]]
@@ -182,6 +183,9 @@ BODY is the body of method."
 	       (nconc (luna-class-find-parents-functions class service)
 		      (list (symbol-function sym)))
 	       )
+	      ((eq (get sym 'luna-method-qualifier) :around)
+	       (cons sym (luna-class-find-parents-functions class service))
+	       )
 	      (t
 	       (list (symbol-function sym))
 	       ))
@@ -192,15 +196,44 @@ BODY is the body of method."
   `(luna-class-find-functions (luna-find-class (luna-class-name ,entity))
 			      ,service))
 
-(defsubst luna-send (entity message &rest args)
-  "Send MESSAGE to ENTITY with ARGS, and return the result."
-  (let ((functions (luna-find-functions entity message))
-	ret)
-    (while functions
-      (setq ret (apply (car functions) args)
-	    functions (cdr functions))
-      )
-    ret))
+(defsubst luna-send (entity message &rest luna-current-method-arguments)
+  "Send MESSAGE to ENTITY, and return the result.
+LUNA-CURRENT-METHOD-ARGUMENTS is arguments of the MESSAGE."
+  (let ((luna-next-methods (luna-find-functions entity message))
+	luna-current-method
+	luna-previous-return-value)
+    (while (and luna-next-methods
+		(progn
+		  (setq luna-current-method (pop luna-next-methods)
+			luna-previous-return-value
+			(apply luna-current-method
+			       luna-current-method-arguments))
+		  (if (symbolp luna-current-method)
+		      (not (eq (get luna-current-method
+				    'luna-method-qualifier) :around))
+		    t))))
+    luna-previous-return-value))
+
+(eval-when-compile
+  (defvar luna-next-methods nil)
+  (defvar luna-current-method-arguments nil)
+  )
+
+(defun luna-call-next-method ()
+  "Call the next method in a method with :around qualifier."
+  (let (luna-current-method
+	luna-previous-return-value)
+    (while (and luna-next-methods
+		(progn
+		  (setq luna-current-method (pop luna-next-methods)
+			luna-previous-return-value
+			(apply luna-current-method
+			       luna-current-method-arguments))
+		  (if (symbolp luna-current-method)
+		      (not (eq (get luna-current-method
+				    'luna-method-qualifier) :around))
+		    t))))
+    luna-previous-return-value))
 
 (defmacro luna-class-name (entity)
   "Return class-name of the ENTITY."
