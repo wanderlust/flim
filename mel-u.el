@@ -29,6 +29,9 @@
 (require 'mime-def)
 
 
+(mel-define-backend "x-uue")
+
+
 ;;; @ variables
 ;;;
 
@@ -158,5 +161,7 @@ START and END are buffer positions."
 ;;;
 
 (provide 'mel-u)
+
+(mel-define-backend "x-uuencode" ("x-uue"))
 
 ;;; mel-u.el ends here
