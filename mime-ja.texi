@@ -259,7 +259,7 @@ code-converted.
 @var{entity} が省略された場合は、@code{mime-message-structure} の値を用
 いる。@refill
 
-@var{field-name} 欄が存在しない場合は nil を返す。
+@var{field-name} 欄が存在しない場合は @code{nil} を返す。
 @end defun
 
 
@@ -906,10 +906,10 @@ directory.@refill
 @menu
 * 7bit::                        
 * 8bit::                        
-* Base64::                      
 * ASCII::                       
-* Coded character set::         Coded character set（符号化文字集合）, Character code（文字符号）
+* Base64::                      
 * binary::                      
+* Coded character set::         Coded character set（符号化文字集合）, Character code（文字符号）
 * media-type::                  
 * message::                     
 * MIME::                        
@@ -951,7 +951,7 @@ byte 以内であることを求めている。よって、これ以上の行が含まれる可能性の
 encodeする必用がある。
 
 
-@node 8bit, Base64, 7bit, Glossary
+@node 8bit, ASCII, 7bit, Glossary
 @subsection 8bit
 @cindex binary
 
@@ -990,23 +990,7 @@ data は @strong{binary} (@ref{binary}) と呼ぶことにする。@refill
 ある。
 
 
-@node Base64, ASCII, 8bit, Glossary
-@subsection Base64
-@cindex pad
-
-RFC 2045 (@ref{RFC 2045}) で定義されている MIME (@ref{MIME}) における 
-binary data (@ref{binary}) の network での変換法の１つ。@refill
-
-『64 進数』という意味で、3 byte の data を 0 から 63 の数を表す ASCII
-(@ref{ASCII}) 4 文字に変換する方法。（もし、4 文字にならなければ 
-@strong{pad} と呼ばれる詰め物をして長さを調整する）@refill
-
-この 65 種類の文字は ASCII と EBCDIC の共通部分から選ばれており、
-Internet 以外の network を経由する場合でも安全に転送できるように設計さ
-れている。
-
-
-@node ASCII, Coded character set, Base64, Glossary
+@node ASCII, Base64, 8bit, Glossary
 @subsection ASCII
 @cindex ANSI X3.4:1986
 @cindex ASCII
@@ -1024,13 +1008,23 @@ Interchange'', ANSI X3.4:1986.
 
 
 
-@node Coded character set, binary, ASCII, Glossary
-@subsection Coded character set（符号化文字集合）, Character code（文字符号）
+@node Base64, binary, ASCII, Glossary
+@subsection Base64
+@cindex pad
 
-文字と byte 列と１対１に対応付ける曖昧でない規則の集合。
+RFC 2045 (@ref{RFC 2045}) で定義されている MIME (@ref{MIME}) における 
+binary data (@ref{binary}) の network での変換法の１つ。@refill
+
+『64 進数』という意味で、3 byte の data を 0 から 63 の数を表す ASCII
+(@ref{ASCII}) 4 文字に変換する方法。（もし、4 文字にならなければ 
+@strong{pad} と呼ばれる詰め物をして長さを調整する）@refill
+
+この 65 種類の文字は ASCII と EBCDIC の共通部分から選ばれており、
+Internet 以外の network を経由する場合でも安全に転送できるように設計さ
+れている。
 
 
-@node binary, media-type, Coded character set, Glossary
+@node binary, Coded character set, Base64, Glossary
 @subsection binary
 @cindex binary data
 @cindex binary
@@ -1047,7 +1041,13 @@ Interchange'', ANSI X3.4:1986.
 とがある。
 
 
-@node media-type, message, binary, Glossary
+@node Coded character set, media-type, binary, Glossary
+@subsection Coded character set（符号化文字集合）, Character code（文字符号）
+
+文字と byte 列と１対１に対応付ける曖昧でない規則の集合。
+
+
+@node media-type, message, Coded character set, Glossary
 @subsection media-type
 @cindex x-token
 @cindex primary-type/subtype
