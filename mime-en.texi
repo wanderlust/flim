@@ -957,10 +957,11 @@ ENCODING must be string.")
 @chapter Network representation of header
 @cindex RFC 2047
 @cindex Standards Track
+@cindex encoded-word
 @cindex RFC 2047
 
-encoded-word は header で非 ASCII (@ref{ASCII}) 文字を表現するための形式
-で、@strong{RFC 2047} で定義されています。@refill
+@strong{RFC 2047} defines the @strong{encoded-word} which is a format to
+represent non-ASCII (@ref{ASCII}) characters in a header.@refill
 
 
 @noindent
@@ -971,10 +972,14 @@ Message Header Extensions for Non-ASCII Text'', November 1996, Standards
 Track (obsolete RFC 1521,1522,1590).
 @end quotation
 
-また、行儀の悪いことだと言えますが、encoded-word を用いずに非 ASCII
-(@ref{ASCII}) 文字を header に入れた記事も存在します。@refill
+The encoded-word is the only valid format to represent non-ASCII
+(@ref{ASCII}) characters in a header, but there are also invalid styles.
+Such kinds of evil messages represent non-ASCII (@ref{ASCII}) characters
+in headers without encoded-words (it is called "raw" non-ASCII
+(@ref{ASCII}) characters).@refill
 
-FLIM はこれらを符号化・復号化する機能を提供します。
+FLIM provides encoding/decoding features of both encoded-word and
+invalid "raw" non-ASCII (@ref{ASCII}) characters.
 
 
 @menu
