@@ -80,7 +80,7 @@
   "An error occurred.")
 
 (luna-define-generic lunit-test-listener-failure (listener case failure)
-  "An failure occurred.")
+  "A failure occurred.")
 
 (luna-define-generic lunit-test-listener-start (listener case)
   "A test started.")
