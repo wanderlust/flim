@@ -1,3 +1,9 @@
+1999-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mel-b-ccl.el (TopLevel): Suppress warning.
+	mel-q-ccl.el (TopLevel): Ditto.
+	mime.el (TopLevel): Ditto.
+
 1999-04-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* eword-decode.el (eword-encoded-word-regexp): Accept "b" and "q"
