@@ -90,15 +90,15 @@ don't define this value."
   :type 'boolean
   :group 'smtp)
 
-(defcustom smtp-authentication-type nil
+(defcustom smtp-authenticate-type nil
   "*SMTP authentication mechanism (RFC2554)."
   :type 'symbol
   :group 'smtp)
 
-(defvar smtp-authentication-user nil)
-(defvar smtp-authentication-passphrase nil)
+(defvar smtp-authenticate-user nil)
+(defvar smtp-authenticate-passphrase nil)
 
-(defvar smtp-authentication-method-alist
+(defvar smtp-authenticate-method-alist
   '((cram-md5 smtp-auth-cram-md5)
     (plain smtp-auth-plain)
     (login smtp-auth-login)
@@ -201,11 +201,11 @@ don't define this value."
 	      (starttls-negotiate process))
 
 	    ;; AUTH --- SMTP Service Extension for Authentication (RFC2554)
-	    (when smtp-authentication-type
-	      (let ((auth (intern smtp-authentication-type)) method)
+	    (when smtp-authenticate-type
+	      (let ((auth (intern smtp-authenticate-type)) method)
 		(if (and 
 		     (memq auth extensions)
-		     (setq method (nth 1 (assq auth smtp-authentication-method-alist))))
+		     (setq method (nth 1 (assq auth smtp-authenticate-method-alist))))
 		    (funcall method process)
 		  (throw 'smtp-error
 			 (format "AUTH mechanism %s not available" auth)))))
@@ -479,7 +479,7 @@ don't define this value."
       (kill-buffer smtp-address-buffer))))
 
 (defun smtp-auth-cram-md5 (process)
-  (let ((secure-word (copy-sequence smtp-authentication-passphrase))
+  (let ((secure-word (copy-sequence smtp-authenticate-passphrase))
 	response)
     (smtp-send-command process "AUTH CRAM-MD5")
     (setq response (smtp-read-response process))
@@ -491,7 +491,7 @@ don't define this value."
      process
      (setq secure-word (unwind-protect
 			   (sasl-cram-md5
-			    smtp-authentication-user secure-word
+			    smtp-authenticate-user secure-word
 			    (base64-decode-string
 			     (substring (car (cdr response)) 4)))
 			 (fillarray secure-word 0))
@@ -506,12 +506,12 @@ don't define this value."
 	(throw 'done (car (cdr response))))))
  
 (defun smtp-auth-plain (process)
-  (let ((secure-word (copy-sequence smtp-authentication-passphrase))
+  (let ((secure-word (copy-sequence smtp-authenticate-passphrase))
 	response)
     (smtp-send-command
      process
      (setq secure-word (unwind-protect
-			   (sasl-plain "" smtp-authentication-user secure-word)
+			   (sasl-plain "" smtp-authenticate-user secure-word)
 			 (fillarray secure-word 0))
 	   secure-word (unwind-protect
 			   (base64-encode-string secure-word)
@@ -527,7 +527,7 @@ don't define this value."
 	(throw 'done (car (cdr response))))))
 
 (defun smtp-auth-login (process)
-  (let ((secure-word (copy-sequence smtp-authentication-passphrase))
+  (let ((secure-word (copy-sequence smtp-authenticate-passphrase))
 	response)
     (smtp-send-command process "AUTH LOGIN")
     (setq response (smtp-read-response process))
@@ -538,7 +538,7 @@ don't define this value."
     (smtp-send-command
      process
      (base64-encode-string
-      smtp-authentication-user))
+      smtp-authenticate-user))
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))
@@ -593,7 +593,7 @@ don't define this value."
 	       (base64-encode-string
 		(setq client-msg-1
 		      (sasl-scram-md5-client-msg-1 
-		       smtp-authentication-user)))) t)
+		       smtp-authenticate-user)))) t)
       (fillarray secure-word 0))
     (setq response (smtp-read-response process))
     (if (or (null (car response))
@@ -615,7 +615,7 @@ don't define this value."
 	   server-msg-1 client-msg-1 
 	   (setq salted-pass
 		 (sasl-scram-md5-make-salted-pass
-		  smtp-authentication-passphrase server-msg-1))))
+		  smtp-authenticate-passphrase server-msg-1))))
     (setq secure-word
 	  (unwind-protect
 	      (base64-encode-string secure-word)
@@ -672,8 +672,8 @@ don't define this value."
     (smtp-send-command process
      (base64-encode-string 
       (digest-md5-digest-response
-       smtp-authentication-user
-       smtp-authentication-passphrase
+       smtp-authenticate-user
+       smtp-authenticate-passphrase
        (digest-md5-digest-uri
 	"smtp" (digest-md5-challenge 'realm)))
       'no-line-break))

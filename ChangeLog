@@ -1,3 +1,10 @@
+2000-01-06  Kenichi OKADA <okada@opaopa.org>
+
+	* smtp.el (smtp-authenticate-type): Rename from `smtp-authenticate-type'.
+	(smtp-authenticate-user): Rename from `smtp-authentication-user'.
+	(smtp-authenticate-passphrase): Rename from `smtp-authentication-passphrase'.
+	(smtp-authenticate-method-alist): Rename from `smtp-authenticate-method-alist)'.
+
 2000-01-05  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* Makefile, mime-en.sgml, mime-ja.sgml: Update for the new CVS
