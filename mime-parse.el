@@ -103,9 +103,11 @@ be the result."
                 (delete-region (point)(- (point) 3)))))
     (setq text (buffer-string))
     (when charset
-      (setq text (with-temp-buffer
-		   (set-buffer-multibyte t)
-		   (decode-mime-charset-string text charset))))
+      ;; I believe that `decode-mime-charset-string' of mcs-e20.el should
+      ;; be independent of the value of `enable-multibyte-characters'.
+      (erase-buffer)
+      (set-buffer-multibyte t)
+      (setq text (decode-mime-charset-string text charset)))
     (when language
       (put-text-property 0 (length text) 'mime-language language text))
     text))
@@ -130,7 +132,6 @@ If parameter continuation is used, segments of values are concatenated.
 If parameters contain charset information, values are decoded.
 If parameters contain language information, it is set to `mime-language'
 property of the decoded-value."
-  ;; should signal an error?
   ;; (unless (zerop (% (length params) 2)) ...)
   (let ((len (/ (length params) 2))
         dest eparams)
@@ -141,6 +142,7 @@ property of the decoded-value."
 				       "\\(\\*\\)?$")) ; charset/language
 			     (car params))
 	       (> (match-end 0) (match-end 1)))
+	  ;; parameter value extensions are used.
           (let* ((attribute (downcase
 			     (substring (car params) 0 (match-end 1))))
                  (section (if (match-beginning 2)
@@ -149,14 +151,16 @@ property of the decoded-value."
 					  (1+ (match-beginning 2))
 					  (match-end 2)))
 			    0))
-		 ;; EPARAM := (ATTRIBUTE CHARSET LANGUAGE VALUES)
+		 ;; EPARAM := (ATTRIBUTE VALUES CHARSET LANGUAGE)
 		 ;; VALUES := [1*VALUE] ; vector of LEN elements.
-                 (eparam (assoc attribute eparams)))
-            (unless eparam
-              (setq eparam (cons attribute
-				 (list nil nil (make-vector len nil)))
-                    eparams (cons eparam eparams)))
-	    (setq params (cdr params))
+                 (eparam (assoc attribute eparams))
+		 (value (progn
+			  (setq params (cdr params))
+			  (car params))))
+            (if eparam
+		(setq eparam (cdr eparam))
+              (setq eparam (list (make-vector len nil) nil nil)
+                    eparams (cons (cons attribute eparam) eparams)))
 	    ;; if parameter-name ends with "*", it is an extended-parameter.
             (if (match-beginning 3)
                 (if (zerop section)
@@ -167,48 +171,51 @@ property of the decoded-value."
 					 "'\\(" mime-language-regexp "\\)?"
 					 "'\\(\\(" mime-attribute-char-regexp
 					 "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+\\)$"))
-				      (car params))
+				      value)
 			(progn
+			  ;; text
+			  (aset (car eparam) 0
+				(substring value (match-beginning 3)))
+			  (setq eparam (cdr eparam))
 			  ;; charset
 			  (when (match-beginning 1)
-			    (setcar (cdr eparam) ; (nthcdr 1 eparam)
+			    (setcar eparam
 				    (downcase
-				     (substring (car params)
-						0 (match-end 1)))))
+				     (substring value 0 (match-end 1)))))
+			  (setq eparam (cdr eparam))
 			  ;; language
 			  (when (match-beginning 2)
-			    (setcar (nthcdr 2 eparam)
+			    (setcar eparam
 				    (intern
 				     (downcase
-				      (substring (car params)
+				      (substring value
 						 (match-beginning 2)
-						 (match-end 2))))))
-			  ;; text
-			  (aset (nth 3 eparam) 0
-				(substring (car params)
-					   (match-beginning 3))))
+						 (match-end 2)))))))
 		      ;; invalid parameter-value.
-		      (aset (nth 3 eparam) 0
-			    (mime-decode-parameter-encode-segment
-			     (car params))))
+		      (aset (car eparam) 0
+			    (mime-decode-parameter-encode-segment value)))
 		  ;; extended-other-parameter.
 		  (if (string-match (eval-when-compile
 				      (concat
 				       "^\\(\\(" mime-attribute-char-regexp
 				       "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+\\)$"))
-				    (car params))
-		      (aset (nth 3 eparam) section
-			    (car params))
+				    value)
+		      (aset (car eparam) section value)
 		    ;; invalid parameter-value.
-		    (aset (nth 3 eparam) section
-			  (mime-decode-parameter-encode-segment
-			   (car params)))))
-	      ;; regular-parameter.
-              (aset (nth 3 eparam) section
-		    (mime-decode-parameter-encode-segment
-		     (car params)))))
-	;; no parameter value extensions used, or invalid attribute-name.
+		    (aset (car eparam) section
+			  (mime-decode-parameter-encode-segment value))))
+	      ;; regular-parameter. parameter continuation only.
+              (aset (car eparam) section
+		    (mime-decode-parameter-encode-segment value))))
+	;; parameter value extensions are not used,
+	;; or invalid attribute-name (in RFC2231, although valid in RFC2045).
         (setq dest (cons (cons (downcase (car params))
+;;;			       ;; decode (invalid!) encoded-words.
+;;; 			       (eword-decode-string
+;;; 				(decode-mime-charset-string
+;;; 				 (car (cdr params))
+;;; 				 default-mime-charset)
+;;; 				'must-unfold)
 			       (car (cdr params)))
 			 dest)
 	      params (cdr params)))
@@ -218,10 +225,10 @@ property of the decoded-value."
       (setq dest (cons (cons (car (car eparams)) ; attribute
 			     (mime-decode-parameter-value
 			      (mapconcat (function identity)
-					 (nth 3 (car eparams)) ; values
+					 (nth 1 (car eparams)) ; values
 					 "")
-			      (nth 1 (car eparams)) ; charset
-			      (nth 2 (car eparams)) ; language
+			      (nth 2 (car eparams)) ; charset
+			      (nth 3 (car eparams)) ; language
 			      ))
 		       dest)
 	    eparams (cdr eparams)))
