@@ -517,17 +517,37 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		      )))
     dest))
 
+(defsubst eword-encode-mailboxes-to-rword-list (mboxes)
+  (let ((dest (eword-encode-mailbox-to-rword-list (car mboxes))))
+    (if dest
+	(while (setq mboxes (cdr mboxes))
+	  (setq dest
+		(nconc dest
+		       (list '("," nil nil))
+		       (eword-encode-mailbox-to-rword-list
+			(car mboxes))))))
+    dest))
+
+(defsubst eword-encode-address-to-rword-list (address)
+  (cond
+   ((eq (car address) 'mailbox)
+    (eword-encode-mailbox-to-rword-list address))
+   ((eq (car address) 'group)
+    (nconc
+     (eword-encode-phrase-to-rword-list (nth 1 address))
+     (list (list ":" nil nil))
+     (eword-encode-mailboxes-to-rword-list (nth 2 address))
+     (list (list ";" nil nil))))))
+
 (defsubst eword-encode-addresses-to-rword-list (addresses)
-  (let ((dest (eword-encode-mailbox-to-rword-list (car addresses))))
+  (let ((dest (eword-encode-address-to-rword-list (car addresses))))
     (if dest
 	(while (setq addresses (cdr addresses))
 	  (setq dest
 		(nconc dest
 		       (list '("," nil nil))
 		       ;; (list '(" " nil nil))
-		       (eword-encode-mailbox-to-rword-list (car addresses))
-		       ))
-	  ))
+		       (eword-encode-address-to-rword-list (car addresses))))))
     dest))
 
 (defsubst eword-encode-msg-id-to-rword-list (msg-id)

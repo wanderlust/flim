@@ -1,3 +1,14 @@
+2000-08-28  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* eword-encode.el (eword-encode-mailboxes-to-rword-list):
+	New inline function.
+	(eword-encode-address-to-rword-list): Ditto.
+	(eword-encode-addresses-to-rword-list):
+	Use `eword-encode-address-to-rword-list' instead of
+	`eword-encode-mailbox-to-rword-list'.
+
+	* std11.el (std11-address-string): Fix for group list.
+
 2000-08-10  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mmgeneric.el: Enclose definition of class `mime-entity' and its
@@ -8,7 +19,7 @@
 
 2000-07-12  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-	* FLIM-Chao: Version 1.14.1 (Rokujiz-Dò)-A released.
+	* FLIM-Chao: Version 1.14.1 (Rokujiz-Dò) released.-A
 
 2000-07-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -626,7 +637,7 @@
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.7 (Y-Dþzaki)-A released.
+	* FLIM: Version 1.12.7 (Y-Dþzaki) released.-A
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -801,7 +812,7 @@
 
 1999-05-11  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.6 (Family-K-Dòenmae)-A released.
+	* FLIM: Version 1.12.6 (Family-K-Dòenmae) released.-A
 
 1999-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
@@ -918,7 +929,7 @@
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama)-A released.
+	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama) released.-A
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -961,7 +972,7 @@
 
 1999-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.2 (Kuj-Dò)-A released.
+	* FLIM: Version 1.12.2 (Kuj-Dò) released.-A
 
 1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1147,7 +1158,7 @@
 
 1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.1 (Nishinoky-Dò)-A released.
+	* FLIM: Version 1.12.1 (Nishinoky-Dò) released.-A
 
 1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1365,7 +1376,7 @@
 
 1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.11.2 (Heij-Dò)-A was released.
+	* FLIM: Version 1.11.2 (Heij-Dò) was released.-A
 
 	* NEWS (Abolish variable `mime-temp-directory'): New subsection.
 
@@ -1645,7 +1656,7 @@
 
 1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.4 (Shin-H-Dòsono)-A was released.
+	* FLIM: Version 1.10.4 (Shin-H-Dòsono) was released.-A
 
 1998-10-12  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -1830,7 +1841,7 @@
 
 1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.0 (K-Dòdo)-A was released.
+	* FLIM: Version 1.10.0 (K-Dòdo) was released.-A
 
 	* README.en (What's FLIM): Add mel-ccl.el.
 
@@ -2117,7 +2128,7 @@
 
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.9.1 (Tonosh-Dò)-A was released.
+	* FLIM: Version 1.9.1 (Tonosh-Dò) was released.-A
 
 	* mime-en.sgml (mm-backend): Translate a little.
 
@@ -2260,7 +2271,7 @@
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.8.0 (Shij-Dò)-A was released.
+	* FLIM-Chao: Version 1.8.0 (Shij-Dò) was released.-A
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2372,7 +2383,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-DÒkubo)-A was released.
+	* FLIM: Version 1.8.0 (-DÒkubo) was released.-A
 
 	* README.en: Delete `How to use'.
 
@@ -2497,7 +2508,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (Goj-Dò)-A was released.
+	* FLIM-Chao: Version 1.7.0 (Goj-Dò) was released.-A
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2756,7 +2767,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae)-A was released.
+	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae) was released.-A
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2876,7 +2887,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J-Dþjò)-A was released.
+	* FLIM: Version 1.2.0 (J-Dþjò) was released.-A
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -2927,7 +2938,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Dòji)-A was released.
+	* FLIM: Version 1.1.0 (T-Dòji) was released.-A
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2963,7 +2974,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
+	* FLIM: Version 1.0.1 (Ky-Dòto) was released.-A
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
