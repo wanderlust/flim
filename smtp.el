@@ -237,7 +237,7 @@ BUFFER is the buffer to associate with the connection.  SERVER is name
 of the host to connect to.  SERVICE is name of the service desired."
   (let* ((process
 	  (binary-funcall smtp-open-connection-function
-			  "SMTP" buffer  server service))
+			  "SMTP" buffer server service))
 	 connection)
     (when process
       (setq connection (smtp-make-connection process server service))

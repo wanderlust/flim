@@ -25,6 +25,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'static))
 (require 'mime-def)
 (require 'poem)
 (require 'alist)
@@ -114,29 +115,64 @@ Content-Transfer-Encoding for it."
 
 (defun binary-funcall (name &rest args)
   "Like `funcall', q.v., but read and write as binary."
-  (let ((coding-system-for-read 'binary)
-	(coding-system-for-write 'binary)
-	selective-display
-	(default-process-coding-system '(binary . binary))
-	(input-coding-system 'binary)
-	(output-coding-system 'binary)
-	default-mc-flag mc-flag
-	program-coding-system-alist
-	(default-kanji-process-code 0)
-	default-kanji-flag kanji-flag program-kanji-code-alist)
-    (apply name args)))
+  (static-cond
+   ((boundp 'NEMACS)
+    (let (kanji-flag
+	  default-kanji-flag selective-display
+	  ;; file input.
+	  (kanji-expected-code 0)
+	  (find-kanji-file-input-code 'find-kanji-file-input-code)
+	  ;; file output.
+	  (default-kanji-fileio-code 0)
+	  (kanji-fileio-code 0)
+	  (find-kanji-file-output-code (function (lambda (&rest args) 0)))
+	  ;; process I/O.
+	  (default-kanji-process-code 0)
+	  (find-kanji-process-code 'find-kanji-process-code)
+	  program-kanji-code-alist service-kanji-code-alist)
+      (apply name args)))
+   ((boundp 'MULE)
+    (let ((default-process-coding-system '(binary . binary))
+	  (input-coding-system 'binary)
+	  (output-coding-system 'binary)
+	  default-mc-flag mc-flag selective-display
+	  call-process-hook open-network-stream-hook start-process-hook)
+      (apply name args)))
+   (t
+    (let ((coding-system-for-read 'binary)
+	  (coding-system-for-write 'binary))
+      (apply name args)))))
 
 (defun binary-to-text-funcall (coding-system name &rest args)
   "Like `funcall', q.v., but write as binary and read as text.
-Read text is decoded as CODING-SYSTEM.  It won't work with Nemacs."
-  (let ((coding-system-for-read coding-system)
-	(coding-system-for-write 'binary)
-	selective-display
-	(default-process-coding-system (cons coding-system 'binary))
-	(input-coding-system coding-system)
-	(output-coding-system 'binary)
-	program-coding-system-alist)
-    (apply name args)))
+Read text is decoded as CODING-SYSTEM.
+It won't work for processes in Nemacs."
+  (static-cond
+   ((boundp 'NEMACS)
+    (let (selective-display
+	  ;; file input.
+	  (kanji-expected-code coding-system)
+	  (find-kanji-file-input-code 'find-kanji-file-input-code)
+	  ;; file output.
+	  (default-kanji-fileio-code 0)
+	  (kanji-fileio-code 0)
+	  (find-kanji-file-output-code (function (lambda (&rest args) 0)))
+	  ;; process I/O (use `coding-system' for both input and output).
+	  (default-kanji-process-code coding-system)
+	  (find-kanji-process-code 'find-kanji-process-code)
+	  program-kanji-code-alist service-kanji-code-alist)
+      (apply name args)))
+   ((boundp 'MULE)
+    (let ((default-process-coding-system (cons coding-system 'binary))
+	  (input-coding-system coding-system)
+	  (output-coding-system 'binary)
+	  selective-display
+	  call-process-hook open-network-stream-hook start-process-hook)
+      (apply name args)))
+   (t
+    (let ((coding-system-for-read coding-system)
+	  (coding-system-for-write 'binary))
+      (apply name args)))))
 
 (mel-define-backend "binary")
 (mel-define-method-function (mime-encode-string string (nil "binary"))

@@ -1,6 +1,6 @@
 ;;; smtpmail.el --- SMTP interface for mail-mode
 
-;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
 ;; Keywords: mail
@@ -47,7 +47,7 @@
 (require 'smtp)
 (require 'sendmail)
 (require 'time-stamp)
-(require 'mel)
+(require 'mel) ; binary-write-decoded-region, binary-find-file-noselect
 
 (eval-when-compile (require 'static))
 

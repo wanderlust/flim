@@ -176,10 +176,8 @@ order.  Otherwise result is not sorted."
 
 
 ;;;###autoload
-(defcustom mime-mailcap-file "~/.mailcap"
-  "*File name of user's mailcap file."
-  :group 'mime
-  :type 'file)
+(defvar mime-mailcap-file "~/.mailcap"
+  "*File name of user's mailcap file.")
 
 ;;;###autoload
 (defun mime-parse-mailcap-file (&optional filename order)
