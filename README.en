@@ -175,11 +175,11 @@ String
 
 Function base64-encode-string (STRING)
 
-  Encode STRING as base64 and return it.
+  Encode STRING to base64, and return the result.
 
 Function base64-decode-string (STRING)
 
-  Decode STRING as base64 and return it.
+  Decode STRING which is encoded in base64, and return the result.
 
 Function q-encoding-encode-string (STRING &optional MODE)
 
