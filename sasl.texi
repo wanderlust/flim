@@ -48,7 +48,7 @@ step.
 @chapter Mechanisms
 
 A mechanism (@code{sasl-mechanism} object) is a schema of the @sc{sasl}
-authentication process.
+authentication mechanism driver.
 
 @defvar sasl-mechanisms
 A list of mechanism names.
@@ -56,7 +56,7 @@ A list of mechanism names.
 
 @defun sasl-find-mechanism mechanisms
 
-Retrieve an apropriate authentication mechanism.
+Retrieve an apropriate mechanism.
 This function compares MECHANISMS and @code{sasl-mechanisms} then
 returns apropriate @sc{sasl} mechanism object.
 
@@ -76,7 +76,7 @@ Drivers}), use @code{sasl-make-mechanism} and modify
 @code{sasl-mechanisms} and @code{sasl-mechanism-alist} correctly.
 
 @defun sasl-make-mechanism name steps
-Allocate an authentication mechanism.
+Allocate a mechanism.
 This function takes two parameters---name of the mechanism, and a list
 of authentication functions.
 
