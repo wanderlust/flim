@@ -1,3 +1,8 @@
+1999-04-22  MORIOKA Tomohiko  <tomo@etl.go.jp>
+
+	* eword-encode.el: Require `poem' instead of `emu'.
+	Don't use `cl' for `caar'.
+
 1999-04-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtp.el (smtp-via-smtp): Funcall `smtp-server' if it is a
