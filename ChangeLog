@@ -1,7 +1,5 @@
 1998-07-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* mime.el: Delete autoload setting for `mime-parse-message'.
-
 	* mime-en.sgml, mime-ja.sgml (Entity creation): Delete description
 	of `mime-parse-message'; modify description of `mime-parse-buffer'
 	to add `representation-type'.
