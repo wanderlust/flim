@@ -5,6 +5,7 @@
 ;; Licensed to the Free Software Foundation.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
+;;         Keiichi Suzuki <keiichi@nanap.org>
 ;; Keywords: definition, MIME, multimedia, mail, news
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
