@@ -31,11 +31,6 @@ install:	elc
 
 
 package:
-	$(XEMACS) -batch -q -no-site-file \
-		-eval '(setq autoload-package-name "flim")' \
-		-l autoload -f batch-update-directory .
-	$(XEMACS) -batch -q -no-site-file \
-		-l cus-dep -f Custom-make-dependencies .
 	$(XEMACS) $(FLAGS) -f compile-flim-package $(PACKAGEDIR)
 
 install-package:	package
