@@ -119,7 +119,7 @@ mmencode included in metamail or XEmacs package)."
     (insert (base64-encode-string
 	     (with-temp-buffer
 	       (set-buffer-multibyte nil)
-	       (insert-file-contents-as-binary filename)
+	       (binary-insert-file-contents filename)
 	       (buffer-string))))
     (or (bolp) (insert ?\n)))
     
