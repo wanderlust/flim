@@ -400,7 +400,7 @@ return the result.
 <args> type
 <opts> parents
 <p>
-Define mm-backend <var>type</var>.
+Define <var>type</var> as a mm-backend.
 <p>
 If <var>PARENTS</var> is specified, <var>type</var> inherits parents.
 Each parent must be representation-type.
