@@ -1,6 +1,8 @@
 ;;; mime-def.el --- definition module about MIME
 
 ;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1999 Electrotechnical Laboratory, JAPAN.
+;; Licensed to the Free Software Foundation.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: definition, MIME, multimedia, mail, news
@@ -207,125 +209,20 @@
 ;;; @ MIME entity
 ;;;
 
-(defmacro make-mime-entity-internal (representation-type location
-				     &optional content-type
-				     children parent node-id
-				     ;; for NOV
-				     decoded-subject decoded-from
-				     date message-id references
-				     chars lines
-				     xref
-				     ;; for other fields
-				     original-header parsed-header
-				     ;; for buffer representation
-				     buffer
-				     header-start header-end
-				     body-start body-end)
-  `(vector ,representation-type ,location
-	   ,content-type nil nil ,children ,parent ,node-id
-	   ;; for NOV
-	   ,decoded-subject ,decoded-from
-	   ,date ,message-id ,references
-	   ,chars ,lines
-	   ,xref
-	   ;; for other fields
-	   ,original-header ,parsed-header
-	   ;; for buffer representation
-	   ,buffer ,header-start ,header-end ,body-start ,body-end))
+(require 'luna)
 
-(defmacro mime-entity-representation-type-internal (entity)
-  `(aref ,entity 0))
-(defmacro mime-entity-set-representation-type-internal (entity type)
-  `(aset ,entity 0 ,type))
-(defmacro mime-entity-location-internal (entity)
-  `(aref ,entity 1))
-(defmacro mime-entity-set-location-internal (entity location)
-  `(aset ,entity 1 ,location))
+(luna-define-class mime-entity ()
+		   (location
+		    content-type children parent
+		    node-id
+		    content-disposition encoding
+		    ;; for other fields
+		    original-header parsed-header))
 
-(defmacro mime-entity-content-type-internal (entity)
-  `(aref ,entity 2))
-(defmacro mime-entity-set-content-type-internal (entity type)
-  `(aset ,entity 2 ,type))
-(defmacro mime-entity-content-disposition-internal (entity)
-  `(aref ,entity 3))
-(defmacro mime-entity-set-content-disposition-internal (entity disposition)
-  `(aset ,entity 3 ,disposition))
-(defmacro mime-entity-encoding-internal (entity)
-  `(aref ,entity 4))
-(defmacro mime-entity-set-encoding-internal (entity encoding)
-  `(aset ,entity 4 ,encoding))
+(defalias 'mime-entity-representation-type-internal 'luna-class-name)
+(defalias 'mime-entity-set-representation-type-internal 'luna-set-class-name)
 
-(defmacro mime-entity-children-internal (entity)
-  `(aref ,entity 5))
-(defmacro mime-entity-set-children-internal (entity children)
-  `(aset ,entity 5 ,children))
-(defmacro mime-entity-parent-internal (entity)
-  `(aref ,entity 6))
-(defmacro mime-entity-node-id-internal (entity)
-  `(aref ,entity 7))
-
-(defmacro mime-entity-decoded-subject-internal (entity)
-  `(aref ,entity 8))
-(defmacro mime-entity-set-decoded-subject-internal (entity subject)
-  `(aset ,entity 8 ,subject))
-(defmacro mime-entity-decoded-from-internal (entity)
-  `(aref ,entity 9))
-(defmacro mime-entity-set-decoded-from-internal (entity from)
-  `(aset ,entity 9 ,from))
-(defmacro mime-entity-date-internal (entity)
-  `(aref ,entity 10))
-(defmacro mime-entity-set-date-internal (entity date)
-  `(aset ,entity 10 ,date))
-(defmacro mime-entity-message-id-internal (entity)
-  `(aref ,entity 11))
-(defmacro mime-entity-set-message-id-internal (entity message-id)
-  `(aset ,entity 11 ,message-id))
-(defmacro mime-entity-references-internal (entity)
-  `(aref ,entity 12))
-(defmacro mime-entity-set-references-internal (entity references)
-  `(aset ,entity 12 ,references))
-(defmacro mime-entity-chars-internal (entity)
-  `(aref ,entity 13))
-(defmacro mime-entity-set-chars-internal (entity chars)
-  `(aset ,entity 13 ,chars))
-(defmacro mime-entity-lines-internal (entity)
-  `(aref ,entity 14))
-(defmacro mime-entity-set-lines-internal (entity lines)
-  `(aset ,entity 14 ,lines))
-(defmacro mime-entity-xref-internal (entity)
-  `(aref ,entity 15))
-(defmacro mime-entity-set-xref-internal (entity xref)
-  `(aset ,entity 15 ,xref))
-
-(defmacro mime-entity-original-header-internal (entity)
-  `(aref ,entity 16))
-(defmacro mime-entity-set-original-header-internal (entity header)
-  `(aset ,entity 16 ,header))
-(defmacro mime-entity-parsed-header-internal (entity)
-  `(aref ,entity 17))
-(defmacro mime-entity-set-parsed-header-internal (entity header)
-  `(aset ,entity 17 ,header))
-
-(defmacro mime-entity-buffer-internal (entity)
-  `(aref ,entity 18))
-(defmacro mime-entity-set-buffer-internal (entity buffer)
-  `(aset ,entity 18 ,buffer))
-(defmacro mime-entity-header-start-internal (entity)
-  `(aref ,entity 19))
-(defmacro mime-entity-set-header-start-internal (entity point)
-  `(aset ,entity 19 ,point))
-(defmacro mime-entity-header-end-internal (entity)
-  `(aref ,entity 20))
-(defmacro mime-entity-set-header-end-internal (entity point)
-  `(aset ,entity 20 ,point))
-(defmacro mime-entity-body-start-internal (entity)
-  `(aref ,entity 21))
-(defmacro mime-entity-set-body-start-internal (entity point)
-  `(aset ,entity 21 ,point))
-(defmacro mime-entity-body-end-internal (entity)
-  `(aref ,entity 22))
-(defmacro mime-entity-set-body-end-internal (entity point)
-  `(aset ,entity 22 ,point))
+(luna-define-internal-accessors 'mime-entity)
 
 
 ;;; @ message structure
@@ -337,12 +234,7 @@ Please use reference function `mime-entity-SLOT' to get value of SLOT.
 
 Following is a list of slots of the structure:
 
-buffer			buffer includes this entity (buffer).
 node-id			node-id (list of integers)
-header-start		minimum point of header in raw-buffer
-header-end		maximum point of header in raw-buffer
-body-start		minimum point of body in raw-buffer
-body-end		maximum point of body in raw-buffer
 content-type		content-type (content-type)
 content-disposition	content-disposition (content-disposition)
 encoding		Content-Transfer-Encoding (string or nil)
@@ -358,47 +250,27 @@ message/rfc822, `mime-entity' structures of them are included in
 ;;; @ for mm-backend
 ;;;
 
-(require 'alist)
-
-(defvar mime-entity-implementation-alist nil)
+(defmacro mm-expand-class-name (type)
+  `(intern (format "mime-%s-entity" ,type)))
 
 (defmacro mm-define-backend (type &optional parents)
-  "Define TYPE as a mm-backend.
-If PARENTS is specified, TYPE inherits PARENTS.
-Each parent must be backend name (symbol)."
-  (if parents
-      `(let ((rest ',(reverse parents)))
-	 (while rest
-	   (set-alist 'mime-entity-implementation-alist
-		      ',type
-		      (copy-alist
-		       (cdr (assq (car rest)
-				  mime-entity-implementation-alist))))
-	   (setq rest (cdr rest))
-	   ))))
+  `(luna-define-class ,(mm-expand-class-name type)
+		      ,(nconc (mapcar (lambda (parent)
+					(mm-expand-class-name parent)
+					)
+				      parents)
+			      '(mime-entity))))
 
 (defmacro mm-define-method (name args &rest body)
-  "Define NAME as a method function of (nth 1 (car ARGS)) backend.
-
-ARGS is like an argument list of lambda, but (car ARGS) must be
-specialized parameter.  (car (car ARGS)) is name of variable and (nth
-1 (car ARGS)) is name of backend."
-  (let* ((specializer (car args))
-	 (class (nth 1 specializer))
-	 (self (car specializer)))
-    `(let ((imps (cdr (assq ',class mime-entity-implementation-alist)))
-	   (func (lambda ,(if self
-			      (cons self (cdr args))
-			    (cdr args))
-		   ,@body)))
-       (if imps
-	   (set-alist 'mime-entity-implementation-alist
-		      ',class (put-alist ',name func imps))
-	 (set-alist 'mime-entity-implementation-alist
-		    ',class
-		    (list (cons ',name func)))
-	 ))))
-
+  (or (eq name 'initialize-instance)
+      (setq name (intern (format "mime-%s" name))))
+  (let ((spec (car args)))
+    (setq args
+	  (cons (list (car spec)
+		      (mm-expand-class-name (nth 1 spec)))
+		(cdr args)))
+    `(luna-define-method ,name ,args ,@body)
+    ))
 (put 'mm-define-method 'lisp-indent-function 'defun)
 
 (eval-when-compile
@@ -422,16 +294,6 @@ specialized parameter.  (car (car ARGS)) is name of variable and (nth
 	    def-body))
  )
 
-(defsubst mm-arglist-to-arguments (arglist)
-  (let (dest)
-    (while arglist
-      (let ((arg (car arglist)))
-	(or (memq arg '(&optional &rest))
-	    (setq dest (cons arg dest)))
-	)
-      (setq arglist (cdr arglist)))
-    (nreverse dest)))
-
 
 ;;; @ for mel-backend
 ;;;
@@ -449,7 +311,7 @@ service."
 	   `((defun ,name ,args
 	       ,@rest
 	       (funcall (mel-find-function ',name ,(car (last args)))
-			,@(mm-arglist-to-arguments (butlast args)))
+			,@(luna-arglist-to-arguments (butlast args)))
 	       )))
      ))
 
