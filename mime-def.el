@@ -25,7 +25,11 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "FLIM-FLAM 1.1.0 - \"韓紅花\" 4.0R4.0/14.0")
+  "FLIM-FLAM 1.2.0 - \"桃花\" 2.5R6.0/10.0")
+
+
+;;; @ variables
+;;;
 
 (require 'custom)
 
@@ -36,6 +40,20 @@
 
 (custom-handle-keyword 'default-mime-charset :group 'mime
 		       'custom-variable)
+
+(defcustom mime-temp-directory (or (getenv "MIME_TMP_DIR")
+				   (getenv "TM_TMP_DIR")
+				   (getenv "TMPDIR")
+				   (getenv "TMP")
+				   (getenv "TEMP")
+				   "/tmp/")
+  "*Directory for temporary files."
+  :group 'mime
+  :type 'directory)
+
+
+;;; @ required functions
+;;;
 
 (unless (fboundp 'butlast)
   (defun butlast (x &optional n)
@@ -79,6 +97,17 @@
 (defconst quoted-printable-octet-regexp
   (concat "=[" quoted-printable-hex-chars
 	  "][" quoted-printable-hex-chars "]"))
+
+
+;;; @ utility
+;;;
+
+(defsubst mime-type/subtype-string (type &optional subtype)
+  "Return type/subtype string from TYPE and SUBTYPE."
+  (if type
+      (if subtype
+	  (format "%s/%s" type subtype)
+	(format "%s" type))))
 
 
 ;;; @ end

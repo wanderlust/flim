@@ -26,7 +26,7 @@
 ;;; Code:
 
 (require 'emu)
-(require 'mel)
+(require 'mime-def)
 
 
 ;;; @ variables

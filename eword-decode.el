@@ -32,7 +32,7 @@
 
 ;;; Code:
 
-(require 'std11-parse)
+(require 'std11)
 (require 'mel)
 (require 'mime-def)
 
@@ -452,7 +452,18 @@ If SEPARATOR is not nil, it is used as header separator."
 ;;; @ encoded-word decoder
 ;;;
 
-(defvar eword-warning-face nil "Face used for invalid encoded-word.")
+(defvar eword-decode-encoded-word-error-handler
+  'eword-decode-encoded-word-default-error-handler)
+
+(defvar eword-warning-face nil
+  "Face used for invalid encoded-word.")
+
+(defun eword-decode-encoded-word-default-error-handler (word signal)
+  (and (add-text-properties 0 (length word)
+			    (and eword-warning-face
+				 (list 'face eword-warning-face))
+			    word)
+       word))
 
 (defun eword-decode-encoded-word (word &optional must-unfold)
   "Decode WORD if it is an encoded-word.
@@ -477,12 +488,8 @@ as a version of Net$cape)."
             (condition-case err
                 (eword-decode-encoded-text charset encoding text must-unfold)
               (error
-               (and
-		(add-text-properties 0 (length word)
-				     (and eword-warning-face
-					  (list 'face eword-warning-face))
-				     word)
-		word)))
+	       (funcall eword-decode-encoded-word-error-handler word err)
+               ))
             ))
       word))
 

@@ -4,11 +4,11 @@
 
 ;;; Code:
 
-(setq flim-modules '(std11 std11-parse
-			   mel mel-dl mel-b mel-q mel-u mel-g
-			   mime-def eword-decode eword-encode
-			   mailcap
-			   ))
+(setq flim-modules '(std11
+		     mime-def
+		     mel mel-dl mel-b mel-q mel-u mel-g
+		     eword-decode eword-encode
+		     mailcap))
 
 (if (fboundp 'dynamic-link)
     (setq flim-modules (cons 'mel-dl flim-modules))
