@@ -1,3 +1,9 @@
+1999-02-21  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): Refined.
+	(mel-ccl-set-eof-block): New function.
+	(mel-ccl-try-to-read-crlf): Use `mel-ccl-set-eof-block'.
+
 1999-02-20  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
