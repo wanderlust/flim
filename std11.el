@@ -38,7 +38,7 @@
   (concat "\n" std11-field-name-regexp ":"))
 
 (defun std11-field-end ()
-  "Move to end of field and return this point. [std11.el]"
+  "Move to end of field and return this point."
   (if (re-search-forward std11-next-field-head-regexp nil t)
       (goto-char (match-beginning 0))
     (if (re-search-forward "^$" nil t)
@@ -48,7 +48,7 @@
   (point)
   )
 
-(defsubst std11-fetch-field (name)
+(defun std11-fetch-field (name)
   "Return the value of the header field NAME.
 The buffer is expected to be narrowed to just the headers of the message."
   (save-excursion
@@ -58,19 +58,31 @@ The buffer is expected to be narrowed to just the headers of the message."
 	  (buffer-substring-no-properties (match-end 0) (std11-field-end))
 	))))
 
+(defun std11-narrow-to-header (&optional boundary)
+  "Narrow to the message header.
+If BOUNDARY is not nil, it is used as message header separator."
+  (narrow-to-region
+   (goto-char (point-min))
+   (if (re-search-forward
+	(concat "^\\(" (regexp-quote (or boundary "")) "\\)?$")
+	nil t)
+       (match-beginning 0)
+     (point-max)
+     )))
+
 (defun std11-field-body (name &optional boundary)
   "Return the value of the header field NAME.
 If BOUNDARY is not nil, it is used as message header separator."
   (save-excursion
     (save-restriction
-      (std11-narrow-to-header boundary)
-      (std11-fetch-field name)
+      (inline (std11-narrow-to-header boundary)
+	      (std11-fetch-field name))
       )))
 
 (defun std11-find-field-body (field-names &optional boundary)
   "Return the first found field-body specified by FIELD-NAMES
 of the message header in current buffer. If BOUNDARY is not nil, it is
-used as message header separator. [std11.el]"
+used as message header separator."
   (save-excursion
     (save-restriction
       (std11-narrow-to-header boundary)
@@ -90,7 +102,7 @@ used as message header separator. [std11.el]"
 (defun std11-field-bodies (field-names &optional default-value boundary)
   "Return list of each field-bodies of FIELD-NAMES of the message header
 in current buffer. If BOUNDARY is not nil, it is used as message
-header separator. [std11.el]"
+header separator."
   (save-excursion
     (save-restriction
       (std11-narrow-to-header boundary)
@@ -133,19 +145,6 @@ header separator. [std11.el]"
 
 ;;; @ header
 ;;;
-
-(defun std11-narrow-to-header (&optional boundary)
-  "Narrow to the message header.
-If BOUNDARY is not nil, it is used as message header separator.
-\[std11.el]"
-  (narrow-to-region
-   (goto-char (point-min))
-   (if (re-search-forward
-	(concat "^\\(" (regexp-quote (or boundary "")) "\\)?$")
-	nil t)
-       (match-beginning 0)
-     (point-max)
-     )))
 
 (defun std11-header-string (regexp &optional boundary)
   "Return string of message header fields matched by REGEXP.
