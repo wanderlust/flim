@@ -275,7 +275,7 @@ of the host to connect to.  SERVICE is name of the service desired."
        (get-buffer-create
 	(format "*trace of SMTP session to %s*" server)))
       (erase-buffer)
-      (buffer-disable-undo)
+      (buffer-disable-undo (current-buffer))
       (unless (smtp-find-connection (current-buffer))
 	(smtp-open-connection (current-buffer) server smtp-service))
       (make-local-variable 'smtp-read-point)
