@@ -1,7 +1,9 @@
 1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel.el (mel-ccl-module): Require path-util when the running
+	emacs has MULE.
+
 	* mel.el: Don't require emu.
-	Must require path-util.
 
 1998-10-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
