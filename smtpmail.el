@@ -130,7 +130,8 @@ This is relative to `smtpmail-queue-dir'.")
 		    (save-restriction
 		      (narrow-to-region (point)
 					(save-excursion
-					  (end-of-line)
+					  (while (looking-at "^[ \t]")
+					    (forward-line 1))
 					  (point)))
 		      (append (mail-parse-comma-list)
 			      resend-to-addresses))))
