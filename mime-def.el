@@ -35,7 +35,7 @@
 (eval-when-compile (require 'cl))	; list*
 
 (eval-and-compile
-  (defconst mime-library-product ["SLIM" (1 13 5) "山瀬まみ"]
+  (defconst mime-library-product ["SLIM" (1 13 6) "島崎和歌子"]
     "Product name, version number and code name of MIME-library package.")
   )
 

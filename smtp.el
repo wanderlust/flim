@@ -104,6 +104,7 @@ don't define this value."
     (login smtp-auth-login)
     (anonymous smtp-auth-anonymous)
     (scram-md5 smtp-auth-scram-md5)
+    (digest-md5 smtp-auth-digest-md5)
     ))
 
 (defcustom smtp-connection-type nil
@@ -655,6 +656,32 @@ don't define this value."
 	    (not (integerp (car response)))
 	    (>= (car response) 400))
 	(throw 'done (car (cdr response)))) ))
+
+(defun smtp-auth-digest-md5 (process)
+  "Login to server using the AUTH DIGEST-MD5 method."
+  (let (responce)
+    (smtp-send-command process "AUTH DIGEST-MD5")
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response))))
+    (digest-md5-parse-digest-challenge
+     (base64-decode-string
+      (substring (car (cdr response)) 4)))
+    (smtp-send-command process
+     (base64-encode-string 
+      (digest-md5-digest-response
+       smtp-authentication-user
+       smtp-authentication-passphrase
+       (digest-md5-digest-uri
+	"smtp" (digest-md5-challenge 'realm)))
+      'no-line-break))
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response))))))
     
 (provide 'smtp)
 
