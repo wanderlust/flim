@@ -506,7 +506,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		      '((" " nil nil)
 			("(" nil nil))
 		      (eword-encode-split-string comment 'comment)
-		      '((")" nil nil))
+		      (list '(")" nil nil))
 		      )))
     dest))
 
