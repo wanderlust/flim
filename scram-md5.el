@@ -39,7 +39,8 @@
 
 ;;; Code:
 
-(require 'hmac-md5)			; (hmac-md5 TEXT KEY)
+(require 'hmac-md5)
+(require 'unique-id)
 
 (defmacro scram-security-info-no-security-layer (security-info)
   `(eq (logand (aref ,security-info 0) 1) 1))
@@ -71,7 +72,7 @@
   (let (id)
     (unwind-protect
 	(concat "<" 
-		(setq id (sasl-unique-id))
+		(setq id (unique-id-m ".sasl"))
 		"@" (system-name) ">")
       (fillarray id 0))))
 

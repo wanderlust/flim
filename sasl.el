@@ -112,57 +112,6 @@
 	     (scram-md5-parse-server-msg-1 server-msg-1))
 	    salted-pass)))
 
-;;; unique-ID
-(defun sasl-number-base36 (num len)
-  (if (if (< len 0)
-	  (<= num 0)
-	(= len 0))
-      ""
-    (concat (sasl-number-base36 (/ num 36) (1- len))
-	    (char-to-string (aref "zyxwvutsrqponmlkjihgfedcba9876543210"
-				  (% num 36))))))
-
-(defvar sasl-unique-id-char nil)
-
-(defun sasl-unique-id ()
-  ;; Don't use microseconds from (current-time), they may be unsupported.
-  ;; Instead we use this randomly inited counter.
-  (setq sasl-unique-id-char
-	(% (1+ (or sasl-unique-id-char (logand (random t) (1- (lsh 1 20)))))
-	   ;; (current-time) returns 16-bit ints,
-	   ;; and 2^16*25 just fits into 4 digits i base 36.
-	   (* 25 25)))
-  (let ((tm (static-if (fboundp 'current-time)
-		(current-time)
-	      (let* ((cts (split-string (current-time-string) "[ :]"))
-		     (m (cdr (assoc (nth 1 cts)
-				    '(("Jan" . "01") ("Feb" . "02")
-				      ("Mar" . "03") ("Apr" . "04")
-				      ("May" . "05") ("Jun" . "06")
-				      ("Jul" . "07") ("Aug" . "08")
-				      ("Sep" . "09") ("Oct" . "10")
-				      ("Nov" . "11") ("Dec" . "12"))))))
-		(list (string-to-int (concat (nth 6 cts) m
-					     (substring (nth 2 cts) 0 1)))
-		      (string-to-int (concat (substring (nth 2 cts) 1)
-					     (nth 4 cts) (nth 5 cts)
-					     (nth 6 cts))))))))
-    (concat
-     (if (memq system-type '(ms-dos emx vax-vms))
-	 (let ((user (downcase (user-login-name))))
-	   (while (string-match "[^a-z0-9_]" user)
-	     (aset user (match-beginning 0) ?_))
-	   user)
-       (sasl-number-base36 (user-uid) -1))
-     (sasl-number-base36 (+ (car   tm)
-			  (lsh (% sasl-unique-id-char 25) 16)) 4)
-     (sasl-number-base36 (+ (nth 1 tm)
-			  (lsh (/ sasl-unique-id-char 25) 16)) 4)
-     ;; Append the name of the message interface, because while the
-     ;; generated ID is unique to this newsreader, other newsreaders
-     ;; might otherwise generate the same ID via another algorithm.
-     ".sasl")))
-
 (provide 'sasl)
 
 ;;; sasl.el ends here
