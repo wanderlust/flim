@@ -1,11 +1,10 @@
 ;;; smtp.el --- basic functions to send mail with SMTP server
 
-;; Copyright (C) 1995, 1996, 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
-;;	Simon Leinen <simon@switch.ch> (ESMTP support)
-;;	MORIOKA Tomohiko <tomo@m17n.org> (separate smtp.el from smtpmail.el)
-;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;;         Simon Leinen <simon@switch.ch> (ESMTP support)
+;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: SMTP, mail
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).

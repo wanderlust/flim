@@ -1,3 +1,270 @@
+1999-06-01  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* Chao: Version 1.13.0 (JR Fujinomori) released.
+
+1999-05-29  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmbuffer.el (mime-entity-fetch-field): New implementation.
+
+	* mime-def.el (mime-entity-fetch-field): New method of luna-class
+	`mime-entity'.
+
+	* luna.el (luna-define-method): Allow `:around' qualifier.
+	(luna-class-find-functions): Likewise.
+	(luna-send): Likewise.
+	(luna-call-next-method): New function.
+
+1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime-def.el (eval-module-depended-macro): Abolished.
+	Use `def-edebug-spec' directly.
+
+	* luna.el (luna-define-method): Allow `:before' qualifier.
+	(luna-class-find-functions): Likewise.
+
+	* mime-def.el (mime-message-structure): Define as obsolete
+	variable.
+
+1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime-parse.el (mime-parse-encapsulated): Use
+	`mime-entity-body-start-point' and `mime-entity-body-end-point'.
+
+	* mime.el (mime-parse-buffer): Revert to auto-load from
+	"mime-parse".
+
+	* mime-parse.el (mime-parse-multipart): Move from mime-parse.el
+	again.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-message): Likewise.
+	(mime-parse-buffer): Likewise.
+
+	* mmbuffer.el (mime-parse-multipart): Move to mime-parse.el again.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-message): Likewise.
+	(mime-parse-buffer): Likewise.
+
+	* mmbuffer.el (mime-parse-encapsulated): Run in body-buffer of an
+	entity.
+
+1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmbuffer.el (initialize-instance): Don't initialize slots if
+	they are initialized.
+	(mime-parse-multipart): Run in body-buffer of an entity.
+	(mime-entity-body-start-point): New method.
+
+1999-05-25  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmbuffer.el (mime-entity-body-end-point): New method.
+	(mime-goto-header-start-point): New method.
+	(mime-goto-body-start-point): New method.
+	(mime-goto-body-end-point): New method.
+
+	* mime.el (mime-goto-body-end-point): New generic function.
+
+	* mel.el (Q-encoded-text-length): Fixed.
+
+1999-05-24  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmbuffer.el (mime-parse-multipart): Refer body-start instead of
+	header-end.
+
+	* mmcooked.el (mime-insert-header): Fix typo.
+
+1999-05-23  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmcooked.el (mime-insert-header): Use
+	`luna-class-find-functions'.
+
+	* mime.el (mime-entity-buffer): Define as obsolete function.
+	(mime-entity-body-end-point): New generic function; define
+	`mime-entity-body-end' as obsolete function.
+	(mime-goto-body-start-point): New generic function.
+	(mime-entity-uu-filename): Use `mime-goto-body-start-point' and
+	`mime-entity-body-end-point'.
+
+	* mmbuffer.el (initialize-instance): Define as after method;
+	return initialized instance.
+
+	* luna.el (luna-define-class): Add `standard-object' as a parent.
+	(luna-define-method): Allow `:after' qualifier.
+	(luna-class-find-parents-functions): New function.
+	(luna-class-find-functions): New function [abolish
+	`luna-class-find-function'].
+	(luna-find-functions): New function [abolish
+	`luna-find-function'].
+	(luna-send): Modify for new method dispatch mechanism.
+	(luna-make-entity): New implementation.
+	(standard-object): New class.
+	(initialize-instance): New method.
+
+1999-05-22  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* Delete mmgeneric.el.
+
+	* mmcooked.el: Modify for mmbuffer.el.
+
+	* mmbuffer.el:
+	- Don't require `mmgeneric' and `mime-parse'.
+	- Require mime.
+	- Use `luna'.
+	(mime-buffer-entity-buffer-internal): Renamed from
+	`mime-entity-set-buffer-internal'.
+	(mime-buffer-entity-set-buffer-internal): Likewise.
+	(mime-buffer-entity-header-start-internal): Likewise.
+	(mime-buffer-entity-set-header-start-internal): Likewise.
+	(mime-buffer-entity-header-end-internal): Likewise.
+	(mime-buffer-entity-set-header-end-internal): Likewise.
+	(mime-buffer-entity-body-start-internal): Likewise.
+	(mime-buffer-entity-set-body-start-internal): Likewise.
+	(mime-buffer-entity-body-end-internal): Likewise.
+	(mime-buffer-entity-set-body-end-internal): Likewise.
+	(mime-entity-name): New method.
+	(mime-parse-multipart): New function [moved from mime-parse.el].
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-message): Likewise.
+	(mime-entity-children): New method.
+	(mime-goto-header-start-point): New method.
+	(mime-visible-field-p): New function [moved from mmgeneric.el].
+	(mime-insert-header-from-buffer): Likewise.
+	(mime-insert-header): New method.
+	(mime-entity-content): Use `luna-define-method'.
+	(mime-insert-text-content): New method.
+	((mime-entity-fetch-field): Use `luna-define-method'.
+	(mime-entity-header-buffer): New method.
+	(mime-entity-body-buffer): Likewise.
+	(mime-entity-buffer): Likewise.
+	(mime-entity-point-min): Use `luna-define-method'.
+	(mime-entity-point-max): Use `luna-define-method'.
+	(mime-parse-buffer): New function [moved from mmgeneric.el].
+
+	* mime-parse.el (mime-parse-multipart): Moved to mmbuffer.el.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-message): Likewise.
+	(mime-parse-buffer): Likewise.
+
+	* mime.el (mime-parse-buffer): Auto-loaded from "mmbufer".
+	(mime-find-function): Abolished.
+	(mime-entity-function): Abolished.
+	(mime-entity-send): Use `luna-send'.
+	(mime-open-entity): Use `luna-make-entity' and
+	`mm-expand-class-name'.
+	(mime-entity-cooked-p): Use `luna-define-generic'.
+	(mime-entity-children): Use `luna-send'.
+	(mime-find-entity-from-content-id): Use `mime-entity-read-field'.
+	(mime-entity-buffer): Change to generic function.
+	(mime-entity-header-buffer): New generic function.
+	(mime-entity-body-buffer): Likewise.
+	(mime-entity-point-min): Use `luna-define-generic'.
+	(mime-entity-point-max): Likewise.
+	(mime-entity-header-start): Abolished.
+	(mime-entity-header-end): Abolished.
+	(mime-entity-body-start): Abolished.
+	(mime-entity-body-end): Abolished.
+	(mime-goto-header-start-point): New generic function.
+	(mime-entity-fetch-field): New generic function.
+	(mime-fetch-field): Use `mime-entity-fetch-field'; declare as
+	obsolete function.
+	(mime-entity-content-type): Use `mime-entity-fetch-field'.
+	(mime-entity-content-disposition): Likewise.
+	(mime-entity-encoding): Likewise.
+	(mime-entity-read-field): New function.
+	(mime-read-field): Use `mime-entity-read-field'; declare as
+	obsolete function.
+	(mime-insert-header): Use `luna-define-generic'; abolish obsolete
+	alias `mime-insert-decoded-header'.
+	(mime-entity-name): New generic function.
+	(mime-entity-content): Use `luna-define-generic'.
+	(mime-insert-entity-content): Likewise.
+	(mime-write-entity-content): Likewise.
+	(mime-insert-text-content): Likewise.
+	(mime-insert-entity): Likewise.
+	(mime-write-entity): Likewise.
+	(mime-write-entity-body): Likewise.
+
+	* mime-def.el:
+	- Use `luna'.
+	(make-mime-entity-internal): Abolished.
+	(mime-entity-representation-type-internal): Change to alias for
+	`luna-class-name'.
+	(mime-entity-set-representation-type-internal): Change to alias
+	for `luna-set-class-name'.
+	(mime-entity-location-internal): Defined by
+	`luna-define-internal-accessors'.
+	(mime-entity-set-location-internal): Likewise.
+	(mime-entity-content-type-internal): Likewise.
+	(mime-entity-set-content-type-internal): Likewise.
+	(mime-entity-content-disposition-internal): Likewise.
+	(mime-entity-set-content-disposition-internal): Likewise.
+	(mime-entity-encoding-internal): Likewise.
+	(mime-entity-set-encoding-internal): Likewise.
+	(mime-entity-children-internal): Likewise.
+	(mime-entity-set-children-internal): Likewise.
+	(mime-entity-parent-internal): Likewise.
+	(mime-entity-set-parent-internal): Likewise.
+	(mime-entity-node-id-internal): Likewise.
+	(mime-entity-decoded-subject-internal): Abolished.
+	(mime-entity-set-decoded-subject-internal): Abolished.
+	(mime-entity-decoded-from-internal): Abolished.
+	(mime-entity-set-decoded-from-internal): Abolished.
+	(mime-entity-date-internal): Abolished.
+	(mime-entity-set-date-internal): Abolished.
+	(mime-entity-message-id-internal): Abolished.
+	(mime-entity-set-message-id-internal): Abolished.
+	(mime-entity-references-internal): Abolished.
+	(mime-entity-set-references-internal): Abolished.
+	(mime-entity-chars-internal): Abolished.
+	(mime-entity-set-chars-internal): Abolished.
+	(mime-entity-lines-internal): Abolished.
+	(mime-entity-set-lines-internal): Abolished.
+	(mime-entity-xref-internal): Abolished.
+	(mime-entity-set-xref-internal): Abolished.
+	(mime-entity-original-header-internal): Defined by
+	`luna-define-internal-accessors'.
+	(mime-entity-set-original-header-internal): Likewise.
+	(mime-entity-parsed-header-internal): Likewise.
+	(mime-entity-set-parsed-header-internal): Likewise.
+	(mime-entity-buffer-internal): Abolished.
+	(mime-entity-set-buffer-internal): Abolished.
+	(mime-entity-header-start-internal): Abolished.
+	(mime-entity-set-header-start-internal): Abolished.
+	(mime-entity-header-end-internal): Abolished.
+	(mime-entity-set-header-end-internal): Abolished.
+	(mime-entity-body-start-internal): Abolished.
+	(mime-entity-set-body-start-internal): Abolished.
+	(mime-entity-body-end-internal): Abolished.
+	(mime-entity-set-body-end-internal): Abolished.
+	(mm-expand-class-name): New macro.
+	(mm-define-backend): Use `luna-define-class' and
+	`mm-expand-class-name'.
+	(mm-define-method): Use `luna-define-method' and
+	`mm-expand-class-name'.
+	(mm-arglist-to-arguments): Abolished.
+	(mel-define-service): Use `luna-arglist-to-arguments' instead of
+	`mm-arglist-to-arguments'.
+
+	* mel.el: Require `alist'.
+
+	* FLIM-ELS (flim-modules): Add `luna' and delete `mmgeneric'.
+
+	* luna.el:
+	- Rename property `luna-member-index' to `luna-slot-index'.
+	- Rearrangement to avoid byte-compiling problem.
+	(luna-define-class-function): New function.
+	(luna-define-class): Use `luna-define-class-function'.
+	(luna-define-generic): Fixed.
+	(luna-define-internal-accessors): New function.
+
+1999-05-15  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* luna.el (luna-make-entity-function): Send `initialize-instance'.
+
+1999-05-14  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* luna.el: New module.
+
+
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM: Version 1.12.7 (Y-Dþzaki)-A released.

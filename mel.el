@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
-;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Created: 1995/6/25
 ;; Keywords: MIME, Base64, Quoted-Printable, uuencode, gzip64
 
@@ -26,6 +26,8 @@
 ;;; Code:
 
 (require 'mime-def)
+(require 'poem)
+(require 'alist)
 (require 'path-util)
 
 (defcustom mime-encoding-list
@@ -222,8 +224,9 @@ the STRING by its value."
 (defun Q-encoded-text-length (string &optional mode)
   (let ((l 0)(i 0)(len (length string)) chr)
     (while (< i len)
-      (setq chr (elt string i))
-      (if (Q-encoding-printable-char-p chr mode)
+      (setq chr (aref string i))
+      (if (or (Q-encoding-printable-char-p chr mode)
+	      (eq chr ? ))
 	  (setq l (+ l 1))
 	(setq l (+ l 3)))
       (setq i (+ i 1)))

@@ -1,8 +1,8 @@
 ;;; mel-b-dl.el --- Base64 encoder/decoder using DL module.
 
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
 
-;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: MIME, Base64
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).

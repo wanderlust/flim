@@ -1,6 +1,6 @@
 ;;; mel-b-ccl.el --- Base64 encoder/decoder using CCL.
 
-;; Copyright (C) 1998 Tanaka Akira
+;; Copyright (C) 1998,1999 Tanaka Akira
 
 ;; Author: Tanaka Akira <akr@jaist.ac.jp>
 ;; Created: 1998/9/17

@@ -105,7 +105,8 @@
   (let ((beg (point)))
     (while (or (mailcap-look-at-qchar)
 	       (mailcap-look-at-schar)))
-    (buffer-substring beg (point))))
+    (buffer-substring beg (point))
+    ))
 
 
 ;;; @ field
