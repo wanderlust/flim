@@ -204,11 +204,12 @@ property of the decoded-value."
   (let ((len (/ (length params) 2))
         dest eparams)
     (while params
-      (if (string-match (eval-when-compile
-                          (concat "^\\(" mime-attribute-char-regexp "+\\)"
-				  "\\(\\*\\([0-9]+\\)\\)?" ; continuation
-				  "\\(\\*\\)?$")) ; charset/language
-                        (car params))
+      (if (and (string-match (eval-when-compile
+			       (concat "^\\(" mime-attribute-char-regexp "+\\)"
+				       "\\(\\*\\([0-9]+\\)\\)?" ; continuation
+				       "\\(\\*\\)?$")) ; charset/language info
+			     (car params))
+	       (> (match-end 0) (match-end 1)))
           (let* ((attribute (downcase
 			     (substring (car params) 0 (match-end 1))))
                  (section (if (match-beginning 2)
@@ -277,7 +278,7 @@ property of the decoded-value."
               (aset (nth 3 eparam) section
 		    (mime-decode-parameter-encode-segment
 		     (car params)))))
-        ;; invalid attribute-name.
+	;; no parameter value extensions used, or invalid attribute-name.
         (setq dest (cons (cons (downcase (car params))
 			       (car (cdr params)))
 			 dest)
