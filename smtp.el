@@ -35,6 +35,10 @@
   "SMTP protocol for sending mail."
   :group 'mail)
 
+(defgroup smtp-extensions nil
+  "SMTP service extensions (RFC1869)."
+  :group 'smtp)
+
 (defcustom smtp-default-server nil
   "Specify default SMTP server."
   :type '(choice (const nil) string)
@@ -65,11 +69,28 @@ don't define this value."
   :type '(choice (const nil) string)
   :group 'smtp)
 
-(defvar smtp-open-connection-function (function open-network-stream))
+(defcustom smtp-use-8bitmime t
+  "If non-nil, use ESMTP 8BITMIME (RFC1652) if available."
+  :type 'boolean
+  :group 'smtp-extensions)
+
+(defcustom smtp-use-size t
+  "If non-nil, use ESMTP SIZE (RFC1870) if available."
+  :type 'boolean
+  :group 'smtp-extensions)
+
+(defcustom smtp-use-starttls nil
+  "If non-nil, use STARTTLS (RFC2595) if available."
+  :type 'boolean
+  :group 'smtp-extensions)
+
+(defvar smtp-open-connection-function #'open-network-stream)
 
 (defvar smtp-read-point nil)
 
 (defvar smtp-connection-alist nil)
+
+(defvar smtp-submit-package-function #'smtp-submit-package)
 
 ;;; @ SMTP package structure
 ;;; A package contains a mail message, an envelope sender address,
@@ -89,6 +110,24 @@ don't define this value."
 (defmacro smtp-make-package (sender recipients buffer)
   `(vector ,sender ,recipients ,buffer))
 
+(defun smtp-package-buffer-size (package)
+  (save-excursion
+    (set-buffer (smtp-package-buffer-internal package))
+    (let ((size
+	   (+ (buffer-size)
+	      ;; Add one byte for each change-of-line
+	      ;; because or CR-LF representation:
+	      (count-lines (point-min) (point-max))
+	      ;; For some reason, an empty line is
+	      ;; added to the message.	Maybe this
+	      ;; is a bug, but it can't hurt to add
+	      ;; those two bytes anyway:
+	      2)))
+      (goto-char (point-min))
+      (while (re-search-forward "^\\." nil t)
+	(setq size (1+ size)))
+      size)))
+
 ;;; @ SMTP connection structure
 ;;; We should take care of a emulation for another network stream.
 ;;; They are likely to be implemented with a external program and the function
@@ -103,8 +142,14 @@ don't define this value."
 (defmacro smtp-connection-service-internal (connection)
   `(aref ,connection 2))
 
+(defmacro smtp-connection-extensions-internal (connection)
+  `(aref ,connection 3))
+
+(defmacro smtp-connection-set-extensions-internal (connection extensions)
+  `(aset ,connection 3 ,extensions))
+
 (defmacro smtp-make-connection (process server service)
-  `(vector ,process ,server ,service))
+  `(vector ,process ,server ,service nil))
 
 (defun smtp-connection-opened (connection)
   "Say whether the CONNECTION to server has been opened."
@@ -143,6 +188,10 @@ or `smtp-local-domain' correctly."))))))
 	      (delq entry smtp-connection-alist))
 	nil))))
 
+(eval-and-compile
+  (autoload 'starttls-open-stream "starttls")
+  (autoload 'starttls-negotiate "starttls"))
+
 (defun smtp-open-connection (buffer server service)
   (let ((process
 	 (as-binary-process
@@ -164,7 +213,11 @@ or `smtp-local-domain' correctly."))))))
 	     (funcall smtp-server sender recipients)
 	   smtp-server))
 	(package
-	 (smtp-make-package sender recipients buffer)))
+	 (smtp-make-package sender recipients buffer))
+	(smtp-open-connection-function
+	 (if smtp-use-starttls
+	     #'starttls-open-stream
+	   smtp-open-connection-function)))
     (save-excursion
       (set-buffer
        (get-buffer-create
@@ -177,11 +230,11 @@ or `smtp-local-domain' correctly."))))))
       (setq smtp-read-point (point-min))
       (condition-case nil
 	  (progn
-	    (smtp-commit package)
+	    (funcall smtp-submit-package-function package)
 	    t)
 	(smtp-response-error)))))
 
-(defun smtp-commit (package)
+(defun smtp-submit-package (package)
   (unwind-protect
       (progn
 	(smtp-primitive-greeting package)
@@ -195,7 +248,7 @@ or `smtp-local-domain' correctly."))))))
 	(smtp-primitive-quit package)
 	(smtp-close-connection connection)))))
 
-;;; @ hook methods for `smtp-commit'
+;;; @ hook methods for `smtp-submit-package'
 ;;;
 (defun smtp-primitive-greeting (package)
   (let* ((connection
@@ -205,6 +258,25 @@ or `smtp-local-domain' correctly."))))))
 	   (smtp-connection-process-internal connection))))
     (if (/= (car response) 220)
 	(smtp-response-error response))))
+
+(defun smtp-primitive-ehlo (package)
+  (let* ((connection
+	  (smtp-find-connection (current-buffer)))
+	 (process
+	  (smtp-connection-process-internal connection))
+	 response)
+    (smtp-send-command process (format "EHLO %s" (smtp-make-fqdn)))
+    (setq response (smtp-read-response process))
+    (if (/= (car response) 250)
+	(smtp-response-error response))
+    (smtp-connection-set-extensions-internal
+     connection (mapcar
+		 (lambda (extension)
+		   (mapcar
+		    (lambda (parameter)
+		      (car (read-from-string (downcase parameter))))
+		    (split-string extension)))
+		 (cdr response)))))
 
 (defun smtp-primitive-helo (package)
   (let* ((connection
@@ -217,14 +289,42 @@ or `smtp-local-domain' correctly."))))))
     (if (/= (car response) 250)
 	(smtp-response-error response))))
 
-(defun smtp-primitive-mailfrom (package)
+(defun smtp-primitive-starttls (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (process
 	  (smtp-connection-process-internal connection))
 	 response)
+    ;; STARTTLS --- begin a TLS negotiation (RFC 2595)
+    (smtp-send-command process "STARTTLS")
+    (setq response (smtp-read-response process))
+    (starttls-negotiate process)))
+
+(defun smtp-primitive-mailfrom (package)
+  (let* ((connection
+	  (smtp-find-connection (current-buffer)))
+	 (process
+	  (smtp-connection-process-internal connection))
+	 (extensions
+	  (smtp-connection-extensions-internal
+	   connection))
+	 (sender
+	  (smtp-package-sender-internal package))
+	 extension
+	 response)
+    ;; SIZE --- Message Size Declaration (RFC1870)
+    (if (and smtp-use-size
+	     (assq 'size extensions))
+	(setq extension (format "SIZE=%d" (smtp-package-buffer-size package))))
+    ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
+    (if (and smtp-use-8bitmime
+	     (assq '8bitmime extensions))
+	(setq extension (concat extension " BODY=8BITMIME")))
     (smtp-send-command
-     process (format "MAIL FROM:<%s>" (smtp-package-sender-internal package)))
+     process
+     (if extension
+	 (format "MAIL FROM:<%s> %s" sender extension)
+       (format "MAIL FROM:<%s>" sender)))
     (setq response (smtp-read-response process))
     (if (/= (car response) 250)
 	(smtp-response-error response))))
