@@ -113,7 +113,11 @@
     ;; (expires              ew-scan-unibyte-std11)
 ;;; others
     (x-face               ew-scan-unibyte-none)
+    (x-face-version       ew-scan-unibyte-none)
     (x-pgp-sig            ew-scan-unibyte-none)
+    (x-pgp-sig-version    ew-scan-unibyte-none)
+    (x-pgp-key-info       ew-scan-unibyte-none)
+    (x-info               ew-scan-unibyte-none)
     ))
 
 (defvar ew-decode-field-default-syntax '(ew-scan-unibyte-unstructured))
