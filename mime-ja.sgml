@@ -263,6 +263,10 @@ code-converted.
 <var>field-name</var> $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
 </defun>
 
+
+<h2> Entity $B$NJ8;zI=8=(B
+<node> entity formatting
+<p>
 <defun name="mime-insert-header">
 	    <args> entity <opts> invisible-fields visible-fields
 <p>
@@ -273,8 +277,20 @@ list $B$G!"$=$l$>$l!"I=<($7$?$/$J$$(B field $BL>$HI=<($7$?$$MsL>$rI=8=$7$?$b$
 $B$G$"$k!#(B
 <p>
 <var>invisible-fields</var> $B$NMWAG$N$I$l$+$K(B match $B$7!"$+$D!"(B
-<var>visible-fields</var> $B$NMWAG$N$I$l$K$b(B match $B$7$J$$Ms$OI=<($5$l$J$$!#(B
+<var>visible-fields</var> $B$NMWAG$N$I$l$K$b(B match $B$7$J$$Ms$OI=<($5$l$J(B
+$B$$!#(B
+<p>
+<dref>encoded-word</dref> $B$OI|9f$5$l$k!#!X@8$NHs(B us-ascii $BJ8;z!Y$O(B 
+<var>default-mime-charset</var> $B$H$7$F2r<a$5$l$k!#(B
 </defun>
+
+<defvar name="default-mime-charset">
+<p>
+$BE,@Z$J(B <dref>MIME charset</dref> $B$,8+$D$+$i$J$+$C$?>l9g$KMQ$$$i$l$k(B
+MIME charset.
+<p>
+$BK\Mh$O(B APEL $B$NJQ?t$G$"$k!#(B
+</defvar>
 
 
 <h2> Entity $B$NFbMF(B
@@ -852,14 +868,6 @@ MIME $B4XO"5!G=$K4X$9$k(B group.
 <p>
 <code>mail</code> $B$H(B <code>news</code> $B$KB0$9$k!#(B
 </define>
-
-<defvar name="default-mime-charset">
-<p>
-$BE,@Z$J(B <dref>MIME charset</dref> $B$,8+$D$+$i$J$+$C$?>l9g$KMQ$$$i$l$k(B
-MIME charset.
-<p>
-$BK\Mh$O(B APEL $B$NJQ?t$G$"$k!#(B
-</defvar>
 
 <defvar name="mime-temp-directory">
 <p>
