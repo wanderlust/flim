@@ -1,5 +1,9 @@
 1998-05-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mailcap.el (mailcap-look-at-mtext): Strip quoted character.
+
+1998-05-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mailcap.el (mailcap-look-at-mtext): Fix typo.
 
 1998-05-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -19,7 +23,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòto) was released.-A
+	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
