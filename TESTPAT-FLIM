@@ -4,8 +4,19 @@
 (if (< max-specpdl-size 1000)
   (setq max-specpdl-size 1000))
 
-(defun crlf-to-lf (str) (decode-coding-string str 'raw-text-dos))
-(defun lf-to-crlf (str) (encode-coding-string str 'raw-text-dos))
+(defun crlf-to-lf (str)
+  (funcall
+    (if (multibyte-string-p str)
+	'string-as-multibyte
+      'string-as-unibyte)
+    (decode-coding-string str 'raw-text-dos)))
+
+(defun lf-to-crlf (str)
+  (funcall
+    (if (multibyte-string-p str)
+	'string-as-multibyte
+      'string-as-unibyte)
+    (encode-coding-string str 'raw-text-dos)))
 
 (defun decode-flim (src &rest opts)
   (unless (memq 'embedded-encoded-word opts)
@@ -21,7 +32,7 @@
       (goto-char (point-min))
       (std11-narrow-to-header mail-header-separator)
       (std11-field-end)
-      (string-as-multibyte (lf-to-crlf (std11-unfold-string (buffer-substring (point-min) (point))))))))
+      (lf-to-crlf (std11-unfold-string (buffer-substring (point-min) (point)))))))
 
 (defun encode-flim (src &rest opts)
   (setq src (crlf-to-lf src))
