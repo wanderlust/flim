@@ -1,3 +1,7 @@
+2000-05-25  Tanaka Akira      <akr@m17n.org>
+
+        * mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
+
 1999-12-13  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* README.en,README.ja,mime-en.sgml,mime-en.texi,mime-ja.sgml,
