@@ -3,6 +3,7 @@
 ;; Copyright (C) 1997,1998,1999,2000 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
+;;         Katsumi Yamaoka  <yamaoka@jpl.org>
 ;; Keywords: definition, MIME, multimedia, mail, news
 
 ;; This file is part of APEL (A Portable Emacs Library).
@@ -48,7 +49,7 @@
        (apply (function start-process-shell-command) name buffer args))
     (as-binary-process
      (start-process name buffer shell-file-name shell-command-switch
-		 (mapconcat (function identity) args " ")))))
+		    (mapconcat (function identity) args " ")))))
 
 (defalias 'raw-text-insert-file-contents 'insert-file-contents-as-raw-text)
 
