@@ -1,3 +1,8 @@
+1999-06-16  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Extend the search bound to the
+	end of the field for fetching the recipients from Resent-To.
+
 1999-06-11  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* luna.el (luna-define-class-function): Check for the improbable
