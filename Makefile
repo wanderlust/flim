@@ -4,7 +4,7 @@
 
 PACKAGE = flim
 API	= 1.12
-RELEASE = 2
+RELEASE = 3
 
 TAR	= tar
 RM	= /bin/rm -f

@@ -1,5 +1,21 @@
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime.el (mime-field-parser-alist): Change to set parser for
+	tokens instead of parser for string.
+	(mime-read-field): Use `eword-lexical-analyze' before parsing.
+
+	* eword-encode.el (eword-encode-in-reply-to): Use
+	`std11-parse-msg-ids-string' instead of `std11-parse-in-reply-to'
+	and `std11-lexical-analyze'.
+
+	* std11.el (std11-parse-msg-ids): Renamed from
+	`std11-parse-in-reply-to'; define `std11-parse-in-reply-to' as
+	obsolete alias.
+	(std11-parse-msg-id-string): New function.
+	(std11-parse-msg-ids-string): New function.
+
+1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime.el (mime-field-parser-alist): New variable.
 	(mime-read-field): Refer `mime-field-parser-alist'.
 
