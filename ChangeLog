@@ -1,3 +1,9 @@
+1998-06-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-lib.el: Add autoload setting for eword-encode.el.
+
+	* mime-lib.el (mime-entity-content): New function.
+
 1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel.el: Abolish constant `mel-version'.
