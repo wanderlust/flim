@@ -1,3 +1,7 @@
+2000-01-22  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl.el (TopLevel): Autoload `digest-md5-parse-digest-challenge'.
+
 2000-01-21  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.13.6 released.
