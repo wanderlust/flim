@@ -85,13 +85,16 @@ Content-Transfer-Encoding for it."
 	 (and (file-exists-p path)
 	      path))))
 
+(defvar mel-ccl-module
+  (and (featurep 'mule)
+       (module-installed-p 'mel-ccl)))
 
 (mel-use-module 'mel-b '("base64" "B"))
 (mel-use-module 'mel-q '("quoted-printable" "Q"))
 (mel-use-module 'mel-g '("x-gzip64"))
 (mel-use-module 'mel-u '("x-uue" "x-uuencode"))
 
-(if (featurep 'mule)
+(if mel-ccl-module
     (mel-use-module 'mel-ccl '("base64" "quoted-printable" "B" "Q"))
   )
 
