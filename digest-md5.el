@@ -25,8 +25,6 @@
 
 ;;; Commentary:
 
-;; NOW BUILDING.
-
 ;; This program is implemented from draft-leach-digest-sasl-05.txt.
 ;;
 ;; It is caller's responsibility to base64-decode challenges and
@@ -84,15 +82,16 @@
 		   (null (string= host serv-name)))
 	      (concat "/" serv-name))))
 
-(defun digest-md5-cnonce ()
+(defmacro digest-md5-cnonce ()
   ;; It is RECOMMENDED that it 
   ;; contain at least 64 bits of entropy.
-  (concat (unique-id-m "") (unique-id-m "")))
+  '(concat (unique-id-m "") (unique-id-m "")))
 
 (defmacro digest-md5-challenge (prop)
   (list 'get ''digest-md5-challenge prop))
 
-(defmacro digest-md5-build-response-value (username passwd cnonce digest-uri)
+(defmacro digest-md5-build-response-value 
+  (username passwd cnonce digest-uri qop)
   `(encode-hex-string
     (md5-binary
      (concat
@@ -106,19 +105,16 @@
 			   (let ((authzid (digest-md5-challenge 'authzid)))
 			     (if authzid (concat ":" authzid) nil)))))
       ":" (digest-md5-challenge 'nonce)
-      ":" (format "%08x" digest-md5-nonce-count) ":" ,cnonce 
-      ":" (digest-md5-challenge 'qop) ":"
+      ":" (format "%08x" digest-md5-nonce-count) ":" ,cnonce ":" ,qop ":"
       (encode-hex-string
        (md5-binary
 	(concat "AUTHENTICATE:" ,digest-uri
-		(if (member "auth" (split-string
-				    (digest-md5-challenge 'qop) 
-				    ","))
-		    nil
-		  ":00000000000000000000000000000000"))))))))
+		(if (string-equal "auth-int" ,qop)
+		    ":00000000000000000000000000000000"
+		  nil))))))))
 
 ;;;###autoload
-(defun digest-md5-digest-response (username passwd digest-uri)
+(defun digest-md5-digest-response (username passwd digest-uri &optional qop)
   (let ((cnonce (digest-md5-cnonce)))
     (concat
      "username=\"" username "\","
@@ -128,7 +124,8 @@
      "cnonce=\"" cnonce "\","
      "digest-uri=\"" digest-uri "\","
      "response=" 
-     (digest-md5-build-response-value username passwd cnonce digest-uri)
+     (digest-md5-build-response-value username passwd cnonce digest-uri 
+				      (or qop "auth"))
      ","
      (mapconcat 
       #'identity
