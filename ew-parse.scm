@@ -171,8 +171,7 @@ cm-qpair
 (put 'ew:cm-qpair 'decode 'ew-decode-comment)
 (put 'ew:us-texts 'decode 'ew-decode-unstructured)
 (put 'ew:us-wsp 'decode 'ew-decode-unstructured)
-(put 'ew:us-fold 'decode 'ew-decode-unstructured)
-"
+(put 'ew:us-fold 'decode 'ew-decode-unstructured)"
 'ew)
 
 (print-states)
