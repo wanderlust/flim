@@ -1,3 +1,7 @@
+2003-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.6 (Marutamachi) released.
+
 2003-12-14  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mime-def.el (mime-header-accept-quoted-encoded-words): Change
