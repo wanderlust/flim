@@ -592,53 +592,37 @@ Optional argument COLUMN is start-position of the field."
 	(or column eword-encode-default-start-column)
 	(eword-encode-split-string string 'text))))
 
-(defun eword-encode-field-body (field-name field-body)
-  "Encode header field body FIELD-BODY, and return the result.
+(defun eword-encode-field-body (field-body field-name)
+  "Encode FIELD-BODY as FIELD-NAME, and return the result.
 A lexical token includes non-ASCII character is encoded as MIME
 encoded-word.  ASCII token is not encoded."
-  (when (symbolp field-name)
-    (setq field-name (symbol-name field-name)))
-  (let ((field-name-symbol (intern (capitalize field-name))))
-    (cond ((string= field-body "") "")
-	  ((memq field-name-symbol
-		 '(Reply-To
-		   From Sender
-		   Resent-Reply-To Resent-From
-		   Resent-Sender To Resent-To
-		   Cc Resent-Cc Bcc Resent-Bcc
-		   Dcc))
-	   (eword-encode-address-list
-	    field-body (+ (length field-name) 2))
-	   )
-	  ((eq field-name-symbol 'In-Reply-To)
-	   (eword-encode-in-reply-to
-	    field-body (+ (length field-name) 2))
-	   )
-	  ((memq field-name-symbol
-		 '(Mime-Version User-Agent))
-	   (eword-encode-structured-field-body
-	    field-body (+ (length field-name) 2))
-	   )
-	  (t
-	   (eword-encode-unstructured-field-body
-	    field-body (1+ (length field-name)))
-	   ))))
-
-(defun eword-encode-field (string)
-  "Encode header field STRING, and return the result.
-A lexical token includes non-ASCII character is encoded as MIME
-encoded-word.  ASCII token is not encoded."
-  (setq string (std11-unfold-string string))
-  (if (string-match std11-field-head-regexp string)
-      (let ((field-name (substring string 0 (1- (match-end 0)))))
-	(concat
-	 field-name ": "
-	 (eword-encode-field-body
-	  field-name
-	  (eliminate-top-spaces
-	   (substring string (match-end 0))))))
-    (eword-encode-string string 0)
-    ))
+  (setq field-body (eliminate-top-spaces field-body))
+  (if (string= field-body "")
+      ""
+    (let (start)
+      (if (symbolp field-name)
+	  (setq start (+ (length (symbol-name field-name)) 2))
+	(setq start (+ (length field-name) 2)
+	      field-name (intern (capitalize field-name)))
+	(cond ((memq field-name-symbol
+		     '(Reply-To
+		       From Sender
+		       Resent-Reply-To Resent-From
+		       Resent-Sender To Resent-To
+		       Cc Resent-Cc Bcc Resent-Bcc
+		       Dcc))
+	       (eword-encode-address-list field-body start)
+	       )
+	      ((eq field-name-symbol 'In-Reply-To)
+	       (eword-encode-in-reply-to field-body start)
+	       )
+	      ((memq field-name-symbol '(Mime-Version User-Agent))
+	       (eword-encode-structured-field-body field-body start)
+	       )
+	      (t
+	       (eword-encode-unstructured-field-body field-body start)
+	       ))
+	))))
 
 (defun eword-in-subject-p ()
   (let ((str (std11-field-body "Subject")))
@@ -670,27 +654,28 @@ It refer variable `eword-field-encoding-method-alist'."
       (std11-narrow-to-header mail-header-separator)
       (goto-char (point-min))
       (let ((default-cs (mime-charset-to-coding-system default-mime-charset))
-	    beg end field-name)
+	    beg bbeg end field-name)
 	(while (re-search-forward std11-field-head-regexp nil t)
-	  (setq beg (match-beginning 0))
-	  (setq field-name (buffer-substring beg (1- (match-end 0))))
-	  (setq end (std11-field-end))
-	  (and (find-non-ascii-charset-region beg end)
+	  (setq bbeg (match-end 0)
+		field-name (buffer-substring (match-beginning 0) (1- bbeg))
+		end (std11-field-end))
+	  (and (find-non-ascii-charset-region bbeg end)
 	       (let ((method (eword-find-field-encoding-method
 			      (downcase field-name))))
 		 (cond ((eq method 'mime)
-			(let ((field
-			       (buffer-substring-no-properties beg end)
+			(let ((field-body
+			       (buffer-substring-no-properties bbeg end)
 			       ))
-			  (delete-region beg end)
-			  (insert (eword-encode-field field))
+			  (delete-region bbeg end)
+			  (insert (eword-encode-field-body field-body
+							   field-name))
 			  ))
 		       (code-conversion
 			(let ((cs
 			       (or (mime-charset-to-coding-system
 				    method)
 				   default-cs)))
-			  (encode-coding-region beg end cs)
+			  (encode-coding-region bbeg end cs)
 			  )))
 		 ))
 	  ))
