@@ -59,6 +59,7 @@ ULEVEL specifies implementation level:
   representation-type.
 
   [Required]<Suggest>
+  (Usage: SEMI 1.14 MIME-View)
 
 
 [Function] mime-parse-buffer (&optional buffer representation-type)
@@ -75,6 +76,7 @@ ULEVEL specifies implementation level:
   Return list of entities included in the ENTITY.
 
   [Required]<Suggest>
+  (Usage: SEMI 1.14 MIME-View, MIME-PGP)
 
 
 [Function] mime-entity-parent (entity &optional message)
@@ -83,6 +85,7 @@ ULEVEL specifies implementation level:
   If MESSAGE is specified, it is regarded as root entity.
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-View, MIME-PGP)
 
 
 [Function] mime-find-root-entity (entity)
@@ -103,12 +106,14 @@ ULEVEL specifies implementation level:
   Return node-id of ENTITY.
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-View, MIME-PGP)
 
 
 [Function] mime-entity-number (entity)
   Return entity-number of ENTITY.
 
   [Optional]
+  (Usage: SEMI 1.14 MIME-View, MIME-PGP)
 
 
 ** MIME-Entity Search
@@ -139,6 +144,35 @@ ULEVEL specifies implementation level:
   (cf. <** Content-Type>)
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-View)
+
+
+[Inline function] mime-entity-media-type (entity)
+  Return primary media-type of ENTITY.
+
+  [Suggest]<Not Suggest>
+  (Usage: SEMI 1.14 MIME-View)
+
+
+[Inline function] mime-entity-media-subtype (entity)
+  Return media-subtype of ENTITY.
+
+  [Suggest]<Not Suggest>
+  (Usage: SEMI 1.14 MIME-View)
+
+
+[Inline function] mime-entity-type/subtype (entity)
+  Return media-type/subtype of ENTITY.
+
+  [Suggest]
+  (Usage: SEMI 1.14 MIME-W3)
+
+
+[Inline function] mime-entity-parameters (entity)
+  Return parameters of Content-Type of ENTITY.
+
+  [Suggest]<Not Suggest>
+  (Usage: SEMI 1.14 MIME-View)
 
 
 [Function] mime-entity-set-content-type (entity content-type)
@@ -147,6 +181,7 @@ ULEVEL specifies implementation level:
   (cf. <** Content-Type>)
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-View)
 
 
 [Function] mime-entity-content-disposition (entity)
@@ -155,12 +190,14 @@ ULEVEL specifies implementation level:
   (cf. <** Content-Disposition>)
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-View)
 
 
 [Function] mime-entity-filename (entity)
   Return filename of ENTITY.
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-View)
 
 
 [Function] mime-entity-encoding (entity &optional default-encoding)
@@ -171,12 +208,14 @@ ULEVEL specifies implementation level:
   default value.
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-View)
 
 
 [Function] mime-entity-set-encoding (entity encoding)
   Set ENTITY's content-transfer-encoding to ENCODING.
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-View)
 
 
 [Function] mime-entity-cooked-p (entity)
@@ -184,12 +223,14 @@ ULEVEL specifies implementation level:
   code-converted.
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-PGP)
 
 
 [Function] mime-entity-name (entity)
   Return unique name of the ENTITY.
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-View)
 
 
 ** MIME-Entity Header
@@ -203,6 +244,7 @@ ULEVEL specifies implementation level:
   If FIELD-NAME field is not found, this function returns nil.
 
   [Required]<Suggest>
+  (Usage: SEMI 1.14 MIME-View, MIME-BBDB)
 
 
 [Function] mime-entity-read-field (entity field-name)
@@ -218,6 +260,7 @@ ULEVEL specifies implementation level:
   If FIELD-NAME field is not found, this function returns nil.
 
   [Suggest]
+  (Usage: SEMI 1.14 MIME-View, MIME-BBDB)
 
 
 ** Text Presentation of MIME-Entity Content
@@ -265,6 +308,7 @@ ULEVEL specifies implementation level:
   Return content of ENTITY as byte sequence (string).
 
   [Required]
+  (Usage: SEMI 1.14 MIME-View, Postpet)
 
 
 [Function] mime-insert-entity-content (entity)
