@@ -324,7 +324,8 @@ ENTITY is used."
 ;;;
 
 (defun mime-entity-content (entity)
-  (mime-entity-send entity 'entity-content))
+  "Return content of ENTITY as byte sequence (string)."
+  (mime-entity-send entity 'get-content))
 
 (defun mime-write-entity-content (entity filename)
   "Write content of ENTITY into FILENAME."
