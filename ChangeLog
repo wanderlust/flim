@@ -1,5 +1,11 @@
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-parse.el (mime-parse-multipart): Change media-type of
+	entity to application/octet-stream if the first delimiter is not
+	found.
+
+1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* FLIM-ELS (flim-modules): Add `mmbuffer' and `mmcooked'.
 
 	* mmcooked.el: New file.
