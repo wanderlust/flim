@@ -1,5 +1,27 @@
 1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mmcooked.el (mmcooked-entity-content): New alias for
+	`mmbuffer-entity-content'.
+	(mmcooked-write-entity-content): New function.
+
+	* mmbuffer.el (mmbuffer-entity-content): New function.
+	(mmbuffer-write-entity-content): New function.
+
+	* mime.el (mime-entity-send): New function.
+	(mime-entity-buffer): Use `mime-entity-send'.
+	(mime-entity-point-min): Likewise.
+	(mime-entity-point-max): Likewise.
+	(mime-entity-header-start): Likewise.
+	(mime-entity-header-end): Likewise.
+	(mime-entity-body-start): Likewise.
+	(mime-entity-body-end): Likewise.
+	(mime-fetch-field): Likewise.
+	(mime-entity-content): Use implementation of mm-backend.
+	(mime-write-entity-content): Likewise.
+
+
+1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* FLIM: Version 1.7.0 (Iseda) was released.
 
 	* mime-ja.sgml (Entity creation): Add description of
