@@ -1,3 +1,9 @@
+2000-08-14   Daiki Ueno  <ueno@unixuser.org>
+
+	* net-trans.el: New file.
+
+	* FLIM-ELS (flim-modules): Add `net-trans'.
+
 2000-06-23  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mmexternal.el (initialize-instance): New method.
