@@ -73,84 +73,79 @@ be the result."
 ;;; @ field parser
 ;;;
 
-(defconst mime/content-parameter-value-regexp
-  (concat "\\("
-	  std11-quoted-string-regexp
-	  "\\|[^; \t\n]*\\)")
-  )
-
-(defconst mime::attribute-char-regexp "[^][*'%()<>@,;:\\\"/?=\000- ]")
-(defconst mime::attribute-regexp (concat mime::attribute-char-regexp "+")
-  )
-
-(defconst mime::ext-octet-regexp "%[0-9a-f][0-9a-f]")
-(defconst mime::extended-other-values-regexp
-  (concat "\\(" mime::attribute-char-regexp "\\|"
-	  mime::ext-octet-regexp "\\)+")
-  )
-(defconst mime::extended-initial-value-regexp
-  (concat "\\(" mime-charset-regexp "\\)'\\(" mime-charset-regexp "\\)'\\("
-	  mime::extended-other-values-regexp "\\)")
-  )
-
-(defconst mime::parameter-regexp
-  (concat "[ \t]*\;[ \t]*\\(" mime::attribute-regexp "\\)"
-	  "\\(\\*\\([0-9]+\\)\\)?\\(\\*\\)?"
-	  "[ \t]*=[ \t]*\\(" mime/content-parameter-value-regexp "\\)")
-  )
+(defun mime-parse-parameters-skip-to-next-token (lrl)
+  (while (and lrl
+	      (memq (caar lrl) '(comment spaces)))
+    (setq lrl (cdr lrl))
+    )
+  (if (eq (caar lrl) 'error)
+      nil
+    lrl))
 
 (defun mime-parse-parameters (str)
-  (with-temp-buffer
-    (let (rest)
-      (insert str)
-      (goto-char (point-min))
-      (while (looking-at mime::parameter-regexp)
-	(let* ((name (buffer-substring (match-beginning 1) (match-end 1)))
-	       (no (or (and (match-beginning 3)
-			    (string-to-int
-			     (buffer-substring (match-beginning 3)
-					       (match-end 3)
-					       )))
-		       0))
-	       (encoded (and (match-beginning 4) t))
-	       (next (match-end 0))
-	       (parm (or (assoc name rest)
-			 (car (setq rest
-				    (cons (make-mime-parameter name) rest)
-				    )))))
-	  (mime-parameter-append-raw-value
-	   parm
-	   no
-	   encoded
-	   (if encoded
-	       (if (and (eq no 0)
-			(progn
-			  (goto-char (match-beginning 5))
-			  (looking-at mime::extended-initial-value-regexp)
-			  ))
-		   (progn
-		     (mime-parameter-set-charset
-		      parm
-		      (intern (downcase
-			       (buffer-substring (match-beginning 1)
-						 (match-end 1)
-						 ))))
-		     (mime-parameter-set-language
-		      parm
-		      (intern (downcase
-				(buffer-substring (match-beginning 2)
-						  (match-end 2)
-						  ))))
-		     (buffer-substring (match-beginning 3) (match-end 3))
-		     )
-		 (buffer-substring (match-beginning 5) (match-end 5))
-		 )
-	     (std11-strip-quoted-string
-	      (buffer-substring (match-beginning 5) (match-end 5))
-	      )))
-	  (goto-char next)
-	  ))
-      rest)))
+  (let* ((lrl (std11-lexical-analyze str mime-lexical-analyzer))
+	 (token (car lrl))
+	 rest name val)
+    (catch 'parse-error
+      (while (and token
+		  (eq (car token) 'tpecials)
+		  (string= (cdr token) ";")
+		  )
+	(setq token nil)
+	(when (and (setq lrl (mime-parse-parameters-skip-to-next-token
+			      (cdr lrl)
+			      ))
+		   (setq name (cdar lrl))
+		   (setq lrl (mime-parse-parameters-skip-to-next-token
+			      (cdr lrl)
+			      ))
+		   (string= (cdar lrl) "=")
+		   (setq lrl (mime-parse-parameters-skip-to-next-token
+			      (cdr lrl)
+			      ))
+		   (setq val (cdar lrl)))
+	  (when (string-match "^\\([^*]+\\)\\(\\*\\([0-9]+\\)\\)?\\(\\*\\)?"
+			      name)
+	    (let ((number (if (match-beginning 3)
+			      (string-to-int (substring name
+							(match-beginning 3)
+							(match-end 3)
+							))
+			    0))
+		  (encoded (if (match-beginning 4) t nil))
+		  parm)
+	      (setq name (substring name (match-beginning 1) (match-end 1))
+		    parm (or (assoc name rest)
+			     (car (setq rest
+					(cons (make-mime-parameter name)
+					      rest)))))
+	      (when (and (eq number 0)
+			 encoded
+			 (string-match "^\\([^']*\\)'\\([^']*\\)'\\(.*\\)"
+				       val))
+		(when (< (match-beginning 1) (match-end 1))
+		  (mime-parameter-set-charset
+		   parm
+		   (intern (downcase (substring val
+						(match-beginning 1)
+						(match-end 1)
+						)))))
+		(when (< (match-beginning 2) (match-end 2))
+		  (mime-parameter-set-language
+		   parm
+		   (intern (downcase (substring val
+						(match-beginning 2)
+						(match-end 2)
+						)))))
+		(setq val (substring val (match-beginning 3)))
+		)
+	      (mime-parameter-append-raw-value parm number encoded val)
+	      (setq lrl (mime-parse-parameters-skip-to-next-token
+			 (cdr lrl)
+			 )
+		    token (car lrl)
+		    ))))))
+    rest))
 
 ;;; @ Content-Type
 ;;;
