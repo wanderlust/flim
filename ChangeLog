@@ -14,6 +14,10 @@
 	(smtp-data): New generic function.
 	(smtp-via-smtp): Simplify.
 	(smtp-check-response): New function.
+	(smtp-read-response): Simplify.
+	(smtp-debug-info): Abolish.
+	(smtp-send-data-1): Don't refer smtp-debug-info.
+	(smtp-ehlo): Parse response.
 
 	* net-trans.el: New file.
 
