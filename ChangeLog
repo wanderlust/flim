@@ -8,8 +8,10 @@
 
 2000-01-21  Kenichi OKADA <okada@opaopa.org>
 
-	* sasl.el (TopLevel): Delete function `sasl-digest-md5-parse-digest-challenge'.
-	* smtp.el (smtp-auth-digest-md5): Don't use `sasl-digest-md5-parse-digest-challenge'.
+	* sasl.el (TopLevel): Delete function
+	`sasl-digest-md5-parse-digest-challenge'.
+	* smtp.el (smtp-auth-digest-md5): Don't use
+	`sasl-digest-md5-parse-digest-challenge'.
 
 2000-01-21  Kenichi OKADA <okada@opaopa.org>
 
@@ -18,7 +20,8 @@
 2000-01-21  Kenichi OKADA <okada@opaopa.org>
 
 	* digest-md5.el (TopLevel): Delete `digest-md5-nonce-count'.
-	(digest-md5-build-response-value): Add `realm', `nonce' and `nonce-count'.
+	(digest-md5-build-response-value): Add `realm',
+	`nonce' and `nonce-count'.
 	(digest-md5-digest-response): Add options as RFC.
 	* sasl.el (TopLevel): New variable `sasl-digest-md5-nonce-count'.
 	New functions `sasl-digest-md5-digest-response' and
@@ -27,7 +30,8 @@
 
 2000-01-06  Kenichi OKADA <okada@opaopa.org>
 
-	* sasl.el (TopLevel): Autoload 'scram-md5' for `scram-make-security-info'.
+	* sasl.el (TopLevel): Autoload 'scram-md5' for
+	`scram-make-security-info'.
 
 2000-01-06  Kenichi OKADA <okada@opaopa.org>
 
