@@ -284,9 +284,10 @@ abcdefghijklmnopqrstuvwxyz\
   (&optional quantums-per-line output-crlf terminate-with-newline)
   `(2
     ((r3 = 0)
+     (r2 = 0)
+     (read r1)
      (loop
-      (r2 = 0)
-      (read-branch
+      (branch
        r1
        ,@(mapcar
           (lambda (r1)
@@ -327,6 +328,8 @@ abcdefghijklmnopqrstuvwxyz\
                      (nth r1 mel-ccl-64-to-256-table))
                    mel-ccl-64-table)))
       (r3 += 1)
+      (r2 = 0)
+      (read r1)
       ,@(when quantums-per-line
 	  `((if (r3 == ,quantums-per-line)
 		((write ,(if output-crlf "\r\n" "\n"))
