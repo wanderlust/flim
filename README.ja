@@ -35,8 +35,8 @@ FLIM とは？
 
   以下の環境で動作します：
 
-	Emacs 20.5 以降
-	XEmacs 20.4 以降
+	Emacs 20.4 以降
+	XEmacs 21.1 以降
 
 
 導入 (install)

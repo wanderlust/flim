@@ -1,3 +1,13 @@
+2000-12-06   Daiki Ueno  <ueno@unixuser.org>
+
+	* FLIM-ELS: Don't install md5-dl.el, md5-el.el, sha1-dl.el and
+	sha1-el.el if the running emacs has builtin message digest functions.
+
+	* md5-dl.el, sha1-dl.el: Don't bind `dynamic-link' and `dynamic-call'.
+
+	* md5.el (md5-dl-module): Moved from md5-dl.el.
+	* sha1.el: Don't bind `sha1-string'.
+
 2000-12-04   Daiki Ueno  <ueno@unixuser.org>
 
 	* luna.el (luna-class-find-functions): Don't quote colon keywords.
