@@ -1,5 +1,9 @@
 2001-02-20  Kenichi OKADA <okada@opaopa.org>
 
+	* SLIM: Version 1.14.6 released.
+
+2001-02-20  Kenichi OKADA <okada@opaopa.org>
+
 	* tests/test-sasl.el(test-sasl-ntlm-imap): Fix
 	`sasl-read-passphrase'
 
