@@ -291,6 +291,10 @@
 "From: (=?US-ASCII?Q?(?=)foo@bar.baz(=?US-ASCII?Q?))baz@bar.foo(?=)")
 
 (decode
+"From: =?US-ASCII?Q?=22?= <akr@jaist.ac.jp>"
+"From: \"\\\"\" <akr@jaist.ac.jp>")
+
+(decode
 "From: =?ISO-2022-JP?B?GyRCJCIbKEIoGyRCJCIbKEIp?= <akr@jaist.ac.jp>"
 "From: \"あ(あ)\" <akr@jaist.ac.jp>")
 
@@ -478,10 +482,6 @@
 "=?ISO-2022-JP?B?GyRCJCIbKEI=?=: test"
 "=?ISO-2022-JP?B?GyRCJCIbKEI=?=: test"
 'permit-sticked-special)
-
-(decode
-"From: =?US-ASCII?Q?=22?= <akr@jaist.ac.jp>"
-"From: \"\\\"\" <akr@jaist.ac.jp>")
 
 ;;; Section 3: Decoding melancholic inputs.
 
