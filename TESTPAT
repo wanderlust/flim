@@ -772,16 +772,20 @@
 
 (encode
 "Subject: $B$"(B a .HN`"*B
-"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a =?ISO-8859-8?Q?=E0?=")
+'("Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a =?ISO-8859-8?Q?=E0?="
+  "Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a =?ISO-8859-8?B?4A==?="))
 
 (encode
 "Subject: .HN`$BNm(B"*B
-"Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?GyRCTm0bKEI=?=")
+'("Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
+  "Subject: =?ISO-8859-8?B?4A==?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="))
 
 (encode
 "Subject: .HN` $BNm(B"*B
 '("Subject: =?ISO-8859-8?Q?=E0_?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
-  "Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?IBskQk5tGyhC?="))
+  "Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?IBskQk5tGyhC?="
+  "Subject: =?ISO-8859-8?B?4CA=?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
+  "Subject: =?ISO-8859-8?B?4A==?= =?ISO-2022-JP?B?IBskQk5tGyhC?="))
 
 (encode
 "Subject: .FNC$B4X?t(B"*B
