@@ -1,8 +1,8 @@
 <!doctype sinfo system>
 <head>
-<title>FLIM 1.10 MIME 機能説明書
+<title>FLIM 1.13 MIME 機能説明書
 <author>守岡 知彦 <mail>morioka@jaist.ac.jp</mail>
-<date>1998/07/01
+<date>1999-01-27
 
 <toc>
 </head>
@@ -11,11 +11,11 @@
 
 <abstract>
 <p>
-This file documents MIME features of FLIM, a Internet message
-parsing/encoding library for GNU Emacs.
+This file documents MIME features of FLIM, a fundamental library to
+process Internet Messages for GNU Emacs / XEmacs.
 <p>
-GNU Emacs 用の Internet Message の解析や符号化に関する library である 
-FLIM の MIME 機能に関して説明します。
+GNU Emacs / XEmacs 用の Internet Message 処理のための基礎 library であ
+る FLIM の MIME 機能に関して説明します。
 </abstract>
 
 
@@ -169,6 +169,10 @@ buffer local 変数。
 <var>entity</var> の entity-number を返す。
 </defun>
 
+
+<h2> Entity の検索
+<node> Entity Search
+<p>
 <defun name="mime-find-entity-from-number">
 	    <args> entity-number <opts> message
 <p>
@@ -182,6 +186,15 @@ If <var>message</var> is not specified,
 	    <args> entity-node-id <opts> message
 <p>
 Return entity from <var>entity-node-id</var> in <var>message</var>.
+<p>
+If <var>message</var> is not specified,
+<code>mime-message-structure</code> is used.
+</defun>
+
+<defun name="mime-find-entity-from-content-id">
+	    <args> cid <opts> message
+<p>
+Return entity from <var>cid</var> in <var>message</var>.
 <p>
 If <var>message</var> is not specified,
 <code>mime-message-structure</code> is used.
@@ -313,10 +326,26 @@ MIME charset.
 <var>entity</var> の内容の byte 列を返す。
 </defun>
 
+<defun name="mime-insert-entity-content">
+	    <args> entity
+<p>
+Insert content of <var>entity</var> at point.
+</defun>
+
 <defun name="mime-write-entity-content">
 	    <args> entity filename
 <p>
 Write content of <var>entity</var> into <var>filename</var>.
+</defun>
+
+
+<h2> Entity のネットワーク表現
+<node> Entity-network-representation
+<p>
+<defun name="mime-insert-entity">
+	    <args> entity
+<p>
+Insert header and body of <var>entity</var> at point.
 </defun>
 
 <defun name="mime-write-entity">
