@@ -1,3 +1,10 @@
+2000-11-12   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-primitive-data): Use `beginning-of-line' instead of
+	`forward-char'.
+	(smtp-read-response): Don't bind `case-fold-search'.
+	(smtp-send-data): Don't save excursion.
+
 2000-11-10   Daiki Ueno  <ueno@unixuser.org>
 
 	* sasl-digest.el (sasl-digest-md5-challenge): Abolish.

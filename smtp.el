@@ -308,7 +308,6 @@ of the host to connect to.  SERVICE is name of the service desired."
 	(smtp-primitive-data package))
     (let ((connection (smtp-find-connection (current-buffer))))
       (when (smtp-connection-opened connection)
-	;; QUIT
 	(smtp-primitive-quit package)
 	(smtp-close-connection connection)))))
 
@@ -476,7 +475,7 @@ of the host to connect to.  SERVICE is name of the service desired."
       (while (not (eobp))
 	(smtp-send-data
 	 process (buffer-substring (point) (progn (end-of-line)(point))))
-	(forward-char)))
+	(beginning-of-line 2)))
     (smtp-send-command process ".")
     (setq response (smtp-read-response process))
     (if (/= (car response) 250)
@@ -511,8 +510,7 @@ of the host to connect to.  SERVICE is name of the service desired."
   (signal 'smtp-response-error response))
 
 (defun smtp-read-response (process)
-  (let (case-fold-search
-	(response-continue t)
+  (let ((response-continue t)
 	response)
     (while response-continue
       (goto-char smtp-read-point)
@@ -542,15 +540,11 @@ of the host to connect to.  SERVICE is name of the service desired."
     (process-send-string process "\r\n")))
 
 (defun smtp-send-data (process data)
-  (save-excursion
-    (set-buffer (process-buffer process))
-    (goto-char (point-max))
-    (setq smtp-read-point (point))
-    ;; Escape "." at start of a line.
-    (if (eq (string-to-char data) ?.)
-	(process-send-string process "."))
-    (process-send-string process data)
-    (process-send-string process "\r\n")))
+  ;; Escape "." at start of a line.
+  (if (eq (string-to-char data) ?.)
+      (process-send-string process "."))
+  (process-send-string process data)
+  (process-send-string process "\r\n"))
 
 (defun smtp-deduce-address-list (smtp-text-buffer header-start header-end)
   "Get address list suitable for smtp RCPT TO:<address>."
