@@ -10,7 +10,8 @@
 
 (eval-and-compile
 
-;; As a result of profiling, CCL is slower than Emacs-Lisp, sigh...
+;; Although CCL program is not well optimized, 
+;; as a result of profiling, CCL is bit slower than Emacs-Lisp, sigh...
 (setq lex-ccl-execute nil)
 
 (defvar lex-ccl-execute

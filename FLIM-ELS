@@ -15,6 +15,7 @@
                      ew-util
                      ew-line
                      ew-quote
+                     ew-bq
                      ew-unit
                      ew-data
                      ew-parse

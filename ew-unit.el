@@ -1,7 +1,7 @@
 (require 'closure)
 (require 'ew-line)
 (require 'ew-quote)
-(require 'mel)
+(require 'ew-bq)
 
 (provide 'ew-unit)
 
@@ -28,8 +28,8 @@
 (defconst ew-q-regexp "\\`\\([^=?]\\|=[0-9A-Fa-f][0-9A-Fa-f]\\)*\\'")
 
 (defconst ew-byte-decoder-alist
-  '(("B" . ew-b-decode)
-    ("Q" . ew-q-decode)))
+  '(("B" . ew-decode-b)
+    ("Q" . ew-decode-q)))
 
 (defconst ew-byte-checker-alist
   '(("B" . ew-b-check)
@@ -69,9 +69,6 @@
 
 (defun ew-byte-checker (encoding)
   (cdr (assoc (upcase encoding) ew-byte-checker-alist)))
-
-(defalias 'ew-b-decode 'base64-decode-string)
-(defalias 'ew-q-decode 'q-encoding-decode-string)
 
 (defun ew-char-decoder (charset)
   (let ((sym (intern (downcase charset))))

@@ -55,6 +55,8 @@ ew-parse.el: ew-parse.scm lalr-el.scm
 check:
 	$(EMACS) -q -batch -eval '(setq load-path (cons "." load-path))' -l ./TESTPAT -eval '(report)'
 
+
+# BENCHMARK is not a part of FLAM-DOODLE because it is so large.
 benchmark:
 	$(EMACS) -q -batch -eval '(setq load-path (cons "." load-path))' -l ./BENCHMARK -eval '(report)'
 
