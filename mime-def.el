@@ -24,7 +24,13 @@
 
 ;;; Code:
 
+(require 'poe)
+(require 'poem)
+(require 'pcustom)
 (require 'mcharset)
+(require 'alist)
+
+(eval-when-compile (require 'cl))	; list*
 
 (eval-and-compile
   (defconst mime-library-product ["FLIM" (1 12 7) "Y.DŽþzaki"]
@@ -51,17 +57,10 @@
 ;;; @ variables
 ;;;
 
-(require 'custom)
-
-(eval-when-compile (require 'cl))
-
-(defgroup mime nil
+(defgroup mime '((default-mime-charset custom-variable))
   "Emacs MIME Interfaces"
   :group 'news
   :group 'mail)
-
-(custom-handle-keyword 'default-mime-charset :group 'mime
-		       'custom-variable)
 
 (defcustom mime-uuencode-encoding-name-list '("x-uue" "x-uuencode")
   "*List of encoding names for uuencode format."
@@ -357,8 +356,6 @@ message/rfc822, `mime-entity' structures of them are included in
 
 ;;; @ for mm-backend
 ;;;
-
-(require 'alist)
 
 (defvar mime-entity-implementation-alist nil)
 
