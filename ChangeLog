@@ -1,5 +1,10 @@
 1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel-b.el (base64-external-decode-string): New function.
+	(base64-decode-string): New function.
+
+1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel-q.el (quoted-printable-decode-string): New implementation.
 
 1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
