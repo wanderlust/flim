@@ -1,3 +1,9 @@
+2004-04-15  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* eword-decode.el (eword-decode-encoded-text): Fix bug when
+	`must-unfold' is specified; eliminate CR too when `must-unfold' is
+	specified.
+
 2004-04-13  Kenichi Okada  <okada@opaopa.org>
 
 	* mel-u.el (mime-write-decoded-region): Use make-temp-file.
