@@ -1,5 +1,7 @@
 1998-10-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* FLIM: Version 1.10.3 (Komada) was released.
+
 	* mel-ccl.el (base64-ccl-write-decoded-region): bind
 	`jka-compr-compression-info-list' with nil.
 
