@@ -1,3 +1,9 @@
+1998-10-20  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mime-def.el: Enclose defining procedure for the constants
+	`std11-quoted-pair-regexp', `std11-non-qtext-char-list' and
+	`std11-qtext-regexp' with `eval-and-compile'.
+
 1998-10-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* NEWS (Behavior change of `mime-insert-header'): New subsection.

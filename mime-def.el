@@ -96,11 +96,12 @@
 ;;; @ about STD 11
 ;;;
 
-(defconst std11-quoted-pair-regexp "\\\\.")
-(defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
-(defconst std11-qtext-regexp
-  (eval-when-compile
-    (concat "[^" (apply #'string std11-non-qtext-char-list) "]")))
+(eval-and-compile
+  (defconst std11-quoted-pair-regexp "\\\\.")
+  (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
+  (defconst std11-qtext-regexp
+    (eval-when-compile
+      (concat "[^" (apply #'string std11-non-qtext-char-list) "]"))))
 (defconst std11-quoted-string-regexp
   (eval-when-compile
     (concat "\""
