@@ -64,8 +64,8 @@
 					visible-fields)
   (let (default-mime-charset)
     (funcall (car (luna-class-find-functions
-		   (luna-find-class 'mime-buffer-entity))
-				       'mime-insert-header)
+		   (luna-find-class 'mime-buffer-entity)
+		   'mime-insert-header))
 	     entity invisible-fields visible-fields)
     ))
 
