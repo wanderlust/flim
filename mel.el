@@ -28,19 +28,11 @@
 
 (require 'emu)
 
-(defconst mel-version "7.4")
+(defconst mel-version "7.5")
 
 
 ;;; @ variable
 ;;;
-
-(defvar mime-temp-directory (or (getenv "MIME_TMP_DIR")
-				(getenv "TM_TMP_DIR")
-				(getenv "TMPDIR")
-				(getenv "TMP")
-				(getenv "TEMP")
-				"/tmp/")
-  "*Directory for temporary files.")
 
 (defvar base64-dl-module
   (and (fboundp 'dynamic-link)
