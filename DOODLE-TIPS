@@ -21,3 +21,22 @@ gnus-unstructured-field-decoder.
 byte-compiling without editing files, set EVALARGS environment variable.
 
   % EVALARGS='(setq load-path (cons "../apel" load-path))' make
+
+* If you use Chao-gnus 6.9, change nnheader.el.
+
+diff -u -F^( -r1.10.2.1.2.17 nnheader.el
+--- nnheader.el	1998/10/20 11:52:46	1.10.2.1.2.17
++++ nnheader.el	1998/10/25 14:12:57
+@@ -110,10 +110,10 @@ (defsubst make-full-mail-header (&option
+    nil
+    nil nil nil
+    (if subject
+-       (eword-decode-and-unfold-unstructured-field subject)
++       (eword-decode-field-body subject 'Subject t)
+      )
+    (if from
+-       (eword-decode-and-unfold-structured-field from)
++       (eword-decode-field-body from 'From t)
+      )
+    date id references
+    chars lines xref

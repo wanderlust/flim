@@ -1,5 +1,9 @@
 1998-10-27  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* DOODLE-TIPS: Add a workaround for Chao-gnus 6.9.
+
+1998-10-27  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* Sync up to flim-1_11_3 from flim-1_11_2.
 
 	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
