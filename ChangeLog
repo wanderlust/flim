@@ -1,3 +1,23 @@
+1998-10-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-ccl.el (base64-ccl-write-decoded-region): bind
+	`jka-compr-compression-info-list' with nil.
+
+	* mel-b.el (base64-internal-decoding-limit): Switch default value
+	between XEmacs-mule and other emacsen.
+	Abolish function `base64-decode-string!'.
+	(base64-internal-decode-region): New implementation.
+	(base64-insert-encoded-file): New function.
+	(mime-insert-encoded-file): Use `base64-insert-encoded-file'.
+	(base64-write-decoded-region): New function.
+	(mime-write-decoded-region): Use `base64-write-decoded-region'.
+
+	* mel-b-dl.el (decode-base64-region): Renamed from
+	`base64-decode-region'.
+	(mime-insert-encoded-file): Change temporary-buffer to unibyte
+	representation.  Abolish method `mime-write-decoded-region'
+	because it is slower than CCL based implementation.
+
 1998-10-09  Tanaka Akira <akr@jaist.ac.jp>
 
 	* mel-ccl.el: Check `ccl-execute-eof-block-on-decoding-some'
