@@ -1,3 +1,8 @@
+1999-12-13  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* README.en,README.ja,mime-en.sgml,mime-en.texi,mime-ja.sgml,
+	mime-ja.texi: Update fot the recent ML address and ftp site.
+
 1999-11-12  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* mel-q-ccl.el (q-encoding-ccl-encoded-length): Removed comment.
