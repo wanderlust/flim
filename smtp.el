@@ -207,7 +207,7 @@ don't define this value."
 		     (memq auth extensions)
 		     (setq method (nth 1 (assq auth smtp-authenticate-method-alist))))
 		    (funcall method process)
-		  (throw 'smtp-error
+		  (throw 'done
 			 (format "AUTH mechanism %s not available" auth)))))
 
 	    ;; ONEX --- One message transaction only (sendmail extension?)
@@ -311,7 +311,7 @@ don't define this value."
 	    t)
 
 	(if (and process
-		 (eq (process-status process) 'open))
+		 (memq (process-status process) '(open run)))
 	(progn
 	  ;; QUIT
 	  (smtp-send-command process "QUIT")
