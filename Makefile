@@ -3,7 +3,7 @@
 #
 
 PACKAGE = chao
-VERSION = 1.12.1
+VERSION = 1.12.2
 
 TAR	= tar
 RM	= /bin/rm -f
