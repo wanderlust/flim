@@ -1,3 +1,9 @@
+1999-12-14   Daiki Ueno  <ueno@ueda.info.waseda.ac.jp>
+
+	* digest-md5.el
+	(digest-md5-digest-response): Add optional argument `qop'.
+	(digest-md5-build-response-value): Use it.
+
 1999-12-13   Daiki Ueno  <ueno@ueda.info.waseda.ac.jp>
 
 	* digest-md5.el (digest-md5-challenge): New variable.
