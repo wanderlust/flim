@@ -1,5 +1,11 @@
 1998-04-13  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* README.en: Modify for FLIM.
+
+	* ChangeLog: New file.
+
+1998-04-13  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* FLIM-CFG, FLIM-ELS, FLIM-MK: New files.
 
 	* Makefile: Modify for FLIM.
