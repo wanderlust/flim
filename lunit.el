@@ -265,7 +265,7 @@ TESTS holds a number of instances of `lunit-test'."
     (mapatoms
      (lambda (symbol)
        (if (and (fboundp symbol)
-		(string-match "^test-" (symbol-name symbol))
+		(string-match "^test" (symbol-name symbol))
 		(null (get symbol 'luna-method-qualifier)))
 	   (push (lunit-make-test-case class symbol) tests)))
      (luna-class-obarray (luna-find-class class)))

@@ -1,3 +1,8 @@
+2004-02-23  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* lunit.el (lunit-make-test-suite-from-class): Fix regexp.
+	Use "^test" instead of "^test-".
+
 2004-02-19  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* lunit.el (lunit-assert): Avoid double-eval `condtion-expr'.
