@@ -1,5 +1,14 @@
 2000-12-04   Daiki Ueno  <ueno@unixuser.org>
 
+	* luna.el (luna-class-find-functions): Don't quote colon keywords.
+	(luna-send): Ditto.
+	(luna-call-next-method): Ditto.
+
+	* README.ja, README.en (load-path): Remove section.
+	(What's FLIM): Specify prerequisite version of Emacsen.
+
+2000-12-04   Daiki Ueno  <ueno@unixuser.org>
+
 	* smtpmail.el (smtpmail-send-it): Use `smtp-send-buffer' instead of
 	`smtp-via-smtp'.
 	(smtpmail-send-queued-mail): Ditto.
