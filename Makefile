@@ -4,7 +4,7 @@
 
 PACKAGE = slim
 API	= 1.14
-RELEASE = 7
+RELEASE = 9
 
 TAR	= tar
 RM	= /bin/rm -f
