@@ -24,6 +24,10 @@
 
 ;;; Code:
 
+(defconst mime-spadework-module-version
+  '("FLIM" "Ky-Dòto"-A 1 0 1))
+
+
 (require 'custom)
 
 (defgroup mime nil
