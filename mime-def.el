@@ -139,10 +139,15 @@ If method is nil, this field will not be encoded."
 	  "*'%"				; introduced in RFC 2231.
 	  "]"))
 
-(defconst mime-charset-regexp mime-token-regexp)
+(defconst mime-charset-regexp
+  (concat "[^" mime-tspecial-char-list "\000-\040"
+	  "*'%"				; should not include "%"?
+	  "]+"))
+
 ;; More precisely, length of "[A-Za-z]+" is limited to at most 8.
 ;; (defconst mime-language-regexp "[A-Za-z]+\\(-[A-Za-z]+\\)*")
 (defconst mime-language-regexp "[-A-Za-z]+")
+
 (defconst mime-encoding-regexp mime-token-regexp)
 
 
