@@ -1,3 +1,16 @@
+1998-09-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* Makefile (XEMACS): New variable.
+	(PACKAGEDIR): New variable.
+	(package): New target.
+	(install-package): New target.
+
+	* FLIM-CFG (PACKAGEDIR): New variable.
+
+	* FLIM-MK (config-flim-package): New function.
+	(compile-flim-package): New function.
+	(install-flim-package): New function.
+
 1998-09-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-en.sgml (Content-Type field): Translate.
