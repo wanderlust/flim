@@ -1,3 +1,14 @@
+1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-msg-id-to-rword-list): New
+	function.
+	(eword-encode-in-reply-to-to-rword-list): New function.
+	(eword-encode-in-reply-to): New function.
+	(eword-encode-field): Use `eword-encode-in-reply-to' for
+	`In-Reply-To' field.
+
+	* std11.el (std11-parse-in-reply-to): New function.
+
 1998-09-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-structured-field-list): Add
