@@ -264,7 +264,11 @@ If <var>field-name</var> field is not found, this function returns
 <code>nil</code>.
 </defun>
 
-<defun name="mime-insert-decoded-header">
+
+<h2> Text presentation of entity
+<node> entity formatting
+<p>
+<defun name="mime-insert-header">
 	    <args> entity <opts> invisible-fields visible-fields
 <p>
 Insert before point a decoded contents of header of <var>entity</var>.
@@ -276,7 +280,31 @@ field-name to hide.
 If a field-name is matched with some elements of
 <var>invisible-fields</var> and matched with none of
 <var>visible-fields</var>, this function don't insert the field.
+<p>
+Each <dref>encoded-word</dref> in the header is decoded.  ``Raw non
+us-ascii characters'' are also decoded as
+<code>default-mime-charset</code>.
 </defun>
+
+<defun name="mime-insert-text-content">
+	    <args> entity
+<p>
+Insert before point a contents of <var>entity</var> as text entity.
+<p>
+Contents of the <var>entity</var> are decoded as <dref>MIME
+charset</dref>.  If the <var>entity</var> does not have charset
+parameter of Content-Type field, <code>default-mime-charset</code> is
+used as default value.
+</defun>
+
+<defvar name="default-mime-charset">
+<p>
+Symbol to indicate default value of <dref>MIME-charset</dref>.
+<p>
+It is used when MIME-charset is not specified.
+<p>
+It is originally variable of APEL.
+</defvar>
 
 
 <h2> Contents of Entity
@@ -856,14 +884,6 @@ MIME 関連機能に関する group.
 <p>
 <code>mail</code> と <code>news</code> に属する。
 </define>
-
-<defvar name="default-mime-charset">
-<p>
-適切な <dref>MIME charset</dref> が見つからなかった場合に用いられる
-MIME charset.
-<p>
-本来は APEL の変数である。
-</defvar>
 
 <defvar name="mime-temp-directory">
 <p>

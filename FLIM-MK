@@ -1,7 +1,8 @@
 ;;; -*-Emacs-Lisp-*-
-;;;
-;;; $Id$
-;;;
+
+;; FLIM-MK: installer for FLIM.
+
+;;; Code:
 
 (defun config-flim ()
   (let (prefix lisp-dir version-specific-lisp-dir)

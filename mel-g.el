@@ -33,8 +33,9 @@
 
 ;;; Code:
 
-(require 'emu)
+(require 'poem)
 (require 'path-util)
+(require 'mel)
 
 
 ;;; @ variables

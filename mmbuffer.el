@@ -24,10 +24,9 @@
 
 ;;; Code:
 
-(require 'mime)
-(require 'mime-parse)
+(require 'mmgeneric)
 
-(mm-define-backend buffer)
+(mm-define-backend buffer (generic))
 
 (mm-define-method initialize-instance ((entity buffer))
   (mime-entity-set-buffer-internal
@@ -62,6 +61,8 @@
       (mime-entity-set-body-end-internal entity body-end)
       )))
 
+;;; redefine to speed up
+
 (mm-define-method entity-point-min ((entity buffer))
   (mime-entity-header-start-internal entity))
 
@@ -76,22 +77,6 @@
 			(mime-entity-header-end-internal entity))
       (std11-fetch-field field-name)
       )))
-
-(mm-define-method entity-cooked-p ((entity buffer)) nil)
-
-(mm-define-method entity-children ((entity buffer))
-  (let* ((content-type (mime-entity-content-type entity))
-	 (primary-type (mime-content-type-primary-type content-type)))
-    (cond ((eq primary-type 'multipart)
-	   (mime-parse-multipart entity)
-	   )
-	  ((and (eq primary-type 'message)
-		(memq (mime-content-type-subtype content-type)
-		      '(rfc822 news external-body)
-		      ))
-	   (mime-parse-encapsulated entity)
-	   ))
-    ))
 
 (mm-define-method entity-content ((entity buffer))
   (save-excursion
@@ -125,69 +110,6 @@
 			    (mime-entity-body-end-internal entity)
 			    filename)
     ))
-
-(defun mime-visible-field-p (field-name visible-fields invisible-fields)
-  (or (catch 'found
-	(while visible-fields
-	  (let ((regexp (car visible-fields)))
-	    (if (string-match regexp field-name)
-		(throw 'found t)
-	      ))
-	  (setq visible-fields (cdr visible-fields))
-	  ))
-      (catch 'found
-	(while invisible-fields
-	  (let ((regexp (car invisible-fields)))
-	    (if (string-match regexp field-name)
-		(throw 'found nil)
-	      ))
-	  (setq invisible-fields (cdr invisible-fields))
-	  )
-	t)))
-
-(mm-define-method insert-decoded-header ((entity buffer)
-					 &optional invisible-fields
-					 visible-fields)
-  (save-restriction
-    (narrow-to-region (point)(point))
-    (let ((the-buf (current-buffer))
-	  (src-buf (mime-entity-buffer-internal entity))
-	  (h-end (mime-entity-header-end-internal entity))
-	  beg p end field-name len field-body decoded)
-      (save-excursion
-	(set-buffer src-buf)
-	(goto-char (mime-entity-header-start-internal entity))
-	(save-restriction
-	  (narrow-to-region (point) h-end)
-	  (while (re-search-forward std11-field-head-regexp nil t)
-	    (setq beg (match-beginning 0)
-		  p (match-end 0)
-		  field-name (buffer-substring beg (1- p))
-		  len (string-width field-name)
-		  end (std11-field-end))
-	    (when (mime-visible-field-p field-name
-					visible-fields invisible-fields)
-	      (save-excursion
-		(set-buffer the-buf)
-		(setq field-body (ew-lf-crlf-to-crlf
-				  (save-excursion
-				    (set-buffer src-buf)
-				    (buffer-substring p end))))
-		(setq decoded (ew-decode-field field-name field-body))
-		(unless (equal field-body decoded)
-		  (setq decoded (ew-crlf-refold
-				 decoded
-				 (1+ (string-width field-name))
-				 fill-column)))
-		(setq beg (point))
-		(insert field-name)
-		(insert ":")
-		(insert (ew-crlf-to-lf decoded))
-		(insert "\n")
-		(add-text-properties beg (point)
-				     (list 'original-field-name field-name
-					   'original-field-body field-body))
-		))))))))
 
 
 ;;; @ end

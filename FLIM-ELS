@@ -27,7 +27,7 @@
                      ew-dec
 		     eword-decode eword-encode
                      ew-compat
-		     mime mime-parse mmbuffer mmcooked
+		     mime mime-parse mmgeneric mmbuffer mmcooked
 		     mailcap
                      ))
 

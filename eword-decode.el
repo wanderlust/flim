@@ -407,6 +407,19 @@ such as a version of Net$cape)."
   (let ((decoded (ew-decode-field "" (ew-lf-crlf-to-crlf string))))
     (ew-crlf-to-lf (ew-crlf-unfold decoded))))
 
+(defun eword-decode-and-unfold-unstructured-field (string)
+  "Decode and unfold STRING as unstructured field body.
+It decodes non us-ascii characters in FULL-NAME encoded as
+encoded-words or invalid \"raw\" string.  \"Raw\" non us-ascii
+characters are regarded as variable `default-mime-charset'.
+
+If an encoded-word is broken or your emacs implementation can not
+decode the charset included in it, it is not decoded."
+  (rotate-memo args-eword-decode-and-unfold-unstructured-field
+	       (list string))
+  (let ((decoded (ew-decode-field "" (ew-lf-crlf-to-crlf string))))
+    (ew-crlf-to-lf (ew-crlf-unfold decoded))))
+
 
 ;;; @ for region
 ;;;
@@ -690,8 +703,7 @@ be the result."
                   (cdr decoded)))))))
 
 (defun eword-analyze-atom (string &optional must-unfold)
-  (if (let ((enable-multibyte-characters nil))
-        (string-match std11-atom-regexp string))
+  (if (string-match std11-atom-regexp (string-as-unibyte string))
       (let ((end (match-end 0)))
 	(if (and eword-decode-sticked-encoded-word
 		 (string-match eword-encoded-word-in-phrase-regexp

@@ -25,7 +25,7 @@
 ;;; Code:
 
 (eval-and-compile
-  (defconst mime-library-product ["FLAM-DOODLE" (1 10 2) "赤白橡 5.0YR8.0/6.0"]
+  (defconst mime-library-product ["FLAM-DOODLE" (1 11 0) "小豆 2.5R3.5/5.0"]
     "Product name, version number and code name of MIME-library package.")
   )
 
@@ -214,75 +214,125 @@
 ;;; @ MIME entity
 ;;;
 
-(defsubst make-mime-entity-internal (representation-type location
+(defmacro make-mime-entity-internal (representation-type location
 				     &optional content-type
 				     children parent node-id
+				     ;; for NOV
+				     decoded-subject decoded-from
+				     date message-id references
+				     chars lines
+				     xref
+				     ;; for other fields
+				     original-header parsed-header
+				     ;; for buffer representation
 				     buffer
 				     header-start header-end
 				     body-start body-end)
-  (vector representation-type location
-	  content-type nil nil children parent node-id
-	  buffer header-start header-end body-start body-end
-	  nil nil))
+  `(vector ,representation-type ,location
+	   ,content-type nil nil ,children ,parent ,node-id
+	   ;; for NOV
+	   ,decoded-subject ,decoded-from
+	   ,date ,message-id ,references
+	   ,chars ,lines
+	   ,xref
+	   ;; for other fields
+	   ,original-header ,parsed-header
+	   ;; for buffer representation
+	   ,buffer ,header-start ,header-end ,body-start ,body-end))
 
-(defsubst mime-entity-representation-type-internal (entity)
-  (aref entity 0))
-(defsubst mime-entity-set-representation-type-internal (entity type)
-  (aset entity 0 type))
-(defsubst mime-entity-location-internal (entity)
-  (aref entity 1))
+(defmacro mime-entity-representation-type-internal (entity)
+  `(aref ,entity 0))
+(defmacro mime-entity-set-representation-type-internal (entity type)
+  `(aset ,entity 0 ,type))
+(defmacro mime-entity-location-internal (entity)
+  `(aref ,entity 1))
+(defmacro mime-entity-set-location-internal (entity location)
+  `(aset ,entity 1 ,location))
 
-(defsubst mime-entity-content-type-internal (entity)
-  (aref entity 2))
-(defsubst mime-entity-set-content-type-internal (entity type)
-  (aset entity 2 type))
-(defsubst mime-entity-content-disposition-internal (entity)
-  (aref entity 3))
-(defsubst mime-entity-set-content-disposition-internal (entity disposition)
-  (aset entity 3 disposition))
-(defsubst mime-entity-encoding-internal (entity)
-  (aref entity 4))
-(defsubst mime-entity-set-encoding-internal (entity encoding)
-  (aset entity 4 encoding))
+(defmacro mime-entity-content-type-internal (entity)
+  `(aref ,entity 2))
+(defmacro mime-entity-set-content-type-internal (entity type)
+  `(aset ,entity 2 ,type))
+(defmacro mime-entity-content-disposition-internal (entity)
+  `(aref ,entity 3))
+(defmacro mime-entity-set-content-disposition-internal (entity disposition)
+  `(aset ,entity 3 ,disposition))
+(defmacro mime-entity-encoding-internal (entity)
+  `(aref ,entity 4))
+(defmacro mime-entity-set-encoding-internal (entity encoding)
+  `(aset ,entity 4 ,encoding))
 
-(defsubst mime-entity-children-internal (entity)
-  (aref entity 5))
-(defsubst mime-entity-set-children-internal (entity children)
-  (aset entity 5 children))
-(defsubst mime-entity-parent-internal (entity)
-  (aref entity 6))
-(defsubst mime-entity-node-id-internal (entity)
-  (aref entity 7))
+(defmacro mime-entity-children-internal (entity)
+  `(aref ,entity 5))
+(defmacro mime-entity-set-children-internal (entity children)
+  `(aset ,entity 5 ,children))
+(defmacro mime-entity-parent-internal (entity)
+  `(aref ,entity 6))
+(defmacro mime-entity-node-id-internal (entity)
+  `(aref ,entity 7))
 
-(defsubst mime-entity-buffer-internal (entity)
-  (aref entity 8))
-(defsubst mime-entity-set-buffer-internal (entity buffer)
-  (aset entity 8 buffer))
-(defsubst mime-entity-header-start-internal (entity)
-  (aref entity 9))
-(defsubst mime-entity-set-header-start-internal (entity point)
-  (aset entity 9 point))
-(defsubst mime-entity-header-end-internal (entity)
-  (aref entity 10))
-(defsubst mime-entity-set-header-end-internal (entity point)
-  (aset entity 10 point))
-(defsubst mime-entity-body-start-internal (entity)
-  (aref entity 11))
-(defsubst mime-entity-set-body-start-internal (entity point)
-  (aset entity 11 point))
-(defsubst mime-entity-body-end-internal (entity)
-  (aref entity 12))
-(defsubst mime-entity-set-body-end-internal (entity point)
-  (aset entity 12 point))
+(defmacro mime-entity-decoded-subject-internal (entity)
+  `(aref ,entity 8))
+(defmacro mime-entity-set-decoded-subject-internal (entity subject)
+  `(aset ,entity 8 ,subject))
+(defmacro mime-entity-decoded-from-internal (entity)
+  `(aref ,entity 9))
+(defmacro mime-entity-set-decoded-from-internal (entity from)
+  `(aset ,entity 9 ,from))
+(defmacro mime-entity-date-internal (entity)
+  `(aref ,entity 10))
+(defmacro mime-entity-set-date-internal (entity date)
+  `(aset ,entity 10 ,date))
+(defmacro mime-entity-message-id-internal (entity)
+  `(aref ,entity 11))
+(defmacro mime-entity-set-message-id-internal (entity message-id)
+  `(aset ,entity 11 ,message-id))
+(defmacro mime-entity-references-internal (entity)
+  `(aref ,entity 12))
+(defmacro mime-entity-set-references-internal (entity references)
+  `(aset ,entity 12 ,references))
+(defmacro mime-entity-chars-internal (entity)
+  `(aref ,entity 13))
+(defmacro mime-entity-set-chars-internal (entity chars)
+  `(aset ,entity 13 ,chars))
+(defmacro mime-entity-lines-internal (entity)
+  `(aref ,entity 14))
+(defmacro mime-entity-set-lines-internal (entity lines)
+  `(aset ,entity 14 ,lines))
+(defmacro mime-entity-xref-internal (entity)
+  `(aref ,entity 15))
+(defmacro mime-entity-set-xref-internal (entity xref)
+  `(aset ,entity 15 ,xref))
 
-(defsubst mime-entity-original-header-internal (entity)
-  (aref entity 13))
-(defsubst mime-entity-set-original-header-internal (entity header)
-  (aset entity 13 header))
-(defsubst mime-entity-parsed-header-internal (entity)
-  (aref entity 14))
-(defsubst mime-entity-set-parsed-header-internal (entity header)
-  (aset entity 14 header))
+(defmacro mime-entity-original-header-internal (entity)
+  `(aref ,entity 16))
+(defmacro mime-entity-set-original-header-internal (entity header)
+  `(aset ,entity 16 ,header))
+(defmacro mime-entity-parsed-header-internal (entity)
+  `(aref ,entity 17))
+(defmacro mime-entity-set-parsed-header-internal (entity header)
+  `(aset ,entity 17 ,header))
+
+(defmacro mime-entity-buffer-internal (entity)
+  `(aref ,entity 18))
+(defmacro mime-entity-set-buffer-internal (entity buffer)
+  `(aset ,entity 18 ,buffer))
+(defmacro mime-entity-header-start-internal (entity)
+  `(aref ,entity 19))
+(defmacro mime-entity-set-header-start-internal (entity point)
+  `(aset ,entity 19 ,point))
+(defmacro mime-entity-header-end-internal (entity)
+  `(aref ,entity 20))
+(defmacro mime-entity-set-header-end-internal (entity point)
+  `(aset ,entity 20 ,point))
+(defmacro mime-entity-body-start-internal (entity)
+  `(aref ,entity 21))
+(defmacro mime-entity-set-body-start-internal (entity point)
+  `(aset ,entity 21 ,point))
+(defmacro mime-entity-body-end-internal (entity)
+  `(aref ,entity 22))
+(defmacro mime-entity-set-body-end-internal (entity point)
+  `(aset ,entity 22 ,point))
 
 
 ;;; @ message structure

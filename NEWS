@@ -1,0 +1,44 @@
+FLIM NEWS --- history of major-changes.
+Copyright (C) 1998 Free Software Foundation, Inc.
+
+* Changes in FLIM 1.11
+
+** New function `mime-insert-text-content'
+
+Add new generic function `mime-insert-text-content' and new mm-service
+`insert-text-content'.
+
+
+** `insert-decoded-header' -> `insert-header'
+
+mm-service `insert-decoded-header' was renamed to `insert-header'.
+Similarly generic function `mime-insert-decoded-header' was renamed to
+`mime-insert-header'.  However `mime-insert-decoded-header' was left
+as an obsolete alias.
+
+
+** Add new function `eword-decode-and-unfold-unstructured-field'
+
+
+** Add new mm-backend `generic'
+
+Add new mm-backend `generic'.  mm-backend `buffer' inherits the
+mm-backend `generic'.
+
+
+** Change internal representation of `mime-entity' structure
+
+Internal representation of `mime-entity' structure was changed to add
+NOV entries.
+
+
+** `mime-entity-*-internal' and `mime-entity-set-*-internal'
+
+Change `mime-entity-*-internal' and `mime-entity-set-*-internal' to
+macro.
+
+
+Local variables:
+mode: outline
+paragraph-separate: "[ 	]*$"
+end:
