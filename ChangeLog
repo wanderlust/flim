@@ -1,3 +1,8 @@
+1999-12-01  Kenichi OKADA <okada@opaopa.org>
+
+	* smtp.el (smtp-auth-scram-md5): New function.
+	(smtp-authentication-method-alist): Add `scram-md5'.
+
 1999-12-12  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl.el (TopLevel): Require `scram-md5'.
@@ -70,7 +75,7 @@
 1999-12-01  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-auth-anonymous): New function.
-	(smtp-authentication-method-alist): Add anonymous.
+	(smtp-authentication-method-alist): Add `anonymous'.
 
 1999-12-01  Kenichi OKADA <okada@opaopa.org>
 

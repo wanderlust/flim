@@ -100,6 +100,7 @@ don't define this value."
     (plain smtp-auth-plain)
     (login smtp-auth-login)
     (anonymous smtp-auth-anonymous)
+    (scram-md5 smtp-auth-scram-md5)
     ))
 
 (defcustom smtp-connection-type nil
@@ -564,6 +565,72 @@ don't define this value."
 	    (>= (car response) 400))
 	(throw 'done (car (cdr response))))))
  
+(defun smtp-auth-scram-md5 (process)
+  ;; now tesing
+  (let ((secure-word (copy-sequence smtp-authentication-passphrase))
+	server-msg-1 server-msg-2 client-msg-1
+	response)
+    (smtp-send-command process "AUTH SCRAM-MD5")
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(progn
+	  (fillarray secure-word 0)
+	  (throw 'done (car (cdr response)))))
+    (smtp-send-command
+     process
+     (base64-encode-string
+      (setq client-msg-1
+	    (sasl-scram-md5-client-msg-1 user))) t)
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(progn 
+	  (fillarray secure-word 0)
+	  (fillarray client-msg-1 0)
+	  (throw 'done (car (cdr response)))))
+    (setq server-msg-1
+	  (base64-decode-string
+	   (substring (car (cdr response)) 4)))
+    (smtp-send-command
+     process
+     (base64-encode-string
+      (sasl-scram-md5-client-msg-2
+       server-msg-1
+       client-msg-1
+       secure-word)) t)
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(progn 
+	  (fillarray secure-word 0)
+	  (fillarray server-msg-1 0)
+	  (fillarray client-msg-1 0)
+	  (throw 'done (car (cdr response)))))
+    (setq server-msg-2
+	  (base64-decode-string
+	   (substring (car (cdr response)) 4)))
+    (if (null (prog1
+		  (sasl-scram-md5-authenticate-server
+		   server-msg-1
+		   server-msg-2
+		   client-msg-1
+		   secure-word)
+		(fillarray secure-word 0)
+		(fillarray server-msg-1 0)
+		(fillarray server-msg-2 0)
+		(fillarray client-msg-1 0)))
+	(throw 'done nil))
+    (smtp-send-command process "")
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response)))) ))
+    
 (provide 'smtp)
 
 ;;; smtp.el ends here
