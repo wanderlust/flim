@@ -37,10 +37,10 @@ FLIM とは？
 導入 (install)
 ==============
 
-(0) 導入 (install) する前に、APEL (9.19 以降) を導入してください。APEL 
+(0) 導入 (install) する前に、APEL (9.22 以降) を導入してください。APEL 
     は以下のところで取得できます:
 
-	ftp://ftp.etl.go.jp/pub/mule/apel/
+	ftp://ftp.m17n.org/pub/mule/apel/
 
 (1-a) 展開した場所への導入
 
@@ -151,17 +151,17 @@ load-path (Emacs と MULE 用)
 バグ報告
 ========
 
-  バグ報告や改善の提案を書いたときは、是非 tm メーリングリストに送って
-  ください:
+  バグ報告や改善の提案を書いたときは、是非 EMACS-MIME メーリングリスト
+  に送ってください:
 
-	bug-tm-en@chamonix.jaist.ac.jp	(英語)
-	bug-tm-ja@chamonix.jaist.ac.jp	(日本語)
+	emacs-mime-en@m17n.org	(英語)
+	emacs-mime-ja@m17n.org	(日本語)
 
-  tm ML を通して、FLIM のバグを報告したり、FLIM の最新のリリースを取得
-  したり、FLIM の将来の拡張の議論をしたりすることができます。tm ML に
-  参加するには、空の電子メールを
+  EMACS-MIME ML を通して、FLIM のバグを報告したり、FLIM の最新のリリー
+  スを取得したり、FLIM の将来の拡張の議論をしたりすることができます。
+  EMACS-MIME ML に参加するには、空の電子メールを
 
-	tm-en-help@chamonix.jaist.ac.jp	(英語)
-	tm-ja-help@chamonix.jaist.ac.jp	(日本語)
+	emacs-mime-en-ctl@m17n.org	(英語)
+	emacs-mime-ja-ctl@m17n.org	(日本語)
 
   に送ってください。
