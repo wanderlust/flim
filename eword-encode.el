@@ -654,7 +654,7 @@ It refer variable `eword-field-encoding-method-alist'."
       (std11-narrow-to-header mail-header-separator)
       (goto-char (point-min))
       (let ((default-cs (mime-charset-to-coding-system default-mime-charset))
-	    beg bbeg end field-name)
+	    bbeg end field-name)
 	(while (re-search-forward std11-field-head-regexp nil t)
 	  (setq bbeg (match-end 0)
 		field-name (buffer-substring (match-beginning 0) (1- bbeg))
