@@ -1,3 +1,8 @@
+1998-09-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-structured-field-list): Add
+	`User-Agent'.
+
 1998-09-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* Makefile (package): Don't update auto-autoloads.el and
