@@ -1,3 +1,7 @@
+2001-03-09  Akihiro Arisawa  <ari@atesoft.advantest.co.jp>
+
+	* mime.el (mime-find-root-entity): Find root recursively.
+
 2000-12-28  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mel.el (binary-to-text-funcall, binary-funcall): Rewrite using
