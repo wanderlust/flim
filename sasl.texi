@@ -4,6 +4,7 @@
 
 @set VERSION 0.2
 
+@dircategory Emacs
 @direntry
 * SASL: (sasl).   The Emacs SASL library.
 @end direntry
@@ -118,7 +119,7 @@ A list of mechanism names.
 @defun sasl-find-mechanism mechanisms
 
 Retrieve an apropriate mechanism.
-This function compares MECHANISMS and @code{sasl-mechanisms} then
+This function compares @var{mechanisms} and @code{sasl-mechanisms} then
 returns apropriate @code{sasl-mechanism} object.
 
 @example
@@ -203,19 +204,19 @@ Return the whole property list of client configuration.
 @section Steps
 
 A step (@code{sasl-step} object) is an abstraction of authentication
-"step" which holds the response value and the next entry point for the
+``step'' which holds the response value and the next entry point for the
 authentication process (the latter is not accessible).
 
 @defun sasl-step-data step
-Return the data which STEP holds, a string.
+Return the data which @var{step} holds, a string.
 @end defun
 
 @defun sasl-step-set-data step data
-Store DATA string to STEP.
+Store @var{data} string to @var{step}.
 @end defun
 
 To get the initial response, you should call the function
-@code{sasl-next-step} with the second argument nil.
+@code{sasl-next-step} with the second argument @code{nil}.
 
 @example
 (setq name (sasl-mechanism-name mechanism))
@@ -237,7 +238,7 @@ To go on with the authentication process, all you have to do is call
 
 @defun sasl-next-step client step
 Perform the authentication step.
-At the first time STEP should be set to nil.
+At the first time @var{step} should be set to @code{nil}.
 @end defun
 
 @node Backend drivers

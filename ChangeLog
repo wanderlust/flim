@@ -1,3 +1,78 @@
+2004-01-12  Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.texi: Texinfo markup fixes.  From Jesper Harder
+	<harder@ifa.au.dk>.
+
+2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sha1-el.el (sha1-string-external): Use with-temp-buffer.
+
+2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sha1-el.el (sha1-string-external): Make it can return a string
+	in binary form.
+	(sha1-region-external): Ditto.
+	(sha1-string-internal): Ditto.
+	(sha1-region-internal): Ditto.
+	(sha1-region): Ditto.
+	(sha1-string): Ditto.
+	(sha1): Ditto.
+
+2003-12-16  Simon Josefsson  <jas@extundo.com>
+
+	* sha1-el.el (autoload): Don't use ignore-errors.
+	(sha1-use-external): Use condition-case.  Suggested by Katsumi
+	Yamaoka <yamaoka@jpl.org>.
+
+2003-12-15  Simon Josefsson  <jas@extundo.com>
+
+	* sha1-el.el (autoload): Ignore errors for
+	executable-find. (XEmacs ecrypto does not require sh-script where
+	executable.el is located.)
+	(sha1-use-external): Likewise.
+
+	* sha1-el.el (sha1): Add defgroup.
+	(sha1-maximum-internal-length, sha1-program, sha1-use-external)
+	(sha1-program): Use 'sha1sum' from GNU CoreUtils instead of OpenSSL.
+	(sha1): Autoload.
+
+2001-12-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* sha1-el.el (sha1-use-external): New variable.
+	(sha1-region): Use it.
+	(sha1-string): Ditto.
+
+2004-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* ntlm.el (ntlm-string-as-unibyte): New macro.
+	(ntlm-build-auth-response): Use it.
+
+2004-01-05  Simon Josefsson  <jas@extundo.com>
+
+	* ntlm.el: Fix namespace.  Change smb-passwd-hash into
+	ntlm-smb-passwd-hash, smb-owf-encrypt into ntlm-smb-owf-encrypt,
+	smb-passwd-hash into ntlm-smb-passwd-hash, smbdes-e-p16 into
+	ntlm-smb-des-e-p16, smbdes-e-p24 into ntlm-smb-des-e-p24, smbhash
+	into ntlm-smb-hash, smb-sp8 into ntlm-smb-sp8, smb-str-to-key into
+	ntlm-smb-str-to-key, smb-dohash into ntlm-smb-dohash, smb-perm1
+	into ntlm-smb-perm1, smb-perm2 into ntlm-smb-perm2, smb-perm3 into
+	ntlm-smb-perm3, smb-perm4 into ntlm-smb-perm4, smb-perm5 into
+	ntlm-smb-perm5, smb-perm6 into ntlm-smb-perm6, smb-sc into
+	ntlm-smb-sc, smb-sbox into ntlm-smb-sbox, string-permute into
+	ntlm-string-permute, string-lshift into ntlm-string-lshift,
+	string-xor into ntlm-string-xor.  Suggested by
+	Jesper Harder <harder@myrealbox.com>.
+
+	* ntlm.el: Don't include poem.
+
+	* md4.el (print-int32, print-string-hexa): Remove.  Suggested by
+	Jesper Harder <harder@myrealbox.com>.
+
+
+2003-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.6 (Marutamachi) released.
+
 2003-12-14  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mime-def.el (mime-header-accept-quoted-encoded-words): Change
