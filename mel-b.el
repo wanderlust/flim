@@ -52,7 +52,7 @@
   :group 'base64
   :type '(repeat :tag "Arguments" string))
 
-(defcustom base64-internal-encoding-limit 1000
+(defcustom base64-internal-encoding-limit 70000
   "*limit size to use internal base64 encoder.
 If size of input to encode is larger than this limit,
 external encoder is called."
