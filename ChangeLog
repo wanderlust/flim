@@ -1,3 +1,12 @@
+2000-12-21   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-send-buffer): Add DOC.
+	(smtp-via-smtp): Add DOC.
+
+	* FLIM-API.en (QMTP): Remove section.
+	(smtp-send-buffer): Add description.
+	(smtp-via-smtp): Likewise.
+
 2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.0 (Ninokuchi) released.
