@@ -149,8 +149,7 @@
 					      visible-fields)
   (let ((the-buf (current-buffer))
 	(decoder-alist
-	 (cdr (or (assq 'folding mime-field-decoder-alist)
-		  (assq t mime-field-decoder-alist))))
+         (cdr (assq 'folding mime-field-decoder-cache)))
 	field-decoder
 	f-b p f-e field-name len field field-body)
     (save-excursion
@@ -169,8 +168,15 @@
 	    (setq field (intern
 			 (capitalize (buffer-substring f-b (1- p))))
 		  field-body (buffer-substring p f-e)
-		  field-decoder (cdr (or (assq field decoder-alist)
-					 (assq t decoder-alist))))
+		  field-decoder 
+                    (cdr (or (assq field decoder-alist)
+                             (prog1
+                                 (funcall
+                                   mime-update-field-decoder-cache
+                                   field 'folding)
+                               (setq decoder-alist
+                                     (cdr (assq 'folding
+                                                mime-field-decoder-cache)))))))
 	    (with-current-buffer the-buf
 	      (insert field-name)
 	      (insert (if field-decoder

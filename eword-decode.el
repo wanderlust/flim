@@ -323,25 +323,67 @@ If mode is `nil', corresponding decoder is set up for every modes."
 				'unfolding function)
 	))))
 
+(defvar mime-field-decoder-cache nil)
+
 ;;;###autoload
 (defun mime-find-field-decoder (field &optional mode)
   "Return function to decode field-body of FIELD in MODE.
 Optional argument MODE must be `native', `folding' or `unfolding'.
 Default value of MODE is `unfolding'."
-  (let ((decoder-alist
-	 (cdr (assq (or mode 'unfolding) mime-field-decoder-alist))))
-    (cdr (or (assq field decoder-alist)
-	     (assq t decoder-alist)
-	     ))))
+  (let ((p (assq (or mode 'unfolding) mime-field-decoder-cache)))
+    (if (and p (setq p (assq field (cdr p))))
+        (cdr p)
+      (cdr (funcall mime-update-field-decoder-cache
+                    field (or mode 'unfolding))))))
+
+(defvar mime-update-field-decoder-cache 'mime-update-field-decoder-cache
+  "*Field decoder cache update function.")
+
+;;;###autoload
+(defun mime-update-field-decoder-cache (field mode &optional function)
+  "Update field decoder cache `mime-field-decoder-cache'."
+  (cond
+    ((eq function 'identity)
+     (setq function nil))
+    ((null function)
+     (let ((decoder-alist
+            (cdr (assq (or mode 'unfolding) mime-field-decoder-alist))))
+       (setq function (cdr (or (assq field decoder-alist)
+                               (assq t decoder-alist)))))))
+  (let ((cell (assq mode mime-field-decoder-cache))
+        ret)
+    (if cell
+        (if (setq ret (assq field (cdr cell)))
+            (setcdr ret function)
+          (setcdr cell (cons (setq ret (cons field function)) (cdr cell))))
+      (setq mime-field-decoder-cache
+            (cons (cons mode (list (setq ret (cons field function))))
+                  mime-field-decoder-cache)))
+    ret))
 
 ;; ignored fields
-(mime-set-field-decoder 'Newsgroups		nil nil)
-(mime-set-field-decoder 'Path			nil nil)
-(mime-set-field-decoder 'Lines			nil nil)
-(mime-set-field-decoder 'Nntp-Posting-Host	nil nil)
-(mime-set-field-decoder 'Received		nil nil)
-(mime-set-field-decoder 'Message-Id		nil nil)
+(mime-set-field-decoder 'Archive                nil nil)
+(mime-set-field-decoder 'Content-Md5            nil nil)
+(mime-set-field-decoder 'Control                nil nil)
 (mime-set-field-decoder 'Date			nil nil)
+(mime-set-field-decoder 'Distribution           nil nil)
+(mime-set-field-decoder 'Followup-Host          nil nil)
+(mime-set-field-decoder 'Followup-To            nil nil)
+(mime-set-field-decoder 'Lines			nil nil)
+(mime-set-field-decoder 'Message-Id		nil nil)
+(mime-set-field-decoder 'Newsgroups		nil nil)
+(mime-set-field-decoder 'Nntp-Posting-Host	nil nil)
+(mime-set-field-decoder 'Path			nil nil)
+(mime-set-field-decoder 'Posted-And-Mailed      nil nil)
+(mime-set-field-decoder 'Received		nil nil)
+(mime-set-field-decoder 'Status                 nil nil)
+(mime-set-field-decoder 'X-Face                 nil nil)
+(mime-set-field-decoder 'X-Face-Version         nil nil)
+(mime-set-field-decoder 'X-Info                 nil nil)
+(mime-set-field-decoder 'X-Pgp-Key-Info         nil nil)
+(mime-set-field-decoder 'X-Pgp-Sig              nil nil)
+(mime-set-field-decoder 'X-Pgp-Sig-Version      nil nil)
+(mime-set-field-decoder 'Xref                   nil nil)
 
 ;; structured fields
 (let ((fields
@@ -413,7 +455,7 @@ default-mime-charset."
 		    default-mime-charset))))
 	(if default-charset
 	    (let ((decoder-alist
-		   (cdr (assq 'folding mime-field-decoder-alist)))
+		   (cdr (assq 'folding mime-field-decoder-cache)))
 		  beg p end field-name len field-decoder)
 	      (goto-char (point-min))
 	      (while (re-search-forward std11-field-head-regexp nil t)
@@ -422,8 +464,16 @@ default-mime-charset."
 		      field-name (buffer-substring beg (1- p))
 		      len (string-width field-name)
 		      field-name (intern (capitalize field-name))
-		      field-decoder (cdr (or (assq field-name decoder-alist)
-					     (assq t decoder-alist))))
+		      field-decoder
+                        (cdr (or (assq field-name decoder-alist)
+                                 (prog1
+                                     (funcall
+                                       mime-update-field-decoder-cache
+                                       field-name 'folding)
+                                   (setq decoder-alist
+                                         (cdr (assq 'folding
+                                                    mime-field-decoder-cache))))
+                                     )))
 		(when field-decoder
 		  (setq end (std11-field-end))
 		  (let ((body (buffer-substring p end))

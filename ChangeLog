@@ -1,3 +1,14 @@
+1998-11-02  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (mime-field-decoder-cache): New variable.
+	(mime-find-field-decoder): Use `mime-field-decoder-cache'.
+	(mime-update-field-decoder-cache): New variable.
+	(mime-update-field-decoder-cache): New function.
+	(mime-decode-header-in-region): Use `mime-field-decoder-cache'.
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Use
+	`mime-field-decoder-cache'.
+
 1998-11-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-decode.el (mime-decode-header-in-region): New function.
