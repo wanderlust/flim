@@ -60,7 +60,7 @@
   ;; (realm nonce qop-options stale maxbuf charset 
   ;; algorithm cipher-opts auth-param).
   (with-temp-buffer
-    (set-syntax-table digest-md5-parse-challenge-syntax-table)
+    (set-syntax-table digest-md5-parse-digest-challenge-syntax-table)
     (insert digest-challenge)
     (goto-char (point-min))
     (insert "(")
