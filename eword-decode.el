@@ -82,7 +82,7 @@ however this behaviour violates RFC2047."
   (concat eword-encoded-word-prefix-regexp
 	  "\\(" eword-encoded-text-in-phrase-regexp "\\)"
 	  eword-encoded-word-suffix-regexp))
-(defconst eword-after-encoded-word-in-phrase-regexp "\\([ \t(]\\|$\\)")
+(defconst eword-after-encoded-word-in-phrase-regexp "\\([ \t]\\|$\\)")
 
 (defconst eword-encoded-text-in-comment-regexp "[]!-'*->@-[^-~]+")
 (defconst eword-encoded-word-in-comment-regexp

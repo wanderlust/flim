@@ -1,3 +1,12 @@
+1998-05-27  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-after-encoded-word-in-phrase-regexp): remove `
+	`(' to do not decode encoded word just before comment.
+
+1998-05-27  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* TESTPAT: New file.
+
 1998-05-22  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-analyze-quoted-string): Check
