@@ -1,5 +1,15 @@
 1999-07-24  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* mmbuffer.el (mime-insert-text-content): Deleted [moved to
+	mime-def.el].
+
+	* mime-def.el: Add autoload settings for `mime-entity-content' [to
+	avoid warning].
+	(mime-insert-text-content): New method of `mime-entity' [moved
+	from mmbuffer.el].
+
+1999-07-24  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* mmbuffer.el (mime-entity-children): Deleted [moved to
 	mime-def.el].
 
