@@ -264,7 +264,7 @@ If <var>field-name</var> field is not found, this function returns
 <code>nil</code>.
 </defun>
 
-<defun name="mime-insert-decoded-header">
+<defun name="mime-insert-header">
 	    <args> entity <opts> invisible-fields visible-fields
 <p>
 Insert before point a decoded contents of header of <var>entity</var>.

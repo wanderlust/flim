@@ -263,7 +263,7 @@ code-converted.
 <var>field-name</var> 欄が存在しない場合は nil を返す。
 </defun>
 
-<defun name="mime-insert-decoded-header">
+<defun name="mime-insert-header">
 	    <args> entity <opts> invisible-fields visible-fields
 <p>
 現在位置に <var>entity</var> の復号した header を挿入する。
