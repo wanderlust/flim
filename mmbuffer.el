@@ -66,6 +66,13 @@
 			       (or (mime-entity-encoding entity) "7bit"))
     ))
 
+(defun mmbuffer-write-entity (entity filename)
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (write-region-as-binary (mime-entity-point-min entity)
+			    (mime-entity-point-max entity) filename)
+    ))
+
 
 ;;; @ end
 ;;;
