@@ -516,24 +516,33 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	  ))
     dest))
 
+
+;;; @ application interfaces
+;;;
+
+(defun eword-encode-string (string &optional column mode)
+  "Encode STRING as encoded-words, and return the result.
+Optional argument COLUMN is start-position of the field.
+Optional argument MODE allows `text', `comment', `phrase' or nil.
+Default value is `phrase'."
+  (car (tm-eword::encode-rwl (or column 0)
+			     (tm-eword::split-string string mode))))
+
 (defun eword-encode-address-list (string &optional column)
+  "Encode header field STRING as list of address, and return the result.
+Optional argument COLUMN is start-position of the field."
   (car (tm-eword::encode-rwl
 	(or column 0)
 	(tm-eword::addresses-to-rwl (std11-parse-addresses-string string))
 	)))
 
 (defun eword-encode-structured-field-body (string &optional column)
+  "Encode header field STRING as structured field, and return the result.
+Optional argument COLUMN is start-position of the field."
   (car (tm-eword::encode-rwl
 	(or column 0)
 	(eword-addr-seq-to-rwl (std11-lexical-analyze string))
 	)))
-
-
-;;; @ application interfaces
-;;;
-
-(defun eword-encode-string (str &optional column mode)
-  (car (tm-eword::encode-rwl (or column 0) (tm-eword::split-string str mode))))
 
 (defun eword-encode-field (string)
   "Encode header field STRING, and return the result.
