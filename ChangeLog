@@ -9,6 +9,7 @@
 	(smtp-default-transaction-compose-function): New function.
 	(smtp-closure-partial-apply): New function.
 	(smtp-transaction-compose-function): New variable.
+	(smtp-mailfrom): Don't send message size.
 
 	* qmtp.el (qmtp-timeout): New user option.
 	(qmtp-read-point): New variable.
