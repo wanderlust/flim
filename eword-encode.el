@@ -24,13 +24,12 @@
 
 ;;; Code:
 
-(require 'emu)
+(require 'poem)
 (require 'mel)
 (require 'std11)
 (require 'mime-def)
 (require 'eword-decode)
 
-(eval-when-compile (require 'cl))
 
 ;;; @ variables
 ;;;
