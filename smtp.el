@@ -27,7 +27,7 @@
 
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
@@ -61,7 +61,7 @@ called from `smtp-via-smtp' with arguments SENDER and RECIPIENTS."
 (defcustom smtp-service "smtp"
   "SMTP service port number.  \"smtp\" or 25."
   :type '(choice (integer :tag "25" 25)
-                 (string :tag "smtp" "smtp"))
+		 (string :tag "smtp" "smtp"))
   :group 'smtp)
 
 (defcustom smtp-local-domain nil
@@ -114,13 +114,34 @@ don't define this value."
 (defvar sasl-mechanisms)
 
 ;;;###autoload
-(defvar smtp-open-connection-function #'open-network-stream)
+(defvar smtp-open-connection-function #'open-network-stream
+  "*Function used for connecting to a SMTP server.
+The function will be called with the same four arguments as
+`open-network-stream' and should return a process object.
+Here is an example:
+
+\(setq smtp-open-connection-function
+      #'(lambda (name buffer host service)
+	  (let ((process-connection-type nil))
+	    (start-process name buffer \"ssh\" \"-C\" host
+			   \"nc\" host service))))
+
+It connects to a SMTP server using \"ssh\" before actually connecting
+to the SMTP port.  Where the command \"nc\" is the netcat executable;
+see http://www.atstake.com/research/tools/index.html#network_utilities
+for details.  In addition, you will have to modify the value for
+`smtp-end-of-line' to \"\\n\" if you use \"telnet\" instead of \"nc\".")
 
 (defvar smtp-read-point nil)
 
 (defvar smtp-connection-alist nil)
 
 (defvar smtp-submit-package-function #'smtp-submit-package)
+
+(defvar smtp-end-of-line "\r\n"
+  "*String to use as end-of-line marker when talking to a SMTP server.
+This is \"\\r\\n\" by default, but it may have to be \"\\n\" when using a non
+native connection function.  See also `smtp-open-connection-function'.")
 
 ;;; @ SMTP package
 ;;; A package contains a mail message, an envelope sender address,
@@ -295,7 +316,9 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	  (smtp-response-error
 	   (smtp-primitive-helo package)))
 	(if smtp-use-starttls
-	    (smtp-primitive-starttls package))
+	    (progn
+	      (smtp-primitive-starttls package)
+	      (smtp-primitive-ehlo package)))
 	(if smtp-use-sasl
 	    (smtp-primitive-auth package))
 	(smtp-primitive-mailfrom package)
@@ -500,13 +523,13 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	response)
     (while response-continue
       (goto-char smtp-read-point)
-      (while (not (search-forward "\r\n" nil t))
+      (while (not (search-forward smtp-end-of-line nil t))
 	(accept-process-output (smtp-connection-process-internal connection))
 	(goto-char smtp-read-point))
       (if decoder
 	  (let ((string (buffer-substring smtp-read-point (- (point) 2))))
 	    (delete-region smtp-read-point (point))
-	    (insert (funcall decoder string) "\r\n")))
+	    (insert (funcall decoder string) smtp-end-of-line)))
       (setq response
 	    (nconc response
 		   (list (buffer-substring
@@ -528,7 +551,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	   (smtp-connection-encoder-internal connection)))
       (set-buffer (process-buffer process))
       (goto-char (point-max))
-      (setq command (concat command "\r\n"))
+      (setq command (concat command smtp-end-of-line))
       (insert command)
       (setq smtp-read-point (point))
       (if encoder
@@ -542,8 +565,8 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	 (smtp-connection-encoder-internal connection)))
     ;; Escape "." at start of a line.
     (if (eq (string-to-char data) ?.)
-	(setq data (concat "." data "\r\n"))
-      (setq data (concat data "\r\n")))
+	(setq data (concat "." data smtp-end-of-line))
+      (setq data (concat data smtp-end-of-line)))
     (if encoder
 	(setq data (funcall encoder data)))
     (process-send-string process data)))

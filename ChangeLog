@@ -1,3 +1,19 @@
+2002-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* smtp.el (smtp-open-connection-function): Add doc.
+	(smtp-end-of-line): Doc fix.
+
+2002-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* smtp.el (smtp-end-of-line): New variable.
+	(smtp-read-response): Use it.
+	(smtp-send-command): Use it.
+	(smtp-send-data): Use it.
+
+2001-07-30  AMAKAWA Shuhei  <sa264@cam.ac.uk>
+
+	* smtp.el (smtp-submit-package): Send EHLO after starttls.
+
 2001-05-21  SHIMADA Mitsunobu <simm@pure.fan.gr.jp>
 
 	* LIMIT: CVS commit
