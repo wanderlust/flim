@@ -606,10 +606,8 @@ don't define this value."
 	  (sasl-scram-md5-client-msg-2
 	   server-msg-1 client-msg-1 
 	   (setq salted-pass
-		 (scram-md5-make-salted-pass
-		  smtp-authentication-passphrase
-		  (car
-		   (scram-md5-parse-server-msg-1 server-msg-1))))))
+		 (sasl-scram-md5-make-salted-pass
+		  smtp-authentication-passphrase server-msg-1))))
     (setq secure-word
 	  (unwind-protect
 	      (base64-encode-string secure-word)

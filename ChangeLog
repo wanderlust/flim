@@ -1,5 +1,11 @@
 1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
+	* sasl.el (sasl-scram-md5-make-salted-pass): New function.
+	* smtp.el (smtp-auth-scram-md5): Use `sasl-scram-md5-make-salted-pass'
+	instead of `scram-md5-make-salted-pass' and `scram-md5-parse-server-msg-1'.	
+
+1999-12-13  Kenichi OKADA <okada@opaopa.org>
+
 	* digest-md5.el (digest-md5-parse-digest-challenge): Fix.
 
 1999-12-13  Kenichi OKADA <okada@opaopa.org>

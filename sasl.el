@@ -70,6 +70,12 @@
 (defvar sasl-scram-md5-client-security-info
   (scram-make-security-info nil t 0))
 
+(defun sasl-scram-md5-make-salted-pass (server-msg-1 passphrase)
+  (scram-md5-make-salted-pass
+   passphrase
+   (car
+    (scram-md5-parse-server-msg-1 server-msg-1))))
+
 (defun sasl-scram-md5-client-msg-1 (authenticate-id &optional authorize-id)
   (scram-md5-make-client-msg-1 authenticate-id authorize-id))
 
