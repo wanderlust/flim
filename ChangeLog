@@ -1,5 +1,14 @@
 1998-10-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-def.el (mel-define-service): Add DOC.
+	(mel-define-method): Add DOC.
+	(mel-define-method-function): Add DOC.
+
+	* mime-en.sgml, mime-ja.sgml: Modify for FLIM 1.10.
+
+
+1998-10-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* FLIM: Version 1.10.1 (Miyamaki) was released.
 
 1998-10-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
