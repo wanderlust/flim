@@ -11,9 +11,9 @@
 		     mime mime-parse mmgeneric
 		     mmbuffer mmcooked mmexternal
 		     mime-conf
-		     unique-id scram-md5
+		     unique-id
 		     sasl sasl-cram sasl-digest
-		     md4 ntlm sasl-ntlm 
+		     md4 ntlm sasl-ntlm sasl-scram
 		     smtp qmtp smtpmail))
 
 (setq flim-version-specific-modules '(mailcap))

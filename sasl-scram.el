@@ -1,4 +1,4 @@
-;;; scram-md5.el --- Compute SCRAM-MD5.
+;;; sasl-scram.el --- Compute SCRAM-MD5.
 
 ;; Copyright (C) 1999 Shuhei KOBAYASHI
 
@@ -34,25 +34,28 @@
 
 ;; Examples.
 ;;
-;; (scram-make-security-info nil t 0)
+;; (sasl-scram-make-security-info nil t 0)
 ;; => "^A^@^@^@"
 
 ;;; Code:
 
+(require 'sasl)
 (require 'hmac-md5)
-(require 'unique-id)
 
-(defmacro scram-security-info-no-security-layer (security-info)
+(defvar sasl-scram-md5-unique-id-function
+  sasl-unique-id-function)
+
+(defmacro sasl-scram-security-info-no-security-layer (security-info)
   `(eq (logand (aref ,security-info 0) 1) 1))
-(defmacro scram-security-info-integrity-protection-layer (security-info)
+(defmacro sasl-scram-security-info-integrity-protection-layer (security-info)
   `(eq (logand (aref ,security-info 0) 2) 2))
-(defmacro scram-security-info-buffer-size (security-info)
+(defmacro sasl-scram-security-info-buffer-size (security-info)
   `(let ((ssecinfo ,security-info))
      (+ (lsh (aref ssecinfo 1) 16)
 	(lsh (aref ssecinfo 2) 8)
 	(aref ssecinfo 3))))
 
-(defun scram-make-security-info (integrity-protection-layer
+(defun sasl-scram-make-security-info (integrity-protection-layer
 				 no-security-layer buffer-size)
   (let ((csecinfo (make-string 4 0)))
     (when integrity-protection-layer
@@ -66,17 +69,18 @@
       (aset csecinfo 3 (logand buffer-size 255)))
     csecinfo))
 
-(defun scram-make-unique-nonce ()	; 8*OCTET, globally unique.
+(defun sasl-scram-make-unique-nonce ()	; 8*OCTET, globally unique.
   ;; For example, concatenated string of process-identifier, system-clock,
   ;; sequence-number, random-number, and domain-name.
-  (let (id)
+  (let ((sasl-unique-id-function sasl-scram-md5-unique-id-function)
+	id)
     (unwind-protect
 	(concat "<" 
-		(setq id (unique-id-m ".sasl"))
+		(setq id (sasl-unique-id))
 		"@" (system-name) ">")
       (fillarray id 0))))
 
-(defun scram-xor-string (str1 str2)
+(defun sasl-scram-xor-string (str1 str2)
   ;; (length str1) == (length str2) == (length dst) == 16 (in SCRAM-MD5)
   (let* ((len (length str1))
          (dst (make-string len 0))
@@ -86,16 +90,16 @@
       (setq pos (1+ pos)))
     dst))
 
-(defun scram-md5-make-client-msg-1 (authenticate-id &optional authorize-id)
+(defun sasl-scram-md5-make-client-msg-1 (authenticate-id &optional authorize-id)
   "Make an initial client message from AUTHENTICATE-ID and AUTHORIZE-ID.
 If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
   (let (nonce)
     (unwind-protect
 	(concat authorize-id "\0" authenticate-id "\0" 
-		(setq nonce (scram-make-unique-nonce)))
+		(setq nonce (sasl-scram-make-unique-nonce)))
       (fillarray nonce 0))))
 
-(defun scram-md5-parse-server-msg-1 (server-msg-1)
+(defun sasl-scram-md5-parse-server-msg-1 (server-msg-1)
   "Parse SERVER-MSG-1 and return a list of (SALT SECURITY-INFO SERVICE-ID)."
   (when (and (> (length server-msg-1) 16)
 	     (eq (string-match "[^@]+@[^\0]+\0" server-msg-1 12) 12))
@@ -104,16 +108,16 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
 	  (substring server-msg-1	; service-id
 		     12 (1- (match-end 0))))))
 
-(defun scram-md5-make-salted-pass (passphrase salt)
+(defun sasl-scram-md5-make-salted-pass (passphrase salt)
   (hmac-md5 salt passphrase))
 
-(defun scram-md5-make-client-key (salted-pass)
+(defun sasl-scram-md5-make-client-key (salted-pass)
   (md5-binary salted-pass))
 
-(defun scram-md5-make-client-verifier (client-key)
+(defun sasl-scram-md5-make-client-verifier (client-key)
   (md5-binary client-key))
 
-(defun scram-md5-make-shared-key (server-msg-1
+(defun sasl-scram-md5-make-shared-key (server-msg-1
 				  client-msg-1
 				  client-security-info
 				  client-verifier)
@@ -125,13 +129,13 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
 	 client-verifier)
       (fillarray buff 0))))
 
-(defun scram-md5-make-client-proof (client-key shared-key)
-  (scram-xor-string client-key shared-key))
+(defun sasl-scram-md5-make-client-proof (client-key shared-key)
+  (sasl-scram-xor-string client-key shared-key))
 
-(defun scram-md5-make-client-msg-2 (client-security-info client-proof)
+(defun sasl-scram-md5-make-client-msg-2 (client-security-info client-proof)
   (concat client-security-info client-proof))
 
-(defun scram-md5-make-server-msg-2 (server-msg-1
+(defun sasl-scram-md5-make-server-msg-2 (server-msg-1
 				    client-msg-1
 				    client-security-info
 				    salt salted-pass)
@@ -149,6 +153,6 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
       (fillarray server-salt 0)
       (fillarray buff 0))))
 
-(provide 'scram-md5)
+(provide 'sasl-scram)
 
-;;; scram-md5.el ends here
+;;; sasl-scram.el ends here

@@ -1,5 +1,17 @@
 2001-02-16  Kenichi OKADA <okada@opaopa.org>
 
+	* sasl-scram.el: rename from scram-md5.el
+	(TopLevel): Provide `sasl-scram'.
+	Fix prefix.
+	Fix comments.
+	require `sasl'.
+	(sasl-scram-make-unique-nonce): use `sasl-unique-id'.
+	(sasl-scram-md5-unique-id-function): New variable.
+	* sasl.el(sasl-mechanisms): Add SCRAM-MD5.
+	(sasl-mechanism-alist): Ditto.
+
+2001-02-16  Kenichi OKADA <okada@opaopa.org>
+
 	* SLIM-TIPS: Fix.
 	* md4.el(md4-pack-int16): Taken form ntlm.el
 	(md4-pack-int32): Ditto.
