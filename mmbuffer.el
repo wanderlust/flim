@@ -65,7 +65,7 @@
 			       (or (mime-entity-encoding entity) "7bit"))
     ))
 
-(mm-define-method write-entity ((entity buffer) filename)
+(mm-define-method write-with-header ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (write-region-as-binary (mime-entity-header-start-internal entity)

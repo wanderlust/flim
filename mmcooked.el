@@ -45,7 +45,7 @@
 				   filename encoding)
 	))))
 
-(mm-define-method write-entity ((entity cooked) filename)
+(mm-define-method write-with-header ((entity cooked) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (write-region (mime-entity-header-start-internal entity)
