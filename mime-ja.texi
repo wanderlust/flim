@@ -1498,9 +1498,9 @@ FLIM $B$N%P%0$r8+$D$1$?$i!"0J2<$N(B address $B$K(B mail $B$rAw$C$F$/$@$5$$!
 
 @itemize @bullet
 @item
- $BF|K\8l(B <bug-tm-ja@@chamonix.jaist.ac.jp>
+ $B1Q8l(B <emacs-mime-en@@m17n.org>
 @item
- $B1Q8l(B <bug-tm-en@@chamonix.jaist.ac.jp>
+ $BF|K\8l(B <emacs-mime-ja@@m17n.org>
 @end itemize
 
 
@@ -1518,14 +1518,14 @@ FLIM $B$N%P%0$r8+$D$1$?$i!"0J2<$N(B address $B$K(B mail $B$rAw$C$F$/$@$5$$!
 $B$r2?DL$b=q$/1)L\$K$J$j$^$9!#$@$+$i!"I,$:(B bug $BJs9p$O>e5-$N(B address $B$KAw$C(B
 $B$F$/$@$5$$!#(B
 
-tm ML $B$G$O(B FLIM $B$N%P%0>pJs$N8r49$d:G?7HG$NG[I[!"(BFLIM $B$N2~NI$K4X$9$k5D(B
-$BO@$r9T$J$C$F$$$^$9!#(Btm ML $B$K;22C$7$?$$J}$O(B
+EMACS-MIME ML $B$G$O(B FLIM $B$N%P%0>pJs$N8r49$d:G?7HG$NG[I[!"(BFLIM $B$N2~NI$K(B
+$B4X$9$k5DO@$r9T$J$C$F$$$^$9!#(BEMACS-MIME ML $B$K;22C$7$?$$J}$O(B
 
 @itemize @bullet
 @item
- $BF|K\8l(B <tm-ja-help@@chamonix.jaist.ac.jp>
+ $B1Q8l(B <emacs-mime-en-ctl@@m17n.org>
 @item
- $B1Q8l(B <tm-en-help@@chamonix.jaist.ac.jp>
+ $BF|K\8l(B <emacs-mime-ja-ctl@@m17n.org>
 @end itemize
 
 @noindent
