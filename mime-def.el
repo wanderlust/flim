@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-library-version
-  '("FLIM" "Shin-Tanabe" 1 9 2)
+  '("Chao" "Karasuma Oike" 1 9 0)
   "Implementation name, version name and numbers of MIME-library package.")
 
 (defconst mime-library-version-string
