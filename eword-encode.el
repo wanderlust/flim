@@ -34,7 +34,11 @@
 ;;; @ variables
 ;;;
 
-(defvar eword-field-encoding-method-alist
+(defgroup eword-encode nil
+  "Encoded-word encoding"
+  :group 'mime)
+
+(defcustom eword-field-encoding-method-alist
   '(("X-Nsubject" . iso-2022-jp-2)
     ("Newsgroups" . nil)
     ("Message-ID" . nil)
@@ -52,7 +56,15 @@ If method is `default-mime-charset', this field will be encoded as
 variable `default-mime-charset' when it must be convert into
 network-code.
 
-If method is nil, this field will not be encoded.")
+If method is nil, this field will not be encoded."
+  :group 'eword-encode
+  :type '(repeat (cons (choice :tag "Field"
+			       (string :tag "Name")
+			       (const :tag "Default" t))
+		       (choice :tag "Method"
+			       (const :tag "MIME conversion" mime)
+			       (symbol :tag "non-MIME conversion")
+			       (const :tag "no-conversion" nil)))))
 
 (defvar eword-charset-encoding-alist
   '((us-ascii		. nil)
