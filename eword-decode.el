@@ -363,10 +363,10 @@ Default value of MODE is `unfolding'."
 ;; unstructured fields (default)
 (mime-set-field-decoder
  t
- 'native	'eword-decode-unstructured-field-body
- 'folding	'eword-decode-unstructured-field-body
- 'unfolding	'eword-decode-and-unfold-unstructured-field)
-  
+ 'native	#'eword-decode-unstructured-field-body
+ 'folding	#'eword-decode-unstructured-field-body
+ 'unfolding	#'eword-decode-and-unfold-unstructured-field)
+
 ;;;###autoload
 (defun mime-decode-field-body (field-body field-name
 					  &optional mode max-column)
@@ -395,17 +395,17 @@ Non MIME encoded-word part in FILED-BODY is decoded with
       )))
 
 ;;;###autoload
-(defun mime-decode-header-in-buffer (&optional code-conversion separator)
-  "Decode MIME encoded-words in header fields.
+(defun mime-decode-header-in-region (start end
+					   &optional code-conversion)
+  "Decode MIME encoded-words in region between START and END.
 If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
 mime-charset, it decodes non-ASCII bit patterns as the mime-charset.
 Otherwise it decodes non-ASCII bit patterns as the
-default-mime-charset.
-If SEPARATOR is not nil, it is used as header separator."
-  (interactive "*")
+default-mime-charset."
+  (interactive "*r")
   (save-excursion
     (save-restriction
-      (std11-narrow-to-header separator)
+      (narrow-to-region start end)
       (let ((default-charset
 	      (if code-conversion
 		  (if (mime-charset-to-coding-system code-conversion)
@@ -434,6 +434,27 @@ If SEPARATOR is not nil, it is used as header separator."
 		))
 	  (eword-decode-region (point-min) (point-max) t)
 	  )))))
+
+;;;###autoload
+(defun mime-decode-header-in-buffer (&optional code-conversion separator)
+  "Decode MIME encoded-words in header fields.
+If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
+mime-charset, it decodes non-ASCII bit patterns as the mime-charset.
+Otherwise it decodes non-ASCII bit patterns as the
+default-mime-charset.
+If SEPARATOR is not nil, it is used as header separator."
+  (interactive "*")
+  (mime-decode-header-in-region
+   (point-min)
+   (save-excursion
+     (goto-char (point-min))
+     (if (re-search-forward
+	  (concat "^\\(" (regexp-quote (or separator "")) "\\)?$")
+	  nil t)
+	 (match-beginning 0)
+       (point-max)
+       ))
+   ))
 
 (define-obsolete-function-alias 'eword-decode-header
   'mime-decode-header-in-buffer)
