@@ -1,3 +1,10 @@
+1999-06-11  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* luna.el (luna-define-class-function): Check for the improbable
+	name of variable beginning with colon whether we should bind the
+	sort of symbol or not.
+	(TopLevel): Likewise.
+
 1999-06-10  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* luna.el (luna-define-class-function): Bind member variables
