@@ -1,3 +1,7 @@
+1999-05-15  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* luna.el (luna-make-entity-function): Send `initialize-instance'.
+
 1999-05-14  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* luna.el: New module.
