@@ -863,12 +863,14 @@ FLIM はこれらを符号化・復号化する機能を提供します。
 <p>
 Decode MIME encoded-words in header fields.
 <p>
-If <var>code-conversion</var> is <code>nil</code>, it decodes only
-encoded-words.  If it is mime-charset, it decodes non-ASCII bit
-patterns as the mime-charset.  Otherwise it decodes non-ASCII bit
-patterns as the default-mime-charset.
+If <var>code-conversion</var> is <code>nil</code>, only encoded-words
+are decoded.  If <var>code-conversion</var> is a <dref>MIME
+charset</dref>, non-ASCII bit patterns are decoded as the MIME
+charset.  Otherwise non-ASCII bit patterns are decoded as the
+<code>default-mime-charset</code>. <cf node="entity formatting">
 <p>
-If <var>separator</var> is not nil, it is used as header separator.
+If <var>separator</var> is not <code>nil</code>, it is used as header
+separator.
 </defun>
 
 <defun name="eword-encode-header">
