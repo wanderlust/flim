@@ -1,5 +1,9 @@
 1999-08-24  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* CLIME: Version 1.13.3 (Hirahata) released.
+
+1999-08-24  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* mime-def.el: Don't require cl.
 	(make-mime-content-type): Don't use `list*'.
 
