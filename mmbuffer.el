@@ -151,13 +151,14 @@
 (defun mime-parse-encapsulated (entity)
   (mime-entity-set-children-internal
    entity
-   (save-restriction
-     (narrow-to-region (mime-buffer-entity-body-start-internal entity)
-		       (mime-buffer-entity-body-end-internal entity))
-     (list (mime-parse-message
-	    (mime-entity-representation-type-internal entity) nil
-	    entity (cons 0 (mime-entity-node-id-internal entity))))
-     )))
+   (with-current-buffer (mime-entity-body-buffer entity)
+     (save-restriction
+       (narrow-to-region (mime-buffer-entity-body-start-internal entity)
+			 (mime-buffer-entity-body-end-internal entity))
+       (list (mime-parse-message
+	      (mime-entity-representation-type-internal entity) nil
+	      entity (cons 0 (mime-entity-node-id-internal entity))))
+       ))))
 
 (defun mime-parse-message (representation-type &optional default-ctl 
 					       parent node-id)
