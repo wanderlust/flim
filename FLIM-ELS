@@ -39,7 +39,8 @@
 	 (not (or (and (boundp 'MULE) MULE)
 		  (and (featurep 'xemacs) (< emacs-major-version 21))
 		  )))
-    (setq flim-modules (cons 'mel-ccl flim-modules))
+    (setq flim-modules (cons 'mel-b-ccl flim-modules))
+    (setq flim-modules (cons 'mel-q-ccl flim-modules))
   )
 
 ;;; FLIM-ELS ends here

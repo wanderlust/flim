@@ -79,11 +79,20 @@ Content-Transfer-Encoding for it."
 ;;; @ setting for modules
 ;;;
 
-(defvar mel-ccl-module
-  (and (featurep 'mule)
+(defvar mel-ccl-module (featurep 'mule))
+
+(defvar mel-b-ccl-module
+  (and mel-ccl-module
        (progn
 	 (require 'path-util)
-	 (module-installed-p 'mel-ccl)
+	 (module-installed-p 'mel-b-ccl)
+	 )))
+
+(defvar mel-q-ccl-module
+  (and mel-ccl-module
+       (progn
+	 (require 'path-util)
+	 (module-installed-p 'mel-q-ccl)
 	 )))
 
 (mel-use-module 'mel-b '("base64" "B"))
@@ -91,8 +100,12 @@ Content-Transfer-Encoding for it."
 (mel-use-module 'mel-g '("x-gzip64"))
 (mel-use-module 'mel-u '("x-uue" "x-uuencode"))
 
-(if mel-ccl-module
-    (mel-use-module 'mel-ccl '("base64" "quoted-printable" "B" "Q"))
+(if mel-b-ccl-module
+    (mel-use-module 'mel-b-ccl '("base64" "B"))
+  )
+
+(if mel-q-ccl-module
+    (mel-use-module 'mel-q-ccl '("quoted-printable" "Q"))
   )
 
 (if base64-dl-module
