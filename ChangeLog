@@ -1,3 +1,9 @@
+2000-12-04   Daiki Ueno  <ueno@unixuser.org>
+
+        * smtpmail.el (smtpmail-send-it): Use `smtp-send-buffer' instead of
+        `smtp-via-smtp'.
+        (smtpmail-send-queued-mail): Ditto.
+
 2000-11-24  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM-MK (compile-flim): Compile `flim-version-specific-modules'.
@@ -2580,7 +2586,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-D“kubo)-A was released.
+	* FLIM: Version 1.8.0 (-DÉÅkubo)-A was released.
 
 	* README.en: Delete `How to use'.
 
