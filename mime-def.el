@@ -1,4 +1,4 @@
-;;; mime-def.el --- definition module about MIME -*- coding: iso-2022-jp; -*-
+;;; mime-def.el --- definition module about MIME -*- coding: iso-8859-4; -*-
 
 ;; Copyright (C) 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 

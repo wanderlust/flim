@@ -1,6 +1,6 @@
 ;;; smtpmail.el --- SMTP interface for mail-mode
 
-;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
 ;; Keywords: mail
@@ -46,7 +46,7 @@
 (require 'smtp)
 (require 'sendmail)
 (require 'time-stamp)
-(require 'raw-io)
+(require 'mel) ; binary-write-decoded-region, binary-find-file-noselect
 
 (eval-when-compile (require 'static))
 
@@ -245,7 +245,7 @@ This is relative to `smtpmail-queue-dir'.")
 		(insert-buffer tembuf)
 		(or (file-directory-p smtpmail-queue-dir)
 		    (make-directory smtpmail-queue-dir t))
-		(binary-write-region (point-min) (point-max) file-data)
+		(binary-write-decoded-region (point-min) (point-max) file-data)
 		(set-buffer buffer-elisp)
 		(erase-buffer)
 		(insert (concat

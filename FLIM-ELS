@@ -9,12 +9,11 @@
 		     mel mel-q mel-u mel-g
 		     eword-decode eword-encode
 		     mime mime-parse mmgeneric
-		     mmbuffer mmcooked mmdbuffer mmexternal
+		     mmbuffer mmcooked mmexternal
 		     mime-conf
              unique-id scram-md5
 		     sasl sasl-cram sasl-digest
-		     smtp qmtp smtpmail
-		     raw-io))
+		     smtp qmtp smtpmail))
 
 (setq flim-version-specific-modules '(mailcap))
 

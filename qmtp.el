@@ -34,6 +34,7 @@
 ;;; Code:
 
 (require 'custom)
+(require 'mel) ; binary-funcall
 
 (defgroup qmtp nil
   "QMTP protocol for sending mail."
@@ -60,9 +61,8 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
   :type 'integer
   :group 'qmtp)
 
-(autoload 'binary-open-network-stream "raw-io")
 ;;;###autoload
-(defvar qmtp-open-connection-function (function binary-open-network-stream))
+(defvar qmtp-open-connection-function (function open-network-stream))
 
 (defvar qmtp-error-response-alist
   '((?Z "Temporary failure")
@@ -128,8 +128,9 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
       (unwind-protect
 	  (progn
 	    (setq process
-		  (funcall qmtp-open-connection-function
-			   "QMTP" (current-buffer) qmtp-server qmtp-service))
+		  (binary-funcall qmtp-open-connection-function
+				  "QMTP" (current-buffer)
+				  qmtp-server qmtp-service))
 	    (qmtp-send-package process sender recipients buffer))
 	(when (and process
 		   (memq (process-status process) '(open run)))

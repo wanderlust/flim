@@ -1,6 +1,6 @@
 ;;; smtp.el --- basic functions to send mail with SMTP server
 
-;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
 ;;	Simon Leinen <simon@switch.ch> (ESMTP support)
@@ -35,6 +35,7 @@
 (require 'mail-utils)			; mail-strip-quoted-names
 (require 'sasl)
 (require 'luna)
+(require 'mel) ; binary-funcall
 
 (defgroup smtp nil
   "SMTP protocol for sending mail."
@@ -112,9 +113,8 @@ don't define this value."
 
 (defvar sasl-mechanisms)
 
-(autoload 'binary-open-network-stream "raw-io")
 ;;;###autoload
-(defvar smtp-open-connection-function #'binary-open-network-stream)
+(defvar smtp-open-connection-function #'open-network-stream)
 
 (defvar smtp-read-point nil)
 
@@ -236,8 +236,8 @@ Return a newly allocated connection-object.
 BUFFER is the buffer to associate with the connection.  SERVER is name
 of the host to connect to.  SERVICE is name of the service desired."
   (let ((process
-	 (funcall smtp-open-connection-function
-		  "SMTP" buffer  server service))
+	 (binary-funcall smtp-open-connection-function
+			 "SMTP" buffer server service))
 	connection)
     (when process
       (setq connection (smtp-make-connection process server service))

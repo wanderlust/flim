@@ -1,6 +1,6 @@
 ;;; mel.el --- A MIME encoding/decoding library.
 
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Created: 1995/6/25
@@ -26,7 +26,6 @@
 ;;; Code:
 
 (require 'mime-def)
-(require 'raw-io)
 (require 'alist)
 
 (defcustom mime-encoding-list
@@ -78,22 +77,78 @@ Content-Transfer-Encoding for it."
 ;;; @ setting for modules
 ;;;
 
-(mel-define-backend "7bit")
-(mel-define-method-function (mime-encode-string string (nil "7bit"))
+(defun 8bit-insert-encoded-file (filename)
+  "Insert file FILENAME encoded by \"7bit\" format."
+  (let ((coding-system-for-read 'raw-text)
+	format-alist)
+    ;; Returns list of absolute file name and length of data inserted.
+    (insert-file-contents filename)))
+
+(defun 8bit-write-decoded-region (start end filename)
+  "Decode and write current region encoded by \"8bit\" into FILENAME."
+  (let ((coding-system-for-write 'raw-text)
+	format-alist)
+    (write-region start end filename)))
+
+(mel-define-backend "8bit")
+(mel-define-method-function (mime-encode-string string (nil "8bit"))
 			    'identity)
-(mel-define-method-function (mime-decode-string string (nil "7bit"))
+(mel-define-method-function (mime-decode-string string (nil "8bit"))
 			    'identity)
-(mel-define-method mime-encode-region (start end (nil "7bit")))
-(mel-define-method mime-decode-region (start end (nil "7bit")))
-(mel-define-method-function (mime-insert-encoded-file filename (nil "7bit"))
-			    'binary-insert-file-contents)
+(mel-define-method mime-encode-region (start end (nil "8bit")))
+(mel-define-method mime-decode-region (start end (nil "8bit")))
+(mel-define-method-function (mime-insert-encoded-file filename (nil "8bit"))
+			    '8bit-insert-encoded-file)
 (mel-define-method-function (mime-write-decoded-region
-			     start end filename (nil "7bit"))
-			    'binary-write-region)
+			     start end filename (nil "8bit"))
+			    '8bit-write-decoded-region)
 
-(mel-define-backend "8bit" ("7bit"))
 
-(mel-define-backend "binary" ("8bit"))
+(defalias '7bit-insert-encoded-file '8bit-insert-encoded-file)
+(defalias '7bit-write-decoded-region '8bit-write-decoded-region)
+
+(mel-define-backend "7bit" ("8bit"))
+
+
+(defun binary-write-decoded-region (start end filename)
+  "Decode and write current region encoded by \"binary\" into FILENAME."
+  (let ((coding-system-for-write 'binary)
+	jka-compr-compression-info-list jam-zcat-filename-list)
+    (write-region start end filename)))
+
+(defalias 'binary-insert-encoded-file 'insert-file-contents-literally)
+
+(defun binary-find-file-noselect (filename &optional nowarn rawfile)
+  "Like `find-file-noselect', q.v., but don't code and format conversion."
+  (let ((coding-system-for-read 'binary)
+	format-alist)
+    (find-file-noselect filename nowarn rawfile)))
+
+(defun binary-funcall (name &rest args)
+  "Like `funcall', q.v., but read and write as binary."
+  (let ((coding-system-for-read 'binary)
+	(coding-system-for-write 'binary))
+    (apply name args)))
+
+(defun binary-to-text-funcall (coding-system name &rest args)
+  "Like `funcall', q.v., but write as binary and read as text.
+Read text is decoded as CODING-SYSTEM."
+  (let ((coding-system-for-read coding-system)
+	(coding-system-for-write 'binary))
+    (apply name args)))
+
+(mel-define-backend "binary")
+(mel-define-method-function (mime-encode-string string (nil "binary"))
+			    'identity)
+(mel-define-method-function (mime-decode-string string (nil "binary"))
+			    'identity)
+(mel-define-method mime-encode-region (start end (nil "binary")))
+(mel-define-method mime-decode-region (start end (nil "binary")))
+(mel-define-method-function (mime-insert-encoded-file filename (nil "binary"))
+			    'binary-insert-encoded-file)
+(mel-define-method-function (mime-write-decoded-region
+			     start end filename (nil "binary"))
+			    'binary-write-decoded-region)
 
 (defvar mel-b-builtin
    (and (fboundp 'base64-encode-string)
@@ -118,7 +173,7 @@ mmencode included in metamail or XEmacs package)."
     (insert (base64-encode-string
 	     (with-temp-buffer
 	       (set-buffer-multibyte nil)
-	       (binary-insert-file-contents filename)
+	       (binary-insert-encoded-file filename)
 	       (buffer-string))))
     (or (bolp) (insert ?\n)))
     

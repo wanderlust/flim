@@ -1,7 +1,67 @@
+2000-12-27  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-conf.el (mime-mailcap-file): Turn to non user option.
+
+
 2000-12-22  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.14.5 released.
 	* mime-def.el (mime-library-product): Up.
+
+2000-12-23  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* smtpmail.el (smtpmail-send-it): Use
+	`binary-write-decoded-region' instead of `binary-write-region'.
+
+	* mmexternal.el (mmexternal-require-buffer): Use
+	`binary-insert-encoded-file' instead of
+	`binary-insert-file-contents'.
+	(mime-write-entity-body): Use `binary-write-decoded-region'
+	instead of `binary-write-region'.
+
+	* mmbuffer.el (mime-write-entity-body): Use
+	`binary-write-decoded-region' instead of `binary-write-region'.
+
+	* mel.el: - Don't require `raw-io'.
+	(8bit-insert-encoded-file): New function.
+	(8bit-write-decoded-region): New function.
+	(7bit-insert-encoded-file): New alias.
+	(7bit-write-decoded-region): New alias.
+	(binary-insert-encoded-file): New alias.
+	(binary-find-file-noselect): New function.
+	(binary-funcall): New function.
+	(binary-to-text-funcall): New function.
+	(mime-insert-encoded-file of "base64"): Use
+	`binary-insert-encoded-file' instead of
+	`binary-insert-file-contents'.
+
+	* FLIM-API.en (base64-decode-string): New function.
+	(base64-encode-string): New function.
+	(ENCODING-write-decoded-region): New function.
+	(ENCODING-insert-encoded-file): New function.
+
+	* raw-io.el: Deleted.
+
+	* FLIM-ELS (flim-modules): Delete `raw-io'.
+
+2000-12-22  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* smtp.el (smtp-open-connection-function): Revert initial value to
+	`open-network-stream'.
+	(qmtp-open-connection): Use `binary-funcall'.
+
+	* qmtp.el (qmtp-open-connection-function): Revert initial value to
+	`open-network-stream'.
+	(qmtp-send-buffer): Use `binary-funcall'.
+	
+2000-12-23  OKAZAKI Tetsurou  <okazaki@be.to>
+
+	* FLIM-ELS (flim-modules): Delete `mmdbuffer'.
+
+
+2000-12-22  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.1 (Yagi) released.
 
 2000-12-22  Keiichi Suzuki  <keiichi@mdcnet.co.jp>
 
@@ -3431,7 +3491,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-D“kubo)-A was released.
+	* FLIM: Version 1.8.0 (-DÉÅkubo)-A was released.
 
 	* README.en: Delete `How to use'.
 
