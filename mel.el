@@ -79,6 +79,57 @@ Content-Transfer-Encoding for it."
 ;;; @ setting for modules
 ;;;
 
+(mel-define-backend "7bit")
+(mel-define-method-function (mime-encode-string string (nil "7bit"))
+			    'identity)
+(mel-define-method-function (mime-decode-string string (nil "7bit"))
+			    'identity)
+(mel-define-method mime-encode-region (start end (nil "7bit")))
+(mel-define-method mime-decode-region (start end (nil "7bit")))
+(mel-define-method-function (mime-insert-encoded-file filename (nil "7bit"))
+			    'insert-file-contents-as-binary)
+(mel-define-method-function (mime-write-decoded-region
+			     start end filename (nil "7bit"))
+			    'write-region-as-binary)
+
+(mel-define-backend "8bit" ("7bit"))
+
+(mel-define-backend "binary" ("8bit"))
+
+(when (subrp 'base64-encode-string)
+  (mel-define-backend "base64")
+  (mel-define-method-function (mime-encode-string string (nil "base64"))
+			      'base64-encode-string)
+  (mel-define-method-function (mime-decode-string string (nil "base64"))
+			      'base64-decode-string)
+  (mel-define-method-function (mime-encode-region start end (nil "base64"))
+			      'base64-encode-region)
+  (mel-define-method-function (mime-decode-region start end (nil "base64"))
+			      'base64-decode-region)  
+  (mel-define-method mime-insert-encoded-file (filename (nil "base64"))
+    "Encode contents of file FILENAME to base64, and insert the result.
+It calls external base64 encoder specified by
+`base64-external-encoder'.  So you must install the program (maybe
+mmencode included in metamail or XEmacs package)."
+    (interactive (list (read-file-name "Insert encoded file: ")))
+    (insert (base64-encode-string
+	     (with-temp-buffer
+	       (set-buffer-multibyte nil)
+	       (insert-file-contents-as-binary filename)
+	       (buffer-string))))
+    (or (bolp)
+	(insert "\n"))
+    )
+    
+  (mel-define-method-function (encoded-text-encode-string string (nil "B"))
+			      'base64-encode-string)
+  (mel-define-method encoded-text-decode-string (string (nil "B"))
+    (if (and (string-match B-encoded-text-regexp string)
+	     (string= string (match-string 0 string)))
+	(base64-decode-string string)
+      (error "Invalid encoded-text %s" string)))
+  )
+
 (defvar mel-ccl-module
   (and (featurep 'mule)
        (progn
@@ -98,23 +149,6 @@ Content-Transfer-Encoding for it."
 (if base64-dl-module
     (mel-use-module 'mel-b-dl '("base64" "B"))
   )
-
-(mel-define-backend "7bit")
-(mel-define-method-function (mime-encode-string string (nil "7bit"))
-			    'identity)
-(mel-define-method-function (mime-decode-string string (nil "7bit"))
-			    'identity)
-(mel-define-method mime-encode-region (start end (nil "7bit")))
-(mel-define-method mime-decode-region (start end (nil "7bit")))
-(mel-define-method-function (mime-insert-encoded-file filename (nil "7bit"))
-			    'insert-file-contents-as-binary)
-(mel-define-method-function (mime-write-decoded-region
-			     start end filename (nil "7bit"))
-			    'write-region-as-binary)
-
-(mel-define-backend "8bit" ("7bit"))
-
-(mel-define-backend "binary" ("8bit"))
 
 
 ;;; @ region
