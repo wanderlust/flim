@@ -1,3 +1,7 @@
+1999-12-09  Kenichi OKADA <okada@opaopa.org>
+
+	* mime-def.el (mime-library-product): Up.
+
 1999-12-06  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl.el (sasl-number-base36): New function.
