@@ -100,7 +100,7 @@
 
 (defsubst mailcap-look-at-mtext ()
   (let ((beg (point)))
-    (while (or (mailcap-look-at-schar)
+    (while (or (mailcap-look-at-qchar)
 	       (mailcap-look-at-schar)))
     (buffer-substring beg (point))
     ))
