@@ -158,6 +158,12 @@ It calls external quoted-printable encoder specified by
 ;;; @ Quoted-Printable decoder
 ;;;
 
+(defsubst quoted-printable-hex-char-to-num (chr)
+  (cond ((<= ?a chr) (+ (- chr ?a) 10))
+	((<= ?A chr) (+ (- chr ?A) 10))
+	((<= ?0 chr) (- chr ?0))
+	))
+
 (defun quoted-printable-decode-string (string)
   "Decode STRING which is encoded in quoted-printable, and return the result."
   (let (q h l)
@@ -166,17 +172,10 @@ It calls external quoted-printable encoder specified by
 		  (cond ((eq chr ?=)
 			 (setq q t)
 			 "")
-			(q (setq h
-				 (cond ((<= ?a chr) (+ (- chr ?a) 10))
-				       ((<= ?A chr) (+ (- chr ?A) 10))
-				       ((<= ?0 chr) (- chr ?0))
-				       ))
+			(q (setq h (quoted-printable-hex-char-to-num chr))
 			   (setq q nil)
 			   "")
-			(h (setq l (cond ((<= ?a chr) (+ (- chr ?a) 10))
-					 ((<= ?A chr) (+ (- chr ?A) 10))
-					 ((<= ?0 chr) (- chr ?0))
-					 ))
+			(h (setq l (quoted-printable-hex-char-to-num chr))
 			   (prog1
 			       (char-to-string (logior (ash h 4) l))
 			     (setq h nil)
