@@ -59,9 +59,7 @@
 (defun ew-separate-eword (frag1 frag2 targets)
   (while (not (eq frag1 frag2))
     (when (and (memq (get frag1 'type) targets)
-	       (string-match (if ew-permit-null-encoded-text
-				 ew-encoded-word-regexp0
-			       ew-encoded-word-regexp1)
+	       (string-match ew-encoded-word-regexp
 			     (symbol-name frag1))
 	       (or (< 0 (match-beginning 0))
 		   (< (match-end 0) (length (symbol-name frag1)))))
@@ -80,10 +78,7 @@
 	  (setq frag (cadr result)))
 	(put frag 'prev-frag (get frag1 'prev-frag))
 	(put (get frag1 'prev-frag) 'next-frag frag)
-	(while (string-match (if ew-permit-null-encoded-text
-				 ew-encoded-word-regexp0
-			       ew-encoded-word-regexp1)
-			     atom start)
+	(while (string-match ew-encoded-word-regexp atom start)
 	  (when (< start (match-beginning 0))
 	    (setq frag (make-symbol (substring atom start (match-beginning 0)))
 		  result (ew-rcons* result frag))

@@ -43,7 +43,7 @@
 	  (while tmp
 	    (setq str (car tmp)
 		  start 0)
-	    (while (string-match ew-encoded-word-regexp0 str start)
+	    (while (string-match ew-encoded-word-regexp str start)
 	      (setq eword-start (match-beginning 0)
 		    charset-start (match-beginning 1)
 		    eword-end (match-end 0))
@@ -92,7 +92,7 @@
 
 (defun ew-quote-sole (str gen-type2)
   (let (result (start 0) charset-start quoting-end eword-end l)
-    (while (string-match ew-encoded-word-regexp0 str start)
+    (while (string-match ew-encoded-word-regexp str start)
       (setq charset-start (match-beginning 1)
 	    eword-end (match-end 0))
       (string-match ew-quoting-chars-regexp str charset-start)

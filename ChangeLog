@@ -1,3 +1,21 @@
+1998-09-02  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* ew-data.el (ew-separate-eword): Remove
+	`ew-permit-null-encoded-text' checking.
+
+	* ew-quote.el (ew-quote-concat): Use `ew-encoded-word-regexp'
+	instead of `ew-encoded-word-regexp0'.
+	(ew-quote-sole): Ditto.
+
+	* ew-var.el (ew-encoded-text-regexp): Reverted.
+	(ew-encoded-text-regexp0): Abolished
+	(ew-encoded-text-regexp1): Abolished
+	(ew-encoded-word-regexp): Reverted.
+	(ew-encoded-word-regexp0): Abolished
+	(ew-encoded-word-regexp1): Abolished
+	(ew-anchored-encoded-word-regexp): Use `ew-encoded-word-regexp'.
+	(ew-type2-regexp): Use `ew-encoded-word-regexp'.
+
 1998-09-01  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: Add a notice about null encoded-text.
