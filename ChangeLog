@@ -1,3 +1,8 @@
+2003-02-05  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* eword-encode.el (mime-encode-header-in-buffer):
+	Do not eliminate white spaces.
+
 2003-01-26  Kenichi OKADA <okada@opaopa.org>
 
 	* eword-encode.el (mime-encode-header-in-buffer): Remove a
