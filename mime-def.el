@@ -24,15 +24,25 @@
 
 ;;; Code:
 
-(defconst mime-library-version
-  '("FLIM" "K.DŽòdo" 1 10 0)
-  "Implementation name, version name and numbers of MIME-library package.")
+(defconst mime-library-product
+  ["FLIM" (1 10 1) "Miyamaki"]
+  "Product name, version number and code name of MIME-library package.")
 
-(defconst mime-library-version-string
-  `,(concat (car mime-library-version) " "
+(defmacro mime-product-name (product)
+  `(aref ,product 0))
+
+(defmacro mime-product-version (product)
+  `(aref ,product 1))
+
+(defmacro mime-product-code-name (product)
+  `(aref ,product 2))
+
+(defconst mime-library-version
+  (eval-when-compile
+    (concat (mime-product-name mime-library-product) " "
 	    (mapconcat #'number-to-string
-		       (cddr mime-library-version) ".")
-	    " - \"" (cadr mime-library-version) "\""))
+		       (mime-product-version mime-library-product) ".")
+	    " - \"" (mime-product-code-name mime-library-product) "\"")))
 
 
 ;;; @ variables
