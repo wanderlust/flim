@@ -382,7 +382,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	   smtp-sasl-user-name "smtp" (smtp-connection-server connection)))
     (if smtp-sasl-user-realm
 	(sasl-instantiator-set-property
-	 instantiator (list 'realm smtp-sasl-user-realm)))
+	 instantiator 'realm smtp-sasl-user-realm))
     (setq mechanism (sasl-authenticator-mechanism authenticator)
 	  ;; Retrieve the initial response
 	  sasl-response (sasl-evaluate-challenge authenticator instantiator))

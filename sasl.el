@@ -74,7 +74,7 @@ SERVER is the fully qualified host name of the server to authenticate to."
 The second argument PLIST is the new property list."
   `(setplist (aref ,instantiator 3) ,plist))
 
-(defmacro sasl-instantiator-put-property (instantiator property value)
+(defmacro sasl-instantiator-set-property (instantiator property value)
   "Add the given property/value to INSTANTIATOR."
   `(put (aref ,instantiator 3) ,property ,value))
 
