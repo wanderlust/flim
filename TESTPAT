@@ -1184,7 +1184,7 @@
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-"From:
+"From:\r
  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
  =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  <akr@jaist.ac.jp>"
@@ -1192,7 +1192,7 @@
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-"From:
+"From:\r
  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
  =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  <akr@jaist.ac.jp>"
@@ -1200,7 +1200,7 @@
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'("From:
+'("From:\r
  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
  =?US-ASCII?Q?=3F?=()=?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?=\r
  =?US-ASCII?Q?aaaaaaaaaaaaaaaa?= <akr@jaist.ac.jp>"
