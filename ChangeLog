@@ -1,5 +1,17 @@
 2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
+	* mime-def.el (char-int): New alias.
+
+	* eword-encode.el (eword-encode-divide-into-charset-words): Don't
+	use `char-length' and `char-next-index'.
+
+2000-12-15  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* eword-decode.el: Fix typo in doc-string of
+	`mime-set-field-decoder'.
+
+2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
 	* mel.el: Don't require `path-util'.
 
 2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
