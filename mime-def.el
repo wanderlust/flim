@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(defconst mime-library-version-string "Chao 1.8.0 - \"Shij.DNr\"")
+(defconst mime-library-version-string "Chao 1.8.0 - \"Shij-Dr\"")
 
 
 ;;; @ variables
@@ -182,50 +182,75 @@
 ;;; @ MIME entity
 ;;;
 
-(defsubst make-mime-entity-internal (representation-type
-				     location
-				     &optional content-type children
-				     node-id
+(defsubst make-mime-entity-internal (representation-type location
+				     &optional content-type
+				     children parent node-id
 				     buffer
 				     header-start header-end
 				     body-start body-end)
   (vector representation-type location
-	  content-type children nil nil node-id
+	  content-type nil nil children parent node-id
 	  buffer header-start header-end body-start body-end
 	  nil nil))
 
-(defsubst mime-entity-representation-type-internal (entity) (aref entity  0))
-(defsubst mime-entity-location-internal            (entity) (aref entity  1))
-
-(defsubst mime-entity-content-type-internal (entity)        (aref entity  2))
-(defsubst mime-entity-children-internal (entity)            (aref entity  3))
-(defsubst mime-entity-content-disposition-internal (entity) (aref entity  4))
-(defsubst mime-entity-encoding-internal (entity)            (aref entity  5))
-(defsubst mime-entity-node-id-internal (entity)             (aref entity  6))
-
-(defsubst mime-entity-buffer-internal (entity)              (aref entity  7))
-(defsubst mime-entity-header-start-internal (entity)        (aref entity  8))
-(defsubst mime-entity-header-end-internal (entity)          (aref entity  9))
-(defsubst mime-entity-body-start-internal (entity)          (aref entity 10))
-(defsubst mime-entity-body-end-internal (entity)            (aref entity 11))
-
-(defsubst mime-entity-original-header-internal (entity)     (aref entity 12))
-(defsubst mime-entity-parsed-header-internal (entity)       (aref entity 13))
-
+(defsubst mime-entity-representation-type-internal (entity)
+  (aref entity 0))
 (defsubst mime-entity-set-representation-type-internal (entity type)
-  (aset entity  0 type))
+  (aset entity 0 type))
+(defsubst mime-entity-location-internal (entity)
+  (aref entity 1))
+
+(defsubst mime-entity-content-type-internal (entity)
+  (aref entity 2))
 (defsubst mime-entity-set-content-type-internal (entity type)
-  (aset entity  2 type))
-(defsubst mime-entity-set-children-internal (entity children)
-  (aset entity  3 children))
+  (aset entity 2 type))
+(defsubst mime-entity-content-disposition-internal (entity)
+  (aref entity 3))
 (defsubst mime-entity-set-content-disposition-internal (entity disposition)
-  (aset entity  4 disposition))
+  (aset entity 3 disposition))
+(defsubst mime-entity-encoding-internal (entity)
+  (aref entity 4))
 (defsubst mime-entity-set-encoding-internal (entity encoding)
-  (aset entity  5 encoding))
+  (aset entity 4 encoding))
+
+(defsubst mime-entity-children-internal (entity)
+  (aref entity 5))
+(defsubst mime-entity-set-children-internal (entity children)
+  (aset entity 5 children))
+(defsubst mime-entity-parent-internal (entity)
+  (aref entity 6))
+(defsubst mime-entity-node-id-internal (entity)
+  (aref entity 7))
+
+(defsubst mime-entity-buffer-internal (entity)
+  (aref entity 8))
+(defsubst mime-entity-set-buffer-internal (entity buffer)
+  (aset entity 8 buffer))
+(defsubst mime-entity-header-start-internal (entity)
+  (aref entity 9))
+(defsubst mime-entity-set-header-start-internal (entity point)
+  (aset entity 9 point))
+(defsubst mime-entity-header-end-internal (entity)
+  (aref entity 10))
+(defsubst mime-entity-set-header-end-internal (entity point)
+  (aset entity 10 point))
+(defsubst mime-entity-body-start-internal (entity)
+  (aref entity 11))
+(defsubst mime-entity-set-body-start-internal (entity point)
+  (aset entity 11 point))
+(defsubst mime-entity-body-end-internal (entity)
+  (aref entity 12))
+(defsubst mime-entity-set-body-end-internal (entity point)
+  (aset entity 12 point))
+
+(defsubst mime-entity-original-header-internal (entity)
+  (aref entity 13))
 (defsubst mime-entity-set-original-header-internal (entity header)
-  (aset entity 12 header))
-(defsubst mime-entity-set-parsed-header-internal (entity header)
   (aset entity 13 header))
+(defsubst mime-entity-parsed-header-internal (entity)
+  (aref entity 14))
+(defsubst mime-entity-set-parsed-header-internal (entity header)
+  (aset entity 14 header))
 
 
 ;;; @ message structure
