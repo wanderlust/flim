@@ -1009,11 +1009,11 @@ Encode header fields to network representation, such as MIME
 encoded-word.@refill
 
 Each field is encoded as corresponding method specified by variable
-@code{eword-field-encoding-method-alist}.
+@code{mime-field-encoding-method-alist}.
 @end defun
 
 
-@defvar eword-field-encoding-method-alist
+@defvar mime-field-encoding-method-alist
 
 Association list to specify field encoding method.  Each element looks
 like (FIELD . METHOD).@refill
@@ -1037,22 +1037,10 @@ Otherwise the FIELD will be encoded as variable
 
 @deffn{group} mime
 
-MIME $B4XO"5!G=$K4X$9$k(B group.@refill
+The group associated with functions related to MIME.@refill
 
-@code{mail} $B$H(B @code{news} $B$KB0$9$k!#(B
+It belongs to @code{mail} and @code{news}.
 @end deffn
-
-
-@defvar mime-temp-directory
-
-MIME $B5!G=$K4X$9$k<BAu$,0l;~E*$K;HMQ$9$k(B file $B$r:n@.$9$k(B 
-directory.@refill
-
-$B4D6-JQ?t(B @code{MIME_TMP_DIR}, @code{TM_TMP_DIR}, @code{TMPDIR},
-@code{TMP} $B$b$7$/$O(B @code{TEMP} $B$,@_Dj$5$l$F$$$?>l9g!"$=$l$r=i4|CM$H$7$F(B
-$BMQ$$$k!#2?$b@_Dj$5$l$F$$$J$$>l9g!"(B@code{"/tmp/"} $B$rMQ$$$k!#(B
-@end defvar
-
 
 
 @node Appendix, Concept Index, custom, Top
@@ -1539,8 +1527,8 @@ EMACS-MIME ML, send an empty e-mail to:
 @node CVS, History, Bug report, Appendix
 @section CVS based development
 
-FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K!$G:G(B
-$B?7$N(B FLIM $B$rF~<j$9$k$3$H$,$G$-$^$9!'(B
+Files in FLIM are managed under CVS. Therefore you can obtain the
+newest FLIM by the following method.
 
 @example
 (0) cvs login
@@ -1556,7 +1544,7 @@ FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K
 @end example
 
 
-CVS $B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
+If you would like to join CVS based development, please send mail to
 
 @itemize @bullet
 @item
@@ -1564,8 +1552,8 @@ CVS $B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
 @end itemize
 
 @noindent
-$B$^$G!"(Baccount $BL>$H(B UNIX $B$N(B passwd $B$HF1$87A<0$N(B crypt $B2=$5$l$?(B password
-$B$r1h$($F8fO"Mm$/$@$5$$!#(B
+with your account name and your public key for ssh.
+cvsroot is :ext:cvs@@cvs.m17n.org:/cvs/root.
 
 
 @node History,  , CVS, Appendix
