@@ -286,6 +286,20 @@ If is is not found, return DEFAULT-ENCODING."
 	      entity (cons 0 (mime-entity-node-id-internal entity))))
        ))))
 
+(defun mime-parse-external (entity)
+  (require 'mmexternal)
+  (mime-entity-set-children-internal
+   entity
+   (with-current-buffer (mime-entity-body-buffer entity)
+     (save-restriction
+       (narrow-to-region (mime-entity-body-start-point entity)
+			 (mime-entity-body-end-point entity))
+       (list (mime-parse-message
+	      'mime-external-entity nil
+	      entity (cons 0 (mime-entity-node-id-internal entity))))
+       ;; [tomo] Should we unify with `mime-parse-encapsulated'?
+       ))))
+
 (defun mime-parse-message (representation-type &optional default-ctl 
 					       parent node-id)
   (let ((header-start (point-min))
