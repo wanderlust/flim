@@ -73,3 +73,26 @@
  title*2=\"isn't it!\"")
      "title")
     "This is even more ***fun*** isn't it!")))
+
+;;; MIME states that parameters are not order sensitive.
+(luna-define-method test-rfc2231-7 ((case test-rfc2231))
+  (lunit-assert
+   (string=
+    (mime-content-type-parameter
+     (mime-parse-Content-Type "application/x-stuff;
+ title*2=\"isn't it!\";
+ title*1*=%2A%2A%2Afun%2A%2A%2A%20;
+ title*0*=us-ascii'en'This%20is%20even%20more%20")
+     "title")
+    "This is even more ***fun*** isn't it!")))
+
+;;; ABNF states that `ext-octet' is case-insensitive.
+(luna-define-method test-rfc2231-8 ((case test-rfc2231))
+  (lunit-assert
+   (let ((case-fold-search nil))
+     (string=
+      (mime-content-type-parameter
+       (mime-parse-Content-Type "application/x-stuff;
+ title*=us-ascii'en-us'This%20is%20%2a%2a%2afun%2a%2a%2a")
+       "title")
+      "This is ***fun***"))))
