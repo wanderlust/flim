@@ -257,25 +257,6 @@ ENTITY is used."
 		    entity (put-alist field-name field header))
 		   field)))))))
 
-(defun eword-visible-field-p (field-name visible-fields invisible-fields)
-  (or (catch 'found
-	(while visible-fields
-	  (let ((regexp (car visible-fields)))
-	    (if (string-match regexp field-name)
-		(throw 'found t)
-	      ))
-	  (setq visible-fields (cdr visible-fields))
-	  ))
-      (catch 'found
-	(while invisible-fields
-	  (let ((regexp (car invisible-fields)))
-	    (if (string-match regexp field-name)
-		(throw 'found nil)
-	      ))
-	  (setq invisible-fields (cdr invisible-fields))
-	  )
-	t)))
-
 (defun mime-insert-decoded-header (entity &optional invisible-fields
 					  visible-fields)
   "Insert before point a decoded header of ENTITY."
@@ -337,7 +318,7 @@ ENTITY is used."
 
 (defun mime-write-entity-body (entity filename)
   "Write body of ENTITY into FILENAME."
-  (mime-entity-send entity 'write-entity-body filename))
+  (mime-entity-send entity 'write-body filename))
 
 
 ;;; @ end
