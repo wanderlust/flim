@@ -20,10 +20,10 @@ parsing/encoding library for GNU Emacs.
 * How to use::                  How to use MIME features
 * Entity::                      Message and Entity
 * Content-Type::                Information of Content-Type field
-* Content-Disposition::         Content-Disposition $BMs$N>pJs(B
-* Content-Transfer-Encoding::   $BId9f2=K!(B
-* encoded-word::                Header $B$N(B network $BI=8=(B
-* custom::                      $B0lHL@_Dj(B
+* Content-Disposition::         Information of Content-Disposition field
+* Content-Transfer-Encoding::   Encoding Method
+* encoded-word::                Network representation of header
+* custom::                      Various Customization
 * Appendix::                    
 * Concept Index::               
 * Function Index::              
@@ -452,8 +452,8 @@ FLIM $B$O(B Content-Type $BMs$r9=J82r@O$9$k4X?t$H(B Content-Type $BMs$N2r@O
 @menu
 * Content-Type field::          Format of Content-Type field
 * mime-content-type::           mime-content-type structure
-* Content-Type parser::         Content-Type $BMs$N2r@O4o(B
-* Content-Type utility::        Content-Type $B$K4X$9$kM-MQ$J4X?t(B
+* Content-Type parser::         Parser for Content-Type field
+* Content-Type utility::        Content-Type
 @end menu
 
 @node Content-Type field, mime-content-type, Content-Type, Content-Type
@@ -552,7 +552,7 @@ content-type $B$N@8@.;R!#(B
 
 
 @node Content-Type parser, Content-Type utility, mime-content-type, Content-Type
-@section Content-Type $BMs$N2r@O4o(B
+@section Parser for Content-Type field
 
 @defun mime-parse-Content-Type string
 
@@ -570,17 +570,17 @@ Content-Type $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
 
 
 @node Content-Type utility,  , Content-Type parser, Content-Type
-@section Content-Type $B$K4X$9$kM-MQ$J4X?t(B
+@section Content-Type
 
 @defun mime-type/subtype-string type  &optional  subtype
 
-@var{type} $B$H(B @var{subtype} $B$+$i(B type/subtype $B7A<0$NJ8;zNs$rJV$9!#(B
+Return type/subtype string from @var{type} and @var{subtype}.
 @end defun
 
 
 
 @node Content-Disposition, Content-Transfer-Encoding, Content-Type, Top
-@chapter Content-Disposition $BMs$N>pJs(B
+@chapter Information of Content-Disposition field
 @cindex mime-content-disposition
 @cindex RFC 2183
 @cindex Standards Track
@@ -604,12 +604,12 @@ FLIM $B$O(B Content-Disposition $BMs$r9=J82r@O$9$k4X?t$H(B Content-Dispositi
 
 
 @menu
-* mime-content-disposition::    mime-content-disposition $B9=B$BN(B
-* Content-Disposition parser::  Content-Disposition $BMs$N2r@O4o(B
+* mime-content-disposition::    mime-content-disposition structure
+* Content-Disposition parser::  Parser for Content-Disposition field
 @end menu
 
 @node mime-content-disposition, Content-Disposition parser, Content-Disposition, Content-Disposition
-@section mime-content-disposition $B9=B$BN(B
+@section mime-content-disposition structure
 
 @deffn{Structure} mime-content-disposition
 
@@ -645,7 +645,7 @@ Content-Disposition $BMs$N(B parameter ($BO"A[(B list).
 
 
 @node Content-Disposition parser,  , mime-content-disposition, Content-Disposition
-@section Content-Disposition $BMs$N2r@O4o(B
+@section Parser for Content-Disposition field
 
 @defun mime-parse-Content-Disposition string
 
@@ -664,7 +664,7 @@ Content-Disposition $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
 
 
 @node Content-Transfer-Encoding, encoded-word, Content-Disposition, Top
-@chapter $BId9f2=K!(B
+@chapter Encoding Method
 @cindex Content-Transfer-Encoding $BMs(B
 
 @strong{Content-Transfer-Encoding $BMs(B} $B$O(B entity $B$NId9f2=K!$r5-=R$9$k$?$a(B
@@ -679,14 +679,14 @@ FLIM $B$G$O(B Content-Transfer-Encoding $BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$
 
 
 @menu
-* Content-Transfer-Encoding parser::  Content-Transfer-Encoding $BMs$N2r@O4o(B
-* Region encoder/decoder::      $BNN0h$NId9f2=!&I|9f2=(B
-* String encoder/decoder::      $BJ8;zNs$NId9f2=!&I|9f2=(B
-* File encoder/decoder::        File $B$NId9f2=!&I|9f2=(B
+* Content-Transfer-Encoding parser::  Parser for Content-Transfer-Encoding field
+* Region encoder/decoder::      Region encoding/decoding
+* String encoder/decoder::      String encoding/decoding
+* File encoder/decoder::        File encoding/decoding
 @end menu
 
 @node Content-Transfer-Encoding parser, Region encoder/decoder, Content-Transfer-Encoding, Content-Transfer-Encoding
-@section Content-Transfer-Encoding $BMs$N2r@O4o(B
+@section Parser for Content-Transfer-Encoding field
 
 @defun mime-parse-Content-Transfer-Encoding string
 
@@ -706,7 +706,7 @@ Content-Transfer-Encoding $BMs$,B8:_$7$J$$>l9g$O(B@var{default-encoding} $B$r
 
 
 @node Region encoder/decoder, String encoder/decoder, Content-Transfer-Encoding parser, Content-Transfer-Encoding
-@section $BNN0h$NId9f2=!&I|9f2=(B
+@section Region encoding/decoding
 
 @defun mime-encode-region start end encoding
 
@@ -744,7 +744,7 @@ region decoder and @code{nil} means not to decode.
 
 
 @node String encoder/decoder, File encoder/decoder, Region encoder/decoder, Content-Transfer-Encoding
-@section $BJ8;zNs$NId9f2=!&I|9f2=(B
+@section String encoding/decoding
 
 @defun mime-decode-string string encoding
 
@@ -763,7 +763,7 @@ content-transfer-encoding.  FUNCTION is string decoder.
 
 
 @node File encoder/decoder,  , String encoder/decoder, Content-Transfer-Encoding
-@section File $B$NId9f2=!&I|9f2=(B
+@section File encoding/decoding
 
 @defun mime-insert-encoded-file filename encoding
 
@@ -803,7 +803,7 @@ to file.
 
 
 @node encoded-word, custom, Content-Transfer-Encoding, Top
-@chapter Header $B$N(B network $BI=8=(B
+@chapter Network representation of header
 @cindex RFC 2047
 @cindex Standards Track
 @cindex RFC 2047
@@ -827,11 +827,11 @@ FLIM $B$O$3$l$i$rId9f2=!&I|9f2=$9$k5!G=$rDs6!$7$^$9!#(B
 
 
 @menu
-* Header encoder/decoder::      Header $B$NId9f2=!&I|9f2=(B
+* Header encoder/decoder::      Header encoding/decoding
 @end menu
 
 @node Header encoder/decoder,  , encoded-word, encoded-word
-@section Header $B$NId9f2=!&I|9f2=(B
+@section Header encoding/decoding
 
 @defun eword-encode-header &optional  code-conversion separator
 
@@ -857,7 +857,7 @@ It refer variable @code{eword-field-encoding-method-alist}.
 
 
 @node custom, Appendix, encoded-word, Top
-@chapter $B0lHL@_Dj(B
+@chapter Various Customization
 
 @deffn{group} mime
 
