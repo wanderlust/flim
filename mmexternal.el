@@ -96,7 +96,8 @@
 (luna-define-method mime-write-entity ((entity mime-external-entity) filename)
   (with-temp-buffer
     (mime-insert-entity entity)
-    (write-region-as-raw-text-CRLF (point-min) (point-max) filename)))
+    (let ((coding-system-for-write 'raw-text-dos))
+      (write-region (point-min) (point-max) filename))))
 
 
 ;;; @ entity header
