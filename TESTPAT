@@ -41,8 +41,9 @@
       (goto-char (point-min))
       (std11-narrow-to-header mail-header-separator)
       (std11-field-end)
-      (let ((result (std11-unfold-string
-		     (buffer-substring (point-min) (point)))))
+      (let ((result (ew-lf-to-crlf
+		     (std11-unfold-string
+		      (buffer-substring-no-properties (point-min) (point))))))
 	(if (member result dsts) t result))))
 
   (defun encode-test (src dsts &rest opts)
@@ -56,7 +57,7 @@
       (goto-char (point-min))
       (std11-narrow-to-header mail-header-separator)
       (std11-field-end)
-      (let ((result (buffer-substring (point-min) (point))))
+      (let ((result (ew-lf-to-crlf (buffer-substring-no-properties (point-min) (point)))))
 	(if (member result dsts) t result)))))
 
  ((eq target 'doodle) ; DOODLE
