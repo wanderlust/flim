@@ -23,10 +23,10 @@
     (let ((status (make-vector 9 nil)))
       (ccl-execute-on-string
        (ccl-compile
-        '(0 (read r0) (r0 = 2)))
+        '(0 (read r0) (r0 = 1)))
        status
        "")
-      (aref status 0))))
+      (= (aref status 0) 0))))
 
 (defun ew-make-ccl-coding-system (coding-system mnemonic doc-string decoder encoder)
   (make-coding-system

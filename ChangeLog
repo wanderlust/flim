@@ -1,5 +1,9 @@
 1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-bq.el (ew-ccl-untrusted-eof-block): Set boolean value. 
+
+1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-bq.el (ew-ccl-use-symbol): New variable.
 	(ew-ccl-untrusted-eof-block): New variable.
 	(ew-make-ccl-coding-system): New function.
