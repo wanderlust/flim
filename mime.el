@@ -337,7 +337,7 @@ default value."
 		 (prog1
 		     field-name
 		   (setq field-name (symbol-name field-name)))
-	       (intern (capitalize (capitalize field-name))))))
+	       (intern (capitalize field-name)))))
     (cond ((eq sym 'Content-Type)
 	   (mime-entity-content-type entity)
 	   )
