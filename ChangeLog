@@ -1,3 +1,54 @@
+1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-entity-content-type): New implementation.
+	(mime-entity-content-disposition): New implementation.
+	(mime-entity-encoding): New implementation.
+
+	* mime-def.el: Change `make-mime-entity-internal',
+	`mime-entity-*-internal' and `mime-entity-set-*-internal' to
+	macro.
+
+	* mime.el (mime-fetch-field): Refer internal slots for Date,
+	Message-Id and References fields.
+
+	* mime-parse.el (mime-parse-message): Modify for
+	`make-mime-entity-internal'.
+
+	* mime-def.el (make-mime-entity-internal): Change interface and
+	data format for NOV data.
+	(mime-entity-set-location-internal): New function.
+	(mime-entity-decoded-subject-internal): New function.
+	(mime-entity-set-decoded-subject-internal): New function.
+	(mime-entity-decoded-from-internal): New function.
+	(mime-entity-set-decoded-from-internal): New function.
+	(mime-entity-date-internal): New function.
+	(mime-entity-set-date-internal): New function.
+	(mime-entity-message-id-internal): New function.
+	(mime-entity-set-message-id-internal): New function.
+	(mime-entity-references-internal): New function.
+	(mime-entity-set-references-internal): New function.
+	(mime-entity-chars-internal): New function.
+	(mime-entity-set-chars-internal): New function.
+	(mime-entity-lines-internal): New function.
+	(mime-entity-set-lines-internal): New function.
+	(mime-entity-xref-internal): New function.
+	(mime-entity-set-xref-internal): New function.
+	(mime-entity-original-header-internal): Modify for new structure.
+	(mime-entity-set-original-header-internal): Likewise.
+	(mime-entity-parsed-header-internal): Likewise.
+	(mime-entity-set-parsed-header-internal): Likewise.
+	(mime-entity-buffer-internal): Likewise.
+	(mime-entity-set-buffer-internal): Likewise.
+	(mime-entity-header-start-internal): Likewise.
+	(mime-entity-set-header-start-internal): Likewise.
+	(mime-entity-header-end-internal): Likewise.
+	(mime-entity-set-header-end-internal): Likewise.
+	(mime-entity-body-start-internal): Likewise.
+	(mime-entity-set-body-start-internal): Likewise.
+	(mime-entity-body-end-internal): Likewise.
+	(mime-entity-set-body-end-internal): Likewise.
+
+
 1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.10.0 (K-Dòdo)-A was released.
