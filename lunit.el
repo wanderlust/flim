@@ -56,29 +56,14 @@
 
 (eval-when-compile (require 'cl))
 
+;;; @ test
+;;;
+
 (eval-and-compile
   (luna-define-class lunit-test ()
 		     (name))
 
-  (luna-define-internal-accessors 'lunit-test)
-
-  (luna-define-class lunit-test-case (lunit-test))
-
-  (luna-define-class lunit-test-suite (lunit-test)
-		     (tests))
-
-  (luna-define-internal-accessors 'lunit-test-suite)
-
-  (luna-define-class lunit-test-result ()
-		     (errors
-		      failures
-		      listeners))
-
-  (luna-define-internal-accessors 'lunit-test-result)
-
-  (luna-define-class lunit-test-listener ())
-
-  (luna-define-class lunit-test-printer (lunit-test-listener)))
+  (luna-define-internal-accessors 'lunit-test))
 
 (luna-define-generic lunit-test-number-of-tests (test)
   "Count the number of test cases that will be run by the test.")
@@ -86,17 +71,42 @@
 (luna-define-generic lunit-test-run (test result)
   "Run the test and collects its result in result.")
 
-(luna-define-generic lunit-test-case-run (case)
-  "Run the test case.")
-
-(luna-define-generic lunit-test-case-setup (case)
-  "Setup the test case.")
-
-(luna-define-generic lunit-test-case-teardown (case)
-  "Clear the test case.")
-
 (luna-define-generic lunit-test-suite-add-test (suite test)
   "Add the test to the suite.")
+
+;;; @ test listener
+;;;
+
+(luna-define-class lunit-test-listener ())
+
+(luna-define-generic lunit-test-listener-error (listener case error)
+  "An error occurred.")
+
+(luna-define-generic lunit-test-listener-failure (listener case failure)
+  "An failure occurred.")
+
+(luna-define-generic lunit-test-listener-start (listener case)
+  "A test started.")
+
+(luna-define-generic lunit-test-listener-end (listener case)
+  "A test ended.")
+
+;;; @ test result
+;;;
+
+(put 'lunit-error 'error-message "test error")
+(put 'lunit-error 'error-conditions '(lunit-error error))
+
+(put 'lunit-failure 'error-message "test failure")
+(put 'lunit-failure 'error-conditions '(lunit-failure lunit-error error))
+
+(eval-and-compile
+  (luna-define-class lunit-test-result ()
+		     (errors
+		      failures
+		      listeners))
+
+  (luna-define-internal-accessors 'lunit-test-result))
 
 (luna-define-generic lunit-test-result-run (result case)
   "Run the test case.")
@@ -112,74 +122,8 @@ The passed in exception caused the failure.")
 (luna-define-generic lunit-test-result-add-listener (result listener)
   "Add listener to the list of listeners.")
 
-(luna-define-generic lunit-test-listener-error (listener case error)
-  "An error occurred.")
-
-(luna-define-generic lunit-test-listener-failure (listener case failure)
-  "An failure occurred.")
-
-(luna-define-generic lunit-test-listener-start (listener case)
-  "A test started.")
-
-(luna-define-generic lunit-test-listener-end (listener case)
-  "A test ended.")
-
-(put 'lunit-error 'error-message "test error")
-(put 'lunit-error 'error-conditions '(lunit-error error))
-
-(put 'lunit-failure 'error-message "test failure")
-(put 'lunit-failure 'error-conditions '(lunit-failure lunit-error error))
-
-(defmacro lunit-assert (condition-expr)
-  (let ((condition (eval condition-expr)))
-    `(unless ,condition
-       (signal 'lunit-failure (list ',condition-expr)))))
-
-(defvar lunit-test-results-buffer "*Lunit Results*")
-
-(defun lunit (test)
-  (let* ((printer
-	  (luna-make-entity 'lunit-test-printer))
-	 (result
-	  (lunit-make-test-result printer))
-	 failures
-	 errors)
-    (with-output-to-temp-buffer lunit-test-results-buffer
-      (lunit-test-run test result)
-      (setq failures (lunit-test-result-failures-internal result)
-	    errors (lunit-test-result-errors-internal result))
-      (princ (format "%d total, %d failures, %d errors"
-		     (lunit-test-number-of-tests test)
-		     (length failures)
-		     (length errors))))
-    nil))
-
-;;; @ test printer
-;;;
-
-(luna-define-method lunit-test-listener-error ((printer lunit-test-printer)
-					       case error)
-  (princ (format "error: %S\n" error)))
-
-(luna-define-method lunit-test-listener-failure ((printer lunit-test-printer)
-						 case failure)
-  (princ (format "failure: %S\n" failure)))
-
-(luna-define-method lunit-test-listener-start ((printer lunit-test-printer) case)
-  (princ (format "\
-______________________________________________________________________
-Starting test %S
-" (lunit-test-name-internal case))))
-
-(luna-define-method lunit-test-listener-end ((printer lunit-test-printer) case)
-  (princ "\
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-"))
-
-;;; @ test result
-;;;
-
 (defun lunit-make-test-result (&rest listeners)
+  "Return a newly allocated `lunit-test-result' instance with LISTENERS."
   (luna-make-entity 'lunit-test-result :listeners listeners))
 
 (luna-define-method lunit-test-result-run ((result lunit-test-result) case)
@@ -225,7 +169,21 @@ Starting test %S
 ;;; @ test case
 ;;;
 
+(luna-define-class lunit-test-case (lunit-test))
+
+(luna-define-generic lunit-test-case-run (case)
+  "Run the test case.")
+
+(luna-define-generic lunit-test-case-setup (case)
+  "Setup the test case.")
+
+(luna-define-generic lunit-test-case-teardown (case)
+  "Clear the test case.")
+
 (defun lunit-make-test-case (class name)
+  "Return a newly allocated `lunit-test-case'.
+CLASS is a symbol for class derived from `lunit-test-case'.
+NAME is name of the method to be tested."
   (luna-make-entity class :name name))
 
 (luna-define-method lunit-test-number-of-tests ((case lunit-test-case))
@@ -257,7 +215,14 @@ Starting test %S
 ;;; @ test suite
 ;;;
 
+(eval-and-compile
+  (luna-define-class lunit-test-suite (lunit-test)
+		     (tests))
+
+  (luna-define-internal-accessors 'lunit-test-suite))
+
 (defun lunit-make-test-suite (&rest tests)
+  "Return a newly allocated `lunit-test-suite' instance."
   (luna-make-entity 'lunit-test-suite :tests tests))
 
 (luna-define-method lunit-test-suite-add-test ((suite lunit-test-suite) test)
@@ -277,6 +242,55 @@ Starting test %S
   (let ((tests (lunit-test-suite-tests-internal suite)))
     (dolist (test tests)
       (lunit-test-run test result))))
+
+;;; @ test runner
+;;;
+
+(defmacro lunit-assert (condition-expr)
+  (let ((condition (eval condition-expr)))
+    `(unless ,condition
+       (signal 'lunit-failure (list ',condition-expr)))))
+
+(defvar lunit-test-results-buffer "*Lunit Results*")
+
+(luna-define-class lunit-test-printer (lunit-test-listener))
+
+(luna-define-method lunit-test-listener-error ((printer lunit-test-printer)
+					       case error)
+  (princ (format "error: %S\n" error)))
+
+(luna-define-method lunit-test-listener-failure ((printer lunit-test-printer)
+						 case failure)
+  (princ (format "failure: %S\n" failure)))
+
+(luna-define-method lunit-test-listener-start ((printer lunit-test-printer) case)
+  (princ (format "\
+______________________________________________________________________
+Starting test %S
+" (lunit-test-name-internal case))))
+
+(luna-define-method lunit-test-listener-end ((printer lunit-test-printer) case)
+  (princ "\
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"))
+
+(defun lunit (test)
+  "Run TEST and display the result."
+  (let* ((printer
+	  (luna-make-entity 'lunit-test-printer))
+	 (result
+	  (lunit-make-test-result printer))
+	 failures
+	 errors)
+    (with-output-to-temp-buffer lunit-test-results-buffer
+      (lunit-test-run test result)
+      (setq failures (lunit-test-result-failures-internal result)
+	    errors (lunit-test-result-errors-internal result))
+      (princ (format "%d runs, %d failures, %d errors"
+		     (lunit-test-number-of-tests test)
+		     (length failures)
+		     (length errors))))
+    nil))
 
 (provide 'lunit)
 
