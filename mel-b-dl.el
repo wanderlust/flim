@@ -47,7 +47,7 @@ START and END are buffer positions."
       (insert "\n"))
   )
 
-(defun base64-decode-region (start end)
+(defun decode-base64-region (start end)
   "Decode current region by base64.
 START and END are buffer positions."
   (interactive "r")
@@ -69,7 +69,7 @@ START and END are buffer positions."
 (mel-define-method-function (mime-encode-region start end (nil "base64"))
 			    'base64-encode-region)
 (mel-define-method-function (mime-decode-region start end (nil "base64"))
-			    'base64-decode-region)
+			    'decode-base64-region)
 
 (mel-define-method-function (encoded-text-encode-string string (nil "B"))
 			    'encode-base64-string)
@@ -92,24 +92,25 @@ mmencode included in metamail or XEmacs package)."
   (interactive (list (read-file-name "Insert encoded file: ")))
   (insert (encode-base64-string
 	   (with-temp-buffer
+	     (set-buffer-multibyte nil)
 	     (insert-file-contents-as-binary filename)
 	     (buffer-string))))
   (or (bolp)
       (insert "\n"))
   )
 
-(mel-define-method mime-write-decoded-region (start end filename
-						    (nil "base64"))
-  "Decode and write current region encoded by base64 into FILENAME.
-START and END are buffer positions."
-  (interactive
-   (list (region-beginning) (region-end)
-	 (read-file-name "Write decoded region to file: ")))
-  (let ((str (buffer-substring start end)))
-    (with-temp-buffer
-      (insert (decode-base64-string str))
-      (write-region-as-binary (point-min) (point-max) filename)
-      )))
+;; (mel-define-method mime-write-decoded-region (start end filename
+;;                                                     (nil "base64"))
+;;   "Decode and write current region encoded by base64 into FILENAME.
+;; START and END are buffer positions."
+;;   (interactive
+;;    (list (region-beginning) (region-end)
+;;          (read-file-name "Write decoded region to file: ")))
+;;   (let ((str (buffer-substring start end)))
+;;     (with-temp-buffer
+;;       (insert (decode-base64-string str))
+;;       (write-region-as-binary (point-min) (point-max) filename)
+;;       )))
 
 
 ;;; @ end
