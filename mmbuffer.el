@@ -1,8 +1,6 @@
 ;;; mmbuffer.el --- MIME entity module for binary buffer
 
-;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
-;; Copyright (C) 1999 Electrotechnical Laboratory, JAPAN.
-;; Licensed to the Free Software Foundation.
+;; Copyright (C) 1998,1999,2000 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: MIME, multimedia, mail, news
@@ -26,6 +24,7 @@
 
 ;;; Code:
 
+(require 'mmgeneric)
 (require 'mime)
 
 (eval-and-compile
