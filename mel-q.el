@@ -158,17 +158,23 @@ external decoder is called.")
 
 (defun quoted-printable-external-encode-region (beg end)
   (save-excursion
-    (apply (function call-process-region)
-	   beg end (car quoted-printable-external-encoder)
-	   t t nil (cdr quoted-printable-external-encoder))
-    ))
+    (let ((selective-display nil) ;Disable ^M to nl translation.
+	  (mc-flag nil)      ;Mule
+	  (kanji-flag nil))  ;NEmacs
+      (apply (function call-process-region)
+	     beg end (car quoted-printable-external-encoder)
+	     t t nil (cdr quoted-printable-external-encoder))
+      )))
 
 (defun quoted-printable-external-decode-region (beg end)
   (save-excursion
-    (apply (function call-process-region)
-	   beg end (car quoted-printable-external-decoder)
-	   t t nil (cdr quoted-printable-external-decoder))
-    ))
+    (let ((selective-display nil) ;Disable ^M to nl translation.
+	  (mc-flag nil)      ;Mule
+	  (kanji-flag nil))  ;NEmacs
+      (apply (function call-process-region)
+	     beg end (car quoted-printable-external-decoder)
+	     t t nil (cdr quoted-printable-external-decoder))
+      )))
 
 (defun quoted-printable-encode-region (beg end)
   (interactive "r")
