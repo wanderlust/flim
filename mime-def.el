@@ -33,7 +33,7 @@
 (require 'alist)
 
 (eval-and-compile
-  (defconst mime-library-product ["CLIME" (1 13 4) "新寺井"]
+  (defconst mime-library-product ["CLIME" (1 13 5) "加賀福岡"]
     "Product name, version number and code name of MIME-library package.")
   )
 
