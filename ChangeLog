@@ -1,5 +1,18 @@
 2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
+	* mime.el (mime-encode-field-body): Add autoload setting.
+
+	* eword-encode.el (mime-encode-field-body): Renamed from
+	`eword-encode-field-body'; declare `eword-encode-field-body' as
+	obsolete alias.
+	(mime-encode-header-in-buffer): Use `mime-encode-field-body'
+	instead of `eword-encode-field-body'.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-encode-header-in-buffer): Renamed from
+	`eword-encode-header'.
+
 	* mmdbuffer.el: Deleted.
 
 	* mime-def.el (mime-header): New group.
