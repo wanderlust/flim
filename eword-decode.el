@@ -171,17 +171,17 @@ such as a version of Net$cape)."
 ;;;
 
 (defcustom eword-decode-ignored-field-list
-  '(newsgroups path lines nntp-posting-host received message-id date)
+  '(Newsgroups Path Lines Nntp-Posting-Host Received Message-Id Date)
   "*List of field-names to be ignored when decoding.
 Each field name must be symbol."
   :group 'eword-decode
   :type '(repeat symbol))
 
 (defcustom eword-decode-structured-field-list
-  '(reply-to resent-reply-to from resent-from sender resent-sender
-	     to resent-to cc resent-cc bcc resent-bcc dcc
-	     mime-version content-type content-transfer-encoding
-	     content-disposition)
+  '(Reply-To Resent-Reply-To From Resent-From Sender Resent-Sender
+	     To Resent-To Cc Resent-Cc Bcc Resent-Bcc Dcc
+	     Mime-Version Content-Type Content-Transfer-Encoding
+	     Content-Disposition)
   "*List of field-names to decode as structured field.
 Each field name must be symbol."
   :group 'eword-decode
@@ -211,7 +211,7 @@ If SEPARATOR is not nil, it is used as header separator."
 		      p (match-end 0)
 		      field-name (buffer-substring beg (1- p))
 		      len (string-width field-name)
-		      field-name (intern (downcase field-name))
+		      field-name (intern (capitalize field-name))
 		      end (std11-field-end))
 		(cond ((memq field-name eword-decode-ignored-field-list)
 		       ;; Don't decode
@@ -253,6 +253,68 @@ If SEPARATOR is not nil, it is used as header separator."
 	    (goto-char (point-max))
 	    ))
       )))
+
+(defun mime-insert-decoded-header (entity
+				   &optional invisible-fields visible-fields
+				   code-conversion)
+  "Insert before point a decoded header of ENTITY."
+  (let ((default-charset
+	  (if code-conversion
+	      (if (mime-charset-to-coding-system code-conversion)
+		  code-conversion
+		default-mime-charset))))
+    (save-restriction
+      (narrow-to-region (point)(point))
+      (let ((the-buf (current-buffer))
+	    (src-buf (mime-entity-buffer entity))
+	    (h-end (mime-entity-header-end entity))
+	    beg p end field-name len field)
+	(save-excursion
+	  (set-buffer src-buf)
+	  (goto-char (mime-entity-header-start entity))
+	  (save-restriction
+	    (narrow-to-region (point) h-end)
+	    (while (re-search-forward std11-field-head-regexp nil t)
+	      (setq beg (match-beginning 0)
+		    p (match-end 0)
+		    field-name (buffer-substring beg (1- p))
+		    len (string-width field-name)
+		    end (std11-field-end))
+	      (when (or (member-if (function
+				    (lambda (regexp)
+				      (string-match regexp field-name)
+				      ))
+				   visible-fields)
+			(not (member-if (function
+					 (lambda (regexp)
+					   (string-match regexp field-name)
+					   ))
+					invisible-fields)))
+		(setq field (intern (capitalize field-name)))
+		(save-excursion
+		  (set-buffer the-buf)
+		  (insert field-name)
+		  (insert ":")
+		  (cond ((memq field eword-decode-ignored-field-list)
+			 ;; Don't decode
+			 (insert-buffer-substring src-buf p end)
+			 )
+			((memq field-name eword-decode-structured-field-list)
+			 ;; Decode as structured field
+			 (let ((body (buffer-substring p end src-buf))
+			       (default-mime-charset default-charset))
+			   (insert (eword-decode-and-fold-structured-field
+				    body (1+ len)))
+			   ))
+			(t
+			 ;; Decode as unstructured field
+			 (let ((body (buffer-substring p end src-buf))
+			       (default-mime-charset default-charset))
+			   (insert (eword-decode-unstructured-field-body
+				    body (1+ len)))
+			   )))
+		  (insert "\n")
+		  )))))))))
 
 
 ;;; @ encoded-word decoder
