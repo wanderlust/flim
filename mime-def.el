@@ -59,8 +59,6 @@
 ;;; @ variables
 ;;;
 
-(require 'custom)
-
 (defgroup mime '((default-mime-charset custom-variable))
   "Emacs MIME Interfaces"
   :group 'news
