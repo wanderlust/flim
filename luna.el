@@ -47,6 +47,9 @@
 If PARENTS is specified, TYPE inherits PARENTS.
 Each parent must be name of luna-class (symbol).
 If SLOTS is specified, TYPE will be defined to have them."
+  `(luna-define-class-function ',type ',parents ',slots))
+
+(defun luna-define-class-function (type &optional parents slots)
   (let ((oa (make-vector 31 0))
 	(rest parents)
 	parent name
@@ -56,10 +59,10 @@ If SLOTS is specified, TYPE will be defined to have them."
       (setq parent (pop rest)
 	    b (- i 2))
       (mapatoms (lambda (sym)
-		  (when (setq j (get sym 'luna-member-index))
+		  (when (setq j (get sym 'luna-slot-index))
 		    (setq name (symbol-name sym))
 		    (unless (intern-soft name oa)
-		      (put (intern name oa) 'luna-member-index (+ j b))
+		      (put (intern name oa) 'luna-slot-index (+ j b))
 		      (setq i (1+ i))
 		      )))
 		(luna-class-obarray (luna-find-class parent)))
@@ -68,49 +71,13 @@ If SLOTS is specified, TYPE will be defined to have them."
     (while rest
       (setq name (symbol-name (pop rest)))
       (unless (intern-soft name oa)
-	(put (intern name oa) 'luna-member-index i)
+	(put (intern name oa) 'luna-slot-index i)
 	(setq i (1+ i))
 	))
-    `(luna-set-class ',type
-		     (vector 'class ,oa ',parents ,i))
+    (luna-set-class type (vector 'class oa parents i))
     ))
 
-(defmacro luna-class-name (entity)
-  "Return class-name of the ENTITY."
-  `(aref ,entity 0))
-
-(defmacro luna-set-class-name (entity name)
-  `(aset ,entity 0 ,name))
-
-(defmacro luna-get-obarray (entity)
-  `(aref ,entity 1))
-
-(defmacro luna-set-obarray (entity obarray)
-  `(aset ,entity 1 ,obarray))
-
-(defmacro luna-make-entity (type &rest init-args)
-  "Make instance of luna-class TYPE and return it.
-If INIT-ARGS is specified, it is used as initial values of the slots.
-It must be plist and each slot name must have prefix `:'."
-  `(apply #'luna-make-entity-function ',type ',init-args))
-
-(defsubst luna-make-entity-function (type &rest init-args)
-  (let* ((c (get type 'luna-class))
-	 (v (make-vector (luna-class-number-of-slots c) nil))
-	 (oa (luna-class-obarray c))
-	 s i)
-    (luna-set-class-name v type)
-    (luna-set-obarray v (make-vector 7 0))
-    (while init-args
-      (setq s (intern-soft (substring (symbol-name (pop init-args)) 1) oa)
-	    i (pop init-args))
-      (if s
-	  (aset v (get s 'luna-member-index) i)
-	))
-    (luna-send v 'initialize-instance v)
-    v))
-
-(defsubst luna-class-find-member (class member-name)
+(defun luna-class-find-member (class member-name)
   (or (stringp member-name)
       (setq member-name (symbol-name member-name)))
   (or (intern-soft member-name (luna-class-obarray class))
@@ -129,7 +96,7 @@ It must be plist and each slot name must have prefix `:'."
   (intern member-name (luna-class-obarray class)))
 
 (defmacro luna-class-slot-index (class slot-name)
-  `(get (luna-class-find-member ,class ,slot-name) 'luna-member-index))
+  `(get (luna-class-find-member ,class ,slot-name) 'luna-slot-index))
 
 (defmacro luna-slot-index (entity slot-name)
   `(luna-class-slot-index (luna-find-class (luna-class-name ,entity))
@@ -161,7 +128,7 @@ specialized parameter.  (car (car ARGS)) is name of variable and (nth
 
 (put 'luna-define-method 'lisp-indent-function 'defun)
 
-(defsubst luna-class-find-function (class service)
+(defun luna-class-find-function (class service)
   (let ((sym (luna-class-find-member class service)))
     (if (fboundp sym)
 	(symbol-function sym)
@@ -181,7 +148,39 @@ specialized parameter.  (car (car ARGS)) is name of variable and (nth
 (defsubst luna-send (entity message &rest args)
   "Send MESSAGE to ENTITY with ARGS, and return the result."
   (apply (luna-find-function entity message)
-	 entity args))
+	 args))
+
+(defmacro luna-class-name (entity)
+  "Return class-name of the ENTITY."
+  `(aref ,entity 0))
+
+(defmacro luna-set-class-name (entity name)
+  `(aset ,entity 0 ,name))
+
+(defmacro luna-get-obarray (entity)
+  `(aref ,entity 1))
+
+(defmacro luna-set-obarray (entity obarray)
+  `(aset ,entity 1 ,obarray))
+
+(defun luna-make-entity (type &rest init-args)
+  "Make instance of luna-class TYPE and return it.
+If INIT-ARGS is specified, it is used as initial values of the slots.
+It must be plist and each slot name must have prefix `:'."
+  (let* ((c (get type 'luna-class))
+	 (v (make-vector (luna-class-number-of-slots c) nil))
+	 (oa (luna-class-obarray c))
+	 s i)
+    (luna-set-class-name v type)
+    (luna-set-obarray v (make-vector 7 0))
+    (while init-args
+      (setq s (intern-soft (substring (symbol-name (pop init-args)) 1) oa)
+	    i (pop init-args))
+      (if s
+	  (aset v (get s 'luna-slot-index) i)
+	))
+    (luna-send v 'initialize-instance v)
+    v))
 
 (defsubst luna-arglist-to-arguments (arglist)
   (let (dest)
@@ -200,15 +199,50 @@ ARGS is argument of and DOC is DOC-string."
       `(defun ,(intern (symbol-name name)) ,args
 	 ,doc
 	 (luna-send ,(car args) ',name
-		    ,@(luna-arglist-to-arguments (cdr args)))
+		    ,@(luna-arglist-to-arguments args))
 	 )
     `(defun ,(intern (symbol-name name)) ,args
        (luna-send ,(car args) ',name
-		  ,@(luna-arglist-to-arguments (cdr args)))
+		  ,@(luna-arglist-to-arguments args))
        )))
 
 (put 'luna-define-generic 'lisp-indent-function 'defun)
 
+(defun luna-define-internal-accessors (class-name)
+  "Define internal accessors for an entity of CLASS-NAME."
+  (let ((entity-class (luna-find-class class-name))
+	parents parent-class)
+    (mapatoms
+     (lambda (slot)
+       (if (luna-class-slot-index entity-class slot)
+	   (catch 'derived
+	     (setq parents (luna-class-parents entity-class))
+	     (while parents
+	       (setq parent-class (luna-find-class (car parents)))
+	       (if (luna-class-slot-index parent-class slot)
+		   (throw 'derived nil))
+	       (setq parents (cdr parents))
+	       )
+	     (eval
+	      `(progn
+		 (defmacro ,(intern (format "%s-%s-internal"
+					    class-name slot))
+		   (entity)
+		   (list 'aref entity
+			 ,(luna-class-slot-index entity-class
+						 (intern (symbol-name slot)))
+			 ))
+		 (defmacro ,(intern (format "%s-set-%s-internal"
+					    class-name slot))
+		   (entity value)
+		   (list 'aset entity
+			 ,(luna-class-slot-index
+			   entity-class (intern (symbol-name slot)))
+			 value))
+		 ))
+	     )))
+     (luna-class-obarray entity-class))))
+  
 
 ;;; @ end
 ;;;
