@@ -90,7 +90,8 @@ representation-type."
   (or (mime-entity-children-internal entity)
       (luna-send entity 'mime-entity-children entity)))
 
-(defalias 'mime-entity-node-id 'mime-entity-node-id-internal)
+(defun mime-entity-node-id (entity)
+  (mime-entity-node-id-internal entity))
 
 (defun mime-entity-number (entity)
   "Return entity-number of ENTITY."
