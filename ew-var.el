@@ -8,12 +8,7 @@
 (defvar ew-ignore-76bytes-limit nil)
 (defvar ew-permit-sticked-comment nil)
 (defvar ew-permit-sticked-special nil)
-
-(defvar ew-parse-error-sit-for-seconds 0)
-
-;;; anonymous function to decode ground string.
-;; NOTE: STR is CRLF-form and it should return as CRLF-form.
-(defvar ew-decode-us-ascii (lambda (str) (decode-coding-string str 'iso-latin-1-unix)))
+(defvar ew-default-mime-charset 'x-ctext)
 
 ;;;
 (defvar ew-decode-field-syntax-alist
@@ -52,6 +47,8 @@
 
 (defvar ew-decode-field-default-syntax '(ew-scan-unibyte-unstructured))
 
+(defvar ew-parse-error-sit-for-seconds 0)
+
 ;;; constants.
 
 (defconst ew-token-regexp "[-!#-'*+0-9A-Z^-~]+")
@@ -68,10 +65,12 @@
 ;;; utilities for variables.
 
 (defun ew-dynamic-options ()
-  (logior
-   (if ew-decode-sticked-encoded-word 1 0)
-   (if ew-decode-quoted-encoded-word 2 0)
-   (if ew-ignore-75bytes-limit 4 0)
-   (if ew-ignore-76bytes-limit 8 0)
-   (if ew-permit-sticked-comment 16 0)
-   (if ew-permit-sticked-special 32 0)))
+  (cons
+   ew-default-mime-charset
+   (logior
+    (if ew-decode-sticked-encoded-word 1 0)
+    (if ew-decode-quoted-encoded-word 2 0)
+    (if ew-ignore-75bytes-limit 4 0)
+    (if ew-ignore-76bytes-limit 8 0)
+    (if ew-permit-sticked-comment 16 0)
+    (if ew-permit-sticked-special 32 0))))

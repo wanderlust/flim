@@ -1,5 +1,20 @@
 1998-08-21  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-dec.el (ew-decode-us-ascii): New function.
+	(ew-decode-none): Use the function `ew-decode-us-ascii' instead of 
+	the variable `ew-decode-us-ascii'.
+	(ew-decode-generic): Ditto.
+	(ew-decode-generic-others): Ditto.
+
+	* ew-unit.el (ew-charset-aliases): Abolished.
+	(ew-char-decoder): Use `decode-mime-charset-string' with 'LF as lbt.
+
+	* ew-var.el (ew-decode-us-ascii): Abolished.
+	(ew-default-mime-charset): New variable.
+	(ew-dynamic-options): Add `ew-default-mime-charset'.
+
+1998-08-21  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-unit.el (ew-eword-p): Use aref instead of substring.
 	(ew-char-decoder): Refined.
 

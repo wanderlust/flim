@@ -92,9 +92,12 @@ instead of its argument."
        (when (< 0 ew-parse-error-sit-for-seconds)
 	 (sit-for ew-parse-error-sit-for-seconds))))))
 
+(defun ew-decode-us-ascii (str)
+  (decode-mime-charset-string str ew-default-mime-charset 'LF))
+
 (defun ew-decode-none (anchor frag end eword-filter)
   (while (not (eq frag end))
-    (put frag 'decoded (funcall ew-decode-us-ascii (symbol-name frag)))
+    (put frag 'decoded (ew-decode-us-ascii (symbol-name frag)))
     (setq frag (get frag 'next-frag))))
 
 (defun ew-decode-generic (anchor start end
@@ -153,14 +156,14 @@ instead of its argument."
        ((memq type puncts)
 	(when buff
 	  (setq buff (nreverse buff)
-		tmp (funcall ew-decode-us-ascii
-			     (mapconcat 'car buff "")))
+		tmp (ew-decode-us-ascii
+		     (mapconcat 'car buff "")))
 	  (if (ew-contain-non-ascii-p tmp)
 	      (setq result (ew-rcons* result tmp))
 	    (setq result (ew-rcons*
 			  result
-			  (funcall ew-decode-us-ascii
-				   (mapconcat 'cdr buff "")))))
+			  (ew-decode-us-ascii
+			   (mapconcat 'cdr buff "")))))
 	  (setq buff ()))
 	(setq result (ew-rcons*
 		      result
@@ -179,14 +182,14 @@ instead of its argument."
 	(error "something wrong: unexpected token: %s (%s)" frag type))))
     (when buff
       (setq buff (nreverse buff)
-	    tmp (funcall ew-decode-us-ascii
-			 (mapconcat 'car buff "")))
+	    tmp (ew-decode-us-ascii
+		 (mapconcat 'car buff "")))
       (if (ew-contain-non-ascii-p tmp)
 	  (setq result (ew-rcons* result tmp))
 	(setq result (ew-rcons*
 		      result
-		      (funcall ew-decode-us-ascii
-			       (mapconcat 'cdr buff "")))))
+		      (ew-decode-us-ascii
+		       (mapconcat 'cdr buff "")))))
       (setq buff ()))
     (nreverse result)))
 
@@ -208,8 +211,8 @@ instead of its argument."
 		    result
 		    (symbol-name (car frags)))
 	    frags (cdr frags)))
-    (list (funcall ew-decode-us-ascii
-		   (apply 'concat (nreverse result))))))
+    (list (ew-decode-us-ascii
+	   (apply 'concat (nreverse result))))))
 
 (defun ew-decode-unstructured (anchor start end eword-filter)
   (ew-decode-generic

@@ -75,19 +75,9 @@
 (defalias 'ew-b-decode 'base64-decode-string)
 (defalias 'ew-q-decode 'q-encoding-decode-string)
 
-(defconst ew-charset-aliases
-  '((us-ascii . iso-8859-1)
-    (iso-2022-jp-2 . iso-2022-7bit-ss2)
-    (x-ctext . ctext)
-    ))
-
 (defun ew-char-decoder (charset)
-  (let ((sym (intern (downcase charset)))
-        tmp cs)
-    (when (setq tmp (assq sym ew-charset-aliases))
-      (setq sym (cdr tmp)))
-    (setq cs (intern (concat (symbol-name sym) "-unix")))
-    (when (coding-system-p cs)
+  (let ((sym (intern (downcase charset))))
+    (when (mime-charset-to-coding-system sym 'LF)
       (closure-make
-        (lambda (str) (decode-coding-string str cs))
-        cs))))
+       (lambda (str) (decode-mime-charset-string str sym 'LF))
+       sym))))
