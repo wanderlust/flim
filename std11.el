@@ -1,6 +1,6 @@
 ;;; std11.el --- STD 11 functions for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
@@ -265,8 +265,11 @@ If BOUNDARY is not nil, it is used as message header separator.
 ;;; @ lexical analyze
 ;;;
 
-(defconst std11-space-chars " \t\n")
-(defconst std11-spaces-regexp (` (, (concat "[" std11-space-chars "]+"))))
+(eval-and-compile
+  (defconst std11-space-chars " \t\n")
+  )
+;; (defconst std11-spaces-regexp
+;;   (eval-when-compile (concat "[" std11-space-chars "]+")))
 (defconst std11-special-char-list '(?\] ?\[
 					?\( ?\) ?< ?> ?@
 					?, ?\; ?: ?\\ ?\"
@@ -275,7 +278,9 @@ If BOUNDARY is not nil, it is used as message header separator.
   (` (, (concat "^[^" std11-special-char-list std11-space-chars "]+"))))
 
 (defun std11-analyze-spaces (string)
-  (if (and (string-match std11-spaces-regexp string)
+  (if (and (string-match
+	    (eval-when-compile (concat "[" std11-space-chars "]+"))
+	    string)
 	   (= (match-beginning 0) 0))
       (let ((end (match-end 0)))
 	(cons (cons 'spaces (substring string 0 end))
