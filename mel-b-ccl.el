@@ -105,6 +105,10 @@ abcdefghijklmnopqrstuvwxyz\
    (logand v (lsh 255 8))
    (lsh (logand v 255) 16)))
 
+)
+
+(eval-when-compile
+
 (defconst mel-ccl-decode-b-0-table
   (vconcat
    (mapcar

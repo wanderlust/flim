@@ -29,9 +29,10 @@
 (require 'mime-def)
 (require 'eword-decode)
 
+(eval-and-compile
+
 (autoload 'eword-encode-header "eword-encode"
   "Encode header fields to network representation, such as MIME encoded-word.")
-
 
 (autoload 'mime-parse-Content-Type "mime-parse"
   "Parse STRING as field-body of Content-Type field.")
@@ -60,6 +61,7 @@ current-buffer, and return it.")
 (autoload 'mime-parse-buffer "mime-parse"
   "Parse BUFFER as a MIME message.")
 
+)
 
 ;;; @ Entity Representation and Implementation
 ;;;

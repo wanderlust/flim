@@ -248,6 +248,10 @@ abcdefghijklmnopqrstuvwxyz\
       ,succ
       ,fail-crlf))))
 
+)
+
+(eval-when-compile
+
 ;; Generated CCL program works not properly on 20.2 because CCL_EOF_BLOCK
 ;; is not executed.
 (defun mel-ccl-encode-quoted-printable-generic (input-crlf output-crlf)
