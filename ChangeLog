@@ -2,6 +2,7 @@
 
 	* mime.el (mime-find-root-entity): Find root entity recursively.
 
+
 2001-02-20  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.14.6 released.
