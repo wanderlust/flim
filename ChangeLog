@@ -1,5 +1,10 @@
 1998-04-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* eword-decode.el (eword-decode-quoted-encoded-word): Use
+ 	'defcustom.
+
+1998-04-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* eword-decode.el (eword-decode-sticked-encoded-word): Use
  	'defcustom.
 
