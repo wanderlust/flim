@@ -1,5 +1,20 @@
 1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mmgeneric.el (mime-insert-header-from-buffer): Use
+	`mime-find-field-presentation-method' and
+	`mime-find-field-decoder-internal'.
+
+	* eword-decode.el (mime-find-field-presentation-method): New
+	macro.
+	(mime-find-field-decoder-internal): New function.
+	(mime-find-field-decoder): New implementation (use
+	mime-find-field-decoder-internal).
+	(mime-decode-header-in-region): Use
+	`mime-find-field-presentation-method' and
+	`mime-find-field-decoder-internal'.
+
+1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmgeneric.el (mime-insert-header-from-buffer): Rename
 	field-presentation-mode `folding' to `wide'.
 
