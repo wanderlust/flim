@@ -579,11 +579,15 @@ be the result."
   (let ((p (std11-check-enclosure string ?\" ?\")))
     (if p
 	(cons (cons 'quoted-string
-		    (eword-decode-quoted-string
-		      (substring string 0 p)
-		      default-mime-charset))
-	      (substring string p))
-      )))
+		    (if eword-decode-quoted-encoded-word
+			(eword-decode-quoted-string
+			 (substring string 0 p)
+			 default-mime-charset)
+		      (decode-mime-charset-string
+		       (std11-strip-quoted-pair (substring string 0 p))
+		       default-mime-charset)))
+	      (substring string p)))
+      ))
 
 (defun eword-analyze-domain-literal (string &optional must-unfold)
   (std11-analyze-domain-literal string))

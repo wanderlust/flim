@@ -1,3 +1,8 @@
+1998-05-22  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-analyze-quoted-string): Check
+	`eword-decode-quoted-encoded-word'.
+
 1998-05-14  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-analyze-comment): Call `std11-unfold-string'.
