@@ -1,11 +1,5 @@
 1998-06-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* mime.el, mime-def.el: Move `mime-content-disposition-parameter'
-	and `mime-content-disposition-filename' from mime-def.el to
-	mime.el.
-
-1998-06-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
-
 	* README.en (What's FLIM): Modify for mime.el.
 
 	* FLIM-ELS (flim-modules): Add `mime'.
