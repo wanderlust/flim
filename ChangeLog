@@ -1,6 +1,18 @@
 2001-02-16  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM-TIPS: Fix.
+	* md4.el(md4-pack-int16): Taken form ntlm.el
+	(md4-pack-int32): Ditto.
+	(md4-unpack-int16): Ditto.
+	(md4-unpack-int32): Ditto.
+	* ntlm.el (pack-int16): Delete.
+	(pack-int32): Delete.
+	(unpack-int16): Delete.
+	(unpack-int32): Delete.
+
+2001-02-16  Kenichi OKADA <okada@opaopa.org>
+
+	* SLIM-TIPS: Fix.
 	* sasl.el(sasl-mechanisms): Add NTLM.
 	(sasl-mechanism-alist): Add NTLM.
 

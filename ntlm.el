@@ -96,12 +96,12 @@ is not given."
     (concat request-ident		;8 bytes
 	    request-msgType	;4 bytes
 	    request-flags		;4 bytes
-	    (pack-int16 lu)	;user field, count field
-	    (pack-int16 lu)	;user field, max count field
-	    (pack-int32 (cons 0 off-u)) ;user field, offset field
-	    (pack-int16 ld)	;domain field, count field
-	    (pack-int16 ld)	;domain field, max count field
-	    (pack-int32 (cons 0 off-d)) ;domain field, offset field
+	    (md4-pack-int16 lu)	;user field, count field
+	    (md4-pack-int16 lu)	;user field, max count field
+	    (md4-pack-int32 (cons 0 off-u)) ;user field, offset field
+	    (md4-pack-int16 ld)	;domain field, count field
+	    (md4-pack-int16 ld)	;domain field, max count field
+	    (md4-pack-int32 (cons 0 off-d)) ;domain field, offset field
 	    user			;bufer field
 	    domain		;bufer field
 	    )))
@@ -129,8 +129,8 @@ by PASSWORD-HASHES.  PASSWORD-HASHES should be a return value of
 	 domain				;ascii domain string
 	 lu ld off-lm off-nt off-d off-u off-w off-s)
     ;; extract domain string from challenge string
-    (setq uDomain-len (unpack-int16 (substring uDomain 0 2)))
-    (setq uDomain-offs (unpack-int32 (substring uDomain 4 8)))
+    (setq uDomain-len (md4-unpack-int16 (substring uDomain 0 2)))
+    (setq uDomain-offs (md4-unpack-int32 (substring uDomain 4 8)))
     (setq domain
 	  (ntlm-unicode2ascii (substring challenge
 					 (cdr uDomain-offs)
@@ -158,45 +158,45 @@ by PASSWORD-HASHES.  PASSWORD-HASHES should be a return value of
     (setq off-s (+ 64 48 (* 2 (+ ld lu lu)))) ;offset to string 'sessionKey
     ;; pack the response struct in a string
     (concat "NTLMSSP\0"			;response ident field, 8 bytes
-	    (pack-int32 '(0 . 3))	;response msgType field, 4 bytes
+	    (md4-pack-int32 '(0 . 3))	;response msgType field, 4 bytes
 
 	    ;; lmResponse field, 8 bytes
 	    ;;AddBytes(response,lmResponse,lmRespData,24);
-	    (pack-int16 24)		;len field
-	    (pack-int16 24)		;maxlen field
-	    (pack-int32 (cons 0 off-lm)) ;field offset
+	    (md4-pack-int16 24)		;len field
+	    (md4-pack-int16 24)		;maxlen field
+	    (md4-pack-int32 (cons 0 off-lm)) ;field offset
 
 	    ;; ntResponse field, 8 bytes
 	    ;;AddBytes(response,ntResponse,ntRespData,24);
-	    (pack-int16 24)		;len field
-	    (pack-int16 24)		;maxlen field
-	    (pack-int32 (cons 0 off-nt)) ;field offset
+	    (md4-pack-int16 24)		;len field
+	    (md4-pack-int16 24)		;maxlen field
+	    (md4-pack-int32 (cons 0 off-nt)) ;field offset
 
 	    ;; uDomain field, 8 bytes
 	    ;;AddUnicodeString(response,uDomain,domain);
 	    ;;AddBytes(response, uDomain, udomain, 2*ld);
-	    (pack-int16 (* 2 ld))	;len field
-	    (pack-int16 (* 2 ld))	;maxlen field
-	    (pack-int32 (cons 0 off-d)) ;field offset
+	    (md4-pack-int16 (* 2 ld))	;len field
+	    (md4-pack-int16 (* 2 ld))	;maxlen field
+	    (md4-pack-int32 (cons 0 off-d)) ;field offset
 
 	    ;; uUser field, 8 bytes
 	    ;;AddUnicodeString(response,uUser,u);
 	    ;;AddBytes(response, uUser, uuser, 2*lu);
-	    (pack-int16 (* 2 lu))	;len field
-	    (pack-int16 (* 2 lu))	;maxlen field
-	    (pack-int32 (cons 0 off-u)) ;field offset
+	    (md4-pack-int16 (* 2 lu))	;len field
+	    (md4-pack-int16 (* 2 lu))	;maxlen field
+	    (md4-pack-int32 (cons 0 off-u)) ;field offset
 
 	    ;; uWks field, 8 bytes
 	    ;;AddUnicodeString(response,uWks,u);
-	    (pack-int16 (* 2 lu))	;len field
-	    (pack-int16 (* 2 lu))	;maxlen field
-	    (pack-int32 (cons 0 off-w)) ;field offset
+	    (md4-pack-int16 (* 2 lu))	;len field
+	    (md4-pack-int16 (* 2 lu))	;maxlen field
+	    (md4-pack-int32 (cons 0 off-w)) ;field offset
 
 	    ;; sessionKey field, 8 bytes
 	    ;;AddString(response,sessionKey,NULL);
-	    (pack-int16 0)		;len field
-	    (pack-int16 0)		;maxlen field
-	    (pack-int32 (cons 0 (- off-s off-lm))) ;field offset
+	    (md4-pack-int16 0)		;len field
+	    (md4-pack-int16 0)		;maxlen field
+	    (md4-pack-int32 (cons 0 (- off-s off-lm))) ;field offset
 
 	    ;; flags field, 4 bytes
 	    flags			;
@@ -216,38 +216,6 @@ by PASSWORD-HASHES.  PASSWORD-HASHES should be a return value of
   "Return a pair of SMB hash and NT MD4 hash of the given password PASSWORD"
   (list (smb-passwd-hash password)
 	(ntlm-md4hash password)))
-
-;;;
-;;; sub functions
-
-(defun pack-int16 (int16)
-  "Pack 16 bits integer in 2 bytes string as little endian."
-  (let ((str (make-string 2 0)))
-    (aset str 0 (logand int16 255))
-    (aset str 1 (lsh int16 -8))
-    str))
-
-(defun pack-int32 (int32)
-  "Pack 32 bits integer in a 4 bytes string as little endian.  A 32 bits
-integer is represented as a pair of two 16 bits integers (cons high low)."
-  (let ((str (make-string 4 0))
-	(h (car int32)) (l (cdr int32)))
-    (aset str 0 (logand l 255))
-    (aset str 1 (lsh l -8))
-    (aset str 2 (logand h 255))
-    (aset str 3 (lsh h -8))
-    str))
-
-(defun unpack-int16 (str)
-  (if (eq 2 (length str))
-      (+ (lsh (aref str 1) 8) (aref str 0))
-    (error "%s is not 2 bytes long" str)))
-
-(defun unpack-int32 (str)
-  (if (eq 4 (length str))
-      (cons (+ (lsh (aref str 3) 8) (aref str 2))
-	    (+ (lsh (aref str 1) 8) (aref str 0)))
-    (error "%s is not 4 bytes long" str)))
 
 (defun ntlm-ascii2unicode (str len)
   "Convert an ASCII string into a NT Unicode string, which is

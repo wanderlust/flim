@@ -69,7 +69,7 @@ bytes long.  N is required to handle strings containing character 0."
     (aset buf n 128)			;0x80
     (if (<= n 55)
 	(progn
-	  (setq c4 (pack-int32 b))
+	  (setq c4 (md4-pack-int32 b))
 	  (aset buf 56 (aref c4 0))
 	  (aset buf 57 (aref c4 1))
 	  (aset buf 58 (aref c4 2))
@@ -77,7 +77,7 @@ bytes long.  N is required to handle strings containing character 0."
 	  (setq m (md4-copy64 buf))
 	  (md4-64 m))
       ;; else
-      (setq c4 (pack-int32 b))
+      (setq c4 (md4-pack-int32 b))
       (aset buf 120 (aref c4 0))
       (aset buf 121 (aref c4 1))
       (aset buf 122 (aref c4 2))
@@ -87,10 +87,10 @@ bytes long.  N is required to handle strings containing character 0."
       (setq m (md4-copy64 (substring buf 64)))
       (md4-64 m)))
 
-    (concat (pack-int32 (aref md4-buffer 0))
-	    (pack-int32 (aref md4-buffer 1))
-	    (pack-int32 (aref md4-buffer 2))
-	    (pack-int32 (aref md4-buffer 3))))
+    (concat (md4-pack-int32 (aref md4-buffer 0))
+	    (md4-pack-int32 (aref md4-buffer 1))
+	    (md4-pack-int32 (aref md4-buffer 2))
+	    (md4-pack-int32 (aref md4-buffer 3))))
 
 (defsubst md4-F (x y z) (logior (logand x y) (logand (lognot x) z)))
 (defsubst md4-G (x y z) (logior (logand x y) (logand x z) (logand y z)))
@@ -199,6 +199,38 @@ bytes long.  N is required to handle strings containing character 0."
 			   (+ (aref seq j) (lsh (aref seq (1+ j)) 8))))
       (setq i (1+ i)))
     int32s))
+
+;;;
+;;; sub functions
+
+(defun md4-pack-int16 (int16)
+  "Pack 16 bits integer in 2 bytes string as little endian."
+  (let ((str (make-string 2 0)))
+    (aset str 0 (logand int16 255))
+    (aset str 1 (lsh int16 -8))
+    str))
+
+(defun md4-pack-int32 (int32)
+  "Pack 32 bits integer in a 4 bytes string as little endian.  A 32 bits
+integer is represented as a pair of two 16 bits integers (cons high low)."
+  (let ((str (make-string 4 0))
+	(h (car int32)) (l (cdr int32)))
+    (aset str 0 (logand l 255))
+    (aset str 1 (lsh l -8))
+    (aset str 2 (logand h 255))
+    (aset str 3 (lsh h -8))
+    str))
+
+(defun md4-unpack-int16 (str)
+  (if (eq 2 (length str))
+      (+ (lsh (aref str 1) 8) (aref str 0))
+    (error "%s is not 2 bytes long" str)))
+
+(defun md4-unpack-int32 (str)
+  (if (eq 4 (length str))
+      (cons (+ (lsh (aref str 3) 8) (aref str 2))
+	    (+ (lsh (aref str 1) 8) (aref str 0)))
+    (error "%s is not 4 bytes long" str)))
 
 (provide 'md4)
 
