@@ -392,6 +392,20 @@ ENTITY is used."
 					  (mime-entity-body-end entity))
 			(mime-entity-encoding entity))))
 
+(defun mime-write-entity-content (entity filename)
+  "Write content of ENTITY into FILENAME."
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (let ((encoding (or (mime-entity-encoding entity) "7bit")))
+      (if (and (mime-entity-cooked-p entity)
+	       (member encoding '("7bit" "8bit" "binary")))
+	  (write-region (mime-entity-body-start entity)
+			(mime-entity-body-end entity) filename)
+	(mime-write-decoded-region (mime-entity-body-start entity)
+				   (mime-entity-body-end entity)
+				   filename encoding)
+	))))
+
 (defun mime-write-entity (entity filename)
   "Write ENTITY into FILENAME."
   (save-excursion
