@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(defconst mime-library-version-string "Chao 1.8.0 - \"Shij,Dr(B\"")
+(defconst mime-library-version-string "Chao 1.8.0 - \"Shij.DNr\"")
 
 
 ;;; @ variables
@@ -266,8 +266,9 @@ message/rfc822, `mime-entity' structures of them are included in
 	 (while rest
 	   (set-alist 'mime-entity-implementation-alist
 		      ',type
-		      (cdr (assq (car rest)
-				 mime-entity-implementation-alist)))
+		      (copy-alist
+		       (cdr (assq (car rest)
+				  mime-entity-implementation-alist))))
 	   (setq rest (cdr rest))
 	   ))))
 
