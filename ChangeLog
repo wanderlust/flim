@@ -1,5 +1,12 @@
 1998-09-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-def.el: Abolish function `butlast' and `nbutlast'.
+
+	* mime-def.el (mime-library-version): New constant.
+	(mime-library-version-string): Refer `mime-library-version'.
+
+1998-09-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* Makefile (XEMACS): New variable.
 	(PACKAGEDIR): New variable.
 	(package): New target.
