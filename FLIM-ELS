@@ -35,7 +35,8 @@
     (setq flim-modules (cons 'mel-b-dl flim-modules))
   )
 
-(if (featurep 'mule)
+(if (and (featurep 'mule)
+	 (not (and (boundp 'MULE) MULE)))
     (setq flim-modules (cons 'mel-ccl flim-modules))
   )
 

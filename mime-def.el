@@ -24,15 +24,24 @@
 
 ;;; Code:
 
-(defconst mime-library-version
-  '("FLAM-DOODLE" "$B4;;R(B 7.5YR7.0/11.0" 1 10 0)
-  "Implementation name, version name and numbers of MIME-library package.")
+(defconst mime-library-product ["FLAM-DOODLE" (1 10 1) "µ‡Õ’ 10YR7.5/10.0"]
+  "Product name, version number and code name of MIME-library package.")
 
-(defconst mime-library-version-string
-  `,(concat (car mime-library-version) " "
+(defmacro mime-product-name (product)
+  `(aref ,product 0))
+
+(defmacro mime-product-version (product)
+  `(aref ,product 1))
+
+(defmacro mime-product-code-name (product)
+  `(aref ,product 2))
+
+(defconst mime-library-version
+  (eval-when-compile
+    (concat (mime-product-name mime-library-product) " "
 	    (mapconcat #'number-to-string
-		       (cddr mime-library-version) ".")
-	    " - \"" (cadr mime-library-version) "\""))
+		       (mime-product-version mime-library-product) ".")
+	    " - \"" (mime-product-code-name mime-library-product) "\"")))
 
 
 ;;; @ variables
@@ -309,6 +318,9 @@ message/rfc822, `mime-entity' structures of them are included in
 (defvar mime-entity-implementation-alist nil)
 
 (defmacro mm-define-backend (type &optional parents)
+  "Define TYPE as a mm-backend.
+If PARENTS is specified, TYPE inherits PARENTS.
+Each parent must be backend name (symbol)."
   (if parents
       `(let ((rest ',(reverse parents)))
 	 (while rest
@@ -321,6 +333,11 @@ message/rfc822, `mime-entity' structures of them are included in
 	   ))))
 
 (defmacro mm-define-method (name args &rest body)
+  "Define NAME as a method function of (nth 1 (car ARGS)) backend.
+
+ARGS is like an argument list of lambda, but (car ARGS) must be
+specialized parameter.  (car (car ARGS)) is name of variable and (nth
+1 (car ARGS)) is name of backend."
   (let* ((specializer (car args))
 	 (class (nth 1 specializer))
 	 (self (car specializer)))
@@ -355,21 +372,72 @@ message/rfc822, `mime-entity' structures of them are included in
 ;;; @ for mel-backend
 ;;;
 
+(defvar mel-service-list nil)
+
 (defmacro mel-define-service (name &optional args &rest rest)
-  (if args
-      `(progn
-	 (defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
-	 (defun ,name ,args
-	   ,@rest
-	   (funcall (mel-find-function ',name ,(car (last args)))
-		    ,@(mm-arglist-to-arguments (butlast args)))
-	   ))
-    `(defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
-    ))
+  "Define NAME as a service for Content-Transfer-Encodings.
+If ARGS is specified, NAME is defined as a generic function for the
+service."
+  `(progn
+     (add-to-list 'mel-service-list ',name)
+     (defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
+     ,@(if args
+	   `((defun ,name ,args
+	       ,@rest
+	       (funcall (mel-find-function ',name ,(car (last args)))
+			,@(mm-arglist-to-arguments (butlast args)))
+	       )))
+     ))
 
 (put 'mel-define-service 'lisp-indent-function 'defun)
 
+
+(defvar mel-encoding-module-alist nil)
+
+(defsubst mel-find-function-from-obarray (ob-array encoding)
+  (let* ((f (intern-soft encoding ob-array)))
+    (or f
+	(let ((rest (cdr (assoc encoding mel-encoding-module-alist))))
+	  (while (and rest
+		      (progn
+			(require (car rest))
+			(null (setq f (intern-soft encoding ob-array)))
+			))
+	    (setq rest (cdr rest))
+	    )
+	  f))))
+
+(defsubst mel-copy-method (service src-backend dst-backend)
+  (let* ((oa (symbol-value (intern (format "%s-obarray" service))))
+	 (f (mel-find-function-from-obarray oa src-backend))
+	 sym)
+    (when f
+      (setq sym (intern dst-backend oa))
+      (or (fboundp sym)
+	  (fset sym (symbol-function f))
+	  ))))
+       
+(defsubst mel-copy-backend (src-backend dst-backend)
+  (let ((services mel-service-list))
+    (while services
+      (mel-copy-method (car services) src-backend dst-backend)
+      (setq services (cdr services)))))
+
+(defmacro mel-define-backend (type &optional parents)
+  "Define TYPE as a mel-backend.
+If PARENTS is specified, TYPE inherits PARENTS.
+Each parent must be backend name (string)."
+  (cons 'progn
+	(mapcar (lambda (parent)
+		  `(mel-copy-backend ,parent ,type)
+		  )
+		parents)))
+
 (defmacro mel-define-method (name args &rest body)
+  "Define NAME as a method function of (nth 1 (car (last ARGS))) backend.
+ARGS is like an argument list of lambda, but (car (last ARGS)) must be
+specialized parameter.  (car (car (last ARGS))) is name of variable
+and (nth 1 (car (last ARGS))) is name of backend (encoding)."
   (let* ((specializer (car (last args)))
 	 (class (nth 1 specializer)))
     `(progn
@@ -381,6 +449,11 @@ message/rfc822, `mime-entity' structures of them are included in
 (put 'mel-define-method 'lisp-indent-function 'defun)
 
 (defmacro mel-define-method-function (spec function)
+  "Set SPEC's function definition to FUNCTION.
+First element of SPEC is service.
+Rest of ARGS is like an argument list of lambda, but (car (last ARGS))
+must be specialized parameter.  (car (car (last ARGS))) is name of
+variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
   (let* ((name (car spec))
 	 (args (cdr spec))
 	 (specializer (car (last args)))
@@ -400,6 +473,12 @@ message/rfc822, `mime-entity' structures of them are included in
        (define-function ,function
 	 (intern ,class ,(intern (format "%s-obarray" name))))
        )))
+
+(defvar base64-dl-module
+  (and (fboundp 'dynamic-link)
+       (let ((path (expand-file-name "base64.so" exec-directory)))
+	 (and (file-exists-p path)
+	      path))))
 
 
 ;;; @ end

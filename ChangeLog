@@ -1,3 +1,10 @@
+1998-10-09  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* Sync up to flim-1_10_2 from flim-1_10_0.
+
+	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
+	1.10.1.
+
 1998-09-30  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_10_0.
@@ -1187,6 +1194,105 @@
 1998-04-13  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el: Copied from AKEMI branch of SEMI.
+
+
+1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.10.2 (Kintetsu-Miyazu) was released.
+
+	* mime-def.el, mel.el, mel-b-dl.el: Move variable
+	`base64-dl-module' from mel-b-dl.el and mel.el to mime-def.el.
+
+1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el (mel-ccl-module): New variable; use it to check mel-ccl
+	is available.
+
+	* FLIM-ELS: Don't install mel-ccl for anything older than MULE
+	2.3.
+
+1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-u.el: Use `mel-define-backend' to define "x-uue".
+	Define "x-uuencode" as a clone of "x-uue".
+
+	* Move variable `mel-encoding-module-alist' from mel.el to
+	mime-def.el.
+	
+	* mel.el (mel-find-function): Use function
+	`mel-find-function-from-obarray'.
+	Use `mel-define-backend' to define "7bit", "8bit" and "binary";
+	don't define methods of "8bit" and "binary"; inherit methods from
+	"7bit".
+
+	* mime-def.el (mel-service-list): New variable.
+	(mel-define-service): New implementation.
+	(mel-find-function-from-obarray): New inline function.
+	(mel-copy-method): New inline function.
+	(mel-copy-backend): New inline function.
+	(mel-define-backend): New macro.
+
+1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-u.el: Define method functions of mel.
+	(mime-encode-region): Use `mel-define-method-function'; abolish
+	`uuencode-encode-region'.
+	(mime-decode-region): Use `mel-define-method-function'; abolish
+	`uuencode-decode-region'.
+	(mime-encode-string): New method.
+	(mime-decode-string): New method.
+	(mime-insert-encoded-file): Use `mel-define-method'; abolish
+	`uuencode-insert-encoded-file'.
+	(mime-write-decoded-region): Use `mel-define-method'; abolish
+	`uuencode-write-decoded-region'.
+
+1998-10-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el (mel-define-service): Add DOC.
+	(mel-define-method): Add DOC.
+	(mel-define-method-function): Add DOC.
+
+	* mime-en.sgml, mime-ja.sgml: Modify for FLIM 1.10.
+
+
+1998-10-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.10.1 (Miyamaki) was released.
+
+1998-10-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-g.el: Define method functions of mel.
+	(mime-encode-region): Use `mel-define-method-function'; abolish
+	`gzip64-encode-region'.
+	(mime-decode-region): Use `mel-define-method-function'; abolish
+	`gzip64-decode-region'.
+	(mime-encode-string): New method.
+	(mime-decode-string): New method.
+	(mime-insert-encoded-file): Use `mel-define-method'; abolish
+	`gzip64-insert-encoded-file'.
+	(mime-write-decoded-region): Use `mel-define-method'; abolish
+	`gzip64-write-decoded-region'.
+
+	* mime-def.el (mime-library-product): New variable; abolish
+	`mime-library-version'.
+	(mime-product-name): New macro.
+	(mime-product-version): New macro.
+	(mime-product-code-name): New macro.
+	(mime-library-version): Renamed from
+	`mime-library-version-string'; use `mime-library-product',
+	`mime-product-name', `mime-product-version' and
+	`mime-product-code-name'.
+
+	* mime-def.el (mm-define-backend): Add DOC.
+	(mm-define-method): Add DOC.
+
+	* mel.el (mime-encoding-list): Modify DOC to add description about
+	optional argument SERVICE.
+
+1998-10-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml, mime-en.sgml (mm-backend module): Write
+	description of `mm-define-backend' and `mm-define-method'.
 
 
 1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
