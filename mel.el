@@ -87,10 +87,10 @@ Content-Transfer-Encoding for it."
 (mel-define-method mime-encode-region (start end (nil "7bit")))
 (mel-define-method mime-decode-region (start end (nil "7bit")))
 (mel-define-method-function (mime-insert-encoded-file filename (nil "7bit"))
-			    'insert-file-contents-as-binary)
+			    'binary-insert-file-contents)
 (mel-define-method-function (mime-write-decoded-region
 			     start end filename (nil "7bit"))
-			    'write-region-as-binary)
+			    'binary-write-region)
 
 (mel-define-backend "8bit" ("7bit"))
 
