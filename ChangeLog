@@ -1,3 +1,7 @@
+1998-07-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.9.0 (Terada) was released.
+
 1998-07-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-parse.el (mime-parse-multipart): Set message/x-broken if
