@@ -332,8 +332,8 @@ ENTITY is used."
   (mime-entity-send entity 'write-content filename))
 
 (defun mime-write-entity (entity filename)
-  "Write ENTITY into FILENAME."
-  (mime-entity-send entity 'write-entity filename))
+  "Write header and body of ENTITY into FILENAME."
+  (mime-entity-send entity 'write-with-header filename))
 
 (defun mime-write-entity-body (entity filename)
   "Write body of ENTITY into FILENAME."
