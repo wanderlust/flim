@@ -1,3 +1,8 @@
+1999-12-20  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mel-b-el.el (base64-encode-string): Allow the optional second arg
+	`no-line-break'.
+
 1999-12-16  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM-ELS (flim-modules): Add `mmexternal'.
