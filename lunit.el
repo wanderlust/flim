@@ -255,23 +255,19 @@ TESTS holds a number of instances of `lunit-test'."
 
 (luna-define-method lunit-test-listener-error ((printer lunit-test-printer)
 					       case error)
-  (princ (format "error: %S\n" error)))
+  (princ (format " error: %S" error)))
 
 (luna-define-method lunit-test-listener-failure ((printer lunit-test-printer)
 						 case failure)
-  (princ (format "failure: %S\n" failure)))
+  (princ (format " failure: %S" failure)))
 
 (luna-define-method lunit-test-listener-start ((printer lunit-test-printer) case)
-  (princ (format "\
-______________________________________________________________________
-Starting test `%S#%S'\n"
+  (princ (format "Running `%S#%S'..."
 		 (luna-class-name case)
 		 (lunit-test-name-internal case))))
 
 (luna-define-method lunit-test-listener-end ((printer lunit-test-printer) case)
-  (princ "\
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-"))
+  (princ "\n"))
 
 (defun lunit-make-test-suite-from-class (class)
   "Make a test suite from all test methods of the CLASS."
