@@ -53,10 +53,11 @@ STEP is a vector [<previous step function> <result of previous step function>]"
   "SASL step function to generate a NTLM response against the server
 challenge stored in the 2nd element of STEP.  Called from 'sasl-next-step."
   (let* ((user (sasl-client-name client))
-	 (passwd-hashes
+	 (passphrase
 	  (sasl-read-passphrase (format "NTLM passphrase for %s: " user)))
 	 (challenge (sasl-step-data step)))
-    (ntlm-build-auth-response challenge user passwd-hashes)))
+    (ntlm-build-auth-response challenge user
+			      (ntlm-get-password-hashes passphrase))))
 
 (put 'sasl-ntlm 'sasl-mechanism
      (sasl-make-mechanism "NTLM" sasl-ntlm-steps))
