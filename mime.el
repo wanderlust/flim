@@ -180,14 +180,14 @@ If MESSAGE is specified, it is regarded as root entity."
 ;;;
 
 (luna-define-generic mime-entity-buffer (entity))
-
-(make-obsolete
- 'mime-entity-buffer
+(make-obsolete 'mime-entity-buffer
  "use mime-entity-header-buffer or mime-entity-body-buffer instead.")
 
 (luna-define-generic mime-entity-point-min (entity))
+(make-obsolete 'mime-entity-point-min 'mime-entity-header-start-point)
 
 (luna-define-generic mime-entity-point-max (entity))
+(make-obsolete 'mime-entity-point-max 'mime-entity-body-end-point)
 
 
 ;;; @ Entity Header
