@@ -211,6 +211,128 @@ If is is not found, return DEFAULT-ENCODING."
 			      '((specials . ">")))))))
 
 
+;;; @ message parser
+;;;
+
+(defun mime-parse-multipart (entity)
+  (with-current-buffer (mime-entity-body-buffer entity)
+    (let* ((representation-type
+	    (mime-entity-representation-type-internal entity))
+	   (content-type (mime-entity-content-type-internal entity))
+	   (dash-boundary
+	    (concat "--"
+		    (mime-content-type-parameter content-type "boundary")))
+	   (delimiter       (concat "\n" (regexp-quote dash-boundary)))
+	   (close-delimiter (concat delimiter "--[ \t]*$"))
+	   (rsep (concat delimiter "[ \t]*\n"))
+	   (dc-ctl
+	    (if (eq (mime-content-type-subtype content-type) 'digest)
+		(make-mime-content-type 'message 'rfc822)
+	      (make-mime-content-type 'text 'plain)
+	      ))
+	   (body-start (mime-entity-body-start-point entity))
+	   (body-end (mime-entity-body-end-point entity)))
+      (save-restriction
+	(goto-char body-end)
+	(narrow-to-region body-start
+			  (if (re-search-backward close-delimiter nil t)
+			      (match-beginning 0)
+			    body-end))
+	(goto-char body-start)
+	(if (re-search-forward
+	     (concat "^" (regexp-quote dash-boundary) "[ \t]*\n")
+	     nil t)
+	    (let ((cb (match-end 0))
+		  ce ncb ret children
+		  (node-id (mime-entity-node-id-internal entity))
+		  (i 0))
+	      (while (re-search-forward rsep nil t)
+		(setq ce (match-beginning 0))
+		(setq ncb (match-end 0))
+		(save-restriction
+		  (narrow-to-region cb ce)
+		  (setq ret (mime-parse-message representation-type dc-ctl
+						entity (cons i node-id)))
+		  )
+		(setq children (cons ret children))
+		(goto-char (setq cb ncb))
+		(setq i (1+ i))
+		)
+	      (setq ce (point-max))
+	      (save-restriction
+		(narrow-to-region cb ce)
+		(setq ret (mime-parse-message representation-type dc-ctl
+					      entity (cons i node-id)))
+		)
+	      (setq children (cons ret children))
+	      (mime-entity-set-children-internal entity (nreverse children))
+	      )
+	  (mime-entity-set-content-type-internal
+	   entity (make-mime-content-type 'message 'x-broken))
+	  nil)
+	))))
+
+(defun mime-parse-encapsulated (entity)
+  (mime-entity-set-children-internal
+   entity
+   (with-current-buffer (mime-entity-body-buffer entity)
+     (save-restriction
+       (narrow-to-region (mime-buffer-entity-body-start-internal entity)
+			 (mime-buffer-entity-body-end-internal entity))
+       (list (mime-parse-message
+	      (mime-entity-representation-type-internal entity) nil
+	      entity (cons 0 (mime-entity-node-id-internal entity))))
+       ))))
+
+(defun mime-parse-message (representation-type &optional default-ctl 
+					       parent node-id)
+  (let ((header-start (point-min))
+	header-end
+	body-start
+	(body-end (point-max))
+	content-type)
+    (goto-char header-start)
+    (if (re-search-forward "^$" nil t)
+	(setq header-end (match-end 0)
+	      body-start (if (= header-end body-end)
+			     body-end
+			   (1+ header-end)))
+      (setq header-end (point-min)
+	    body-start (point-min)))
+    (save-restriction
+      (narrow-to-region header-start header-end)
+      (setq content-type (or (let ((str (std11-fetch-field "Content-Type")))
+			       (if str
+				   (mime-parse-Content-Type str)
+				 ))
+			     default-ctl))
+      )
+    (luna-make-entity representation-type
+		      :location (current-buffer)
+		      :content-type content-type
+		      :parent parent
+		      :node-id node-id
+		      :buffer (current-buffer)
+		      :header-start header-start
+		      :header-end header-end
+		      :body-start body-start
+		      :body-end body-end)
+    ))
+
+
+;;; @ for buffer
+;;;
+
+;;;###autoload
+(defun mime-parse-buffer (&optional buffer representation-type)
+  "Parse BUFFER as a MIME message.
+If buffer is omitted, it parses current-buffer."
+  (save-excursion
+    (if buffer (set-buffer buffer))
+    (setq mime-message-structure
+	  (mime-parse-message (or representation-type 'buffer) nil))
+    ))
+
 
 ;;; @ end
 ;;;
