@@ -679,17 +679,17 @@ Return nil if Content-Disposition field is not found.
 
 @node Content-Transfer-Encoding, encoded-word, Content-Disposition, Top
 @chapter Encoding Method
-@cindex Content-Transfer-Encoding $(BMs(B
+@cindex Content-Transfer-Encoding field
 
-@strong{Content-Transfer-Encoding $(BMs(B} $(B$O(B entity $(B$NId9f2=K!$r5-=R$9$k$?$a(B
-$(B$N$b$N$G$9!#(B@refill
+@strong{Content-Transfer-Encoding field} is a header field to indicate
+body encoding of a entity.@refill
 
-FLIM $(B$G$O(B Content-Transfer-Encoding $(BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$3(B
-$(B$l$i$N4X?t$O(B Content-Transfer-Encoding $(BMs$N>pJs$OJ8;zNs$GI=8=$7$^$9!#(B
-@refill
+FLIM provides parser functions for Content-Transfer-Encoding field.
+They represent information of Content-Transfer-Encoding field as
+string.@refill
 
-$(B$^$?!"(BContent-Transfer-Encoding $(B$K4p$E$$$FId9f2=!&I|9f2=$r9T$&4X?t$bDs(B
-$(B6!$5$l$^$9!#(B
+In addition, FLIM provides encoder/decoder functions by
+Content-Transfer-Encoding.
 
 
 @menu
@@ -704,17 +704,17 @@ FLIM $(B$G$O(B Content-Transfer-Encoding $(BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!
 
 @defun mime-parse-Content-Transfer-Encoding string
 
-@var{string} $(B$r(B content-transfer-encoding $(B$H$7$F2r@O$7$?7k2L$rJV$9!#(B
+@var{string} $B$r(B content-transfer-encoding $B$H$7$F2r@O$7$?7k2L$rJV$9!#(B
 @end defun
 
 
 @defun mime-read-Content-Transfer-Encoding &optional default-encoding
 
-$(B8=:_$N(B buffer $(B$N(B Content-Transfer-Encoding $(BMs$rFI$_<h$j!"2r@O$7$?7k2L$r(B
-$(BJV$9!#(B@refill
+$B8=:_$N(B buffer $B$N(B Content-Transfer-Encoding $BMs$rFI$_<h$j!"2r@O$7$?7k2L$r(B
+$BJV$9!#(B@refill
 
-Content-Transfer-Encoding $(BMs$,B8:_$7$J$$>l9g$O(B@var{default-encoding} $(B$r(B
-$(BJV$9!#(B
+Content-Transfer-Encoding $BMs$,B8:_$7$J$$>l9g$O(B@var{default-encoding} $B$r(B
+$BJV$9!#(B
 @end defun
 
 
@@ -762,7 +762,7 @@ region decoder and @code{nil} means not to decode.
 
 @defun mime-decode-string string encoding
 
-@var{string} $(B$r(B @var{encoding} $(B$H$7$FI|9f$7$?7k2L$rJV$7$^$9!#(B
+@var{string} $B$r(B @var{encoding} $B$H$7$FI|9f$7$?7k2L$rJV$7$^$9!#(B
 @end defun
 
 
@@ -822,8 +822,8 @@ to file.
 @cindex Standards Track
 @cindex RFC 2047
 
-encoded-word $(B$O(B header $(B$GHs(B ASCII (@ref{ASCII}) $(BJ8;z$rI=8=$9$k$?$a$N7A<0(B
-$(B$G!"(B@strong{RFC 2047} $(B$GDj5A$5$l$F$$$^$9!#(B@refill
+encoded-word $B$O(B header $B$GHs(B ASCII (@ref{ASCII}) $BJ8;z$rI=8=$9$k$?$a$N7A<0(B
+$B$G!"(B@strong{RFC 2047} $B$GDj5A$5$l$F$$$^$9!#(B@refill
 
 
 @noindent
@@ -834,10 +834,10 @@ Message Header Extensions for Non-ASCII Text'', November 1996, Standards
 Track (obsolete RFC 1521,1522,1590).
 @end quotation
 
-$(B$^$?!"9T57$N0-$$$3$H$@$H8@$($^$9$,!"(Bencoded-word $(B$rMQ$$$:$KHs(B ASCII
-(@ref{ASCII}) $(BJ8;z$r(B header $(B$KF~$l$?5-;v$bB8:_$7$^$9!#(B@refill
+$B$^$?!"9T57$N0-$$$3$H$@$H8@$($^$9$,!"(Bencoded-word $B$rMQ$$$:$KHs(B ASCII
+(@ref{ASCII}) $BJ8;z$r(B header $B$KF~$l$?5-;v$bB8:_$7$^$9!#(B@refill
 
-FLIM $(B$O$3$l$i$rId9f2=!&I|9f2=$9$k5!G=$rDs6!$7$^$9!#(B
+FLIM $B$O$3$l$i$rId9f2=!&I|9f2=$9$k5!G=$rDs6!$7$^$9!#(B
 
 
 @menu
@@ -875,29 +875,29 @@ It refer variable @code{eword-field-encoding-method-alist}.
 
 @deffn{group} mime
 
-MIME $(B4XO"5!G=$K4X$9$k(B group.@refill
+MIME $B4XO"5!G=$K4X$9$k(B group.@refill
 
-@code{mail} $(B$H(B @code{news} $(B$KB0$9$k!#(B
+@code{mail} $B$H(B @code{news} $B$KB0$9$k!#(B
 @end deffn
 
 
 @defvar default-mime-charset
 
-$(BE,@Z$J(B MIME charset (@ref{MIME charset}) $(B$,8+$D$+$i$J$+$C$?>l9g$KMQ$$$i(B
-$(B$l$k(BMIME charset.@refill
+$BE,@Z$J(B MIME charset (@ref{MIME charset}) $B$,8+$D$+$i$J$+$C$?>l9g$KMQ$$$i(B
+$B$l$k(BMIME charset.@refill
 
-$(BK\Mh$O(B APEL $(B$NJQ?t$G$"$k!#(B
+$BK\Mh$O(B APEL $B$NJQ?t$G$"$k!#(B
 @end defvar
 
 
 @defvar mime-temp-directory
 
-MIME $(B5!G=$K4X$9$k<BAu$,0l;~E*$K;HMQ$9$k(B file $(B$r:n@.$9$k(B 
+MIME $B5!G=$K4X$9$k<BAu$,0l;~E*$K;HMQ$9$k(B file $B$r:n@.$9$k(B 
 directory.@refill
 
-$(B4D6-JQ?t(B @code{MIME_TMP_DIR}, @code{TM_TMP_DIR}, @code{TMPDIR},
-@code{TMP} $(B$b$7$/$O(B @code{TEMP} $(B$,@_Dj$5$l$F$$$?>l9g!"$=$l$r=i4|CM$H$7$F(B
-$(BMQ$$$k!#2?$b@_Dj$5$l$F$$$J$$>l9g!"(B@code{"/tmp/"} $(B$rMQ$$$k!#(B
+$B4D6-JQ?t(B @code{MIME_TMP_DIR}, @code{TM_TMP_DIR}, @code{TMPDIR},
+@code{TMP} $B$b$7$/$O(B @code{TEMP} $B$,@_Dj$5$l$F$$$?>l9g!"$=$l$r=i4|CM$H$7$F(B
+$BMQ$$$k!#2?$b@_Dj$5$l$F$$$J$$>l9g!"(B@code{"/tmp/"} $B$rMQ$$$k!#(B
 @end defvar
 
 
@@ -1386,8 +1386,8 @@ send empty e-mail to:
 @node CVS, History, Bug report, Appendix
 @section CVS based development
 
-FLIM $(B$N(B file $(B$O(B CVS $(B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K!$G:G(B
-$(B?7$N(B FLIM $(B$rF~<j$9$k$3$H$,$G$-$^$9!'(B
+FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K!$G:G(B
+$B?7$N(B FLIM $B$rF~<j$9$k$3$H$,$G$-$^$9!'(B
 
 @example
 (0) cvs login
@@ -1404,7 +1404,7 @@ FLIM $(B$N(B file $(B$O(B CVS $(B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$N
 @end example
 
 
-CVS $(B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
+CVS $B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
 
 @itemize @bullet
 @item
@@ -1412,61 +1412,61 @@ CVS $(B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
 @end itemize
 
 @noindent
-$(B$^$G!"(Baccount $(BL>$H(B UNIX $(B$N(B passwd $(B$HF1$87A<0$N(B crypt $(B2=$5$l$?(B password
-$(B$r1h$($F8fO"Mm$/$@$5$$!#(B
+$B$^$G!"(Baccount $BL>$H(B UNIX $B$N(B passwd $B$HF1$87A<0$N(B crypt $B2=$5$l$?(B password
+$B$r1h$($F8fO"Mm$/$@$5$$!#(B
 
 
 @node History,  , CVS, Appendix
 @section History of FLIM
 
-FLIM $(B$N(B code $(B$N:G8E$NItJ,$O(B $(B1]JB(B $(B;LCR(B $(B;a$,=q$$$?(B @file{mime.el}$(B$K5/8;$7(B
-$(B$^$9!#$3$N>.$5$J(B program $(B$O(B Nemacs $(B$GF0:n$9$k(B iso-2022-jp $(B$N(B B-encoding 
-$(B@lMQ$N(B encoded-word $(B$NI|9f2=%W%m%0%i%`$G$7$?!#(B@refill
+FLIM $B$N(B code $B$N:G8E$NItJ,$O(B $B1]JB(B $B;LCR(B $B;a$,=q$$$?(B @file{mime.el}$B$K5/8;$7(B
+$B$^$9!#$3$N>.$5$J(B program $B$O(B Nemacs $B$GF0:n$9$k(B iso-2022-jp $B$N(B B-encoding 
+$B@lMQ$N(B encoded-word $B$NI|9f2=%W%m%0%i%`$G$7$?!#(B@refill
 
-$(B$=$N8e!"<i2,(B $(BCNI'(B $(B$O(B @file{mime.el} $(B$r85$K(B@file{tiny-mime.el} $(B$H$$$&%W%m(B
-$(B%0%i%`$r=q$-$^$9!#$3$l$O!"(BNemacs $(B$H(B Mule $(B$GF0:n$9$k(B encoded-word $(B$NId9f(B
-$(B2=!&I|9f2=%W%m%0%i%`$G$7$?!#(B@file{tiny-mime.el} $(B$O(B B-encoding $(B$@$1$G$J$/(B 
-Q-encoding $(B$b(Bsupport $(B$7!"$^$?!"(BMULE $(B$G07$&$3$H$,$G$-$k$5$^$6$^$J(B MIME
-charset (@ref{MIME charset}) $(B$rF1;~$K;H$&$3$H$,$G$-$^$7$?!#$3$N;~!"(B
-Nemacs $(B$H(B Mule $(B$NAPJ}$r(B support $(B$9$k$?$a$KMQ$$$i$l$?%F%/%K%C%/$O8e$K(B emu
-package $(B$K$^$H$a$i$l$^$9!#(B@refill
+$B$=$N8e!"<i2,(B $BCNI'(B $B$O(B @file{mime.el} $B$r85$K(B@file{tiny-mime.el} $B$H$$$&%W%m(B
+$B%0%i%`$r=q$-$^$9!#$3$l$O!"(BNemacs $B$H(B Mule $B$GF0:n$9$k(B encoded-word $B$NId9f(B
+$B2=!&I|9f2=%W%m%0%i%`$G$7$?!#(B@file{tiny-mime.el} $B$O(B B-encoding $B$@$1$G$J$/(B 
+Q-encoding $B$b(Bsupport $B$7!"$^$?!"(BMULE $B$G07$&$3$H$,$G$-$k$5$^$6$^$J(B MIME
+charset (@ref{MIME charset}) $B$rF1;~$K;H$&$3$H$,$G$-$^$7$?!#$3$N;~!"(B
+Nemacs $B$H(B Mule $B$NAPJ}$r(B support $B$9$k$?$a$KMQ$$$i$l$?%F%/%K%C%/$O8e$K(B emu
+package $B$K$^$H$a$i$l$^$9!#(B@refill
 
-$(B$3$N:"!"<i2,(B $(BCNI'(B $(B$O(B @file{tiny-mime.el} $(B$r$5$^$6$^$J(B MUA $(B$G;H$&$?$a$N@_(B
-$(BDj=8$bG[I[$7$F$$$^$7$?$,!"$=$l$i$O8e$K(B@file{tiny-mime.el} $(B$H$H$b$K#1$D$N(B 
-package $(B$K$^$H$a$i$l!"(Btm $(B$H$$$&L>A0$GG[I[$5$l$^$9!#(B@refill
+$B$3$N:"!"<i2,(B $BCNI'(B $B$O(B @file{tiny-mime.el} $B$r$5$^$6$^$J(B MUA $B$G;H$&$?$a$N@_(B
+$BDj=8$bG[I[$7$F$$$^$7$?$,!"$=$l$i$O8e$K(B@file{tiny-mime.el} $B$H$H$b$K#1$D$N(B 
+package $B$K$^$H$a$i$l!"(Btm $B$H$$$&L>A0$GG[I[$5$l$^$9!#(B@refill
 
-$(B<i2,(B $(BCNI'(B $(B$O$d$,$F!"(BMIME message $(B$r1\Mw$9$k$?$a$N%W%m%0%i%`$G$"$k(B
-@file{tm-body.el} $(B$r=q$-$^$9!#$3$l$O!"$9$0$K(B@file{tm-view.el} $(B$H$$$&L>A0(B
-$(B$KJQ$o$j$^$7$?$,!"$d$,$F!"$3$l$,(B@file{tiny-mime.el} $(B$KBe$o$C$F!"(Btm $(B$NCf(B
-$(B3K$H$J$j$^$9!#(B@refill
+$B<i2,(B $BCNI'(B $B$O$d$,$F!"(BMIME message $B$r1\Mw$9$k$?$a$N%W%m%0%i%`$G$"$k(B
+@file{tm-body.el} $B$r=q$-$^$9!#$3$l$O!"$9$0$K(B@file{tm-view.el} $B$H$$$&L>A0(B
+$B$KJQ$o$j$^$7$?$,!"$d$,$F!"$3$l$,(B@file{tiny-mime.el} $B$KBe$o$C$F!"(Btm $B$NCf(B
+$B3K$H$J$j$^$9!#(B@refill
 
-@file{tm-view.el} $(B$OEvA3!"(BContent-Transfer-Encoding $(B$r07$&I,MW$,$"$j$^$9!#(B
-$(B$3$NL\E*$N$?$a$K!"(BMEL $(B$,@0Hw$5$l$O$8$a$^$7$?!#(BBase64 $(B$K4X$7$F$O(B 
-@file{tiny-mime.el} $(B$N(B code $(B$,0\$5$l!"$^$?!"?7$?$K(BQuoted-Printable $(B$N(B 
-code $(B$,DI2C$5$l$^$7$?!#$3$l$i$,(B@file{mel-b.el} $(B$H(B @file{mel-q.el} $(B$K$J$j(B
-$(B$^$7$?!#(B@refill
+@file{tm-view.el} $B$OEvA3!"(BContent-Transfer-Encoding $B$r07$&I,MW$,$"$j$^$9!#(B
+$B$3$NL\E*$N$?$a$K!"(BMEL $B$,@0Hw$5$l$O$8$a$^$7$?!#(BBase64 $B$K4X$7$F$O(B 
+@file{tiny-mime.el} $B$N(B code $B$,0\$5$l!"$^$?!"?7$?$K(BQuoted-Printable $B$N(B 
+code $B$,DI2C$5$l$^$7$?!#$3$l$i$,(B@file{mel-b.el} $B$H(B @file{mel-q.el} $B$K$J$j(B
+$B$^$7$?!#(B@refill
 
-$(B$^$?!"8e$K!"<i2,(B $(BCNI'(B $(B$K$h$C$F(B uuencode $(BMQ$N(B @file{mel-u.el} $(B$,DI2C$5$l!"(B
-$(B$=$N8e$K!">.NS(B $(B=$J?(B $(B;a$K$h$C$F(B x-gzip64 $(BMQ$N(B@file{mel-g.el} $(B$,DI2C$5$l$^(B
-$(B$7$?!#(B@refill
+$B$^$?!"8e$K!"<i2,(B $BCNI'(B $B$K$h$C$F(B uuencode $BMQ$N(B @file{mel-u.el} $B$,DI2C$5$l!"(B
+$B$=$N8e$K!">.NS(B $B=$J?(B $B;a$K$h$C$F(B x-gzip64 $BMQ$N(B@file{mel-g.el} $B$,DI2C$5$l$^(B
+$B$7$?!#(B@refill
 
-tm $(B$G$O8e$K!"<i2,(B $(BCNI'(B $(B$K$h$C$F(B @file{tiny-mime.el} $(B$N:F<BAu$,9T$o$l!"$3(B
-$(B$N2aDx$G!"(BSTD 11 $(B$N(B parser $(B$,=q$+$l$^$7$?!#$3$l$O!"8=:_$N(B 
-@file{std11.el} $(B$KEv$?$j$^$9!#$^$?!"$3$N2aDx$G(B @file{tiny-mime.el} $(B$OI|(B
-$(B9f2=$r9T$&(B @file{tm-ew-d.el} $(B$HId9f2=$r9T$&(B @file{tm-ew-e.el} $(B$KJ,$1$i$l(B
-$(B$^$7$?!#$3$NN><T$,8=:_$N(B @file{eword-decode.el} $(B$H(B 
-@file{eword-encode.el} $(B$N@hAD$KEv$?$j$^$9!#(B@refill
+tm $B$G$O8e$K!"<i2,(B $BCNI'(B $B$K$h$C$F(B @file{tiny-mime.el} $B$N:F<BAu$,9T$o$l!"$3(B
+$B$N2aDx$G!"(BSTD 11 $B$N(B parser $B$,=q$+$l$^$7$?!#$3$l$O!"8=:_$N(B 
+@file{std11.el} $B$KEv$?$j$^$9!#$^$?!"$3$N2aDx$G(B @file{tiny-mime.el} $B$OI|(B
+$B9f2=$r9T$&(B @file{tm-ew-d.el} $B$HId9f2=$r9T$&(B @file{tm-ew-e.el} $B$KJ,$1$i$l(B
+$B$^$7$?!#$3$NN><T$,8=:_$N(B @file{eword-decode.el} $B$H(B 
+@file{eword-encode.el} $B$N@hAD$KEv$?$j$^$9!#(B@refill
 
-$(B8e$K!"<i2,(B $(BCNI'(B $(B$i$K$h$C$F(B tm $(B$NA4LL=q$-49$(:n6H$,9T$o$l!"$3$N2aDx$G!"(Btm 
-$(B$O(B APEL, MEL, SEMI, EMH, RMAIL-MIME, Gnus-MIME $(B$J$I$KJ,$1$i$l$^$7$?!#$3(B
-$(B$N$&$A$N(B MEL $(B$,(B FLIM $(B$ND>@\$N@hAD$KEv$?$j$^$9!#(B@refill
+$B8e$K!"<i2,(B $BCNI'(B $B$i$K$h$C$F(B tm $B$NA4LL=q$-49$(:n6H$,9T$o$l!"$3$N2aDx$G!"(Btm 
+$B$O(B APEL, MEL, SEMI, EMH, RMAIL-MIME, Gnus-MIME $B$J$I$KJ,$1$i$l$^$7$?!#$3(B
+$B$N$&$A$N(B MEL $B$,(B FLIM $B$ND>@\$N@hAD$KEv$?$j$^$9!#(B@refill
 
-$(B8e$K!"(BAPEL $(B$+$i(B @file{std11.el} $(B$,0\$5$l!"$^$?!"(B@file{mailcap.el},
-@file{eword-decode.el} $(B$*$h$S(B @file{eword-encode.el} $(B$,(B SEMI $(B$+$i0\$5$l!"(B
-package $(B$NL>A0$,(B FLIM$(B$H$J$j$^$9!#(B@refill
+$B8e$K!"(BAPEL $B$+$i(B @file{std11.el} $B$,0\$5$l!"$^$?!"(B@file{mailcap.el},
+@file{eword-decode.el} $B$*$h$S(B @file{eword-encode.el} $B$,(B SEMI $B$+$i0\$5$l!"(B
+package $B$NL>A0$,(B FLIM$B$H$J$j$^$9!#(B@refill
 
-$(B$3$ND>A0$+$iEDCf(B $(BE/(B $(B;a$,$h$j(B RFC $(B$KCi<B$J<BAu$r=q$-;O$a!"$3$l$O!"8=:_!"(B
-FLIM $(B$N;^$G$"$k(B ``FLIM-FLAM'' $(B$H$J$C$F$$$^$9!#(B
+$B$3$ND>A0$+$iEDCf(B $BE/(B $B;a$,$h$j(B RFC $B$KCi<B$J<BAu$r=q$-;O$a!"$3$l$O!"8=:_!"(B
+FLIM $B$N;^$G$"$k(B ``FLIM-FLAM'' $B$H$J$C$F$$$^$9!#(B
 
 
 @node Concept Index, Function Index, Appendix, Top
