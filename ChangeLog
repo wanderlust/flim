@@ -1,5 +1,10 @@
 2001-02-17  Kenichi OKADA <okada@opaopa.org>
 
+	* sasl-scram.el(sasl-scram-md5-server-salt): New function.
+	(sasl-scram-md5-response-2): Use `sasl-scram-md5-server-salt'
+
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
 	* sasl-scram.el(sasl-scram-md5-make-unique-nonce): Rewrite.
 
 2001-02-17  Kenichi OKADA <okada@opaopa.org>

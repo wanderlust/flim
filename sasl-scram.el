@@ -129,6 +129,9 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
 	  (substring server-msg-1	; service-id
 		     12 (1- (match-end 0))))))
 
+(defun sasl-scram-md5-server-salt (server-msg-1)
+  (car (sasl-scram-md5-parse-server-msg-1 server-msg-1)))
+
 (defun sasl-scram-md5-make-salted-pass (passphrase salt)
   (hmac-md5 salt passphrase))
 
@@ -209,25 +212,26 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
     (sasl-client-property client 'nonce))))
 
 (defun sasl-scram-md5-response-2 (client step)
-  (sasl-client-set-property
-      client 'server-msg-1
-      (sasl-step-data step))
-  (sasl-client-set-property
-      client 'salted-pass
-      (sasl-scram-md5-make-salted-pass
-       (sasl-read-passphrase
-	(format "SCRAM-MD5 passphrase for %s: "
-		(sasl-client-name client)))
-       (substring
-	(sasl-client-property client 'server-msg-1) 0 8)))
-  (sasl-client-set-property
-   client 'client-msg-2
-   (sasl-scram-md5-make-client-msg-2
-    (sasl-client-property client 'server-msg-1)
-    (sasl-client-property client 'client-msg-1)
-    (sasl-client-property client 'salted-pass)
-    (or (sasl-client-property client 'client-security-info)
-	(sasl-scram-md5-make-security-info nil t 0)))))
+  (let* ((server-msg-1
+	  (sasl-client-set-property
+	   client 'server-msg-1
+	   (sasl-step-data step)))
+	 (salted-pass
+	  (sasl-client-set-property
+	   client 'salted-pass
+	   (sasl-scram-md5-make-salted-pass
+	    (sasl-read-passphrase
+	     (format "SCRAM-MD5 passphrase for %s: "
+		     (sasl-client-name client)))
+	    (sasl-scram-md5-server-salt server-msg-1)))))
+    (sasl-client-set-property
+     client 'client-msg-2
+     (sasl-scram-md5-make-client-msg-2
+      server-msg-1
+      (sasl-client-property client 'client-msg-1)
+      salted-pass
+      (or (sasl-client-property client 'client-security-info)
+	  (sasl-scram-md5-make-security-info nil t 0))))))
 
 (defun sasl-scram-md5-authenticate-server (client step)
   (let ((server-msg-2
@@ -242,8 +246,7 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
 		      (sasl-client-property client 'client-msg-1)
 		      (or (sasl-client-property client 'client-security-info)
 			  (sasl-scram-md5-make-security-info nil t 0))
-		      (car
-		       (sasl-scram-md5-parse-server-msg-1 server-msg-1))
+		      (sasl-scram-md5-server-salt server-msg-1)
 		      (sasl-client-property client 'salted-pass)))
 	" "
       (sasl-error "SCRAM-MD5:  authenticate server failed."))))
