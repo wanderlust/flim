@@ -1,5 +1,9 @@
 1999-12-02  Kenichi OKADA <okada@opaopa.org>
 
+	* smtp.el (smtp-via-smtp): Comment out vain commands.
+
+1999-12-02  Kenichi OKADA <okada@opaopa.org>
+
 	* scram-md5.el: New file.
 	* FLIM-ELS (flim-modules): Add `scram-md5'.
 
