@@ -722,8 +722,8 @@ be the result."
 	      (cdr ret))
       )))
 
-(defun std11-parse-in-reply-to (tokens)
-  "Parse lexical TOKENS as In-Reply-To field, and return the result."
+(defun std11-parse-msg-ids (tokens)
+  "Parse lexical TOKENS as `*(phrase / msg-id)', and return the result."
   (let ((ret (or (std11-parse-msg-id tokens)
 		 (std11-parse-phrase tokens))))
     (if ret
@@ -736,6 +736,9 @@ be the result."
 	    )
 	  (nreverse dest)
 	  ))))
+
+(defalias 'std11-parse-in-reply-to 'std11-parse-msg-ids)
+(make-obsolete 'std11-parse-in-reply-to 'std11-parse-msg-ids)
 
 
 ;;; @ composer
@@ -889,6 +892,18 @@ represents addr-spec of RFC 822."
 (defun std11-parse-addresses-string (string)
   "Parse STRING as mail address list."
   (std11-parse-addresses (std11-lexical-analyze string))
+  )
+
+;;;###autoload
+(defun std11-parse-msg-id-string (string)
+  "Parse STRING as msg-id."
+  (std11-parse-msg-id (std11-lexical-analyze string))
+  )
+
+;;;###autoload
+(defun std11-parse-msg-ids-string (string)
+  "Parse STRING as `*(phrase / msg-id)'."
+  (std11-parse-msg-ids (std11-lexical-analyze string))
   )
 
 ;;;###autoload
