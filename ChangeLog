@@ -1,24 +1,31 @@
-1999-10-23  Kenichi OKADA <okada@opaopa.org>
+1999-11-28  Kenichi OKADA <okada@opaopa.org>
+
+	* ChangeLog: Fix.
+	* sasl.el (sasl-cram-md5): Rename `username' from `user'.
+	Rename `challenge' from `response'.
+	* SLIM-VERION: Add code name.
+
+1999-11-23  Kenichi OKADA <okada@opaopa.org>
 
 	* sha1.el (sha1-encode): Fix and define as obsolete function.
 	(sha1-encode-binary): Ditto.
 
-1999-10-23  Kenichi OKADA <okada@opaopa.org>
+1999-11-23  Kenichi OKADA <okada@opaopa.org>
 
 	* sha1.el (sha1-encode): New alias.
 	(sha1-encode-binary): Ditto.
 
 
-1999-10-23  Kenichi OKADA <okada@opaopa.org>
+1999-11-23  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.13.3 released.
 
-1999-10-23  Tsunehiko Baba <tbaba@mtl.t.u-tokyo.ac.jp>
+1999-11-23  Tsunehiko Baba <tbaba@mtl.t.u-tokyo.ac.jp>
 
 	* sasl.el: Don't require `hmac-util'.
 	(sasl-cram-md5): Update to use encode-hex-string.
 
-1999-10-23  Kenichi OKADA <okada@opaopa.org>
+1999-11-23  Kenichi OKADA <okada@opaopa.org>
 
 	* sha1.el: Update.
 	* sha1-el.el: Update.
@@ -43,7 +50,7 @@
 	sha1-el.el (sha1-region-internal): Ditto.
 
 
-1999-10-23  Kenichi OKADA <okada@opaopa.org>
+1999-11-23  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.13.2 released.
 
@@ -54,27 +61,27 @@
 	(smtp-auth-login): Update to delete
 	insecure sequences at plain.
 
-1999-10-23  Kenichi OKADA <okada@opaopa.org>
+1999-11-23  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-auth-cram-md5): New function.
 	(smtp-auth-plain): New function.
 	(smtp-auth-login): New function.
 	(smtp-authentication-method-alist): New variable.
 
-1999-10-23  Kenichi OKADA <okada@opaopa.org>
+1999-11-23  Kenichi OKADA <okada@opaopa.org>
 
 	* hex-util.el: New file.
 	* hmac-util.el: Remove.
 	* hmac-md5.el: Update.
 	* FLIM-ELS (flim-modeules): Rename `hex-util' from `hmac-util'.
 
-1999-10-22  Kenichi OKADA <okada@opaopa.org>
+1999-11-22  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-via-smtp): Fix to use `smtp-authentication-type',
 	`smtp-authentication-user', `smtp-authentication-passphrase' and
 	`smtp-connection-type'.
 
-1999-10-22  Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
+1999-11-22  Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
 
 	* smtp.el (smtp-authentication-type): New variable.
 	(smtp-authentication-user): New variable.
@@ -82,22 +89,22 @@
 	(smtp-connection-type): New variable.
 
 
-1999-10-21  Kenichi OKADA <okada@opaopa.org>
+1999-11-21  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.13.1 released.
 
-1999-10-21  Kenichi OKADA <okada@opaopa.org>
+1999-11-21  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM-TIPS: Add comment.
 
-1999-10-21  Kenichi OKADA <okada@opaopa.org>
+1999-11-21  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-via-smtp): Add autoload for
 	`starttls-open-stream', `starttls-negotiate',
 	`sasl-cram-md5' and `sasl-plain'.
 	* smtp.el (smtp-via-smtp): Don't require `sasl' and `starttls'.
 
-1999-10-21  Kenichi OKADA <okada@opaopa.org>
+1999-11-21  Kenichi OKADA <okada@opaopa.org>
 
 	* starttls.c: New file.
 	* smtp.el (smtp-via-smtp): STARTTLS support.
@@ -105,7 +112,7 @@
 	* starttls.c: Deleted. See SLIM-TIPS.
 	* FLIM-ELS (flim-modules): Add `starttls'
 
-1999-10-21  Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
+1999-11-21  Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
 
 	* starttls.el: New file.
 	* starttls.c: New file.
@@ -117,22 +124,22 @@
 	* SLIM-VERION: Add code name.
 	* mime-def.el (mime-library-product): Up.
 
-1999-10-20  Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+1999-11-20  Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 
 	* hmac-def.el (define-hmac-function): Update to delete
 	insecure sequences.
 
 
-1999-10-20  Kenichi OKADA <okada@opaopa.org>
+1999-11-20  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.13.0 released.
 
-1999-10-20  Kenichi OKADA <okada@opaopa.org>
+1999-11-20  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-via-smtp): Fix typo.
 	* hmac-md5.el: Add Author and Maintainer.
 
-1999-10-20  Kenichi OKADA <okada@opaopa.org>
+1999-11-20  Kenichi OKADA <okada@opaopa.org>
 
 	* hmac-md5.el (hmac-md5): Specify the 4th arg to `md5'
 	as `binary' if possible.
@@ -141,7 +148,7 @@
 
 	* hmac-md5.el (hmac-md5): Fixed for XEmacs's md5.
 
-1999-10-19  Kenichi OKADA <okada@opaopa.org>
+1999-11-19  Kenichi OKADA <okada@opaopa.org>
 
 	* md5.el: New file. (import from hmac package)
 	* md5-el.el: New file. (import from hmac package)
@@ -156,12 +163,12 @@
 	* FLIM-ELS (flim-modules): Add `md5 md5-el md5-dl sha1 sha1-el
 	sha1-dl hmac-def hmac-util hmac-md5 hmac-sha1'.
 
-1999-10-19  Kenichi OKADA <okada@opaopa.org>
+1999-11-19  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM-VERSION: New file.
 	* sasl.el: Add keyword.
 
-1999-10-19  Kenichi OKADA <okada@opaopa.org>
+1999-11-19  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl.el: New file.
 	* smtp.el (smtp-via-smtp): Use sasl.el for SASL.
