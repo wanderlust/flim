@@ -1,3 +1,7 @@
+1998-08-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* Delete mime-lib.el.
+
 1998-08-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mmbuffer.el (write-entity): `write-region-as-CRLF' was renamed
