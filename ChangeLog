@@ -1,7 +1,19 @@
+1999-05-29  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmbuffer.el (mime-entity-fetch-field): New implementation.
+
+	* mime-def.el (mime-entity-fetch-field): New method of luna-class
+	`mime-entity'.
+
+	* luna.el (luna-define-method): Allow `:around' qualifier.
+	(luna-class-find-functions): Likewise.
+	(luna-send): Likewise.
+	(luna-call-next-method): New function.
+
 1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* mime-def.el (eval-module-depended-macro): Abolished.  Use
-	`def-edebug-spec' directly.
+	* mime-def.el (eval-module-depended-macro): Abolished.
+	Use `def-edebug-spec' directly.
 
 	* luna.el (luna-define-method): Allow `:before' qualifier.
 	(luna-class-find-functions): Likewise.
