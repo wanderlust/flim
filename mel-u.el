@@ -84,7 +84,14 @@ variable `uuencode-external-decoder'."
 		  t nil nil (cdr uuencode-external-decoder))
 	   (setq filename (expand-file-name filename mime-temp-directory))
 	   (as-binary-input-file (insert-file-contents filename))
-	   (delete-file filename)
+	   ;; The previous line causes the buffer to be made read-only, I
+	   ;; do not pretend to understand the control flow leading to this
+	   ;; but suspect it has something to do with image-mode. -slb
+	   ;;	Use `inhibit-read-only' to avoid to force
+	   ;;	buffer-read-only nil. - tomo.
+	   (let ((inhibit-read-only t))
+	     (delete-file filename)
+	     )
 	   ))
       )))
 
