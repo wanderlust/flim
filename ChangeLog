@@ -1,3 +1,8 @@
+1999-03-27  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
+	1.12.5.
+
 1999-03-09  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* digraph.el (digraph-saf-dfs): Use implicit control stack.
