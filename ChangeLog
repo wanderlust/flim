@@ -1,5 +1,9 @@
 2000-11-05   Daiki Ueno  <ueno@unixuser.org>
 
+	* sasl.texi: New file.
+
+2000-11-05   Daiki Ueno  <ueno@unixuser.org>
+
 	* sasl.el (sasl-step-data): New function.
 	(sasl-step-set-data): New function.
 
