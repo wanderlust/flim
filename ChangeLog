@@ -1,5 +1,37 @@
 1998-09-10  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* mel-ccl.el (mel-ccl-encode-q-generic): New compile-time
+	function.
+	(mel-ccl-count-q-length): New compile-time function.
+	(mel-ccl-encode-uq): Use `mel-ccl-encode-q-generic'.
+	(mel-ccl-encode-cq): Use `mel-ccl-encode-q-generic'.
+	(mel-ccl-encode-pq): Use `mel-ccl-encode-q-generic'.
+	(mel-ccl-count-uq): New CCL program.
+	(mel-ccl-count-cq): Ditto.
+	(mel-ccl-count-pq): Ditto.
+	(mel-ccl-encode-base64-generic): New function.
+	(mel-ccl-encode-b): Use `mel-ccl-encode-base64-generic'.
+	(mel-ccl-encode-base64-crlf-crlf): Use
+	`mel-ccl-encode-base64-generic'.
+	(mel-ccl-encode-base64-crlf-lf): Use
+	`mel-ccl-encode-base64-generic'.
+	(base64-ccl-encode-string): Use `mel-ccl-base64-lf-rev' instead
+	of `mel-ccl-b-rev' for folding.
+	(base64-ccl-encode-region): Ditto.
+	(base64-ccl-decode-string): Remove useless `string-as-unibyte'
+	call.
+	(quoted-printable-ccl-insert-encoded-file): Remove unused
+	bindings.
+	(q-encoding-ccl-decode-string): Remove useless
+	`string-as-unibyte' call.
+	(q-encoding-ccl-encoded-length): New function.
+
+	* mel.el (q-encoding-ccl-encoded-length): New autoload.
+	(q-encoding-encoded-length): Use
+	`q-encoding-ccl-encoded-length' if defined.
+
+1998-09-10  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mime-def.el (mime-library-version-string): bump up to
 	FLAM-DOODLE 1.9.3.
 

@@ -189,63 +189,60 @@ abcdefghijklmnopqrstuvwxyz\
               `(write-repeat ,r0))))
           mel-ccl-256-table))))))
 
+(eval-when-compile
+
+(defun mel-ccl-encode-q-generic (raw)
+  `(3
+    (loop
+     (loop
+      (read-branch
+       r0
+       ,@(mapcar
+          (lambda (r0)
+            (cond
+             ((= r0 32) `(write-repeat ?_))
+             ((member r0 raw) `(write-repeat ,r0))
+             (t '(break))))
+          mel-ccl-256-table)))
+     (write ?=)
+     (write r0 ,mel-ccl-high-table)
+     (write r0 ,mel-ccl-low-table)
+     (repeat))))
+
+;; On xemacs, generated program counts iso-8859-1 8bit character as 6bytes.
+(defun mel-ccl-count-q-length (raw)
+  `(0
+    ((r0 = 0)
+     (loop
+      (read-branch
+       r1
+       ,@(mapcar
+	  (lambda (r1)
+	    (if (or (= r1 32) (member r1 raw))
+		'((r0 += 1) (repeat))
+	      '((r0 += 3) (repeat))))
+	  mel-ccl-256-table))))))
+
+)
+
 (define-ccl-program mel-ccl-encode-uq
-  `(3
-    (loop
-     (loop
-      (read-branch
-       r0
-       ,@(mapcar
-          (lambda (r0)
-            (cond
-             ((= r0 32) `(write-repeat ?_))
-             ((member r0 mel-ccl-u-raw) `(write-repeat ,r0))
-             (t '(break))))
-          mel-ccl-256-table)))
-     (write ?=)
-     (write r0 ,mel-ccl-high-table)
-     (write r0 ,mel-ccl-low-table)
-     (repeat))))
-
+  (mel-ccl-encode-q-generic mel-ccl-u-raw))
 (define-ccl-program mel-ccl-encode-cq
-  `(3
-    (loop
-     (loop
-      (read-branch
-       r0
-       ,@(mapcar
-          (lambda (r0)
-            (cond
-             ((= r0 32) `(write-repeat ?_))
-             ((member r0 mel-ccl-c-raw) `(write-repeat ,r0))
-             (t '(break))))
-          mel-ccl-256-table)))
-     (write ?=)
-     (write r0 ,mel-ccl-high-table)
-     (write r0 ,mel-ccl-low-table)
-     (repeat))))
-
+  (mel-ccl-encode-q-generic mel-ccl-c-raw))
 (define-ccl-program mel-ccl-encode-pq
-  `(3
-    (loop
-     (loop
-      (read-branch
-       r0
-       ,@(mapcar
-          (lambda (r0)
-            (cond
-             ((= r0 32) `(write-repeat ?_))
-             ((member r0 mel-ccl-p-raw) `(write-repeat ,r0))
-             (t '(break))))
-          mel-ccl-256-table)))
-     (write ?=)
-     (write r0 ,mel-ccl-high-table)
-     (write r0 ,mel-ccl-low-table)
-     (repeat))))
+  (mel-ccl-encode-q-generic mel-ccl-p-raw))
+
+(define-ccl-program mel-ccl-count-uq
+  (mel-ccl-count-q-length mel-ccl-u-raw))
+(define-ccl-program mel-ccl-count-cq
+  (mel-ccl-count-q-length mel-ccl-c-raw))
+(define-ccl-program mel-ccl-count-pq
+  (mel-ccl-count-q-length mel-ccl-p-raw))
 
 ;;; B/Base64
 
 (eval-when-compile
+
 (defun mel-ccl-decode-b-bit-ex (v)
   (logior
    (lsh (logand v (lsh 255 16)) -16)
@@ -373,215 +370,101 @@ abcdefghijklmnopqrstuvwxyz\
 	(write r7)
 	(write-repeat r4))))))
 
-;;; B
+(eval-when-compile
 
-;; mel-ccl-encode-b works only 20.3 or later because CCL_EOF_BLOCK
-;; is not executed on 20.2 (or former?).
+;; Generated CCL program works not properly on 20.2 because CCL_EOF_BLOCK
+;; is not executed.
+(defun mel-ccl-encode-base64-generic (&optional quantums-per-line output-crlf terminate-with-newline)
+  `(2
+    ((r3 = 0)
+     (loop
+      (r2 = 0)
+      (read-branch
+       r1
+       ,@(mapcar
+          (lambda (r1)
+            `((write ,(nth (lsh r1 -2) mel-ccl-64-to-256-table))
+              (r0 = ,(logand r1 3))))
+          mel-ccl-256-table))
+      (r2 = 1)
+      (read-branch
+       r1
+       ,@(mapcar
+          (lambda (r1)
+            `((write r0 ,(vconcat
+                          (mapcar
+                           (lambda (r0)
+                             (nth (logior (lsh r0 4)
+                                          (lsh r1 -4))
+                                  mel-ccl-64-to-256-table))
+                           mel-ccl-4-table)))
+              (r0 = ,(logand r1 15))))
+          mel-ccl-256-table))
+      (r2 = 2)
+      (read-branch
+       r1
+       ,@(mapcar
+          (lambda (r1)
+            `((write r0 ,(vconcat
+                          (mapcar
+                           (lambda (r0)
+                             (nth (logior (lsh r0 2)
+                                          (lsh r1 -6))
+                                  mel-ccl-64-to-256-table))
+                           mel-ccl-16-table)))))
+          mel-ccl-256-table))
+      (r1 &= 63)
+      (write r1 ,(vconcat
+                  (mapcar
+                   (lambda (r1)
+                     (nth r1 mel-ccl-64-to-256-table))
+                   mel-ccl-64-table)))
+      (r3 += 1)
+      ,@(when quantums-per-line
+	  `((if (r3 == ,quantums-per-line)
+		((write ,(if output-crlf "\r\n" "\n"))
+		 (r3 = 0)))))
+      (repeat)))
+    (branch
+     r2
+     ,(if terminate-with-newline
+	  `(if (r3 > 0) (write ,(if output-crlf "\r\n" "\n")))
+	`(r0 = 0))
+     ((write r0 ,(vconcat
+                  (mapcar
+                   (lambda (r0)
+                     (nth (lsh r0 4) mel-ccl-64-to-256-table))
+                   mel-ccl-4-table)))
+      (write ,(if terminate-with-newline
+		  (if output-crlf "==\r\n" "==\n")
+		"==")))
+     ((write r0 ,(vconcat
+                  (mapcar
+                   (lambda (r0)
+                     (nth (lsh r0 2) mel-ccl-64-to-256-table))
+                   mel-ccl-16-table)))
+      (write ,(if terminate-with-newline
+		  (if output-crlf "=\r\n" "=\n")
+		"="))))
+    ))
+)
+
 (define-ccl-program mel-ccl-encode-b
-  `(2
-    (loop
-     (r2 = 0)
-     (read-branch
-      r1
-      ,@(mapcar
-         (lambda (r1)
-           `((write ,(nth (lsh r1 -2) mel-ccl-64-to-256-table))
-             (r0 = ,(logand r1 3))))
-         mel-ccl-256-table))
-     (r2 = 1)
-     (read-branch
-      r1
-      ,@(mapcar
-         (lambda (r1)
-           `((write r0 ,(vconcat
-                         (mapcar
-                          (lambda (r0)
-                            (nth (logior (lsh r0 4)
-                                         (lsh r1 -4))
-                                 mel-ccl-64-to-256-table))
-                          mel-ccl-4-table)))
-             (r0 = ,(logand r1 15))))
-         mel-ccl-256-table))
-     (r2 = 2)
-     (read-branch
-      r1
-      ,@(mapcar
-         (lambda (r1)
-           `((write r0 ,(vconcat
-                         (mapcar
-                          (lambda (r0)
-                            (nth (logior (lsh r0 2)
-                                         (lsh r1 -6))
-                                 mel-ccl-64-to-256-table))
-                          mel-ccl-16-table)))))
-         mel-ccl-256-table))
-     (r1 &= 63)
-     (write r1 ,(vconcat
-                 (mapcar
-                  (lambda (r1)
-                    (nth r1 mel-ccl-64-to-256-table))
-                  mel-ccl-64-table)))
-     (repeat))
-    (branch
-     r2
-     (end)
-     ((write r0 ,(vconcat
-                  (mapcar
-                   (lambda (r0)
-                     (nth (lsh r0 4) mel-ccl-64-to-256-table))
-                   mel-ccl-4-table)))
-      (write "=="))
-     ((write r0 ,(vconcat
-                  (mapcar
-                   (lambda (r0)
-                     (nth (lsh r0 2) mel-ccl-64-to-256-table))
-                   mel-ccl-16-table)))
-      (write ?=)))
-    ))
+  (mel-ccl-encode-base64-generic))
 
-;;; Base64
-
-;; mel-ccl-encode-base64 does not works on 20.2 by same reason of mel-ccl-encode-b
+;; 19 * 4 = 76
 (define-ccl-program mel-ccl-encode-base64-crlf-crlf
-  `(2
-    ((r3 = 0)
-     (loop
-      (r2 = 0)
-      (read-branch
-       r1
-       ,@(mapcar
-          (lambda (r1)
-            `((write ,(nth (lsh r1 -2) mel-ccl-64-to-256-table))
-              (r0 = ,(logand r1 3))))
-          mel-ccl-256-table))
-      (r2 = 1)
-      (read-branch
-       r1
-       ,@(mapcar
-          (lambda (r1)
-            `((write r0 ,(vconcat
-                          (mapcar
-                           (lambda (r0)
-                             (nth (logior (lsh r0 4)
-                                          (lsh r1 -4))
-                                  mel-ccl-64-to-256-table))
-                           mel-ccl-4-table)))
-              (r0 = ,(logand r1 15))))
-          mel-ccl-256-table))
-      (r2 = 2)
-      (read-branch
-       r1
-       ,@(mapcar
-          (lambda (r1)
-            `((write r0 ,(vconcat
-                          (mapcar
-                           (lambda (r0)
-                             (nth (logior (lsh r0 2)
-                                          (lsh r1 -6))
-                                  mel-ccl-64-to-256-table))
-                           mel-ccl-16-table)))))
-          mel-ccl-256-table))
-      (r1 &= 63)
-      (write r1 ,(vconcat
-                  (mapcar
-                   (lambda (r1)
-                     (nth r1 mel-ccl-64-to-256-table))
-                   mel-ccl-64-table)))
-      (r3 += 1)
-      (if (r3 == 19) ; 4 * 19 = 76 --> line break.
-          ((write "\r\n")
-           (r3 = 0)))
-      (repeat)))
-    (branch
-     r2
-     (if (r0 > 0) (write "\r\n"))
-     ((write r0 ,(vconcat
-                  (mapcar
-                   (lambda (r0)
-                     (nth (lsh r0 4) mel-ccl-64-to-256-table))
-                   mel-ccl-4-table)))
-      (write "==\r\n"))
-     ((write r0 ,(vconcat
-                  (mapcar
-                   (lambda (r0)
-                     (nth (lsh r0 2) mel-ccl-64-to-256-table))
-                   mel-ccl-16-table)))
-      (write "=\r\n")))
-    ))
+  (mel-ccl-encode-base64-generic 19 t))
 
-;; produce newline as LF instead of CRLF.
 (define-ccl-program mel-ccl-encode-base64-crlf-lf
-  `(2
-    ((r3 = 0)
-     (loop
-      (r2 = 0)
-      (read-branch
-       r1
-       ,@(mapcar
-          (lambda (r1)
-            `((write ,(nth (lsh r1 -2) mel-ccl-64-to-256-table))
-              (r0 = ,(logand r1 3))))
-          mel-ccl-256-table))
-      (r2 = 1)
-      (read-branch
-       r1
-       ,@(mapcar
-          (lambda (r1)
-            `((write r0 ,(vconcat
-                          (mapcar
-                           (lambda (r0)
-                             (nth (logior (lsh r0 4)
-                                          (lsh r1 -4))
-                                  mel-ccl-64-to-256-table))
-                           mel-ccl-4-table)))
-              (r0 = ,(logand r1 15))))
-          mel-ccl-256-table))
-      (r2 = 2)
-      (read-branch
-       r1
-       ,@(mapcar
-          (lambda (r1)
-            `((write r0 ,(vconcat
-                          (mapcar
-                           (lambda (r0)
-                             (nth (logior (lsh r0 2)
-                                          (lsh r1 -6))
-                                  mel-ccl-64-to-256-table))
-                           mel-ccl-16-table)))))
-          mel-ccl-256-table))
-      (r1 &= 63)
-      (write r1 ,(vconcat
-                  (mapcar
-                   (lambda (r1)
-                     (nth r1 mel-ccl-64-to-256-table))
-                   mel-ccl-64-table)))
-      (r3 += 1)
-      (if (r3 == 19) ; 4 * 19 = 76 --> line break.
-          ((write "\n")
-           (r3 = 0)))
-      (repeat)))
-    (branch
-     r2
-     (if (r0 > 0) (write "\n"))
-     ((write r0 ,(vconcat
-                  (mapcar
-                   (lambda (r0)
-                     (nth (lsh r0 4) mel-ccl-64-to-256-table))
-                   mel-ccl-4-table)))
-      (write "==\n"))
-     ((write r0 ,(vconcat
-                  (mapcar
-                   (lambda (r0)
-                     (nth (lsh r0 2) mel-ccl-64-to-256-table))
-                   mel-ccl-16-table)))
-      (write "=\n")))
-    ))
+  (mel-ccl-encode-base64-generic 19 nil))
 
 ;; Quoted-Printable
 
 (eval-when-compile
 
-;; mel-ccl-encode-quoted-printable does not works on 20.2 by same reason of mel-ccl-encode-b
+;; Generated CCL program works not properly on 20.2 because CCL_EOF_BLOCK
+;; is not executed.
 (defun mel-ccl-encode-quoted-printable-generic (input-crlf output-crlf)
   `(4
     ((r6 = 0)				; column
@@ -1192,26 +1075,26 @@ abcdefghijklmnopqrstuvwxyz\
 (unless (and (boundp 'ccl-encoder-eof-block-is-broken)
 	     ccl-encoder-eof-block-is-broken)
 
-(defun base64-ccl-encode-string (string)
-  "Encode STRING with base64 encoding."
-  (decode-coding-string string 'mel-ccl-b-rev))
+  (defun base64-ccl-encode-string (string)
+    "Encode STRING with base64 encoding."
+    (decode-coding-string string 'mel-ccl-base64-lf-rev))
 
-(defun base64-ccl-encode-region (start end)
-  "Encode region from START to END with base64 encoding."
-  (interactive "r")
-  (decode-coding-region start end 'mel-ccl-b-rev))
+  (defun base64-ccl-encode-region (start end)
+    "Encode region from START to END with base64 encoding."
+    (interactive "r")
+    (decode-coding-region start end 'mel-ccl-base64-lf-rev))
 
-(defun base64-ccl-insert-encoded-file (filename)
-  "Encode contents of file FILENAME to base64, and insert the result."
-  (interactive (list (read-file-name "Insert encoded file: ")))
-  (let ((coding-system-for-read 'mel-ccl-b-rev))
-    (insert-file-contents filename)))
+  (defun base64-ccl-insert-encoded-file (filename)
+    "Encode contents of file FILENAME to base64, and insert the result."
+    (interactive (list (read-file-name "Insert encoded file: ")))
+    (let ((coding-system-for-read 'mel-ccl-b-rev))
+      (insert-file-contents filename)))
 
-)
+  )
 
 (defun base64-ccl-decode-string (string)
   "Decode base64 encoded STRING"
-  (string-as-unibyte (encode-coding-string string 'mel-ccl-b-rev)))
+  (encode-coding-string string 'mel-ccl-b-rev))
 
 (defun base64-ccl-decode-region (start end)
   "Decode base64 encoded the region from START to END."
@@ -1233,26 +1116,25 @@ abcdefghijklmnopqrstuvwxyz\
 (unless (and (boundp 'ccl-encoder-eof-block-is-broken)
 	     ccl-encoder-eof-block-is-broken)
 
-(defun quoted-printable-ccl-encode-string (string)
-  "Encode STRING with quoted-printable encoding."
-  (decode-coding-string
-   string
-   'mel-ccl-quoted-printable-lf-lf-rev))
+  (defun quoted-printable-ccl-encode-string (string)
+    "Encode STRING with quoted-printable encoding."
+    (decode-coding-string
+     string
+     'mel-ccl-quoted-printable-lf-lf-rev))
 
-(defun quoted-printable-ccl-encode-region (start end)
-  "Encode the region from START to END with quoted-printable
+  (defun quoted-printable-ccl-encode-region (start end)
+    "Encode the region from START to END with quoted-printable
 encoding."
-  (interactive "r")
-  (decode-coding-region start end 'mel-ccl-quoted-printable-lf-lf-rev))
+    (interactive "r")
+    (decode-coding-region start end 'mel-ccl-quoted-printable-lf-lf-rev))
 
-(defun quoted-printable-ccl-insert-encoded-file (filename)
-  "Encode contents of the file named as FILENAME, and insert it."
-  (interactive (list (read-file-name "Insert encoded file: ")))
-  (let ((start (point)) end
-	(coding-system-for-read 'mel-ccl-quoted-printable-lf-lf-rev))
-    (insert-file-contents filename)))
+  (defun quoted-printable-ccl-insert-encoded-file (filename)
+    "Encode contents of the file named as FILENAME, and insert it."
+    (interactive (list (read-file-name "Insert encoded file: ")))
+    (let ((coding-system-for-read 'mel-ccl-quoted-printable-lf-lf-rev))
+      (insert-file-contents filename)))
 
-)
+  )
 
 (defun quoted-printable-ccl-decode-string (string)
   "Decode quoted-printable encoded STRING."
@@ -1292,11 +1174,26 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 
 (defun q-encoding-ccl-decode-string (string)
   "Decode Q encoded STRING and return the result."
-  (string-as-unibyte
-   (encode-coding-string
-    string
-    'mel-ccl-uq-rev)))
+  (encode-coding-string
+   string
+   'mel-ccl-uq-rev))
 
+(unless running-xemacs
+  (defun q-encoding-ccl-encoded-length (string &optional mode)
+    "Encode STRING to Q-encoding of encoded-word, and return the result.
+MODE allows `text', `comment', `phrase' or nil.  Default value is
+`phrase'."
+    (let ((status [nil nil nil nil nil nil nil nil nil]))
+      (fillarray status nil)
+      (ccl-execute-on-string
+       (cond
+	((eq mode 'text) 'mel-ccl-count-uq)
+	((eq mode 'comment) 'mel-ccl-count-cq)
+	(t 'mel-ccl-count-pq))
+       status
+       string)
+      (aref status 0)))
+  )
 
 ;;; @ end
 ;;;

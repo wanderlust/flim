@@ -72,40 +72,40 @@ external decoder is called.")
 
 (when base64-dl-module
   (autoload 'base64-dl-encode-string "mel-dl"
-   "Encode STRING to base64, and return the result.")
+    "Encode STRING to base64, and return the result.")
   (autoload 'base64-dl-decode-string "mel-dl"
-   "Decode STRING which is encoded in base64, and return the result.")
+    "Decode STRING which is encoded in base64, and return the result.")
   (autoload 'base64-dl-encode-region "mel-dl"
-   "Encode current region by base64." t)
+    "Encode current region by base64." t)
   (autoload 'base64-dl-decode-region "mel-dl"
-   "Decode current region by base64." t))
+    "Decode current region by base64." t))
 
 ;; mel-b
 (autoload 'base64-internal-encode-string "mel-b"
- "Encode STRING to base64, and return the result.")
+  "Encode STRING to base64, and return the result.")
 (autoload 'base64-internal-decode-string "mel-b"
- "Decode STRING which is encoded in base64, and return the result.")
+  "Decode STRING which is encoded in base64, and return the result.")
 (autoload 'base64-internal-encode-region "mel-b"
- "Encode current region by base64." t)
+  "Encode current region by base64." t)
 (autoload 'base64-internal-decode-region "mel-b"
- "Decode current region by base64." t)
+  "Decode current region by base64." t)
 (autoload 'base64-internal-insert-encoded-file "mel-b"
- "Encode contents of file to base64, and insert the result." t)
+  "Encode contents of file to base64, and insert the result." t)
 (autoload 'base64-internal-write-decoded-region "mel-b"
- "Decode and write current region encoded by base64 into FILENAME." t)
+  "Decode and write current region encoded by base64 into FILENAME." t)
 
 (autoload 'base64-external-encode-string "mel-b"
- "Encode STRING to base64, and return the result.")
+  "Encode STRING to base64, and return the result.")
 (autoload 'base64-external-decode-string "mel-b"
- "Decode STRING which is encoded in base64, and return the result.")
+  "Decode STRING which is encoded in base64, and return the result.")
 (autoload 'base64-external-encode-region "mel-b"
- "Encode current region by base64." t)
+  "Encode current region by base64." t)
 (autoload 'base64-external-decode-region "mel-b"
- "Decode current region by base64." t)
+  "Decode current region by base64." t)
 (autoload 'base64-external-insert-encoded-file "mel-b"
- "Encode contents of file to base64, and insert the result." t)
+  "Encode contents of file to base64, and insert the result." t)
 (autoload 'base64-external-write-decoded-region "mel-b"
- "Decode and write current region encoded by base64 into FILENAME." t)
+  "Decode and write current region encoded by base64 into FILENAME." t)
 
 ;; for encoded-word
 (autoload 'base64-internal-encoded-length "mel-b")
@@ -204,18 +204,26 @@ external decoder is called.")
   `phrase'.")
   (autoload 'q-encoding-ccl-decode-string "mel-ccl"
     "Decode Q encoded STRING and return the result.")
-)
+
+  (unless running-xemacs
+    (autoload 'q-encoding-ccl-encoded-length "mel-ccl"
+      "Encode STRING to Q-encoding of encoded-word, and return the result.
+MODE allows `text', `comment', `phrase' or nil.  Default value is
+`phrase'.")
+    )
+  )
+
 
 ;;; @ entrance functions.
 ;;;
 
 (cond
-  ((fboundp 'base64-dl-encode-string)
-    (defalias 'base64-encode-string 'base64-dl-encode-string))
-  ((fboundp 'base64-ccl-encode-string)
-    (defalias 'base64-encode-string 'base64-ccl-encode-string))
-  (t
-    (defalias 'base64-encode-string 'base64-internal-encode-string)))
+ ((fboundp 'base64-dl-encode-string)
+  (defalias 'base64-encode-string 'base64-dl-encode-string))
+ ((fboundp 'base64-ccl-encode-string)
+  (defalias 'base64-encode-string 'base64-ccl-encode-string))
+ (t
+  (defalias 'base64-encode-string 'base64-internal-encode-string)))
 
 (defun base64-internal-external-decode-string (string)
   "Decode STRING which is encoded in base64, and return the result.
@@ -231,12 +239,12 @@ metamail or XEmacs package)."
     (base64-internal-decode-string string)))
 
 (cond
-  ((fboundp 'base64-dl-decode-string)
-    (defalias 'base64-decode-string 'base64-dl-decode-string))
-  ((fboundp 'base64-ccl-decode-string)
-    (defalias 'base64-decode-string 'base64-ccl-decode-string))
-  (t
-    (defalias 'base64-decode-string 'base64-internal-external-decode-string)))
+ ((fboundp 'base64-dl-decode-string)
+  (defalias 'base64-decode-string 'base64-dl-decode-string))
+ ((fboundp 'base64-ccl-decode-string)
+  (defalias 'base64-decode-string 'base64-ccl-decode-string))
+ (t
+  (defalias 'base64-decode-string 'base64-internal-external-decode-string)))
 
 (defun base64-internal-external-encode-region (start end)
   "Encode current region by base64.
@@ -253,12 +261,12 @@ metamail or XEmacs package)."
     (base64-internal-encode-region start end)))
 
 (cond
-  ((fboundp 'base64-dl-encode-region)
-    (defalias 'base64-encode-region 'base64-dl-encode-region)) ; no fold
-  ((fboundp 'base64-ccl-encode-region)
-    (defalias 'base64-encode-region 'base64-ccl-encode-region)) ; no fold
-  (t
-    (defalias 'base64-encode-region 'base64-internal-external-encode-region))) ; LF fold
+ ((fboundp 'base64-dl-encode-region)
+  (defalias 'base64-encode-region 'base64-dl-encode-region)) ; no fold
+ ((fboundp 'base64-ccl-encode-region)
+  (defalias 'base64-encode-region 'base64-ccl-encode-region)) ; LF fold
+ (t
+  (defalias 'base64-encode-region 'base64-internal-external-encode-region))) ; LF fold
 
 (defun base64-internal-external-decode-region (start end)
   "Decode current region by base64.
@@ -275,12 +283,12 @@ metamail or XEmacs package)."
     (base64-internal-decode-region start end)))
 
 (cond
-  ((fboundp 'base64-dl-decode-region)
-    (defalias 'base64-decode-region 'base64-dl-decode-region))
-  ((fboundp 'base64-ccl-decode-region)
-    (defalias 'base64-decode-region 'base64-ccl-decode-region))
-  (t
-    (defalias 'base64-decode-region 'base64-internal-external-decode-region)))
+ ((fboundp 'base64-dl-decode-region)
+  (defalias 'base64-decode-region 'base64-dl-decode-region))
+ ((fboundp 'base64-ccl-decode-region)
+  (defalias 'base64-decode-region 'base64-ccl-decode-region))
+ (t
+  (defalias 'base64-decode-region 'base64-internal-external-decode-region)))
 
 (defun base64-internal-external-insert-encoded-file (filename)
   "Encode contents of file FILENAME to base64, and insert the result.
@@ -295,10 +303,10 @@ mmencode included in metamail or XEmacs package)."
     (base64-internal-insert-encoded-file filename)))
 
 (cond
-  ((fboundp 'base64-ccl-insert-encoded-file)
-    (defalias 'base64-insert-encoded-file 'base64-ccl-insert-encoded-file))
-  (t
-    (defalias 'base64-insert-encoded-file 'base64-internal-external-insert-encoded-file)))
+ ((fboundp 'base64-ccl-insert-encoded-file)
+  (defalias 'base64-insert-encoded-file 'base64-ccl-insert-encoded-file))
+ (t
+  (defalias 'base64-insert-encoded-file 'base64-internal-external-insert-encoded-file)))
 
 (defun base64-internal-external-write-decoded-region (start end filename)
   "Decode and write current region encoded by base64 into FILENAME.
@@ -312,134 +320,136 @@ START and END are buffer positions."
     (base64-internal-write-decoded-region start end filename)))
 
 (cond
-  ((fboundp 'base64-ccl-write-decoded-region)
-    (defalias 'base64-write-decoded-region 'base64-ccl-write-decoded-region))
-  (t
-    (defalias 'base64-write-decoded-region 'base64-internal-external-write-decoded-region)))
+ ((fboundp 'base64-ccl-write-decoded-region)
+  (defalias 'base64-write-decoded-region 'base64-ccl-write-decoded-region))
+ (t
+  (defalias 'base64-write-decoded-region 'base64-internal-external-write-decoded-region)))
 
 (cond
-  (t
-    (defalias 'base64-encoded-length 'base64-internal-encoded-length)))
+ (t
+  (defalias 'base64-encoded-length 'base64-internal-encoded-length)))
 
 (cond
-  ((fboundp 'quoted-printable-ccl-encode-string)
-    (defalias 'quoted-printable-encode-string 'quoted-printable-ccl-encode-string))
-  (t
-    (defun quoted-printable-encode-string (string)
-      "Encode STRING to quoted-printable, and return the result."
-      (if (and quoted-printable-internal-encoding-limit
-               (> (length string) quoted-printable-internal-encoding-limit))
-          (quoted-printable-external-encode-string string)
-        (quoted-printable-internal-encode-string string)))))
+ ((fboundp 'quoted-printable-ccl-encode-string)
+  (defalias 'quoted-printable-encode-string 'quoted-printable-ccl-encode-string))
+ (t
+  (defun quoted-printable-encode-string (string)
+    "Encode STRING to quoted-printable, and return the result."
+    (if (and quoted-printable-internal-encoding-limit
+	     (> (length string) quoted-printable-internal-encoding-limit))
+	(quoted-printable-external-encode-string string)
+      (quoted-printable-internal-encode-string string)))))
 
 (cond
-  ((fboundp 'quoted-printable-ccl-decode-string)
-    (defalias 'quoted-printable-decode-string 'quoted-printable-ccl-decode-string))
-  (t
-    (defun quoted-printable-decode-string (string)
-      "Decode STRING which is encoded in quoted-printable, and return the result."
-      (if (and quoted-printable-internal-decoding-limit
-               (> (length string) quoted-printable-internal-decoding-limit))
-          (quoted-printable-external-decode-string string)
-        (quoted-printable-internal-decode-string string)))))
+ ((fboundp 'quoted-printable-ccl-decode-string)
+  (defalias 'quoted-printable-decode-string 'quoted-printable-ccl-decode-string))
+ (t
+  (defun quoted-printable-decode-string (string)
+    "Decode STRING which is encoded in quoted-printable, and return the result."
+    (if (and quoted-printable-internal-decoding-limit
+	     (> (length string) quoted-printable-internal-decoding-limit))
+	(quoted-printable-external-decode-string string)
+      (quoted-printable-internal-decode-string string)))))
 
 (cond
-  ((fboundp 'quoted-printable-ccl-encode-region)
-    (defalias 'quoted-printable-encode-region 'quoted-printable-ccl-encode-region))
-  (t
-    (defun quoted-printable-encode-region (start end)
-      "Encode current region by quoted-printable.
+ ((fboundp 'quoted-printable-ccl-encode-region)
+  (defalias 'quoted-printable-encode-region 'quoted-printable-ccl-encode-region))
+ (t
+  (defun quoted-printable-encode-region (start end)
+    "Encode current region by quoted-printable.
 START and END are buffer positions.
 This function calls internal quoted-printable encoder if size of
 region is smaller than `quoted-printable-internal-encoding-limit',
 otherwise it calls external quoted-printable encoder specified by
 `quoted-printable-external-encoder'.  In this case, you must install
 the program (maybe mmencode included in metamail or XEmacs package)."
-      (interactive "r")
-      (if (and quoted-printable-internal-encoding-limit
-               (> (- end start) quoted-printable-internal-encoding-limit))
-          (quoted-printable-external-encode-region start end)
-        (quoted-printable-internal-encode-region start end)
-        ))))
+    (interactive "r")
+    (if (and quoted-printable-internal-encoding-limit
+	     (> (- end start) quoted-printable-internal-encoding-limit))
+	(quoted-printable-external-encode-region start end)
+      (quoted-printable-internal-encode-region start end)
+      ))))
 
 (cond
-  ((fboundp 'quoted-printable-ccl-decode-region)
-    (defalias 'quoted-printable-decode-region 'quoted-printable-ccl-decode-region))
-  (t
-    (defun quoted-printable-decode-region (start end)
-      "Decode current region by quoted-printable.
+ ((fboundp 'quoted-printable-ccl-decode-region)
+  (defalias 'quoted-printable-decode-region 'quoted-printable-ccl-decode-region))
+ (t
+  (defun quoted-printable-decode-region (start end)
+    "Decode current region by quoted-printable.
 START and END are buffer positions.
 This function calls internal quoted-printable decoder if size of
 region is smaller than `quoted-printable-internal-decoding-limit',
 otherwise it calls external quoted-printable decoder specified by
 `quoted-printable-external-decoder'.  In this case, you must install
 the program (maybe mmencode included in metamail or XEmacs package)."
-      (interactive "r")
-      (if (and quoted-printable-internal-decoding-limit
-               (> (- end start) quoted-printable-internal-decoding-limit))
-          (quoted-printable-external-decode-region start end)
-        (quoted-printable-internal-decode-region start end)
-        ))))
+    (interactive "r")
+    (if (and quoted-printable-internal-decoding-limit
+	     (> (- end start) quoted-printable-internal-decoding-limit))
+	(quoted-printable-external-decode-region start end)
+      (quoted-printable-internal-decode-region start end)
+      ))))
 
 (cond
-  ((fboundp 'quoted-printable-ccl-insert-encoded-file)
-    (defalias 'quoted-printable-insert-encoded-file 'quoted-printable-ccl-insert-encoded-file))
-  (t
-    (defalias 'quoted-printable-insert-encoded-file 'quoted-printable-external-insert-encoded-file)))
+ ((fboundp 'quoted-printable-ccl-insert-encoded-file)
+  (defalias 'quoted-printable-insert-encoded-file 'quoted-printable-ccl-insert-encoded-file))
+ (t
+  (defalias 'quoted-printable-insert-encoded-file 'quoted-printable-external-insert-encoded-file)))
 
 (cond
-  ((fboundp 'quoted-printable-ccl-write-decoded-region)
-    (defalias 'quoted-printable-write-decoded-region 'quoted-printable-ccl-write-decoded-region))
-  (t
-    (defalias 'quoted-printable-write-decoded-region 'quoted-printable-external-write-decoded-region)))
+ ((fboundp 'quoted-printable-ccl-write-decoded-region)
+  (defalias 'quoted-printable-write-decoded-region 'quoted-printable-ccl-write-decoded-region))
+ (t
+  (defalias 'quoted-printable-write-decoded-region 'quoted-printable-external-write-decoded-region)))
 
 (cond
-  ((fboundp 'q-encoding-ccl-encode-string)
-    (defalias 'q-encoding-encode-string 'q-encoding-ccl-encode-string))
-  (t
-    (defalias 'q-encoding-encode-string 'q-encoding-internal-encode-string)))
+ ((fboundp 'q-encoding-ccl-encode-string)
+  (defalias 'q-encoding-encode-string 'q-encoding-ccl-encode-string))
+ (t
+  (defalias 'q-encoding-encode-string 'q-encoding-internal-encode-string)))
 
 (cond
-  ((fboundp 'q-encoding-ccl-decode-string)
-    (defalias 'q-encoding-decode-string 'q-encoding-ccl-decode-string))
-  (t
-    (defalias 'q-encoding-decode-string 'q-encoding-internal-decode-string)))
+ ((fboundp 'q-encoding-ccl-decode-string)
+  (defalias 'q-encoding-decode-string 'q-encoding-ccl-decode-string))
+ (t
+  (defalias 'q-encoding-decode-string 'q-encoding-internal-decode-string)))
 
 (cond
-  (t
-    (defalias 'q-encoding-encoded-length 'q-encoding-internal-encoded-length)))
+ ((fboundp 'q-encoding-ccl-encoded-length)
+  (defalias 'q-encoding-encoded-length 'q-encoding-ccl-encoded-length))
+ (t
+  (defalias 'q-encoding-encoded-length 'q-encoding-internal-encoded-length)))
 
 (cond
-  (t
-    (defalias 'uuencode-encode-region 'uuencode-external-encode-region)))
+ (t
+  (defalias 'uuencode-encode-region 'uuencode-external-encode-region)))
 
 (cond
-  (t
-    (defalias 'uuencode-decode-region 'uuencode-external-decode-region)))
+ (t
+  (defalias 'uuencode-decode-region 'uuencode-external-decode-region)))
 
 (cond
-  (t
-    (defalias 'uuencode-insert-encoded-file 'uuencode-external-insert-encoded-file)))
+ (t
+  (defalias 'uuencode-insert-encoded-file 'uuencode-external-insert-encoded-file)))
 
 (cond
-  (t
-    (defalias 'uuencode-write-decoded-region 'uuencode-external-write-decoded-region)))
+ (t
+  (defalias 'uuencode-write-decoded-region 'uuencode-external-write-decoded-region)))
 
 (cond
-  (t
-    (defalias 'gzip64-encode-region 'gzip64-external-encode-region)))
+ (t
+  (defalias 'gzip64-encode-region 'gzip64-external-encode-region)))
 
 (cond
-  (t
-    (defalias 'gzip64-decode-region 'gzip64-external-decode-region)))
+ (t
+  (defalias 'gzip64-decode-region 'gzip64-external-decode-region)))
 
 (cond
-  (t
-    (defalias 'gzip64-insert-encoded-file 'gzip64-external-insert-encoded-file)))
+ (t
+  (defalias 'gzip64-insert-encoded-file 'gzip64-external-insert-encoded-file)))
 
 (cond
-  (t
-    (defalias 'gzip64-write-decoded-region 'gzip64-external-write-decoded-region)))
+ (t
+  (defalias 'gzip64-write-decoded-region 'gzip64-external-write-decoded-region)))
 
 ;;; @ region
 ;;;
