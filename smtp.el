@@ -241,8 +241,6 @@ don't define this value."
 			  sender recipients smtp-text-buffer)))
 	    (or (functionp function)
 		(error "Unable to compose SMTP commands"))
-	    (if (and (listp function) (eq (car function) 'lambda))
-		(setq function (byte-compile function)));; XXX
 	    (as-binary-process
 	     (setq process
 		   (funcall smtp-open-connection-function
