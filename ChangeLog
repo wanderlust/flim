@@ -1,3 +1,10 @@
+1998-10-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.10.5 (Kizugawadai) was released.
+
+	* mel.el: Must require poem.
+
+
 1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.10.4 (Shin-H-Dòsono)-A was released.
