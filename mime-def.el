@@ -142,6 +142,9 @@
 (defsubst mime-entity-encoding (entity)            (aref entity 8))
 (defsubst mime-entity-children (entity)            (aref entity 9))
 
+(defsubst mime-entity-number (entity)
+  (reverse (mime-entity-node-id entity)))
+
 
 ;;; @ utility
 ;;;
