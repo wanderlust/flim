@@ -42,7 +42,8 @@
   (autoload 'sasl-plain "sasl")
   (autoload 'sasl-scram-md5-client-msg-1 "sasl")
   (autoload 'sasl-scram-md5-client-msg-2 "sasl")
-  (autoload 'sasl-scram-md5-authenticate-server "sasl"))
+  (autoload 'sasl-scram-md5-authenticate-server "sasl")
+  (autoload 'sasl-digest-md5-digest-response "sasl"))
 		       
 (eval-when-compile (require 'cl))	; push
 

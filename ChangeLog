@@ -1,3 +1,7 @@
+2000-02-03  Kenichi OKADA <okada@opaopa.org>
+
+	* smtp.el (TopLevel): Autoload `sasl-digest-md5-digest-response'.
+
 2000-02-02  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM-TIPS: Add comment.
