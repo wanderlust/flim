@@ -1,4 +1,4 @@
-2002-10-28  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2002-10-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mime-def.el (toplevel): Bind colon keywords to suppress
 	byte-compile warnings.
