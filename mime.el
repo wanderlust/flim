@@ -190,39 +190,59 @@ If MESSAGE is specified, it is regarded as root entity."
       (setq field-name (intern (capitalize (capitalize field-name)))))
   (or entity
       (setq entity mime-message-structure))
-  (let* ((header (mime-entity-original-header-internal entity))
-	 (field-body (cdr (assq field-name header))))
-    (or field-body
-	(progn
-	  (if (setq field-body
-		    (mime-entity-send entity 'fetch-field
-				      (symbol-name field-name)))
-	      (mime-entity-set-original-header-internal
-	       entity (put-alist field-name field-body header))
-	    )
-	  field-body))))
+  (cond ((eq field-name 'Date)
+	 (or (mime-entity-date-internal entity)
+	     (mime-entity-set-date-internal
+	      entity (mime-entity-send entity 'fetch-field "Date"))
+	     ))
+	((eq field-name 'Message-Id)
+	 (or (mime-entity-message-id-internal entity)
+	     (mime-entity-set-message-id-internal
+	      entity (mime-entity-send entity 'fetch-field "Message-Id"))
+	     ))
+	((eq field-name 'References)
+	 (or (mime-entity-references-internal entity)
+	     (mime-entity-set-references-internal
+	      entity (mime-entity-send entity 'fetch-field "References"))
+	     ))
+	(t
+	 (let* ((header (mime-entity-original-header-internal entity))
+		(field-body (cdr (assq field-name header))))
+	   (or field-body
+	       (progn
+		 (if (setq field-body
+			   (mime-entity-send entity 'fetch-field
+					     (symbol-name field-name)))
+		     (mime-entity-set-original-header-internal
+		      entity (put-alist field-name field-body header))
+		   )
+		 field-body))
+	   ))))
 
-(defalias 'mime-entity-content-type 'mime-entity-content-type-internal)
+(defun mime-entity-content-type (entity)
+  (or (mime-entity-content-type-internal entity)
+      (let ((ret (mime-fetch-field 'Content-Type entity)))
+	(if ret
+	    (mime-entity-set-content-type-internal
+	     entity (mime-parse-Content-Type ret))
+	  ))))
 
 (defun mime-entity-content-disposition (entity)
   (or (mime-entity-content-disposition-internal entity)
       (let ((ret (mime-fetch-field 'Content-Disposition entity)))
 	(if ret
-	    (let ((disposition (mime-parse-Content-Disposition ret)))
-	      (when disposition
-		(mime-entity-set-content-disposition-internal
-		 entity disposition)
-		disposition))))))
+	    (mime-entity-set-content-disposition-internal
+	     entity (mime-parse-Content-Disposition ret))
+	  ))))
 
 (defun mime-entity-encoding (entity &optional default-encoding)
   (or (mime-entity-encoding-internal entity)
-      (let ((encoding
-	     (or (let ((ret (mime-fetch-field
-			     'Content-Transfer-Encoding entity)))
-		   (and ret (mime-parse-Content-Transfer-Encoding ret)))
-		 default-encoding "7bit")))
-	(mime-entity-set-encoding-internal entity encoding)
-	encoding)))
+      (let ((ret (mime-fetch-field 'Content-Transfer-Encoding entity)))
+	(mime-entity-set-encoding-internal
+	 entity
+	 (or (and ret (mime-parse-Content-Transfer-Encoding ret))
+	     default-encoding "7bit"))
+	)))
 
 (defun mime-read-field (field-name &optional entity)
   (or (symbolp field-name)
@@ -269,9 +289,12 @@ If MESSAGE is specified, it is regarded as root entity."
 		    entity (put-alist field-name field header))
 		   field)))))))
 
-(mm-define-generic insert-decoded-header (entity &optional invisible-fields
-					  visible-fields)
+(mm-define-generic insert-header (entity &optional invisible-fields
+					 visible-fields)
   "Insert before point a decoded header of ENTITY.")
+
+(define-obsolete-function-alias
+  'mime-insert-decoded-header 'mime-insert-header)
 
 
 ;;; @ Entity Attributes
@@ -316,6 +339,9 @@ If MESSAGE is specified, it is regarded as root entity."
 
 (mm-define-generic entity-content (entity)
   "Return content of ENTITY as byte sequence (string).")
+
+(mm-define-generic insert-text-content (entity)
+  "Insert decoded text body of ENTITY.")
 
 (mm-define-generic write-entity-content (entity filename)
   "Write content of ENTITY into FILENAME.")

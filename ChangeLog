@@ -1,3 +1,125 @@
+1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.11.0 (Yamadagawa) was released.
+
+1998-10-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml, mime-en.sgml (entity formatting): Add description
+	about `mime-insert-text-content'.
+
+1998-10-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml, mime-en.sgml (entity formatting): New node; move
+	`mime-insert-header' from `Entity-header'; move
+	`default-mime-charset' from `custom'.
+
+1998-10-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml, mime-ja.sgml (Entity-header): Generic function
+	`mime-insert-decoded-header' was renamed to `mime-insert-header'.
+
+1998-10-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* NEWS: New file.
+
+1998-10-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-insert-header): Renamed from
+	`mime-insert-decoded-header'; define `mime-insert-decoded-header'
+	as an obsolete alias.
+
+	* mmgeneric.el, mmcooked.el (insert-header): Renamed from
+	`insert-decoded-header'.
+
+	* README.en (Installation): Add required version of APEL.
+
+1998-10-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-g.el: Require mel.
+
+	* mel-g.el: Require poem instead of emu.
+
+1998-10-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-insert-text-content): New generic function.
+
+	* mmcooked.el, mmgeneric.el (insert-text-content): New method.
+
+1998-10-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* std11.el (std11-unfold-string): New implementation.
+
+1998-10-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el: New module.
+
+	* mmbuffer.el: Use `generic' as mother backend.
+
+	* FLIM-ELS (flim-modules): Add mmgeneric.
+
+1998-10-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-parse.el (mime-parse-message): Modify for
+	`make-mime-entity-internal'.
+
+	* mime-def.el (make-mime-entity-internal): Change interface to be
+	able to specify original-header and parsed-header.
+
+1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-and-unfold-unstructured-field):
+	New function.
+
+1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-entity-content-type): New implementation.
+	(mime-entity-content-disposition): New implementation.
+	(mime-entity-encoding): New implementation.
+
+	* mime.el (mime-fetch-field): Refer internal slots for Date,
+	Message-Id and References fields.
+
+	* mime-parse.el (mime-parse-message): Modify for
+	`make-mime-entity-internal'.
+
+	* mime-def.el: Change `mime-entity-*-internal' and
+	`mime-entity-set-*-internal' to macro.
+	(make-mime-entity-internal): Change interface and data format for
+	NOV data; changed to macro.
+	(mime-entity-set-location-internal): New macro.
+	(mime-entity-decoded-subject-internal): New macro.
+	(mime-entity-set-decoded-subject-internal): New macro.
+	(mime-entity-decoded-from-internal): New macro.
+	(mime-entity-set-decoded-from-internal): New macro.
+	(mime-entity-date-internal): New macro.
+	(mime-entity-set-date-internal): New macro.
+	(mime-entity-message-id-internal): New macro.
+	(mime-entity-set-message-id-internal): New macro.
+	(mime-entity-references-internal): New macro.
+	(mime-entity-set-references-internal): New macro.
+	(mime-entity-chars-internal): New macro.
+	(mime-entity-set-chars-internal): New macro.
+	(mime-entity-lines-internal): New macro.
+	(mime-entity-set-lines-internal): New macro.
+	(mime-entity-xref-internal): New macro.
+	(mime-entity-set-xref-internal): New macro.
+	(mime-entity-original-header-internal): Modify for new structure;
+	changed to macro.
+	(mime-entity-set-original-header-internal): Likewise.
+	(mime-entity-parsed-header-internal): Likewise.
+	(mime-entity-set-parsed-header-internal): Likewise.
+	(mime-entity-buffer-internal): Likewise.
+	(mime-entity-set-buffer-internal): Likewise.
+	(mime-entity-header-start-internal): Likewise.
+	(mime-entity-set-header-start-internal): Likewise.
+	(mime-entity-header-end-internal): Likewise.
+	(mime-entity-set-header-end-internal): Likewise.
+	(mime-entity-body-start-internal): Likewise.
+	(mime-entity-set-body-start-internal): Likewise.
+	(mime-entity-body-end-internal): Likewise.
+	(mime-entity-set-body-end-internal): Likewise.
+
+
 1998-10-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.10.5 (Kizugawadai) was released.

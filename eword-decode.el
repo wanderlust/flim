@@ -218,6 +218,19 @@ such as a version of Net$cape)."
    (decode-mime-charset-string string default-mime-charset)
    must-unfold))
 
+(defun eword-decode-and-unfold-unstructured-field (string)
+  "Decode and unfold STRING as unstructured field body.
+It decodes non us-ascii characters in FULL-NAME encoded as
+encoded-words or invalid \"raw\" string.  \"Raw\" non us-ascii
+characters are regarded as variable `default-mime-charset'.
+
+If an encoded-word is broken or your emacs implementation can not
+decode the charset included in it, it is not decoded."
+  (eword-decode-string
+   (decode-mime-charset-string (std11-unfold-string string)
+			       default-mime-charset)
+   'must-unfold))
+
 
 ;;; @ for region
 ;;;

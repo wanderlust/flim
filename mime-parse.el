@@ -242,6 +242,9 @@ If is is not found, return DEFAULT-ENCODING."
     (make-mime-entity-internal representation-type
 			       (current-buffer)
 			       content-type nil parent node-id
+			       nil nil nil nil
+			       nil nil nil nil
+			       nil nil
 			       (current-buffer)
 			       header-start header-end
 			       body-start body-end)
