@@ -501,8 +501,8 @@ If SEPARATOR is not nil, it is used as header separator."
        ))
    code-conversion))
 
-;; (define-obsolete-function-alias 'eword-decode-header
-;;   'mime-decode-header-in-buffer)
+(defalias 'eword-decode-header 'mime-decode-header-in-buffer)
+(make-obsolete 'eword-decode-header 'mime-decode-header-in-buffer)
 
 
 ;;; @ encoded-word decoder
