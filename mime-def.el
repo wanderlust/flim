@@ -35,9 +35,8 @@
 (eval-when-compile (require 'cl))	; list*
 
 (eval-and-compile
-  (defconst mime-library-product ["FLIM" (1 13 2) "Kasanui"]
-    "Product name, version number and code name of MIME-library package.")
-  )
+  (defconst mime-library-product ["Chao" (1 14 0) "Momoyama"]
+    "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)
   `(aref ,product 0))
@@ -239,17 +238,19 @@
 
 (luna-define-method mime-entity-children ((entity mime-entity))
   (let* ((content-type (mime-entity-content-type entity))
-	 (primary-type (mime-content-type-primary-type content-type)))
+	 (primary-type (mime-content-type-primary-type content-type))
+	 sub-type)
     (cond ((eq primary-type 'multipart)
-	   (mime-parse-multipart entity)
-	   )
-	  ((and (eq primary-type 'message)
-		(memq (mime-content-type-subtype content-type)
-		      '(rfc822 news external-body)
-		      ))
-	   (mime-parse-encapsulated entity)
-	   ))
-    ))
+	   (mime-parse-multipart entity))
+	  ((eq primary-type 'message)
+	   (setq sub-type (mime-content-type-subtype content-type))
+	   (cond ((eq sub-type 'external-body)
+		  (mime-parse-external entity))
+		 ((memq sub-type '(rfc822 news))
+		  (mime-parse-encapsulated entity)
+		  ;; [tomo] Should we make a variable to specify
+		  ;; encapsulated media-types?
+		  ))))))
 
 (luna-define-method mime-insert-text-content ((entity mime-entity))
   (insert
