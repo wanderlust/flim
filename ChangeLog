@@ -1,5 +1,16 @@
 1998-06-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime.el (mime-find-entity-from-number): New function.
+	(mime-find-entity-from-node-id): New function.
+	(mime-entity-parent): New function (moved from SEMI MIME-View).
+	(mime-entity-uu-filename): New function (moved from SEMI
+	MIME-View).
+	(mime-entity-filename): New function (moved from SEMI MIME-View).
+
+	* mime-def.el (mime-uuencode-encoding-name-list): New variable.
+
+1998-06-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-ja.sgml: Modify for FLIM 1.6.
 
 	* mime.el (mime-fetch-field): New function; abolish
