@@ -97,12 +97,10 @@
 (defun sasl-scram-md5-make-unique-nonce ()	; 8*OCTET, globally unique.
   ;; For example, concatenated string of process-identifier, system-clock,
   ;; sequence-number, random-number, and domain-name.
-  (let ((sasl-unique-id-function sasl-scram-md5-unique-id-function)
-	id)
+  (let* ((sasl-unique-id-function sasl-scram-md5-unique-id-function)
+	 (id (sasl-unique-id)))
     (unwind-protect
-	(concat "<" 
-		(setq id (sasl-unique-id))
-		"@" (system-name) ">")
+	(concat "<" id "@" (system-name) ">")
       (fillarray id 0))))
 
 (defun sasl-scram-md5-xor-string (str1 str2)
