@@ -1,5 +1,9 @@
 1998-08-23  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-bq.el: Re-indented.
+
+1998-08-23  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-bq.el: New file.
 
 	* ew-unit.el: Use 'ew-bq instead of 'mel.
