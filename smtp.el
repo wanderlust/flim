@@ -100,8 +100,8 @@ don't define this value."
   :type 'string
   :group 'smtp-extensions)
 
-(defcustom smtp-sasl-user-realm smtp-local-domain
-  "Realm name to be used for authorization."
+(defcustom smtp-sasl-properties nil
+  "Properties set to SASL client."
   :type 'string
   :group 'smtp-extensions)
 
@@ -122,8 +122,8 @@ don't define this value."
 
 ;;; @ SMTP package structure
 ;;; A package contains a mail message, an envelope sender address,
-;;; and one or more envelope recipient addresses.  In ESMTP model,
-;;; we should guarantee the user to access the current sending package
+;;; and one or more envelope recipient addresses.  In ESMTP model
+;;; the current sending package should be guaranteed to be accessible
 ;;; anywhere from the hook methods (or SMTP commands).
 
 (defmacro smtp-package-sender (package)
@@ -140,8 +140,7 @@ don't define this value."
 
 (defmacro smtp-make-package (sender recipients buffer)
   "Create a new package structure.
-A package is a unit of SMTP message which contains a mail message,
-an envelope sender address, and one or more envelope recipient addresses.
+A package is a unit of SMTP message
 SENDER specifies the package sender, a string.
 RECIPIENTS is a list of recipients.
 BUFFER may be a buffer or a buffer name which contains mail message."
@@ -167,9 +166,10 @@ BUFFER may be a buffer or a buffer name which contains mail message."
       size)))
 
 ;;; @ SMTP connection structure
-;;; We should take care of a emulation for another network stream.
-;;; They are likely to be implemented with a external program and the function
-;;; `process-contact' returns the process ID instead of `(HOST SERVICE)' pair.
+;;; We should consider the function `open-network-stream' is a emulation
+;;; for another network stream.  They are likely to be implemented with an
+;;; external program and the function `process-contact' returns the
+;;; process id instead of `(HOST SERVICE)' pair.
 
 (defmacro smtp-connection-process (connection)
   "Return the subprocess-object of CONNECTION."
@@ -375,8 +375,8 @@ of the host to connect to.  SERVICE is name of the service desired."
       (error "No authentication mechanism available"))
     (setq client (sasl-make-client mechanism smtp-sasl-user-name "smtp"
 				   (smtp-connection-server connection)))
-    (if smtp-sasl-user-realm
-	(sasl-client-set-property client 'realm smtp-sasl-user-realm))
+    (if smtp-sasl-properties
+	(sasl-client-set-properties client smtp-sasl-properties))
     (setq name (sasl-mechanism-name mechanism)
 	  ;; Retrieve the initial response
 	  step (sasl-next-step client nil))
