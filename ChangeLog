@@ -1,5 +1,21 @@
 1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* eword-decode.el (eword-decode-structured-field-body): New
+	implementation; abolish optional argument `must-unfold'; delete
+	DOC-string.
+	(eword-decode-and-unfold-structured-field-body): Renamed from
+	`eword-decode-and-unfold-structured-field'; delete DOC-string.
+	(eword-decode-and-fold-structured-field-body): Renamed from
+	`eword-decode-and-fold-structured-field'; abolish optional
+	argument `must-unfold'; delete DOC-string.
+	(eword-decode-unstructured-field-body): Abolish optional argument
+	`must-unfold'; delete DOC-string.
+	(eword-decode-and-unfold-unstructured-field-body): Renamed from
+	`eword-decode-and-unfold-unstructured-field'; delete DOC-string.
+	(eword-decode-unfolded-unstructured-field-body): New function.
+
+1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmgeneric.el (mime-insert-header-from-buffer): Use
 	`mime-find-field-presentation-method' and
 	`mime-find-field-decoder-internal'.
