@@ -1,5 +1,17 @@
 2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
+	* mime-def.el (mime-content-type-parameter): Expand
+	`mime-content-type-parameters'.
+
+	* mime-parse.el (mime-parse-Content-Disposition): Add
+	description of return value to the docstring.
+	(mime-parse-Content-Transfer-Encoding): Ditto.
+
+	* test/test-rfc2231.el: Made independent of internal
+	representation of Content-Type.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
 	* FLIM-MK (check-flim): Limit filename of test files.
 
 	* test/test-rfc2231.el: New file.
