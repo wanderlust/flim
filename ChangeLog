@@ -1,3 +1,13 @@
+1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-parse.el: Don't require emu.
+
+	* mime-parse.el (mime-parse-Content-Disposition): Use
+	`eval-when-compile'.
+
+	* mime-parse.el (mime-parse-Content-Transfer-Encoding): New
+	implementation.
+
 1998-12-22  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* README.en (Installation): Modify for APEL 9.12.
