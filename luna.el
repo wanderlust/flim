@@ -293,15 +293,15 @@ It must be plist and each slot name must have prefix `:'."
   "Define generic-function NAME.
 ARGS is argument of and DOC is DOC-string."
   (if doc
-      `(defun ,(intern (symbol-name name)) ,args
-	 ,doc
-	 (luna-send ,(car args) ',name
-		    ,@(luna-arglist-to-arguments args))
-	 )
-    `(defun ,(intern (symbol-name name)) ,args
-       (luna-send ,(car args) ',name
-		  ,@(luna-arglist-to-arguments args))
-       )))
+      (` (defun (, (intern (symbol-name name))) (, args)
+	   (, doc)
+	   (luna-send (, (car args)) '(, name)
+		      (,@ (luna-arglist-to-arguments args)))
+	   ))
+    (` (defun (, (intern (symbol-name name))) (, args)
+	 (luna-send (, (car args)) '(, name)
+		    (,@ (luna-arglist-to-arguments args)))
+	 ))))
 
 (put 'luna-define-generic 'lisp-indent-function 'defun)
 
@@ -322,22 +322,22 @@ ARGS is argument of and DOC is DOC-string."
 		(setq parents (cdr parents))
 		)
 	      (eval
-	       `(progn
-		  (defmacro ,(intern (format "%s-%s-internal"
-					     class-name slot))
-		    (entity)
-		    (list 'aref entity
-			  ,(luna-class-slot-index entity-class
-						  (intern (symbol-name slot)))
-			  ))
-		  (defmacro ,(intern (format "%s-set-%s-internal"
-					     class-name slot))
-		    (entity value)
-		    (list 'aset entity
-			  ,(luna-class-slot-index
-			    entity-class (intern (symbol-name slot)))
-			  value))
-		  ))
+	       (` (progn
+		    (defmacro (, (intern (format "%s-%s-internal"
+						 class-name slot)))
+		      (entity)
+		      (list 'aref entity
+			    (, (luna-class-slot-index entity-class
+						      (intern (symbol-name slot))))
+			    ))
+		    (defmacro (, (intern (format "%s-set-%s-internal"
+						 class-name slot)))
+		      (entity value)
+		      (list 'aset entity
+			    (, (luna-class-slot-index
+				entity-class (intern (symbol-name slot))))
+			    value))
+		    )))
 	      ))))
      (luna-class-obarray entity-class))))
 
