@@ -391,7 +391,7 @@ contains @var{entity}.
 @node mm-backend,  , Entity buffer, Entity
 @section Entity representations and implementations
 @cindex mm-backend
-@cindex entity 処理 method
+@cindex entity processing method
 @cindex representation-type
 
 Entity is an abstraction.  It is designed to use various data
@@ -400,18 +400,16 @@ representations for their purposes.@refill
 Each entity has @strong{representation-type}.  It must be specified when
 an entity is created. (cf. @ref{Entity Creation}) @refill
 
-前節までに述べて来た entity に対する処理は、entity に対してその処理を依
-頼することによって実現されています。Entity は自分の representation-type 
-を知っており、その representation-type に応じて実際の処理を行う関数を呼
-び出します。このような関数を @strong{entity 処理method} と呼びます。また、
-representation-type 毎にこのような関数をまとめたものを 
-@strong{mm-backend} と呼びます。@refill
+Functions about entity are implemented by request processing to the
+entity.  Each entity knows its representation-type.  Each entity calls
+processing function corresponding with the representation-type.  Such
+kind of function is called @strong{entity processing method}.  A module,
+consists of them corresponding with a representation-type, is called
+@strong{mm-backend}.@refill
 
-mm-backend は representation-type の名前の先頭に @code{mm} という
-接頭辞を付けた関数名からなる module で、その module 名は同様に
-representation-type の名前の先頭に @code{mm} を付けたものになって
-います。この module は representation-type の entity が最初に生成される
-時に自動的に require されます。
+Module name of each mm-backend consists of the prefix @code{mm}
+and its representation-type.  The module is required automatically
+when its entity is created at first.
 
 
 @menu
@@ -424,9 +422,10 @@ representation-type の名前の先頭に @code{mm} を付けたものになって
 
 @defun mime-entity-send entity message  &rest  args
 
-@var{entity} に @var{message} を送る。@refill
+Send @var{message} to @var{entity} with @var{args}, and return the
+result.@refill
 
-@var{args} は @var{message} の引数である。
+@var{args} is arguments of the @var{message}.
 @end defun
 
 
@@ -434,9 +433,9 @@ representation-type の名前の先頭に @code{mm} を付けたものになって
 @node mm-backend module,  , Request for entity, mm-backend
 @subsection How to make mm-backend
 
-（すみません。そのうち書きます (^_^;）@refill
+(It is not written yet, sorry. (^_^;)@refill
 
-（とりあえず、mm*.el を参考にしてください）
+(Please read mm*.el)
 
 
 @node Content-Type, Content-Disposition, Entity, Top

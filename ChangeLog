@@ -1,3 +1,11 @@
+1998-09-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml (mm-backend): Translate.
+	(Request for entity): Likewise.
+	(mm-backend module): Likewise.
+
+	* mime.el (mime-entity-send): Add DOC-string.
+
 1998-09-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-en.sgml (Entity hierarchy): Translate.
