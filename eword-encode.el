@@ -31,12 +31,6 @@
 (require 'eword-decode)
 
 
-;;; @ version
-;;;
-
-(defconst eword-encode-version "1.2")
-
-
 ;;; @ variables
 ;;;
 
