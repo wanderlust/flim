@@ -146,6 +146,10 @@ If MESSAGE is specified, it is regarded as root entity."
 
 (luna-define-generic mime-entity-buffer (entity))
 
+(make-obsolete
+ 'mime-entity-buffer
+ "use mime-entity-header-buffer or mime-entity-body-buffer instead.")
+
 (luna-define-generic mime-entity-header-buffer (entity))
 
 (luna-define-generic mime-entity-body-buffer (entity))
@@ -154,12 +158,21 @@ If MESSAGE is specified, it is regarded as root entity."
 
 (luna-define-generic mime-entity-point-max (entity))
 
+(luna-define-generic mime-entity-body-end-point (entity)
+  "Set buffer and point to body-start-position of ENTITY.")
 
-;;; @ Entity Header
-;;;
+(define-obsolete-function-alias
+  'mime-entity-body-end 'mime-entity-body-end-point)
 
 (luna-define-generic mime-goto-header-start-point (entity)
   "Set buffer and point to header-start-position of ENTITY.")
+
+(luna-define-generic mime-goto-body-start-point (entity)
+  "Set buffer and point to body-start-position of ENTITY.")
+
+
+;;; @ Entity Header
+;;;
 
 (luna-define-generic mime-entity-fetch-field (entity field-name)
   "Return the value of the ENTITY's header field whose type is FIELD-NAME.")
@@ -284,10 +297,9 @@ If MESSAGE is specified, it is regarded as root entity."
 (defun mime-entity-uu-filename (entity)
   (if (member (mime-entity-encoding entity) mime-uuencode-encoding-name-list)
       (save-excursion
-	(set-buffer (mime-entity-buffer entity))
-	(goto-char (mime-entity-body-start entity))
+	(mime-goto-body-start-point entity)
 	(if (re-search-forward "^begin [0-9]+ "
-			       (mime-entity-body-end entity) t)
+			       (mime-entity-body-end-point entity) t)
 	    (if (looking-at ".+$")
 		(buffer-substring (match-beginning 0)(match-end 0))
 	      )))))
