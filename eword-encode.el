@@ -1,6 +1,6 @@
 ;;; eword-encode.el --- RFC 2047 based encoded-word encoder for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999,2000,2002 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
@@ -27,6 +27,7 @@
 (require 'mime-def)
 (require 'mel)
 (require 'std11)
+(require 'mime-parse)
 (require 'eword-decode)
 
 
@@ -71,7 +72,10 @@
 	Dcc))
     (eword-encode-in-reply-to . (In-Reply-To))
     (eword-encode-structured-field-body . (Mime-Version User-Agent))
+    (eword-encode-Content-Disposition-field-body . (Content-Disposition))
+    (eword-encode-Content-Type-field-body . (Content-Type))
     (eword-encode-unstructured-field-body)))
+
 
 ;;; @ encoded-text encoder
 ;;;
@@ -605,6 +609,74 @@ Optional argument COLUMN is start-position of the field."
   (car (eword-encode-rword-list
 	(or column eword-encode-default-start-column)
 	(eword-encode-split-string string 'text))))
+
+(defun eword-encode-Content-Type-field-body (field-body &optional column)
+  "Encode FIELD-BODY with MIME Parameter-Value Extensions, if necessary.
+Optional second arg COLUMN is ignored."
+  (let ((tokens (mime-lexical-analyze field-body))
+	primary-type)
+    (unless (eq (car (car tokens)) 'mime-token)
+      (error "Invalid Content-Type value: %s" field-body))
+    (setq primary-type (downcase (cdr (car tokens)))
+	  tokens (cdr tokens))
+    (unless (and (eq (car (car tokens)) 'tspecials)
+		 (string= (cdr (car tokens)) "/")
+		 (setq tokens (cdr tokens))
+		 (eq (car (car tokens)) 'mime-token))
+      (error "Invalid Content-Type value: %s" field-body))
+    (concat " " primary-type "/" (downcase (cdr (car tokens)))
+            (mapconcat
+             (function
+              (lambda (param)
+                (concat ";\n " (car param) "=" (cdr param))))
+             (mime-encode-parameters
+	      (mime-parse-parameters (cdr tokens)))
+             ""))))
+
+(defun eword-encode-Content-Disposition-field-body (field-body &optional column)
+  "Encode FIELD-BODY with MIME Parameter-Value Extensions, if necessary.
+Optional second arg COLUMN is ignored."
+  (let ((tokens (mime-lexical-analyze field-body)))
+    (unless (eq (car (car tokens)) 'mime-token)
+      (error "Invalid Content-Disposition value: %s" field-body))
+    (concat " " (cdr (car tokens))
+            (mapconcat
+             (function
+              (lambda (param)
+                (concat ";\n " (car param) "=" (cdr param))))
+             (mime-encode-parameters
+	      (mime-parse-parameters (cdr tokens)))
+             ""))))
+
+;;; for MIME-Edit Next Generation.
+;;; (eword-encode-Content-Type type subtype parameters)
+(defun eword-encode-Content-Type (content-type)
+  "Stringfy CONTENT-TYPE, using MIME Parameter-Value Extensions."
+  (concat " "				; XXX: Who requires this space?
+	  (mime-type/subtype-string
+           (mime-content-type-primary-type content-type)
+           (mime-content-type-subtype content-type))
+	  (mapconcat
+	   (function
+	    (lambda (param)
+	      (concat ";\n " (car param) "=" (cdr param))))
+	   (mime-encode-parameters
+	    (mime-content-type-parameters content-type))
+	   "")))
+
+;;; for MIME-Edit Next Generation.
+;;; (eword-encode-Content-Disposition type parameters)
+(defun eword-encode-Content-Disposition (content-disposition)
+  "Stringfy CONTENT-DISPOSITION, using MIME Parameter-Value Extensions."
+  (concat " "				; XXX: Who requires this space?
+	  (symbol-name (mime-content-disposition-type content-disposition))
+	  (mapconcat
+	   (function
+	    (lambda (param)
+	      (concat ";\n " (car param) "=" (cdr param))))
+	   (mime-encode-parameters
+	    (mime-content-disposition-parameters content-disposition))
+	   "")))
 
 ;;;###autoload
 (defun mime-encode-field-body (field-body field-name)

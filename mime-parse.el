@@ -1,6 +1,6 @@
 ;;; mime-parse.el --- MIME message parser
 
-;; Copyright (C) 1994,95,96,97,98,99,2001 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95,96,97,98,99,2001,2002 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
@@ -88,7 +88,7 @@ be the result."
     ret))
 
 
-;;; @ field parser
+;;; @ parameter value decoder
 ;;;
 
 (defun mime-decode-parameter-value (text charset language)
@@ -162,7 +162,7 @@ property of the decoded-value."
 		(setq eparam (cdr eparam))
               (setq eparam (list (make-vector len nil) nil nil)
                     eparams (cons (cons attribute eparam) eparams)))
-	    ;; if parameter-name ends with "*", it is an extended-parameter.
+	    ;; if parameter name ends with "*", it is an extended-parameter.
             (if (match-beginning 3)
                 (if (zerop section)
 		    ;; extended-initial-parameter.
@@ -192,7 +192,7 @@ property of the decoded-value."
 				      (substring value
 						 (match-beginning 2)
 						 (match-end 2)))))))
-		      ;; invalid parameter-value.
+		      ;; invalid parameter value.
 		      (aset (car eparam) 0
 			    (mime-decode-parameter-encode-segment value)))
 		  ;; extended-other-parameter.
@@ -202,14 +202,14 @@ property of the decoded-value."
 				       "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+\\)$"))
 				    value)
 		      (aset (car eparam) section value)
-		    ;; invalid parameter-value.
+		    ;; invalid parameter value.
 		    (aset (car eparam) section
 			  (mime-decode-parameter-encode-segment value))))
 	      ;; regular-parameter. parameter continuation only.
               (aset (car eparam) section
 		    (mime-decode-parameter-encode-segment value))))
 	;; parameter value extensions are not used,
-	;; or invalid attribute-name (in RFC2231, although valid in RFC2045).
+	;; or invalid parameter name (in RFC 2231, although valid in RFC 2045).
         (setq dest (cons (cons (downcase (car params))
 ;;;			       ;; decode (invalid!) encoded-words.
 ;;; 			       (eword-decode-string
@@ -238,6 +238,198 @@ property of the decoded-value."
 ;;; for compatibility with flim-1_13-rfc2231 API.
 (defalias 'mime-parse-parameters-from-list 'mime-decode-parameters)
 (make-obsolete 'mime-parse-parameters-from-list 'mime-decode-parameters)
+
+
+;;; @ parameter value encoder
+;;;
+
+(defun mime-divide-extended-parameter (name value)
+  "Divide MIME parameter value \"NAME=VALUE\" into segments.
+Each of \" NAME*n*=SEGMENT_n\;\" will be no more than 78 characters.
+Return value is a list of string when division is performed, otherwise
+return value is just a string."
+  ;; `limit' must be more than (length "CHARSET'LANGUAGE'%XX").
+  ;;
+  ;; Since MIME spec does not limit either length of CHARSET or length
+  ;; of LANGUAGE, we choose 30 for minimum `limit' based on the longest
+  ;; name of charset that Emacs supports ("ISO-2022-CN-EXT"; 15 chars).
+  ;;
+  ;; Anyway, if `name' is too long, we will ignore 78 chars limit.
+  (let ((limit (max (- 78 4 (length name)) 30))); (length " *=;") => 4
+    (if (> limit (length value))
+	value
+      (let ((count 0)
+	    result)
+	(setq limit (max (- limit 2) 30))	; (length "*n") => 2
+	(with-temp-buffer
+	  (set-buffer-multibyte nil)
+	  (insert value)
+	  (while (> (point-max) limit)
+	    (goto-char (- limit 3))		; (length "%XX") => 3
+	    (cond
+	     ((eq (char-after) ?%)
+	      (forward-char 3))
+	     ((progn
+		(forward-char)
+		(eq (char-after) ?%)))
+	     ((progn
+		(forward-char)
+		(eq (char-after) ?%)))
+	     (t
+	      (forward-char)))
+	    (setq result (cons (prog1 (buffer-substring (point-min)(point))
+				 (delete-region (point-min)(point)))
+			       result)
+		  count (1+ count))
+	    (when (zerop (% count 10))
+	      (setq limit (max (1- limit) 30))))
+	  (nreverse
+	   (cons (buffer-substring (point-min)(point-max))
+		 result)))))))
+
+(defun mime-encode-extended-parameter (name value)
+  "Encode MIME parameter value \"NAME=VALUE\" as an extended-parameter.
+If encoding is unnecessary, return nil.
+If division is performed, return value is a list of string, otherwise
+return value is just a string."
+  (let ((language (get-text-property 0 'mime-language value)))
+    (when (or language
+	      (string-match "[^ -~]" value)) ; Nonmatching printable US-ASCII.
+      (with-temp-buffer
+	(let ((charset (find-mime-charset-by-charsets
+			(find-charset-string value))))
+	  ;; I believe that `encode-mime-charset-string' of mcs-e20.el should
+	  ;; be independent of the value of `enable-multibyte-characters'.
+	  ;; -- shuhei
+	  (set-buffer-multibyte t)
+	  (setq value (encode-mime-charset-string value charset))
+	  (set-buffer-multibyte nil)
+	  (insert value)
+	  (goto-char (point-min))
+	  (insert (symbol-name charset)
+		  ?'
+		  (if language (symbol-name language) "")
+		  ?')
+	  (while (re-search-forward mime-non-attribute-char-regexp nil t)
+	    (insert (prog1 (format "%%%02X" (char-int
+					     (char-after (1- (point)))))
+		      (delete-region (1- (point))(point)))))
+	  (mime-divide-extended-parameter name (buffer-string)))))))
+
+(defun mime-divide-regular-parameter (name value)
+  "Divide MIME parameter value \"NAME=VALUE\" into segments.
+Each of \" NAME*n=SEGMENT_n\;\" will be no more than 78 characters.
+Return value is a list of string when division is performed, otherwise
+just a string is returned."
+  (let ((limit (max (- (eval-when-compile (- 78 (length " =\"\";")))
+		       (length name))
+		    30)))
+    (if (> limit (length value))
+	(concat "\"" value "\"")
+      (let ((count 0)
+	    result)
+	(setq limit (max (- limit 2) 30))	; (length "*n") => 2
+	(setq limit (1- limit))			; XXX
+	(with-temp-buffer
+	  (set-buffer-multibyte nil)
+	  (insert value)
+	  (while (> (point-max) limit)
+	    (goto-char (point-min))
+	    (while (< (point) limit)
+	      (when (eq (char-after) ?\\)
+		(forward-char))
+	      (forward-char))
+	    (setq result (cons (concat "\""
+				       (prog1 (buffer-substring
+					       (point-min)(point))
+					 (delete-region
+					  (point-min)(point)))
+				       "\"")
+			       result)
+		  count (1+ count))
+	    (when (zerop (% count 10))
+	      (setq limit (max (1- limit) 30))))
+	  (nreverse
+	   (cons (concat "\""
+			 (buffer-substring (point-min)(point-max))
+			 "\"")
+		 result)))))))
+
+(defun mime-encode-regular-parameter (name value)
+  "Encode MIME parameter value \"NAME=VALUE\" as a regular-parameter.
+If division is performed, return value is a list of string, otherwise
+return value is just a string."
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert value)
+    (goto-char (point-min))
+    (while (not (eobp))
+      (when (memq (char-after) '(?\\ ?\"))
+	(insert ?\\))
+      (forward-char 1))
+    (mime-divide-regular-parameter name (buffer-string))))
+
+(defun mime-encode-parameters (params)
+  "Encode PARAMS plist with MIME Parameter-Value Extensions.
+Return value is an alist of MIME parameter values."
+  (let (name value encoded result)
+    (while params
+      (setq name (car params)
+            value (car (cdr params))
+            params (cdr (cdr params)))
+      (cond
+       ;; first two clauses are for backward compatibility,
+       ;; especially for "ftp.in" in the distribution.
+       ((not (string-match (eval-when-compile
+			     (concat "^\\(" mime-attribute-char-regexp "+\\)"
+				     "\\(\\*[0-9]+\\)?" ; continuation
+				     "\\(\\*\\)?$")) ; charset/language
+			   name))
+	;; invalid parameter name.
+	;; XXX: Should we signal an error?
+	)
+       ((> (match-end 0) (match-end 1))
+	;; this parameter value is already encoded.
+	(setq result (cons (cons name
+				 (if (match-beginning 3)
+				     ;; extended-parameter
+				     value
+				   ;; regular-parameter
+				   (std11-wrap-as-quoted-string value)))
+			   result)))
+       ((setq encoded (mime-encode-extended-parameter name value))
+	;; extended-parameter
+	(if (stringp encoded)
+	    (setq result (cons (cons (concat name "*") encoded) result))
+	  ;; with continuation
+	  (let ((section 0))
+	    (while encoded
+	      (setq result (cons (cons (concat name
+					       "*" (int-to-string section)
+					       "*")
+				       (car encoded))
+				 result)
+		    section (1+ section)
+		    encoded(cdr encoded))))))
+       (t
+	;; regular-parameter
+	(setq encoded (mime-encode-regular-parameter name value))
+        (if (stringp encoded)
+            (setq result (cons (cons name encoded) result))
+	  ;; with continuation
+          (let ((section 0))
+            (while encoded
+              (setq result (cons (cons (concat name
+                                               "*" (int-to-string section))
+				       (car encoded))
+				 result)
+		    section (1+ section)
+		    encoded (cdr encoded))))))))
+    (nreverse result)))
+
+
+;;; @ field parser
+;;;
 
 (defun mime-parse-parameters (tokens)
   "Parse TOKENS as MIME parameter values.
@@ -289,7 +481,7 @@ If FIELD-BODY is not a valid Content-Type field, return nil."
 
 ;;;###autoload
 (defun mime-read-Content-Type ()
-  "Parse field-body of Content-Type field of current-buffer.
+  "Parse field-body of Content-Type field of current buffer.
 Return value is a mime-content-type object.
 If Content-Type field is not found, return nil."
   (let ((field-body (std11-field-body "Content-Type")))
@@ -316,7 +508,7 @@ If FIELD-BODY is not a valid Content-Disposition field, return nil."
 
 ;;;###autoload
 (defun mime-read-Content-Disposition ()
-  "Parse field-body of Content-Disposition field of current-buffer.
+  "Parse field-body of Content-Disposition field of current buffer.
 Return value is a mime-content-disposition object.
 If Content-Disposition field is not found, return nil."
   (let ((field-body (std11-field-body "Content-Disposition")))
@@ -340,7 +532,7 @@ If FIELD-BODY is not a valid Content-Transfer-Encoding field, return nil."
 
 ;;;###autoload
 (defun mime-read-Content-Transfer-Encoding ()
-  "Parse field-body of Content-Transfer-Encoding field of current-buffer.
+  "Parse field-body of Content-Transfer-Encoding field of current buffer.
 Return value is a string.
 If Content-Transfer-Encoding field is not found, return nil."
   (let ((field-body (std11-field-body "Content-Transfer-Encoding")))
@@ -495,7 +687,7 @@ If Content-Transfer-Encoding field is not found, return nil."
 ;;;###autoload
 (defun mime-parse-buffer (&optional buffer representation-type)
   "Parse BUFFER as a MIME message.
-If buffer is omitted, it parses current-buffer."
+If buffer is omitted, it parses current buffer."
   (save-excursion
     (if buffer (set-buffer buffer))
     (mime-parse-message (or representation-type
