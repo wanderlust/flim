@@ -1,41 +1,9 @@
-1999-10-17  Yoshiki Hayashi  <t90553@mail.ecc.u-tokyo.ac.jp>
+1999-10-19  Kenichi OKADA <okada@opaopa.org>
 
-	* FLIM-MK (install-flim-package): Delete auto-autoloads.el
-	and custom-load.el
+	* sasl.el: New file.
+	* smtp.el: (smtp-via-smtp): Use sasl.el for SASL.
+	* FLIM-ELS (flim-modules): Add `sasl'.
 
-1999-09-20  Katsumi Yamaoka   <yamaoka@jpl.org>
-
-	* mailcap.el (mailcap-look-at-schar): Protect against unexpected
-	eof.  [cf. <tm-ja:5177>]
-
-1999-09-13  Katsumi Yamaoka   <yamaoka@jpl.org>
-
-	* smtpmail.el (smtpmail-send-it): Remove needless `concat'.
-
-1999-09-08  Yoshiki Hayashi  <t90553@mail.ecc.u-tokyo.ac.jp>
-
-	* mime-ja.sgml, mime-en.sgml (Entity creation): Fix typo.
-
-1999-09-01  Katsumi Yamaoka   <yamaoka@jpl.org>
-
-	* smtpmail.el (smtpmail-send-it): Make directory
-	`smtpmail-queue-dir' if it does not exist; convert filename of
-	queued mail using `convert-standard-filename'.
-	(smtpmail-queue-index): Treat `smtpmail-queue-dir' as a directory
-	name using `file-name-as-directory'.
-	(smtpmail-queue-dir, smtpmail-queue-mail): Remove "*" from doc
-	strings.
-
-1999-08-26  Katsumi Yamaoka   <yamaoka@jpl.org>
-
-	* smtpmail.el (smtpmail-send-it): Use `time-stamp-yyyy-mm-dd' and
-	`time-stamp-hh:mm:ss' instead of `current-time'.
-
-1999-08-25  Katsumi Yamaoka   <yamaoka@jpl.org>
-
-	* FLIM-ELS: Use `if' instead of `unless'.
-
-
 1999-08-17  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM: Version 1.13.2 (Kasanui) released.
@@ -646,7 +614,7 @@
 1999-03-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel.el (mime-decode-string): Return STRING if return value of
- 	`(mel-find-function 'mime-decode-string encoding)' is nil.
+	`(mel-find-function 'mime-decode-string encoding)' is nil.
 
 1999-02-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1967,12 +1935,12 @@
 1998-08-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-encode.el (eword-encode-field): Use `capitalize' instead
- 	of `downcase' for `field-name'.
+	of `downcase' for `field-name'.
 
 	* eword-encode.el (eword-encode-structured-field-body): New
- 	function.
+	function.
 	(eword-encode-field): Use `eword-encode-structured-field-body' for
- 	"MIME-Version" and "User-Agent" field.
+	"MIME-Version" and "User-Agent" field.
 
 1998-08-26  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
@@ -1982,15 +1950,15 @@
 
 	* eword-encode.el (eword-encode-address-list): New function.
 	(eword-encode-field): Use `eword-encode-address-list' instead of
- 	`tm-eword::encode-address-list'; abolish
- 	`tm-eword::encode-address-list'.
+	`tm-eword::encode-address-list'; abolish
+	`tm-eword::encode-address-list'.
 
 	* eword-encode.el (eword-encode-field): Use `eword-encode-string'
- 	instead of `tm-eword::encode-string'; abolish
- 	`tm-eword::encode-string'.
+	instead of `tm-eword::encode-string'; abolish
+	`tm-eword::encode-string'.
 
 	* eword-encode.el: Rename `tm-eword::make-rword' ->
- 	`make-ew-rword'; rename `tm-eword::rword-' -> `ew-rword-'.
+	`make-ew-rword'; rename `tm-eword::rword-' -> `ew-rword-'.
 
 1998-08-26  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
@@ -2668,7 +2636,7 @@
 	* FLIM: Version 1.2.0 (J-D~jr) was released.
 
 	* README.en (What's FLIM): Delete description about
- 	std11-parse.el; add description about mailcap.el.
+	std11-parse.el; add description about mailcap.el.
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2755,7 +2723,7 @@
 	* FLIM: Version 1.0.1 (Ky-Drto) was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
- 	constant.
+	constant.
 
 	* eword-encode.el: Abolish constant 'eword-encode-version.
 
@@ -2792,6 +2760,6 @@
 	* Makefile: New file.
 
 	* mime-def.el, std11-parse.el, std11.el, eword-decode.el,
- 	eword-encode.el: Copied from MEL, SEMI (mime-def.el
- 	eword-decode.el eword-encode.el) and APEL (std11-parse.el
- 	std11.el).
+	eword-encode.el: Copied from MEL, SEMI (mime-def.el
+	eword-decode.el eword-encode.el) and APEL (std11-parse.el
+	std11.el).

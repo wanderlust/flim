@@ -5,6 +5,7 @@
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
 ;;         Simon Leinen <simon@switch.ch> (ESMTP support)
 ;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;;         Kenichi OKADA <okada@opaopa.org> (SASL support)
 ;; Keywords: SMTP, mail
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -30,6 +31,7 @@
 (require 'poem)
 (require 'pcustom)
 (require 'mail-utils)			; mail-strip-quoted-names
+(require 'sasl)
 
 (eval-when-compile (require 'cl))	; push
 
@@ -91,7 +93,8 @@ don't define this value."
      (t
       (error "Cannot generate valid FQDN. Set `smtp-local-domain' correctly.")))))
 
-(defun smtp-via-smtp (sender recipients smtp-text-buffer)
+(defun smtp-via-smtp (sender recipients smtp-text-buffer
+			     &optional auth user passphrase)
   (let ((server (if (functionp smtp-server)
 		    (funcall smtp-server sender recipients)
 		  smtp-server))
@@ -135,11 +138,76 @@ don't define this value."
 			  (not (integerp (car response)))
 			  (>= (car response) 400))
 		      (throw 'done (car (cdr response)))))
-	      (let ((extension-lines (cdr (cdr response))))
+	      (let ((extension-lines (cdr (cdr response)))
+		    extension)
 		(while extension-lines
-		  (push (intern (downcase (substring (car extension-lines) 4)))
-			extensions)
+		  (if (string-match
+		       "^auth "
+		       (setq extension
+			     (downcase (substring (car extension-lines) 4))))
+		      (while (string-match "\\([^ ]+\\)" extension (match-end 1))
+			(push (intern (match-string 1 extension)) extensions))
+		    (push (intern extension) extensions))
 		  (setq extension-lines (cdr extension-lines)))))
+
+	    ;; AUTH --- SMTP Service Extension for Authentication (RFC2554)
+	    (when auth
+	      (if (null (memq (intern auth) extensions))
+		  (throw 'done 
+			 (concat "AUTH mechanism " auth " not available")))
+	      
+	      (cond ((string= "cram-md5" auth)
+		     (smtp-send-command process "AUTH CRAM-MD5")
+		     (setq response (smtp-read-response process))
+		     (if (or (null (car response))
+			     (not (integerp (car response)))
+			     (>= (car response) 400))
+			 (throw 'done (car (cdr response))))
+		     (smtp-send-command
+		      process
+		      (base64-encode-string
+		       (cram-md5-encode
+			user passphrase 
+			(base64-decode-string
+			 (substring (car (cdr response)) 4)))))
+		     (setq response (smtp-read-response process))
+		     (if (or (null (car response))
+			     (not (integerp (car response)))
+			     (>= (car response) 400))
+			 (throw 'done (car (cdr response)))))
+
+		    ((string= "plain" auth)
+		     (smtp-send-command
+		      process
+		      (concat "AUTH PLAIN "
+			      (base64-encode-string
+			       (plain-encode "" user passphrase))))
+		     (setq response (smtp-read-response process))
+		     (if (or (null (car response))
+			     (not (integerp (car response)))
+			     (>= (car response) 400))
+			 (throw 'done (car (cdr response)))))
+
+		    ((string= "login" auth)
+		     (smtp-send-command
+		      process
+		      (concat "AUTH LOGIN " user))
+		     (setq response (smtp-read-response process))
+		     (if (or (null (car response))
+			     (not (integerp (car response)))
+			     (>= (car response) 400))
+			 (throw 'done (car (cdr response))))
+		     (smtp-send-command
+		      process
+		      (base64-encode-string passphrase))
+		     (setq response (smtp-read-response process))
+		     (if (or (null (car response))
+			     (not (integerp (car response)))
+			     (>= (car response) 400))
+			 (throw 'done (car (cdr response)))))
+
+		    (t
+		     (throw 'done (concat "AUTH " auth " not supported")))))
 
 	    ;; ONEX --- One message transaction only (sendmail extension?)
 	    (if (or (memq 'onex extensions)
