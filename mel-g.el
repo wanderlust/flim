@@ -35,7 +35,7 @@
 
 (require 'poem)
 (require 'path-util)
-(require 'mime-def)
+(require 'mel)
 
 
 ;;; @ variables
