@@ -1,6 +1,7 @@
 ;;; luna.el --- tiny OOP system kernel
 
 ;; Copyright (C) 1999 Electrotechnical Laboratory, JAPAN.
+;; Licensed to the Free Software Foundation.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: OOP
