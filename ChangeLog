@@ -1,3 +1,8 @@
+1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el: Don't require emu.
+	Must require path-util.
+
 1998-10-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM-ELS: Don't install mel-ccl in anything older than XEmacs 21
