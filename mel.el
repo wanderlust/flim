@@ -191,7 +191,8 @@ It won't work for processes in Nemacs."
    (and (fboundp 'base64-encode-string)
         (subrp (symbol-function 'base64-encode-string))))
 
-(when mel-b-builtin
+(if (not mel-b-builtin)
+    (require 'mel-b-el)
   (mel-define-backend "base64")
   (mel-define-method-function (mime-encode-string string (nil "base64"))
 			      'base64-encode-string)

@@ -1,3 +1,8 @@
+2001-09-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mel.el (top): When `mel-b-builtin' equals nil, load `mel-b-el'
+	to define `base64-encode-string'.
+
 2001-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtpmail.el (smtpmail-send-it): Work even if the first line of
