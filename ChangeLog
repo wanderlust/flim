@@ -1,3 +1,18 @@
+1998-09-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b-el.el, mel-b-ccl.el: New modules.
+
+	* mel.el: Use mel-b.el unconditionally.
+
+	* mel-dl.el, mel-b-dl.el: Rename mel-dl.el to mel-b-dl.el.
+
+	* mel-b-dl.el: New file.
+
+	* mel-b.el: Split into mel-b-el.el.
+
+	* FLIM-ELS (flim-modules): Add `mel-b-el'; add `mel-b-ccl',
+	`mel-ccl' and `mel-b-dl' conditionally.
+
 1998-09-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel-b.el (base64-internal-encoding-limit): modify :type.
