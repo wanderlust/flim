@@ -234,8 +234,8 @@ This is relative to `smtpmail-queue-dir'.")
 	    (let* ((file-data (convert-standard-filename
 			       (concat
 				(file-name-as-directory smtpmail-queue-dir)
-				(concat (time-stamp-yyyy-mm-dd)
-					"_" (time-stamp-hh:mm:ss)))))
+				(time-stamp-yyyy-mm-dd)
+				"_" (time-stamp-hh:mm:ss))))
 		   (file-elisp (concat file-data ".el"))
 		   (buffer-data (create-file-buffer file-data))
 		   (buffer-elisp (create-file-buffer file-elisp))

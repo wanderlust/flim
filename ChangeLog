@@ -1,3 +1,7 @@
+1999-09-14  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Remove needless `concat'.
+
 1999-09-08  Yoshiki Hayashi  <t90553@mail.ecc.u-tokyo.ac.jp>
 
 	* mime-ja.sgml, mime-en.sgml (Entity creation): Fix typo.
