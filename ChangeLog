@@ -1,3 +1,12 @@
+1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Rename
+	field-presentation-mode `folding' to `wide'.
+
+	* eword-decode.el: Rename field-presentation-modes from `native',
+	`folding', `unfolding', `unfolding-xover' to `plain', `wide',
+	`summary', `nov'.
+
 1998-11-07  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* eword-decode.el (mime-set-field-decoder): Add mode `unfolding-xover'.
