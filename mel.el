@@ -254,7 +254,7 @@ If MODE is nil, the result is appropriate for phrase.")
 (mel-defmethod uuencode-write-decoded-region external)
 
 ;; mel-g
-(mel-defmodule gzip64 external "mel-u")
+(mel-defmodule gzip64 external "mel-g")
 
 (mel-defmethod gzip64-encode-region external)
 (mel-defmethod gzip64-decode-region external)
