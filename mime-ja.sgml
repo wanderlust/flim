@@ -303,7 +303,7 @@ list $B$G!"$=$l$>$l!"I=<($7$?$/$J$$(B field $BL>$HI=<($7$?$$MsL>$rI=8=$7$?$b$
 <p>
 point $B$NA0$K(B <var>entity</var> $B$r(B text entity $B$H$7$FA^F~$7$^$9!#(B
 <p>
-<var>entity</var> $B$NFbMF$O(B <dref>MIMe charset</dref> $B$H$7$FI|9f2=$5$l(B
+<var>entity</var> $B$NFbMF$O(B <dref>MIME charset</dref> $B$H$7$FI|9f2=$5$l(B
 $B$^$9!#(B<var>entity</var> $B$N(B Content-Type field $B$K(B charset paramter $B$,L5(B
 $B$$$H!"(B<code>default-mime-charset</code> $B$,=i4|CM$H$7$F;H$o$l$^$9!#(B
 </defun>
@@ -329,7 +329,7 @@ MIME charset.
 <defun name="mime-insert-entity-content">
 	    <args> entity
 <p>
-pointo $B$N0LCV$K(B <var>entity</var> $B$NFbMF$rA^F~$7$^$9!#(B
+point $B$N0LCV$K(B <var>entity</var> $B$NFbMF$rA^F~$7$^$9!#(B
 </defun>
 
 <defun name="mime-write-entity-content">

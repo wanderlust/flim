@@ -55,7 +55,7 @@ information of entity.  In this document, it is called simply
 <node> Entity creation
 <p>
 <defun name="mime-open-entity">
-	  <opts> type location
+	  <args> type location
 <p>
 Open an entity and return it.
 <p>
