@@ -5,14 +5,14 @@
 ;;; @ variables
 ;;;
 
+(defvar mime/tmp-dir (or (getenv "TM_TMP_DIR") "/tmp/"))
+
 (defvar uuencode-external-encoder '("uuencode" "-")
   "*list of uuencode encoder program name and its arguments.")
 
-(defvar uuencode-external-decoder '("uudecode")
+(defvar uuencode-external-decoder
+  (list "sh" "-c" (format "(cd %s; uudecode)" mime/tmp-dir))
   "*list of uuencode decoder program name and its arguments.")
-(list "sh" "-c" (format "(cd %s; uudecode)" mime/tmp-dir))
-
-(defvar mime/tmp-dir (or (getenv "TM_TMP_DIR") "/tmp/"))
 
 
 ;;; @ external encoder
@@ -61,15 +61,9 @@
 	  )
       (if filename
 	  (progn
-	    (funcall (function call-process-region)
-		     beg end "sh"
-		     t t nil
-		     "-c" (format "(cd %s; %s)"
-				  mime/tmp-dir
-				  (mapconcat (function identity)
-					     uuencode-external-decoder
-					     " ")
-				  ))
+	    (apply (function call-process-region)
+		   beg end (car uuencode-external-decoder)
+		   t t nil (cdr uuencode-external-decoder))
 	    (setq filename (expand-file-name filename mime/tmp-dir))
 	    (let ((file-coding-system-for-read
 		   (if (boundp 'MULE) *noconv*))	; Mule

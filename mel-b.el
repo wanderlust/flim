@@ -83,21 +83,41 @@ external decoder is called.")
 ;;;
 
 (defun base64-encode-string (string)
-  (let* ((es (mapconcat
-	      (function
-	       (lambda (pack)
-		 (mapconcat (function char-to-string)
-			    (apply (function base64-encode-chars) pack)
-			    "")
-		 ))
-	      (pack-sequence string 3)
-	      ""))
-	 (m (mod (length es) 4))
-	 )
-    (concat es (cond ((= m 3) "=")
-		     ((= m 2) "==")
-		     ))
-    ))
+  (let ((len (length string))
+	(b 0)(e 57)
+	dest)
+    (while (< e len)
+      (setq dest
+	    (concat dest
+		    (mapconcat
+		     (function
+		      (lambda (pack)
+			(mapconcat (function char-to-string)
+				   (apply (function base64-encode-chars) pack)
+				   "")
+			))
+		     (pack-sequence (substring string b e) 3)
+		     "")
+		    "\n"))
+      (setq b e
+	    e (+ e 57)
+	    )
+      )
+    (let* ((es (mapconcat
+		(function
+		 (lambda (pack)
+		   (mapconcat (function char-to-string)
+			      (apply (function base64-encode-chars) pack)
+			      "")
+		   ))
+		(pack-sequence (substring string b) 3)
+		""))
+	   (m (mod (length es) 4))
+	   )
+      (concat dest es (cond ((= m 3) "=")
+			    ((= m 2) "==")
+			    ))
+      )))
 
 (defun base64-decode-string (string)
   (mapconcat (function
@@ -113,6 +133,19 @@ external decoder is called.")
 ;;; @ encode/decode base64 region
 ;;;
 
+(defun base64-internal-encode-region (beg end)
+  (save-excursion
+    (save-restriction
+      (narrow-to-region beg end)
+      (let ((str (buffer-substring beg end)))
+	(delete-region beg end)
+	(insert (base64-encode-string str))
+	)
+      (or (bolp)
+	  (insert "\n")
+	  )
+      )))
+
 (defun base64-internal-decode-region (beg end)
   (save-excursion
     (save-restriction
@@ -125,26 +158,6 @@ external decoder is called.")
 	(delete-region (point-min)(point-max))
 	(insert (base64-decode-string str))
 	))))
-
-(defun base64-internal-encode-region (beg end)
-  (save-excursion
-    (let* ((str (base64-encode-string (buffer-substring beg end)))
-	   (len (length str))
-	   (i 0)
-	   (j (if (>= len 76)
-		  76
-		len))
-	   )
-      (delete-region beg end)
-      (goto-char beg)
-      (while (< j len)
-	(insert (substring str i j))
-	(insert "\n")
-	(setq i j)
-	(setq j (+ i 76))
-	)
-      (insert (substring str i))
-      )))
 
 (cond ((boundp 'MULE)
        (define-program-coding-system
@@ -161,12 +174,21 @@ external decoder is called.")
 
 (defun base64-external-encode-region (beg end)
   (save-excursion
-    (let ((selective-display nil) ;Disable ^M to nl translation.
-	  (mc-flag nil)      ;Mule
-	  (kanji-flag nil))  ;NEmacs
-      (apply (function call-process-region)
-	     beg end (car base64-external-encoder)
-	     t t nil (cdr base64-external-encoder))
+    (save-restriction
+      (narrow-to-region beg end)
+      (let ((selective-display nil) ;Disable ^M to nl translation.
+	    (mc-flag nil)      ;Mule
+	    (kanji-flag nil))  ;NEmacs
+	(apply (function call-process-region)
+	       beg end (car base64-external-encoder)
+	       t t nil (cdr base64-external-encoder))
+	)
+      ;; for OS/2
+      ;;   regularize line break code
+      (goto-char (point-min))
+      (while (re-search-forward "\r$" nil t)
+	(replace-match "")
+	)
       )))
 
 (defun base64-external-decode-region (beg end)

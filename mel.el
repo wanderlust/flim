@@ -29,6 +29,9 @@
   '(("base64"           . base64-encode-region)
     ("quoted-printable" . quoted-printable-encode-region)
     ("x-uue"            . uuencode-encode-region)
+    ("7bit")
+    ("8bit")
+    ("binary")
     ))
 
 (defvar mime-decoding-method-alist

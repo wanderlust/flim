@@ -48,10 +48,13 @@ external decoder is called.")
   (let ((i 0))
     (mapconcat (function
 		(lambda (chr)
-		  (cond ((or (< chr 32) (< 126 chr) (eq chr ?=))
+		  (cond ((eq chr ?\n)
+			 (setq i 0)
+			 "\n")
+			((or (< chr 32) (< 126 chr) (eq chr ?=))
 			 (if (>= i 73)
 			     (progn
-			       (setq i 0)
+			       (setq i 3)
 			       (concat "=\n" (quoted-printable-quote-char chr))
 			       )
 			   (progn
@@ -60,7 +63,7 @@ external decoder is called.")
 			     )))
 			(t (if (>= i 75)
 			       (progn
-				 (setq i 0)
+				 (setq i 1)
 				 (concat "=\n" (char-to-string chr))
 				 )
 			     (progn
@@ -105,23 +108,13 @@ external decoder is called.")
   (save-excursion
     (save-restriction
       (narrow-to-region beg end)
-      (goto-char (point-min))
-      (catch 'tag
-	(let (b e str)
-	  (while t
-	    (beginning-of-line) (setq b (point))
-	    (end-of-line)       (setq e (point))
-	    (if (< b e)
-		(progn
-		  (setq str (buffer-substring b e))
-		  (delete-region b e)
-		  (insert (quoted-printable-encode-string str))
-		  ))
-	    (if (eobp)
-		(throw 'tag nil)
-	      )
-	    (forward-char 1)
-	    )))
+      (let ((str (buffer-substring beg end)))
+	(delete-region beg end)
+	(insert (quoted-printable-encode-string str))
+	)
+      (or (bolp)
+	  (insert "=\n")
+	  )
       )))
 
 (defun quoted-printable-internal-decode-region (beg end)
@@ -158,12 +151,21 @@ external decoder is called.")
 
 (defun quoted-printable-external-encode-region (beg end)
   (save-excursion
-    (let ((selective-display nil) ;Disable ^M to nl translation.
-	  (mc-flag nil)      ;Mule
-	  (kanji-flag nil))  ;NEmacs
-      (apply (function call-process-region)
-	     beg end (car quoted-printable-external-encoder)
-	     t t nil (cdr quoted-printable-external-encoder))
+    (save-restriction
+      (narrow-to-region beg end)
+      (let ((selective-display nil) ;Disable ^M to nl translation.
+	    (mc-flag nil)      ;Mule
+	    (kanji-flag nil))  ;NEmacs
+	(apply (function call-process-region)
+	       beg end (car quoted-printable-external-encoder)
+	       t t nil (cdr quoted-printable-external-encoder))
+	)
+      ;; for OS/2
+      ;;   regularize line break code
+      (goto-char (point-min))
+      (while (re-search-forward "\r$" nil t)
+	(replace-match "")
+	)
       )))
 
 (defun quoted-printable-external-decode-region (beg end)
