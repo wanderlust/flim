@@ -5,7 +5,7 @@
 ;;; Code:
 
 (setq flim-modules '(std11
-		     luna mime-def
+		     luna lunit mime-def
 		     mel mel-q mel-u mel-g
 		     eword-decode eword-encode
 		     mime mime-parse mmgeneric
