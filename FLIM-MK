@@ -40,7 +40,7 @@ LISPDIR=%s\n" PREFIX LISPDIR))))
 (defun check-flim ()
   (config-flim)
   (require 'lunit)
-  (let ((files (directory-files "tests" t))
+  (let ((files (directory-files "tests" t "^test-.*\\.el$"))
 	(suite (lunit-make-test-suite)))
     (while files
       (if (file-regular-p (car files))
