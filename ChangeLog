@@ -1,5 +1,16 @@
 1998-10-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime.el (mime-insert-header): Renamed from
+	`mime-insert-decoded-header'; define `mime-insert-decoded-header'
+	as an obsolete alias.
+
+	* mmgeneric.el, mmcooked.el (insert-header): Renamed from
+	`insert-decoded-header'.
+
+	* README.en (Installation): Add required version of APEL.
+
+1998-10-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel-g.el: Require mel.
 
 	* mel-g.el: Require poem instead of emu.
