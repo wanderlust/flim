@@ -1,3 +1,8 @@
+2004-01-12  Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.texi: Texinfo markup fixes.  From Jesper Harder
+	<harder@ifa.au.dk>.
+
 2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sha1-el.el (sha1-string-external): Use with-temp-buffer.
