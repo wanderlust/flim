@@ -1,3 +1,8 @@
+2001-06-07  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mime-def.el (mime-library-product): 1.14.3 (Terai-Nishikuchi).
+
+
 2001-06-01  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.3 (Unebigory-Dòmae)-A released.

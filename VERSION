@@ -106,8 +106,31 @@
 ;;-------------------------------------------------------------------------
 ;;	Hokuriku Railway	$(BKLN&E4F;(B
 ;;	Nomi Line		$(BG=H~@~(B		$(B!J5l(B $(BG=H~EE5$E4F;!K(B
+;;
+;;	"$BN/CS(B" $B$*$h$S(B "$B;{0f@>8}(B" $B0J9_$O(B OHNO Toshihiko $B$5$^$4Ds6!$N!"(B
+;;	JTB $B@PLnE/JT!XA49qGQ@~;dE4$NDd<V>l0lMw!Y$r85$K$7$F$$$^$9!#(B
 ;;-------------------------------------------------------------------------
-1.13.4	Shin-Terai		$(B?7;{0f(B		; <=> $(BKLN&K\@~(B $(B;{0f(B
-1.13.5	Kaga-Fukuoka		$(B2C2lJ!2,(B
-1.13.6	Nakanosh-Dò-A		$(BCf%N>1(B
-1.14.0	Gokend-Dò-A			$(B8^4VF2(B
+1.13.4	Shin-Terai		$B?7;{0f(B		; <=> $BKLN&K\@~(B $B;{0f(B
+------	Tameike			$BN/CS(B
+1.13.5	Kaga-Fukuoka		$B2C2lJ!2,(B
+1.13.6	Nakanosh-Dò-A		$BCf%N>1(B		; $B$N$A$KCf$N>1$K2~>N(B
+1.14.0	Gokend-Dò-A			$B8^4VF2(B
+1.14.3	Terai-Nishikuchi	$B;{0f@>8}(B
+------	Jid-Dò-Asha-Renraku		$B<+F0<VO"Mm(B
+------	Hon-Terai		$BK\;{0f(B
+------	Suenobu-Ushijima	$BKv?.5mEg(B
+------	Kaga-Sano		$B2C2l:4Ln(B
+------	Yunotani-Ishiko		$BErC+@P;R(B
+------	Tokuhisa		$BFA5W(B
+------	Kami-Kaihatsu		$B>e3+H/(B
+------	Tatsunokuchi		$BC$8}(B		; $B$N$A$KC$8}29@t$K2~>N(B
+------	Raimaru			$BMh4](B
+------	Higama			$B2P3x(B
+------	Iwauchi			$B4dFb(B		; $B$N$A$K2C2l4dFb$K2~>N(B
+------	Mitsukuchi		$B;08}(B		; $B$N$A$K;0%D8}$K2~>N(B
+------	Miyatake		$B5\C](B
+------	Todashino		$BEtBf:{(B
+------	Iwamoto			$B4dK\(B		; $B$N$A$K?7DaMh$K2~>N(B
+------	Tengu-yama		$BE76i;3(B
+------	Hon-Tsurugi		$BK\DaMh(B
+------	Tsurugi			$BDaMh(B
