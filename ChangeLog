@@ -1252,6 +1252,10 @@
 	* eword-decode.el: Copied from AKEMI branch of SEMI.
 
 
+1998-10-27  Tanaka Akira  <akr@jaist.ac.jp>
+
+        * eword-encode.el (eword-encode-field-body): Unfold `field-body'.
+
 1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.11.2 (Heij-Dò)-A was released.
