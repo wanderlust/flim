@@ -118,16 +118,13 @@
        '(ew:atom)))
     (setq frag1 (get (get frag1 'prev-frag) 'next-frag)))
   (while (not (eq frag1 frag2))
+    (setq frag2 (get frag2 'prev-frag))
     (unless (ew-comment-frag-p frag2)
-      (put frag2 'decode 'ew-decode-phrase))
-    (setq frag2 (get frag2 'prev-frag)))
-  (unless (ew-comment-frag-p frag2)
-    (put frag2 'decode 'ew-decode-phrase))
-  (setq frag2 (get frag2 'prev-frag))
-  (while (not (ew-token-last-frag-p frag2))
+      (put frag2 'decode 'ew-decode-phrase)))
+  (while (not (ew-token-last-frag-p
+	       (setq frag2 (get frag2 'prev-frag))))
     (unless (ew-comment-frag-p frag2)
-      (put frag2 'decode 'ew-decode-phrase))
-    (setq frag2 (get frag2 'prev-frag))))
+      (put frag2 'decode 'ew-decode-phrase))))
 
 ;;; frag predicate
 
