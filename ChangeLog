@@ -1,10 +1,15 @@
+1999-01-20  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Do not contain : in
+	`original-field-name'.
+
 1999-01-17  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ew-compat.el (ew-mime-update-field-decoder-cache): Abolished
 	because duplicated.
 
 	* mmgeneric.el (mime-insert-header-from-buffer): Convert LF to CRLF for
-	original-field-body.
+	`original-field-body'.
 
 1999-01-05  Tanaka Akira      <akr@jaist.ac.jp>
 

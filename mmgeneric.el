@@ -178,7 +178,7 @@
 			field-body))
 	      (insert "\n")
               (add-text-properties p (point)
-                                   (list 'original-field-name field-name
+                                   (list 'original-field-name (substring field-name 0 (1- len))
                                          'original-field-body (ew-lf-to-crlf field-body)))
 	      )))))))
 
