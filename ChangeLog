@@ -2,6 +2,10 @@
 
 	* FLIM: Version 1.9.2 (Shin-Tanabe) was released.
 
+	* README.en (Installation): Add `install as a XEmacs package'.
+
+1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-en.sgml (Encoding Method): Translate.
 
 1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
