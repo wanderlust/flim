@@ -1,6 +1,6 @@
 ;;; mel.el : a MIME encoding/decoding library
 
-;; Copyright (C) 1995,1996,1997 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; modified by Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
@@ -35,19 +35,79 @@
 				"/tmp/")
   "*Directory for temporary files.")
 
+(defvar base64-dl-module
+  (and (fboundp 'dynamic-link)
+       (expand-file-name "base64.so" exec-directory)))
+
+
+;;; @ autoload
+;;;
+
+(cond (base64-dl-module
+       (autoload 'base64-encode-string "mel-dl"
+	 "Encode STRING to base64, and return the result.")
+       (autoload 'base64-decode-string "mel-dl"
+	 "Decode STRING which is encoded in base64, and return the result.")
+       (autoload 'base64-encode-region "mel-dl"
+	 "Encode current region by base64." t)
+       (autoload 'base64-decode-region "mel-dl"
+	 "Decode current region by base64." t)
+       (autoload 'base64-insert-encoded-file "mel-dl"
+	 "Encode contents of file to base64, and insert the result." t)
+       ;; for encoded-word
+       (autoload 'base64-encoded-length "mel-dl")
+       )
+      (t
+       (autoload 'base64-encode-string "mel-b"
+	 "Encode STRING to base64, and return the result.")
+       (autoload 'base64-decode-string "mel-b"
+	 "Decode STRING which is encoded in base64, and return the result.")
+       (autoload 'base64-encode-region "mel-b"
+	 "Encode current region by base64." t)
+       (autoload 'base64-decode-region "mel-b"
+	 "Decode current region by base64." t)
+       (autoload 'base64-insert-encoded-file "mel-b"
+	 "Encode contents of file to base64, and insert the result." t)
+       ;; for encoded-word
+       (autoload 'base64-encoded-length "mel-b")
+       ))
+
+(autoload 'quoted-printable-encode-string "mel-q"
+  "Encode STRING to quoted-printable, and return the result.")
+(autoload 'quoted-printable-decode-string "mel-q"
+  "Decode STRING which is encoded in quoted-printable, and return the result.")
+(autoload 'quoted-printable-encode-region "mel-q"
+  "Encode current region by Quoted-Printable." t)
+(autoload 'quoted-printable-decode-region "mel-q"
+  "Decode current region by Quoted-Printable." t)
+(autoload 'quoted-printable-insert-encoded-file "mel-q"
+  "Encode contents of file to quoted-printable, and insert the result." t)
+;; for encoded-word
+(autoload 'q-encoding-encode-string "mel-q"
+  "Encode STRING to Q-encoding of encoded-word, and return the result.")
+(autoload 'q-encoding-decode-string "mel-q"
+  "Decode STRING which is encoded in Q-encoding and return the result.")
+(autoload 'q-encoding-encoded-length "mel-q")
+
+(autoload 'uuencode-encode-region "mel-u"
+  "Encode current region by unofficial uuencode format." t)
+(autoload 'uuencode-decode-region "mel-u"
+  "Decode current region by unofficial uuencode format." t)
+(autoload 'uuencode-insert-encoded-file "mel-u"
+  "Insert file encoded by unofficial uuencode format." t)
+
+(autoload 'gzip64-encode-region "mel-g"
+  "Encode current region by unofficial x-gzip64 format." t)
+(autoload 'gzip64-decode-region "mel-g"
+  "Decode current region by unofficial x-gzip64 format." t)
+(autoload 'gzip64-insert-encoded-file "mel-g"
+  "Insert file encoded by unofficial gzip64 format." t)
+
 
 ;;; @ region
 ;;;
 
-(autoload 'base64-encode-region
-  "mel-b" "Encode current region by base64." t)
-(autoload 'quoted-printable-encode-region
-  "mel-q" "Encode current region by Quoted-Printable." t)
-(autoload 'uuencode-encode-region
-  "mel-u" "Encode current region by unofficial uuencode format." t)
-(autoload 'gzip64-encode-region
-  "mel-g" "Encode current region by unofficial x-gzip64 format." t)
-
+;;;###autoload
 (defvar mime-encoding-method-alist
   '(("base64"           . base64-encode-region)
     ("quoted-printable" . quoted-printable-encode-region)
@@ -63,16 +123,7 @@ Each element looks like (STRING . FUNCTION) or (STRING . nil).
 STRING is content-transfer-encoding.
 FUNCTION is region encoder and nil means not to encode.")
 
-
-(autoload 'base64-decode-region
-  "mel-b" "Decode current region by base64." t)
-(autoload 'quoted-printable-decode-region
-  "mel-q" "Decode current region by Quoted-Printable." t)
-(autoload 'uuencode-decode-region
-  "mel-u" "Decode current region by unofficial uuencode format." t)
-(autoload 'gzip64-decode-region
-  "mel-g" "Decode current region by unofficial x-gzip64 format." t)
-
+;;;###autoload
 (defvar mime-decoding-method-alist
   '(("base64"           . base64-decode-region)
     ("quoted-printable" . quoted-printable-decode-region)
@@ -84,7 +135,6 @@ FUNCTION is region encoder and nil means not to encode.")
 Each element looks like (STRING . FUNCTION).
 STRING is content-transfer-encoding.
 FUNCTION is region decoder.")
-
 
 ;;;###autoload
 (defun mime-encode-region (start end encoding)
@@ -124,15 +174,7 @@ region by its value."
 ;;; @ file
 ;;;
 
-(autoload 'base64-insert-encoded-file "mel-b"
-  "Encode contents of file to base64, and insert the result." t)
-(autoload 'quoted-printable-insert-encoded-file "mel-q"
-  "Encode contents of file to quoted-printable, and insert the result." t)
-(autoload 'uuencode-insert-encoded-file
-  "mel-u" "Insert file encoded by unofficial uuencode format." t)
-(autoload 'gzip64-insert-encoded-file
-  "mel-g" "Insert file encoded by unofficial gzip64 format." t)
-
+;;;###autoload
 (defvar mime-file-encoding-method-alist
   '(("base64"           . base64-insert-encoded-file)
     ("quoted-printable" . quoted-printable-insert-encoded-file)
@@ -161,27 +203,6 @@ FUNCTION is function to insert encoded file.")
     (if f
 	(funcall f filename)
       )))
-
-
-;;; @ string
-;;;
-
-(autoload 'base64-encode-string "mel-b"
-  "Encode STRING to base64, and return the result.")
-(autoload 'base64-decode-string "mel-b"
-  "Decode STRING which is encoded in base64, and return the result.")
-(autoload 'quoted-printable-encode-string "mel-q"
-  "Encode STRING to quoted-printable, and return the result.")
-(autoload 'quoted-printable-decode-string "mel-q"
-  "Decode STRING which is encoded in quoted-printable, and return the result.")
-
-(autoload 'q-encoding-encode-string "mel-q"
-  "Encode STRING to Q-encoding of encoded-word, and return the result.")
-(autoload 'q-encoding-decode-string "mel-q"
-  "Decode STRING which is encoded in Q-encoding and return the result.")
-
-(autoload 'base64-encoded-length "mel-b")
-(autoload 'q-encoding-encoded-length "mel-q")
 
 
 ;;; @ end
