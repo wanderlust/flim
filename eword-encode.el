@@ -520,7 +520,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	  ))
     dest))
 
-(defun tm-eword::encode-address-list (column str)
+(defun ew-encode-address-list (column str)
   (tm-eword::encode-rwl
    column
    (tm-eword::addresses-to-rwl (std11-parse-addresses-string str))
@@ -556,7 +556,7 @@ encoded-word.  ASCII token is not encoded."
 				       bcc resent-bcc dcc
 				       mime-version)
 				     )
-			       (car (tm-eword::encode-address-list
+			       (car (ew-encode-address-list
 				     (+ (length field-name) 2) field-body))
 			       )
 			      (t
