@@ -307,9 +307,9 @@ or `smtp-local-domain' correctly."))))))
       (goto-char
        (prog1 smtp-read-point
 	 (setq smtp-read-point (point))))
-      (when (looking-at "[1-5][0-9][0-9] ")
-	(setq response-continue nil)
-	(push (read (point-marker)) response)))
+      (if (looking-at "[1-5][0-9][0-9] ")
+	  (setq response (cons (read (point-marker)) response)
+		response-continue nil)))
     response))
 
 (defun smtp-send-command (process command)
