@@ -290,7 +290,10 @@ don't define this value."
 	      (smtp-send-command process
 				 (format
 				  (if smtp-notify-success
-				      "RCPT TO:<%s> NOTIFY=SUCCESS" 
+				      (if (memq 'dsn extensions)
+					  "RCPT TO:<%s> NOTIFY=SUCCESS" 
+					(throw 'done
+					       (format "Delivery Status Notifications is not available")))
 				    "RCPT TO:<%s>")
 				  (car recipients)))
 	      (setq recipients (cdr recipients))

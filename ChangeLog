@@ -1,3 +1,18 @@
+2000-09-21  Kenichi OKADA   <okada@opaopa.org>
+
+	* smtp.el (smtp-via-smtp): Cause an error if `smtp-notify-success'
+	is not available.
+
+2000-09-18  KUSANO Takayuki  <AE5T-KSN@asahi-net.or.jp>
+
+	* smtp.el (smtp-via-smtp): Check `service extensions' for DSN.
+
+2000-09-21  Kenichi OKADA <okada@opaopa.org>
+
+	* mime-def.el (mime-library-product): Up.
+	* SLIM-VERSION: Up.
+
+
 2000-09-16  Kenichi OKADA   <okada@opaopa.org>
 
 	* SLIM: Version 1.14.2 released.
