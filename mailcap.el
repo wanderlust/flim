@@ -170,8 +170,11 @@ order.  Otherwise result is not sorted."
 	    (t entries)
 	    ))))
 
-(defvar mailcap-file "~/.mailcap"
-  "*File name of user's mailcap file.")
+
+(defcustom mailcap-file "~/.mailcap"
+  "*File name of user's mailcap file."
+  :group 'mime
+  :type 'file)
 
 (defun mailcap-parse-file (&optional filename order)
   "Parse FILENAME as a mailcap, and return the result.
