@@ -1,3 +1,8 @@
+1998-08-23  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* lex.el (lex-gen-ccel-unibyte-automata-state): Jump start of loop
+	on end of states.
+
 1998-08-22  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: Use `\t' instead of raw TAB character.

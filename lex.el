@@ -9,6 +9,10 @@
 ;;;
 
 (eval-and-compile
+;; CCL is not so fast for this library.
+;; Because it requires quadratic time for skipping string prefix.
+;; However, it is bit faster than emacs-lisp on average for common case,
+;; it is default if available.
 (defvar lex-use-ccl (fboundp 'ccl-execute-on-string))
 (when lex-use-ccl
   (require 'ccl))
@@ -236,7 +240,8 @@
 				  (if (null (cdr l))
 				      (natset-seg (car l))
 				    (natset-seg (car l) (1- (cadr l)))))
-				`(r1 = ,(cadr tr))))
+				`((r1 = ,(cadr tr))
+				  (repeat))))
 		  trans))
 	       (repeat))))
 	'((end)))))
