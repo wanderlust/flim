@@ -544,6 +544,12 @@ Optional argument COLUMN is start-position of the field."
 	(eword-addr-seq-to-rwl (std11-lexical-analyze string))
 	)))
 
+(defun eword-encode-unstructured-field-body (string &optional column)
+  "Encode header field STRING as unstructured field, and return the result.
+Optional argument COLUMN is start-position of the field."
+  (car (tm-eword::encode-rwl (or column 0)
+			     (tm-eword::split-string string 'text))))
+
 (defun eword-encode-field (string)
   "Encode header field STRING, and return the result.
 A lexical token includes non-ASCII character is encoded as MIME
@@ -575,9 +581,8 @@ encoded-word.  ASCII token is not encoded."
 				field-body (+ (length field-name) 2))
 			       )
 			      (t
-                               (eword-encode-string field-body
-						    (1+ (length field-name))
-						    'text)
+                               (eword-encode-unstructured-field-body
+				field-body (1+ (length field-name)))
 			       ))
 			)
 		  (concat field-name ": " ret)
