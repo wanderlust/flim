@@ -1,5 +1,13 @@
 1998-09-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* Makefile (package): Don't update auto-autoloads.el and
+	custom-load.el.
+
+	* FLIM-MK (compile-flim-package): Update auto-autoloads.el and
+	custom-load.el.
+
+1998-09-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-def.el: Abolish function `butlast' and `nbutlast'.
 
 	* mime-def.el (mime-library-version): New constant.
