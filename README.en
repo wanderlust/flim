@@ -96,11 +96,25 @@ Command mime-decode-region (start end encoding)
 
 Command base64-encode-region (start end)
 
-  Encode region START to END of current buffer using base64.
+  Encode current region by base64.
+  START and END are buffer positions.
+
+  This function calls internal base64 encoder if size of region is
+  smaller than `base64-internal-encoding-limit', otherwise it calls
+  external base64 encoder specified by `base64-external-encoder'.  In
+  this case, you must install the program (maybe mmencode included in
+  metamail or XEmacs package).
 
 Command base64-decode-region (start end)
 
-  Decode region START to END of current buffer using base64.
+  Decode current region by base64.
+  START and END are buffer positions.
+
+  This function calls internal base64 decoder if size of region is
+  smaller than `base64-internal-decoding-limit', otherwise it calls
+  external base64 decoder specified by `base64-external-decoder'.  In
+  this case, you must install the program (maybe mmencode included in
+  metamail or XEmacs package).
 
 Command quoted-printable-encode-region (start end)
 
