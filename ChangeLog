@@ -18,7 +18,7 @@
 	(base64-internal-decode-string): Use `base64-internal-decode'.
 	(base64-internal-decode-string!): New function.
 	(base64-internal-decode-region): Use
-	`base64-internal-decode-string!'  instead of
+	`base64-internal-decode-string!' instead of
 	`base64-internal-decode-string'.
 
 1998-09-15  Tanaka Akira  <akr@jaist.ac.jp>
