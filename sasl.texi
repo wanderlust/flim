@@ -58,7 +58,7 @@ A list of mechanism names.
 
 Retrieve an apropriate mechanism.
 This function compares MECHANISMS and @code{sasl-mechanisms} then
-returns apropriate @sc{sasl} mechanism object.
+returns apropriate @code{sasl-mechanism} object.
 
 @example
 (let ((sasl-mechanisms '("CRAM-MD5" "DIGEST-MD5")))
@@ -76,7 +76,7 @@ Drivers}), use @code{sasl-make-mechanism} and modify
 @code{sasl-mechanisms} and @code{sasl-mechanism-alist} correctly.
 
 @defun sasl-make-mechanism name steps
-Allocate a mechanism.
+Allocate a @code{sasl-mechanism} object.
 This function takes two parameters---name of the mechanism, and a list
 of authentication functions.
 
@@ -99,43 +99,43 @@ parameters---a mechanism, a user name, name of the service and name of
 the server.
 
 @defun sasl-make-client mechanism name service server
-Prepare a client parameter object.
+Prepare a @code{sasl-client} object.
 @end defun
 
 @defun sasl-client-mechanism client
-Return the authentication mechanism driver of CLIENT.
+Return the mechanism (@code{sasl-mechanism} object) of client.
 @end defun
 
 @defun sasl-client-name client
-Return the authorization name of CLIENT, a string.
+Return the authorization name of client, a string.
 @end defun
 
 @defun sasl-client-service client
-Return the service name of CLIENT, a string.
+Return the service name of client, a string.
 @end defun
 
 @defun sasl-client-server client
-Return the server name of CLIENT, a string.
+Return the server name of client, a string.
 @end defun
 
 If you want to specify additional configuration properties, please use
 @code{sasl-client-set-property}.
 
 @defun sasl-client-set-property client property value
-Add the given property/value to CLIENT.
+Add the given property/value to client.
 @end defun
 
 @defun sasl-client-property client property
-Return the value of the PROPERTY of CLIENT.
+Return the value of the property of client.
 @end defun
 
 @defun sasl-client-set-properties client plist
-Destructively set the properties of CLIENT.
-The second argument PLIST is the new property list.
+Destructively set the properties of client.
+The second argument is the new property list.
 @end defun
 
 @defun sasl-client-properties client
-Return the whole property list of CLIENT configuration.
+Return the whole property list of client configuration.
 @end defun
 
 @node Steps
