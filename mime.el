@@ -63,6 +63,13 @@ current-buffer, and return it.")
 ;;; @ Entity as node of message
 ;;;
 
+(defalias 'mime-entity-children	'mime-entity-children-internal)
+
+(defalias 'mime-entity-node-id 'mime-entity-node-id-internal)
+
+(defsubst mime-entity-number (entity)
+  (reverse (mime-entity-node-id-internal entity)))
+
 (defun mime-find-entity-from-number (entity-number &optional message)
   "Return entity from ENTITY-NUMBER in MESSAGE.
 If MESSAGE is not specified, `mime-message-structure' is used."
@@ -98,15 +105,26 @@ ENTITY is used."
   (null (mime-entity-node-id entity)))
 
 
+;;; @ Entity Buffer
+;;;
+
+(defalias 'mime-entity-buffer    'mime-entity-buffer-internal)
+(defalias 'mime-entity-point-min 'mime-entity-header-start-internal)
+(defalias 'mime-entity-point-max 'mime-entity-body-end-internal)
+
+
 ;;; @ Entity Header
 ;;;
+
+(defalias 'mime-entity-header-start 'mime-entity-header-start-internal)
+(defalias 'mime-entity-header-end   'mime-entity-header-end-internal)
 
 (defun mime-fetch-field (field-name &optional entity)
   (or (symbolp field-name)
       (setq field-name (intern (capitalize (capitalize field-name)))))
   (or entity
       (setq entity mime-message-structure))
-  (let* ((header (mime-entity-original-header entity))
+  (let* ((header (mime-entity-original-header-internal entity))
 	 (field-body (cdr (assq field-name header))))
     (or field-body
 	(progn
@@ -118,10 +136,31 @@ ENTITY is used."
 		  (setq field-body
 			(std11-fetch-field (symbol-name field-name)))
 		  ))
-	      (mime-entity-set-original-header
+	      (mime-entity-set-original-header-internal
 	       entity (put-alist field-name field-body header))
 	    )
 	  field-body))))
+
+(defalias 'mime-entity-content-type 'mime-entity-content-type-internal)
+
+(defun mime-entity-content-disposition (entity)
+  (or (mime-entity-content-disposition-internal entity)
+      (let ((ret (mime-fetch-field 'Content-Disposition entity)))
+	(if ret
+	    (let ((disposition (mime-parse-Content-Disposition ret)))
+	      (when disposition
+		(mime-entity-set-content-disposition-internal
+		 entity disposition)
+		disposition))))))
+
+(defun mime-entity-encoding (entity)
+  (or (mime-entity-encoding-internal entity)
+      (let ((ret (mime-fetch-field 'Content-Transfer-Encoding entity)))
+	(if ret
+	    (let ((encoding (mime-parse-Content-Transfer-Encoding ret)))
+	      (when encoding
+		(mime-entity-set-encoding-internal entity encoding)
+		encoding))))))
 
 (defun mime-read-field (field-name &optional entity)
   (or (symbolp field-name)
@@ -138,7 +177,7 @@ ENTITY is used."
 	 (mime-entity-encoding entity)
 	 )
 	(t
-	 (let* ((header (mime-entity-parsed-header entity))
+	 (let* ((header (mime-entity-parsed-header-internal entity))
 		(field (cdr (assq field-name header))))
 	   (or field
 	       (let ((field-body (mime-fetch-field field-name entity)))
@@ -164,13 +203,93 @@ ENTITY is used."
 			  (setq field (eword-decode-unstructured-field-body
 				       field-body))
 			  ))
-		   (mime-entity-set-parsed-header
+		   (mime-entity-set-parsed-header-internal
 		    entity (put-alist field-name field header))
 		   field)))))))
+
+(defun eword-visible-field-p (field-name visible-fields invisible-fields)
+  (or (catch 'found
+	(while visible-fields
+	  (let ((regexp (car visible-fields)))
+	    (if (string-match regexp field-name)
+		(throw 'found t)
+	      ))
+	  (setq visible-fields (cdr visible-fields))
+	  ))
+      (catch 'found
+	(while invisible-fields
+	  (let ((regexp (car invisible-fields)))
+	    (if (string-match regexp field-name)
+		(throw 'found nil)
+	      ))
+	  (setq invisible-fields (cdr invisible-fields))
+	  )
+	t)))
+		
+(defun mime-insert-decoded-header (entity
+				   &optional invisible-fields visible-fields
+				   code-conversion)
+  "Insert before point a decoded header of ENTITY."
+  (let ((default-charset
+	  (if code-conversion
+	      (if (mime-charset-to-coding-system code-conversion)
+		  code-conversion
+		default-mime-charset))))
+    (save-restriction
+      (narrow-to-region (point)(point))
+      (let ((the-buf (current-buffer))
+	    (src-buf (mime-entity-buffer entity))
+	    (h-end (mime-entity-header-end entity))
+	    beg p end field-name len field)
+	(save-excursion
+	  (set-buffer src-buf)
+	  (goto-char (mime-entity-header-start entity))
+	  (save-restriction
+	    (narrow-to-region (point) h-end)
+	    (while (re-search-forward std11-field-head-regexp nil t)
+	      (setq beg (match-beginning 0)
+		    p (match-end 0)
+		    field-name (buffer-substring beg (1- p))
+		    len (string-width field-name)
+		    end (std11-field-end))
+	      (when (eword-visible-field-p field-name
+					   visible-fields invisible-fields)
+		(setq field (intern (capitalize field-name)))
+		(save-excursion
+		  (set-buffer the-buf)
+		  (insert field-name)
+		  (insert ":")
+		  (cond ((memq field eword-decode-ignored-field-list)
+			 ;; Don't decode
+			 (insert-buffer-substring src-buf p end)
+			 )
+			((memq field eword-decode-structured-field-list)
+			 ;; Decode as structured field
+			 (let ((body (save-excursion
+				       (set-buffer src-buf)
+				       (buffer-substring p end)))
+			       (default-mime-charset default-charset))
+			   (insert (eword-decode-and-fold-structured-field
+				    body (1+ len)))
+			   ))
+			(t
+			 ;; Decode as unstructured field
+			 (let ((body (save-excursion
+				       (set-buffer src-buf)
+				       (buffer-substring p end)))
+			       (default-mime-charset default-charset))
+			   (insert (eword-decode-unstructured-field-body
+				    body (1+ len)))
+			   )))
+		  (insert "\n")
+		  )))))))))
 
 
 ;;; @ Entity Content
 ;;;
+
+(defalias 'mime-entity-body-start 'mime-entity-body-start-internal)
+(defalias 'mime-entity-body-end   'mime-entity-body-end-internal)
 
 (defun mime-entity-content (entity)
   (save-excursion
@@ -204,6 +323,17 @@ ENTITY is used."
 	     (or (assoc "name" param)
 		 (assoc "x-name" param))
 	     ))))
+
+
+(defsubst mime-entity-media-type (entity)
+  (mime-content-type-primary-type (mime-entity-content-type entity)))
+(defsubst mime-entity-media-subtype (entity)
+  (mime-content-type-subtype (mime-entity-content-type entity)))
+(defsubst mime-entity-parameters (entity)
+  (mime-content-type-parameters (mime-entity-content-type entity)))
+(defsubst mime-entity-type/subtype (entity-info)
+  (mime-type/subtype-string (mime-entity-media-type entity-info)
+			    (mime-entity-media-subtype entity-info)))
 
 
 ;;; @ end

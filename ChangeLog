@@ -1,3 +1,90 @@
+1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-entity-encoding): New implementation.
+
+	* mime-parse.el (mime-parse-message): Abolish argument `encoding'.
+
+	* mime-def.el (make-mime-entity-internal): Abolish argument
+	`encoding'.
+	(mime-entity-set-encoding-internal): New function.
+
+1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-entity-content-disposition): New implementation.
+
+	* mime-parse.el (mime-parse-message): Don't parse
+	Content-Disposition.
+
+	* mime-def.el (make-mime-entity-internal): Delete argument
+	`content-disposition'.
+	(mime-entity-set-content-disposition-internal): New function.
+
+1998-06-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el: Move function `eword-visible-field-p' and
+	`mime-insert-decoded-header' to mime.el.
+
+	* mime-parse.el: Use internal functions of mime-entity.
+
+	* mime.el (mime-entity-children): Moved from mime-def.el; use
+	`mime-entity-children-internal'.
+	(mime-entity-node-id): Moved from mime-def.el; use
+	`mime-entity-node-id-internal'.
+	(mime-entity-number): Moved from mime-def.el; use
+	`mime-entity-node-id-internal'.
+	(mime-entity-buffer): Moved from mime-def.el; use
+	`mime-entity-buffer-internal'.
+	(mime-entity-point-min): Moved from mime-def.el; use
+	`mime-entity-header-start-internal'.
+	(mime-entity-point-max): Moved from mime-def.el; use
+	`mime-entity-body-end-internal'.
+	(mime-entity-header-start): Moved from mime-def.el; use
+	`mime-entity-header-start-internal'.
+	(mime-entity-header-end): Moved from mime-def.el; use
+	`mime-entity-header-end-internal'.
+	(mime-entity-content-type): Moved from mime-def.el; use
+	`mime-entity-content-type-internal'.
+	(mime-entity-content-disposition): Moved from mime-def.el; use
+	`mime-entity-content-disposition-internal'.
+	(mime-entity-encoding): Moved from mime-def.el; use
+	`mime-entity-encoding-internal'.
+	(mime-fetch-field): Use `mime-entity-original-header-internal' and
+	`mime-entity-set-original-header-internal'.
+	(mime-read-field): Use `mime-entity-parsed-header-internal' and
+	`mime-entity-set-parsed-header-internal'.
+	(eword-visible-field-p): Moved from eword-decode.el.
+	(mime-insert-decoded-header): Moved from eword-decode.el.
+	(mime-entity-body-start): Moved from mime-def.el; use
+	`mime-entity-body-start-internal'.
+	(mime-entity-body-end): Moved from mime-def.el; use
+	`mime-entity-body-end-internal'.
+	(mime-entity-media-type): Moved from mime-def.el.
+	(mime-entity-media-subtype): Moved from mime-def.el.
+	(mime-entity-parameters): Moved from mime-def.el.
+	(mime-entity-type/subtype): Moved from mime-def.el.
+
+	* mime-def.el (make-mime-entity-internal): Renamed from
+	`make-mime-entity'.
+	(mime-entity-buffer-internal): New function.
+	(mime-entity-header-start-internal): New function.
+	(mime-entity-header-end-internal): New function.
+	(mime-entity-body-start-internal): New function.
+	(mime-entity-body-end-internal): New function.
+	(mime-entity-node-id-internal): New function.
+	(mime-entity-content-type-internal): New function.
+	(mime-entity-content-disposition-internal): New function.
+	(mime-entity-encoding-internal): New function.
+	(mime-entity-original-header-internal): New function.
+	(mime-entity-children-internal): New function.
+	(mime-entity-parsed-header-internal): New function.
+	(mime-entity-set-original-header-internal): Renamed from
+	`mime-entity-set-original-header'.
+	(mime-entity-set-children-internal): Renamed from
+	`mime-entity-set-children'.
+	(mime-entity-set-parsed-header-internal): Renamed from
+	`mime-entity-set-parsed-header'.  Move `mime-entity-SLOT'
+	functions to mime.el.
+
 1998-06-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-ja.sgml (CVS): Fix typo.
