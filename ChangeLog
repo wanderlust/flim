@@ -1,5 +1,9 @@
 1998-05-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mailcap.el (mailcap-look-at-mtext): Fix typo.
+
+1998-05-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* FLIM-ELS (flim-modules): Add mailcap.
 
 	* mailcap.el: New file (copied from SEMI).
@@ -15,7 +19,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
+	* FLIM: Version 1.0.1 (Ky-Dòto) was released.-A
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
