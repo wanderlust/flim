@@ -1,3 +1,10 @@
+1998-09-01  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* Sync up with flim-1_9_2.
+
+	* mime-def.el (mime-library-version): Bump up to FLAM-DOODLE
+	1.9.4.
+
 1998-09-14  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mel-ccl.el (mel-ccl-try-to-read-crlf): New compile-time
@@ -49,7 +56,7 @@
 
 1998-09-10  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* mime-def.el (mime-library-version-string): bump up to
+	* mime-def.el (mime-library-version-string): Bump up to
 	FLAM-DOODLE 1.9.3.
 
 1998-09-10  Tanaka Akira      <akr@jaist.ac.jp>
@@ -190,7 +197,7 @@
 
 	* Sync up with flim-1_9_1.
 
-	* mime-def.el (mime-library-version-string): bump up to
+	* mime-def.el (mime-library-version-string): Bump up to
 	FLAM-DOODLE 1.9.2.
 
 1998-08-28  Tanaka Akira      <akr@jaist.ac.jp>
@@ -687,7 +694,7 @@
 
 1998-08-18  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* mime-def.el (mime-library-version-string): bump up to
+	* mime-def.el (mime-library-version-string): Bump up to
 	FLAM-DOODLE 1.9.1.
 
 1998-08-18  Tanaka Akira      <akr@jaist.ac.jp>
@@ -849,7 +856,7 @@
 
 1998-08-16  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* mime-def.el (mime-library-version-string): bump up to FLIM-FLAM 1.9.1.
+	* mime-def.el (mime-library-version-string): Bump up to FLIM-FLAM 1.9.1.
 
 1998-07-22  Tanaka Akira      <akr@jaist.ac.jp>
 
@@ -1081,9 +1088,94 @@
 	* eword-decode.el: Copied from AKEMI branch of SEMI.
 
 
+1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.9.2 (Shin-Tanabe) was released.
+
+	* README.en (Installation): Add `install as a XEmacs package'.
+
+1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml (Encoding Method): Translate.
+
+1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-msg-id-to-rword-list): New
+	function.
+	(eword-encode-in-reply-to-to-rword-list): New function.
+	(eword-encode-in-reply-to): New function.
+	(eword-encode-field): Use `eword-encode-in-reply-to' for
+	`In-Reply-To' field.
+
+	* std11.el (std11-parse-in-reply-to): New function.
+
+1998-09-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-structured-field-list): Add
+	`User-Agent'.
+
+1998-09-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* Makefile (package): Don't update auto-autoloads.el and
+	custom-load.el.
+
+	* FLIM-MK (compile-flim-package): Update auto-autoloads.el and
+	custom-load.el.
+
+1998-09-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el: Abolish function `butlast' and `nbutlast'.
+
+	* mime-def.el (mime-library-version): New constant.
+	(mime-library-version-string): Refer `mime-library-version'.
+
+1998-09-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* Makefile (XEMACS): New variable.
+	(PACKAGEDIR): New variable.
+	(package): New target.
+	(install-package): New target.
+
+	* FLIM-CFG (PACKAGEDIR): New variable.
+
+	* FLIM-MK (config-flim-package): New function.
+	(compile-flim-package): New function.
+	(install-flim-package): New function.
+
+1998-09-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml (Content-Type field): Translate.
+	(mime-content-type): Translate.
+	(Content-Type parser): Translate.
+	(Content-Disposition): Translate.
+	(mime-content-disposition): Translate.
+	(Content-Disposition parser): Translate.
+
+1998-09-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* Makefile (GOMI): Add Texinfo related garbages.
+	(clean): Delete historical setting.
+
+1998-09-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml (mm-backend): Translate.
+	(Request for entity): Likewise.
+	(mm-backend module): Likewise.
+
+	* mime.el (mime-entity-send): Add DOC-string.
+
+1998-09-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml (Entity hierarchy): Translate.
+
+1998-09-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml, mime-ja.sgml (Entity): Rearrangement.
+
+
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.9.1 (Tonosh.DNr) was released.*B
+	* FLIM: Version 1.9.1 (Tonosh-Dò)-A was released.
 
 	* mime-en.sgml (mm-backend): Translate a little.
 
@@ -1226,7 +1318,7 @@
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.8.0 (Shij.DNr) was released.*B
+	* FLIM-Chao: Version 1.8.0 (Shij-Dò)-A was released.
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1338,7 +1430,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (.DNRkubo) was released.*B
+	* FLIM: Version 1.8.0 (-DÒkubo)-A was released.
 
 	* README.en: Delete `How to use'.
 
@@ -1463,7 +1555,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (Goj.DNr) was released.*B
+	* FLIM-Chao: Version 1.7.0 (Goj-Dò)-A was released.
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1722,7 +1814,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-Gory.DNrmae) was released.*B
+	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae)-A was released.
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1842,7 +1934,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J.DN~jNr) was released.*B
+	* FLIM: Version 1.2.0 (J-Dþjò)-A was released.
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -1893,7 +1985,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T.DNrji) was released.*B
+	* FLIM: Version 1.1.0 (T-Dòji)-A was released.
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1929,7 +2021,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky.DNrto) was released.*B
+	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.

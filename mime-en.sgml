@@ -42,46 +42,13 @@ a message or one of the parts in the body of a multipart entity.'  In
 this document, the term <concept>entity</concept> indicates all of
 header fields and body.
 <p>
-The definition of RFC 2045 indicates that a MIME message is a tree.
-An message is a tree, each node is an entity, like following figure.
-Namely MIME extends message to tree structure.
+The definition of RFC 2045 indicates that a MIME message is a tree,
+and each node of the tree is an entity.  Namely MIME extends message
+to tree structure.
 <p>
 FLIM uses <concept>mime-entity</concept> structure to represent
 information of entity.  In this document, it is called simply
 `mime-entity'.
-<p>
-$BA0=R$N$h$&$K!"(Bmessage $BCf$N3F(B entity $B$OLZ$N@a$KEv$?$j$^$9$,!"$3$NLZ$K$O(B
-$B?<$5$HF1$8?<$5$NCf$N=gHV$K=>$C$FHV9f$,IU$1$k$3$H$,$G$-$^$9!#B($A!"(B
-<verb>
-
-                              $B(#(!(!(!($(B
-                              $B("(B  nil $B("(B
-                              $B(&(!(((!(%(B
-              $B(#(!(!(!(!(!(!(!(!(!(+(!(!(!(!(!(!(!(!(!($(B
-            $B(#(*($(B              $B(#(*($(B              $B(#(*($(B
-            $B("#0("(B              $B("#1("(B              $B("#2("(B
-            $B(&(((%(B              $B(&(((%(B              $B(&(((%(B
-              $B("(B        $B(#(!(!(!(!(+(!(!(!(!($(B        $B("(B
-          $B(#(!(*(!($(#(!(*(!($(#(!(*(!($(#(!(*(!($(#(!(*(!($(B
-          $B("(B $B#0(B.$B#0("("(B $B#1(B.$B#0("("(B $B#1(B.$B#1("("(B $B#1(B.$B#2("("(B $B#2(B.$B#0("(B
-          $B(&(!(!(!(%(&(!(!(!(%(&(!(!(!(%(&(!(!(!(%(&(!(!(!(%(B
-
-</verb>
-<p>
-<noindent>$B$N$h$&$K?<$5(B n $B$N@a$K$OD9$5(B n $B$N@0?tNs$N@aHV9f$,?6$l$^$9!#$3$l(B
-$B$r(B <concept>entity-number</concept> $B$H8F$S$^$9!#(Bentity-number $B$O(B S $B<0$H(B
-$B$7$F$O(B <code>(1 2 3)</code> $B$N$h$&$J@0?t$N%j%9%H$H$7$FI=8=$5$l$^$9!#(B
-<p>
-mime-entity $B$G$O!"$3$l$HF1MM$N(B <concept>node-id</concept> $B$rMQ$$$^$9!#(B
-node-id $B$O$A$g$&$I(B entity-number $B$r5U$K$7$?%j%9%H$G!"(Bentity-number
-1.2.3 $B$KBP1~$9$k(B node-id $B$O(B <code>(3 2 1)</code> $B$G$9!#(B
-<p>
-$BA0=R$N$h$&$K!"(BMIME message $B$O(B entity $B$rC10L$H$7$?LZ9=B$$K$J$C$F$$$k$N$G!"(B
-$B$3$N:,$G$"$k(B message $BA4BN$b(B mime-entity $B$GI=8=$9$k$3$H$,$G$-!"(Bbuffer
-local $BJQ?t(B <code>mime-message-structure</code> $B$K3JG<$9$k$3$H$K$7$^$9!#(B
-$B$=$7$F!"(Bentity-number $B$d(B node-id $B$rMQ$$$k$3$H$G(B 
-<code>mime-message-structure</code> $B$K$*$1$k(B entity $B$NAjBPE*$J0LCV4X78$r(B
-$B07$&$3$H$,$G$-$^$9!#(B
 
 
 <h2> Functions to create mime-entity
@@ -115,6 +82,50 @@ node="mm-backend"> Default value is <var>buffer</var>.
 <h2> Features about message tree
 <node> Entity hierarchy
 <p>
+Structure of a MIME message is tree.
+<p>
+In the tree, root node is the entity indicates all of the message.  In
+this document, it is called <concept>root-entity</concept> or
+<concept>message</concept>.  In FLIM, it is indicated by buffer local
+variable <code>mime-message-structure</code>.
+<p>
+Each entity except root-entity has a parent.  An entity may have
+children.  We can indicate an entity by relative position from a base
+entity, based on the parent-child relationship.
+<p>
+In addition, we can indicate an entity by absolute position of the
+message.
+<p>
+Each entity, which is a node of the tree, can be numbered by
+depth and left-to-right order of the depth.
+<verb>
+
+                              +-------+
+                              |  nil  |
+                              +---+---+
+              +-------------------+-------------------+
+            +-+-+               +-+-+               +-+-+
+            | 0 |               | 1 |               | 2 |
+            +-+-+               +-+-+               +-+-+
+              |         +---------+---------+         |
+           +--+--+   +--+--+   +--+--+   +--+--+   +--+--+
+           | 0.0 |   | 1.0 |   | 1.1 |   | 1.2 |   | 2.0 |
+           +-----+   +-----+   +-----+   +-----+   +-----+
+
+</verb>
+<p>
+Namely, if depth of a node is n, the node has a node-number, which is
+consists of n integers.  In this document, it is called
+<concept>entity-number</concept>.  An entity-number is represented by
+list of integer, like <code>(1 2 3)</code>.
+<p>
+mime-entity has also <concept>node-id</concept>.  A node-id is
+represented by reversed list of entity-number.  For example, node-id
+corresponding with 1.2.3 is <code>(3 2 1)</code>.
+<p>
+Each entity can be indicated by entity-number or node-id in
+<code>mime-message-structure</code>.
+
 <defvar name="mime-message-structure">
 <p>
 Buffer local variable to store mime-entity structure of message.
@@ -357,18 +368,16 @@ representations for their purposes.
 Each entity has <concept>representation-type</concept>.  It must be
 specified when an entity is created. <cf node="Entity Creation">
 <p>
-$BA0@a$^$G$K=R$Y$FMh$?(B entity $B$KBP$9$k=hM}$O!"(Bentity $B$KBP$7$F$=$N=hM}$r0M(B
-$BMj$9$k$3$H$K$h$C$F<B8=$5$l$F$$$^$9!#(BEntity $B$O<+J,$N(B 
-representation-type $B$rCN$C$F$*$j!"$=$N(B representation-type $B$K1~$8$F<B:](B
-$B$N=hM}$r9T$&4X?t$r8F$S=P$7$^$9!#$3$N$h$&$J4X?t$r(B <concept>entity $B=hM}(B
-method</concept> $B$H8F$S$^$9!#$^$?!"(Brepresentation-type $BKh$K$3$N$h$&$J4X(B
-$B?t$r$^$H$a$?$b$N$r(B <concept>mm-backend</concept> $B$H8F$S$^$9!#(B
+Functions about entity are implemented by request processing to the
+entity.  Each entity knows its representation-type.  Each entity calls
+processing function corresponding with the representation-type.  Such
+kind of function is called <concept>entity processing
+method</concept>.  A module, consists of them corresponding with a
+representation-type, is called <concept>mm-backend</concept>.
 <p>
-mm-backend $B$O(B representation-type $B$NL>A0$N@hF,$K(B <code>mm</code> $B$H$$$&(B
-$B@\F,<-$rIU$1$?4X?tL>$+$i$J$k(B module $B$G!"$=$N(B module $BL>$OF1MM$K(B
-representation-type $B$NL>A0$N@hF,$K(B <code>mm</code> $B$rIU$1$?$b$N$K$J$C$F(B
-$B$$$^$9!#$3$N(B module $B$O(B representation-type $B$N(B entity $B$,:G=i$K@8@.$5$l$k(B
-$B;~$K<+F0E*$K(B require $B$5$l$^$9!#(B
+Module name of each mm-backend consists of the prefix <code>mm</code>
+and its representation-type.  The module is required automatically
+when its entity is created at first.
 
 
 <h3> Message-passing for entity
@@ -377,18 +386,19 @@ representation-type $B$NL>A0$N@hF,$K(B <code>mm</code> $B$rIU$1$?$b$N$K$J$C$F
 <defun name="mime-entity-send">
 	      <args> entity message <rest> args
 <p>
-<var>entity</var> $B$K(B <var>message</var> $B$rAw$k!#(B
+Send <var>message</var> to <var>entity</var> with <var>args</var>, and
+return the result.
 <p>
-<var>args</var> $B$O(B <var>message</var> $B$N0z?t$G$"$k!#(B
+<var>args</var> is arguments of the <var>message</var>.
 </defun>
 
 
 <h3> How to make mm-backend
 <node> mm-backend module
 <p>
-$B!J$9$_$^$;$s!#$=$N$&$A=q$-$^$9(B (^_^;$B!K(B
+(It is not written yet, sorry. (^_^;)
 <p>
-$B!J$H$j$"$($:!"(Bmm*.el $B$r;29M$K$7$F$/$@$5$$!K(B
+(Please read mm*.el)
 
 
 <h1> Information of Content-Type field
@@ -414,14 +424,14 @@ Content-Type field.
 <h2> Format of Content-Type field
 <node> Content-Type field
 <p>
-Content-Type $BMs$N7A<0$O0J2<$N$h$&$KDj5A$5$l$F$$$^$9!'(B
+Format of Content-Type field is defined as follows:
 
 <quote>
 ``Content-Type'' ``:'' <concept>type</concept> ``/''
 <concept>subtype</concept> *( ``;'' <concept>parameter</concept> )
 </quote>
 <p>
-$BNc$($P!"(B
+For example:
 
 <quote>
 <verb>
@@ -429,25 +439,20 @@ Content-Type: image/jpeg
 </verb>
 </quote>
 
-<noindent>
-$B$d(B
-
 <quote>
 <verb>
 Content-Type: text/plain; charset=iso-2022-jp
 </verb>
 </quote>
-
-<noindent>
-$B$J$I$N$h$&$KMQ$$$i$l$^$9!#(B
 <p>
-$B$3$3$G!"(B`type' $B$H(B `subtype' $B$O(B entity $B$N7A<0$r<($9$b$N$G!"N><T$rAm>N$7(B
-$B$F!"(B`media-type' $B$H8F$V$3$H$K$7$^$9!#>e5-$NNc$K$*$1$k(B `image/jpeg' $B$d(B
-`text/plain' $B$O(B media-type $B$N#1$D$G$9!#(B
+`type' and `subtype' indicate format of an entity.  In this document,
+pair of them is called `media-type'.  `image/jpeg' or `text/plain' is
+a media-type.
 
 <memo>
 <p>
-Content-Type $BMs$N$J$$(B entity $B$O(B
+If an entity does not have Content-Type field, it is regarded as
+following:
 
 <quote>
 <verb>
@@ -456,7 +461,7 @@ Content-Type: text/plain; charset=us-ascii
 </quote>
 
 <noindent>
-$B$H$7$F2r<a$5$l$k!#(B<cf node="us-ascii">
+<cf node="us-ascii">
 </memo>
 
 
@@ -465,19 +470,20 @@ Content-Type: text/plain; charset=us-ascii
 <p>
 <define type="Structure" name="mime-content-type">
 <p>
-Content-Type $BMs$N>pJs$r3JG<$9$k$?$a$N9=B$BN!#(B
+Structure to store information of a Content-Type field.
 <p>
-$B$3$N9=B$BN$r;2>H$9$k$K$O(B <code>mime-content-type-$BMWAGL>(B</code> $B$H$$$&L>(B
-$BA0$N;2>H4X?t$rMQ$$$k!#(B
+Applications should use reference functions
+<code>mime-content-type-SLOT</code> to refer information of the
+structure.
 <p>
-$B$3$N9=B$BN$NMWAG$O0J2<$NDL$j$G$"$k!'(B
+Slots of the structure are following:
 
 <vl>
-<dt>primary-type<dd>media-type $B$N<g7?(B (symbol).
+<dt>primary-type<dd>primary type of media-type (symbol).
 </dd>
-<dt>subtype<dd>media-type $B$NI{7?(B (symbol).
+<dt>subtype<dd>subtype of media-type (symbol).
 </dd>
-<dt>parameters<dd>Content-Type $BMs$N(B parameter ($BO"A[(B list).
+<dt>parameters<dd>parameters of Content-Type field (association-list).
 </dd>
 </vl>
 </define>
@@ -485,13 +491,13 @@ Content-Type $BMs$N>pJs$r3JG<$9$k$?$a$N9=B$BN!#(B
 <defun name="make-mime-content-type">
 	  <args> type subtype
 	  <opts> parameters
-<p>content-type $B$N@8@.;R!#(B
+<p>Constructor of content-type.
 </defun>
 
 <defun name="mime-content-type-parameter">
 <args> content-type parameter
 <p>
-<var>content-type</var> $B$N(B <var>parameter</var> $B$NCM$rJV$9!#(B
+Return value of <var>parameter</var> of <var>content-type</var>.
 </defun>
 
 
@@ -501,14 +507,15 @@ Content-Type $BMs$N>pJs$r3JG<$9$k$?$a$N9=B$BN!#(B
 <defun name="mime-parse-Content-Type">
 	  <args> string
 <p>
-<var>string</var> $B$r(B content-type $B$H$7$F2r@O$7$?7k2L$rJV$9!#(B
+Parse <var>string</var> as field-body of Content-Type field.
 </defun>
 
 <defun name="mime-read-Content-Type">
 <p>
-$B8=:_$N(B buffer $B$N(B Content-Type $BMs$rFI$_<h$j!"2r@O$7$?7k2L$rJV$9!#(B
+Read field-body of Content-Type field from current-buffer,
+and return parsed it.
 <p>
-Content-Type $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
+Return <code>nil</code> if Content-Type field is not found.
 </defun>
 
 
@@ -526,8 +533,9 @@ Return type/subtype string from <var>type</var> and
 <h1> Information of Content-Disposition field
 <node> Content-Disposition
 <p>
-<concept>Content-Disposition $BMs(B</concept> $B$O(B entity $B$NI=<($d(B file $BL>$J$I(B
-$B$NB0@-$K$J$I$K4X$9$k>pJs$r5-=R$9$k$?$a$N$b$N$G$9!#(B
+<concept>Content-Disposition field</concept> is an optional field to
+specify presentation of an entity or attributes of an entity, such as
+file name.
 
 <rfc number="2183" type="Standards Track"
 	      author="S. Dorner, K. Moore and R. Troost"
@@ -535,9 +543,9 @@ Return type/subtype string from <var>type</var> and
 	      Internet Messages: The Content-Disposition Header"
 	      date="August 1997">
 <p>
-FLIM $B$O(B Content-Disposition $BMs$r9=J82r@O$9$k4X?t$H(B Content-Disposition 
-$BMs$N2r@O7k2L$r3JG<$9$k9=B$BN(B 
-<concept>mime-content-disposition</concept> $B$rDs6!$7$^$9!#(B
+FLIM provides parser for Content-Disposition field and structure
+<concept>mime-content-disposition</concept> to store information of
+Content-Disposition field.
 
 
 <h2> mime-content-disposition structure
@@ -545,17 +553,19 @@ FLIM $B$O(B Content-Disposition $BMs$r9=J82r@O$9$k4X?t$H(B Content-Dispositi
 <p>
 <define type="Structure" name="mime-content-disposition">
 <p>
-Content-Disposition $BMs$N2r@O7k2L$r<}$a$k$?$a$N9=B$BN!#(B
+Structure to store information of a Content-Disposition field.
 <p>
-$B$3$N9=B$BN$r;2>H$9$k$K$O(B <code>mime-content-disposition-$BMWAGL>(B</code> $B$H(B
-$B$$$&L>A0$N;2>H4X?t$rMQ$$$k!#(B
+Applications should use reference functions
+<code>mime-content-disposition-SLOT</code> to refer information of the
+structure.
 <p>
-$B$3$N9=B$BN$NMWAG$O0J2<$NDL$j$G$"$k!'(B
+Slots of the structure are following:
 
 <vl>
 <dt>disposition-type<dd>disposition-type (symbol).
 </dd>
-<dt>parameters<dd>Content-Disposition $BMs$N(B parameter ($BO"A[(B list).
+<dt>parameters<dd>parameters of Content-Disposition field
+(association-list).
 </dd>
 </vl>
 </define>
@@ -563,13 +573,14 @@ Content-Disposition $BMs$N2r@O7k2L$r<}$a$k$?$a$N9=B$BN!#(B
 <defun name="mime-content-disposition-parameter">
 <args> content-disposition parameter
 <p>
-<var>content-disposition</var> $B$N(B <var>parameter</var> $B$NCM$rJV$9!#(B
+Return value of <var>parameter</var> of
+<var>content-disposition</var>.
 </defun>
 
 <defun name="mime-content-disposition-filename">
 <args> content-disposition
 <p>
-<var>content-disposition</var> $B$N(B filename $B$NCM$rJV$9!#(B
+Return filename of <var>content-disposition</var>.
 </defun>
 
 
@@ -579,28 +590,30 @@ Content-Disposition $BMs$N2r@O7k2L$r<}$a$k$?$a$N9=B$BN!#(B
 <defun name="mime-parse-Content-Disposition">
 	    <args> string
 <p>
-<var>string</var> $B$r(B content-disposition $B$H$7$F2r@O$7$?7k2L$rJV$9!#(B
+Parse <var>string</var> as field-body of Content-Disposition field,
+and return the result.
 </defun>
 
 <defun name="mime-read-Content-Disposition">
 <p>
-$B8=:_$N(B buffer $B$N(B Content-Disposition $BMs$rFI$_<h$j!"2r@O$7$?7k2L$rJV$9!#(B
+Read field-body of Content-Disposition field from current-buffer,
 <p>
-Content-Disposition $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
+Return nil if Content-Disposition field is not found.
 </defun>
 
 
 <h1> Encoding Method
 <node> Content-Transfer-Encoding
 <p>
-<concept>Content-Transfer-Encoding $BMs(B</concept> $B$O(B entity $B$NId9f2=K!$r5-(B
-$B=R$9$k$?$a$N$b$N$G$9!#(B
+<concept>Content-Transfer-Encoding field</concept> is a header field
+to indicate body encoding of a entity.
 <p>
-FLIM $B$G$O(B Content-Transfer-Encoding $BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$3(B
-$B$l$i$N4X?t$O(B Content-Transfer-Encoding $BMs$N>pJs$OJ8;zNs$GI=8=$7$^$9!#(B
+FLIM provides parser functions for Content-Transfer-Encoding field.
+They represent information of Content-Transfer-Encoding field as
+string.
 <p>
-$B$^$?!"(BContent-Transfer-Encoding $B$K4p$E$$$FId9f2=!&I|9f2=$r9T$&4X?t$bDs(B
-$B6!$5$l$^$9!#(B
+In addition, FLIM provides encoder/decoder functions by
+Content-Transfer-Encoding.
 
 
 <h2> Parser

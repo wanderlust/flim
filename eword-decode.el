@@ -397,7 +397,7 @@ Each field name must be symbol."
   '(Reply-To Resent-Reply-To From Resent-From Sender Resent-Sender
 	     To Resent-To Cc Resent-Cc Bcc Resent-Bcc Dcc
 	     Mime-Version Content-Type Content-Transfer-Encoding
-	     Content-Disposition)
+	     Content-Disposition User-Agent)
   "*List of field-names to decode as structured field.
 Each field name must be symbol."
   :group 'eword-decode
@@ -413,7 +413,7 @@ If SEPARATOR is not nil, it is used as header separator."
   (interactive "*")
   (rotate-memo args-eword-decode-header (list code-conversion))
   (unless code-conversion
-    (message "eword-decode-header is called with no code-conversion")
+    (message "eword-decode-header is called without code-conversion")
     (sit-for 2))
   (if (and code-conversion
 	   (not (mime-charset-to-coding-system code-conversion)))

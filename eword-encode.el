@@ -529,6 +529,24 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	  ))
     dest))
 
+(defsubst eword-encode-msg-id-to-rword-list (msg-id)
+  (cons '("<" nil nil)
+	(append (eword-encode-addr-seq-to-rword-list (cdr msg-id))
+		'((">" nil nil)))))
+
+(defsubst eword-encode-in-reply-to-to-rword-list (in-reply-to)
+  (let (dest)
+    (while in-reply-to
+      (setq dest
+	    (append dest
+		    (let ((elt (car in-reply-to)))
+		      (if (eq (car elt) 'phrase)
+			  (eword-encode-phrase-to-rword-list (cdr elt))
+			(eword-encode-msg-id-to-rword-list elt)
+			))))
+      (setq in-reply-to (cdr in-reply-to)))
+    dest))
+
 
 ;;; @ application interfaces
 ;;;
@@ -555,6 +573,15 @@ Optional argument COLUMN is start-position of the field."
 	(eword-encode-addresses-to-rword-list
 	 (std11-parse-addresses-string string))
 	)))
+
+(defun eword-encode-in-reply-to (string &optional column)
+  "Encode header field STRING as In-Reply-To field, and return the result.
+Optional argument COLUMN is start-position of the field."
+  (car (eword-encode-rword-list
+	(or column 13)
+	(eword-encode-in-reply-to-to-rword-list
+	 (std11-parse-in-reply-to
+	  (std11-lexical-analyze string))))))
 
 (defun eword-encode-structured-field-body (string &optional column)
   "Encode header field STRING as structured field, and return the result.
@@ -595,9 +622,12 @@ encoded-word.  ASCII token is not encoded."
                                (eword-encode-address-list
 				field-body (+ (length field-name) 2))
 			       )
+			      ((eq field-name-symbol 'In-Reply-To)
+                               (eword-encode-in-reply-to
+				field-body (+ (length field-name) 2))
+			       )
 			      ((memq field-name-symbol
-				     '(In-Reply-To
-				       Mime-Version User-Agent))
+				     '(Mime-Version User-Agent))
                                (eword-encode-structured-field-body
 				field-body (+ (length field-name) 2))
 			       )

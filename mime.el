@@ -73,9 +73,10 @@ current-buffer, and return it.")
   (mime-find-function service
 		      (mime-entity-representation-type-internal entity)))
 
-(defsubst mime-entity-send (entity service &rest args)
+(defsubst mime-entity-send (entity message &rest args)
+  "Send MESSAGE to ENTITY with ARGS, and return the result."
   (apply (mime-find-function
-	  service (mime-entity-representation-type-internal entity))
+	  message (mime-entity-representation-type-internal entity))
 	 entity
 	 args))
 

@@ -87,6 +87,28 @@ Installation
   You can specify other optional settings by editing the file
   FLIM-CFG.  Please read comments in it.
 
+(1-c) install as a XEmacs package
+
+  If you want to install to XEmacs package directory, please do
+  following:
+
+	% make install-package
+
+  You can specify the emacs command name, for example
+
+	% make install-package XEMACS=xemacs-21
+
+  If `XEMACS=...' is omitted, XEMACS=xemacs is used.
+
+  You can specify the package directory, for example:
+
+	% make install PACKAGEDIR=~/.xemacs
+
+  If `PACKAGEDIR=...' is omitted, the first existing package
+  directory is used.
+
+  Notice that XEmacs package system requires XEmacs 21.0 or later.
+
 
 load-path (for Emacs or MULE)
 =============================

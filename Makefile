@@ -3,7 +3,7 @@
 #
 
 PACKAGE = flim
-VERSION = 1.9.1
+VERSION = 1.9.2
 
 TAR	= tar
 RM	= /bin/rm -f
@@ -12,11 +12,15 @@ CP	= /bin/cp -p
 EMACS	= emacs
 FLAGS   = -batch -q -no-site-file -eval "$${EVALARGS:-nil}"
 FLAGS_CURDIR   = $(FLAGS) -eval '(setq load-path (cons "." load-path))'
+XEMACS	= xemacs
 
 PREFIX = NONE
 LISPDIR = NONE
+PACKAGEDIR = NONE
 
-GOMI	= *.elc
+GOMI	= *.elc \
+	  *.cp *.cps *.ky *.kys *.fn *.fns *.vr *.vrs \
+	  *.pg *.pgs *.tp *.tps *.toc *.aux *.log
 FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 
@@ -25,6 +29,13 @@ elc: ew-parse.el
 
 install:	elc
 	$(EMACS) $(FLAGS) -l FLIM-MK -f install-flim $(PREFIX) $(LISPDIR)
+
+
+package:
+	$(XEMACS) $(FLAGS) -f compile-flim-package $(PACKAGEDIR)
+
+install-package:	package
+	$(XEMACS) $(FLAGS) -f install-flim-package $(PACKAGEDIR)
 
 clean:
 	-$(RM) $(GOMI)
