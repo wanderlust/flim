@@ -4,7 +4,7 @@
 
 PACKAGE = flim
 API	= 1.12
-RELEASE = 5
+RELEASE = 6
 
 TAR	= tar
 RM	= /bin/rm -f
@@ -25,8 +25,8 @@ GOMI	= *.elc \
 FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 VERSION	= $(API).$(RELEASE)
-ARC_DIR = /pub/GNU/elisp/flim/$(PACKAGE)-$(API)
-SEMI_ARC_DIR = /pub/GNU/elisp/semi/semi-1.13-for-flim-$(API)
+ARC_DIR = /pub/mule/flim/$(PACKAGE)-$(API)
+SEMI_ARC_DIR = /pub/mule/semi/semi-1.13-for-flim-$(API)
 
 elc:
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
