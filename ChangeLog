@@ -1,5 +1,19 @@
 1999-11-05  Keiichi Suzuki  <keiichi@nanap.org>
 
+	* eword-decode.el (eword-encoded-word-regexp): Match with
+	RFC-2231.
+	(eword-decode-region): Likewise.
+	(eword-decode-encoded-word): Likewise.
+	(eword-decode-encoded-text): Add new option parameter `language'.
+
+	* mime-def.el (mime-token-exclude-chars-regexp): New constant.
+	(mime-token-regexp): Use `mime-token-exclude-chars-regexp'.
+	(mime-charset-regexp): Ditto. (Exclude `*')
+	(mime-parameter-value): When language is not specified, do not add
+	text-property `mime-language'.
+
+1999-11-05  Keiichi Suzuki  <keiichi@nanap.org>
+
 	* mime-parse.el (mime::attribute-char-regexp): New constant.
 	(mime::attribute-char-regexp): Ditto.
 	(mime::attribute-regexp): Ditto.
