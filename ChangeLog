@@ -1,4 +1,4 @@
-2000-01-23  Kenichi OKADA <okada@opaopa.org>
+2000-01-28  Kenichi OKADA <okada@opaopa.org>
 
 	* md5-el.el (md5-encode): If `md5-maximum-internal-length' is nil,
 	don't use external md5-program.
