@@ -290,61 +290,6 @@ message/rfc822, `mime-entity' structures of them are included in
 
 (make-variable-buffer-local 'mime-message-structure)
 
-
-;;; @ for mm-backend
-;;;
-
-(defvar mime-entity-implementation-alist nil)
-
-(defmacro mm-define-backend (type &optional parents)
-  "Define TYPE as a mm-backend.
-If PARENTS is specified, TYPE inherits PARENTS.
-Each parent must be backend name (symbol)."
-  (if parents
-      `(let ((rest ',(reverse parents)))
-	 (while rest
-	   (set-alist 'mime-entity-implementation-alist
-		      ',type
-		      (copy-alist
-		       (cdr (assq (car rest)
-				  mime-entity-implementation-alist))))
-	   (setq rest (cdr rest))
-	   ))))
-
-(defmacro mm-define-method (name args &rest body)
-  "Define NAME as a method function of (nth 1 (car ARGS)) backend.
-
-ARGS is like an argument list of lambda, but (car ARGS) must be
-specialized parameter.  (car (car ARGS)) is name of variable and (nth
-1 (car ARGS)) is name of backend."
-  (let* ((specializer (car args))
-	 (class (nth 1 specializer))
-	 (self (car specializer)))
-    `(let ((imps (cdr (assq ',class mime-entity-implementation-alist)))
-	   (func (lambda ,(if self
-			      (cons self (cdr args))
-			    (cdr args))
-		   ,@body)))
-       (if imps
-	   (set-alist 'mime-entity-implementation-alist
-		      ',class (put-alist ',name func imps))
-	 (set-alist 'mime-entity-implementation-alist
-		    ',class
-		    (list (cons ',name func)))
-	 ))))
-
-(put 'mm-define-method 'lisp-indent-function 'defun)
-
-(eval-when-compile
-  (defmacro eval-module-depended-macro (module definition)
-    (condition-case nil
-	(progn
-	  (require (eval module))
-	  definition)
-      (error `(eval-after-load ,(symbol-name (eval module)) ',definition))
-      ))
-  )
-
 (make-obsolete-variable 'mime-message-structure "should not use it.")
 
 
