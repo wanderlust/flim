@@ -1,5 +1,30 @@
 1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mmgeneric.el (mime-insert-header-from-buffer): Refer
+	`mime-field-decoder-alist' instead of hard-coding.
+
+	* mime.el (mime-read-field): Use `mime-decode-field-body'.
+
+	* eword-decode.el (eword-decode-and-unfold-structured-field): Add
+	optional dummy argument `start-column' and `max-column'.
+	(eword-decode-structured-field-body): Change interface.
+	(eword-decode-unstructured-field-body): Change interface to add
+	optional dummy argument `start-column' and `max-column'.
+	(eword-decode-and-unfold-unstructured-field): Add optional dummy
+	argument `start-column' and `max-column'.
+	(mime-field-decoder-alist): New variable; abolish user option
+	`eword-decode-ignored-field-list' and
+	`eword-decode-structured-field-list'.
+	(mime-set-field-decoder): New function.
+	(mime-find-field-decoder): New function.
+	(mime-decode-field-body): New function; abolish function
+	`eword-decode-field-body'.
+	(mime-decode-header-in-buffer): Renamed from
+	`eword-decode-header'; refer `mime-field-decoder-alist' instead of
+	hard-coding; add obsolete alias `eword-decode-header'.
+
+1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-def.el: Avoid compile error when ediff is missing.
 
 
