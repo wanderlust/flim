@@ -1,5 +1,13 @@
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mmcooked.el, mmbuffer.el (open): Renamed from `open-entity'.
+
+	* mime.el (mime-open-entity): Change message to `open'.
+
+	* mime-def.el (mm-define-backend): Must `copy-alist'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmcooked.el, mmbuffer.el: Use `mm-define-backend' and
 	`mm-define-method'.
 
