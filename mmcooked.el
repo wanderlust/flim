@@ -28,9 +28,6 @@
 
 (mm-define-backend cooked (buffer))
 
-(mm-define-method open ((nil cooked) location)
-  (mime-parse-buffer location 'cooked))
-
 (mm-define-method entity-cooked-p ((entity cooked)) t)
 
 (mm-define-method write-entity-content ((entity cooked) filename)
