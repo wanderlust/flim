@@ -96,11 +96,10 @@
 (luna-define-method mime-write-entity ((entity mime-buffer-entity) filename)
   (save-excursion
     (set-buffer (mime-buffer-entity-buffer-internal entity))
-    (write-region-as-raw-text-CRLF
-     (mime-buffer-entity-header-start-internal entity)
-     (mime-buffer-entity-body-end-internal entity)
-     filename)
-    ))
+    (let ((coding-system-for-write 'raw-text-dos))
+      (write-region (mime-buffer-entity-header-start-internal entity)
+		    (mime-buffer-entity-body-end-internal entity)
+		    filename))))
 
 
 ;;; @ entity header
