@@ -1,0 +1,14 @@
+1998-04-13  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-CFG, FLIM-ELS, FLIM-MK: New files.
+
+	* Makefile: Modify for FLIM.
+
+1998-04-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* Makefile: New file.
+
+	* mime-def.el, std11-parse.el, std11.el, eword-decode.el,
+ 	eword-encode.el: Copied from MEL, SEMI (mime-def.el
+ 	eword-decode.el eword-encode.el) and APEL (std11-parse.el
+ 	std11.el).
