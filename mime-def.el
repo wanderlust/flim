@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-library-version
-  '("FLIM" "Tonosh-Dò"-A 1 9 1)
+  '("FLIM" "Tonosh.DNr" 1 9 1)
   "Implementation name, version name and numbers of MIME-library package.")
 
 (defconst mime-library-version-string
@@ -68,22 +68,6 @@
 
 ;;; @ required functions
 ;;;
-
-(unless (fboundp 'butlast)
-  (defun butlast (x &optional n)
-    "Returns a copy of LIST with the last N elements removed."
-    (if (and n (<= n 0)) x
-      (nbutlast (copy-sequence x) n)))
-  
-  (defun nbutlast (x &optional n)
-    "Modifies LIST to remove the last N elements."
-    (let ((m (length x)))
-      (or n (setq n 1))
-      (and (< n m)
-	   (progn
-	     (if (> n 0) (setcdr (nthcdr (- (1- m) n) x) nil))
-	     x))))
-  )
 
 (defsubst eliminate-top-spaces (string)
   "Eliminate top sequence of space or tab in STRING."
