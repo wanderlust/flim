@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(defconst mime-library-version-string "Chao 1.7.1 - \"Goj,Dr(B\"")
+(defconst mime-library-version-string "Chao 1.7.0 - \"Goj,Dr(B\"")
 
 
 ;;; @ variables
