@@ -111,7 +111,9 @@ current-buffer, and return it.")
 TYPE is representation-type.
 LOCATION is location of entity.  Specification of it is depended on
 representation-type."
-  (funcall (mime-find-function 'open type) location))
+  (let ((entity (make-mime-entity-internal type location)))
+    (mime-entity-send entity 'initialize-instance)
+    entity))
 
 (mm-define-generic entity-cooked-p (entity)
   "Return non-nil if contents of ENTITY has been already code-converted.")
@@ -120,7 +122,9 @@ representation-type."
 ;;; @ Entity as node of message
 ;;;
 
-(defalias 'mime-entity-children	'mime-entity-children-internal)
+(defun mime-entity-children (entity)
+  (or (mime-entity-children-internal entity)
+      (mime-entity-send entity 'entity-children)))
 
 (defalias 'mime-entity-node-id 'mime-entity-node-id-internal)
 
@@ -149,18 +153,15 @@ If MESSAGE is not specified, `mime-message-structure' is used."
 
 (defun mime-entity-parent (entity &optional message)
   "Return mother entity of ENTITY.
-If MESSAGE is not specified, `mime-message-structure' in the buffer of
-ENTITY is used."
-  (mime-find-entity-from-node-id
-   (cdr (mime-entity-node-id entity))
-   (or message
-       (save-excursion
-	 (set-buffer (mime-entity-buffer entity))
-	 mime-message-structure))))
+If MESSAGE is specified, it is regarded as root entity."
+  (if (equal entity message)
+      nil
+    (mime-entity-parent-internal entity)))
 
-(defun mime-root-entity-p (entity)
-  "Return t if ENTITY is root-entity (message)."
-  (null (mime-entity-node-id entity)))
+(defun mime-root-entity-p (entity &optional message)
+  "Return t if ENTITY is root-entity (message).
+If MESSAGE is specified, it is regarded as root entity."
+  (null (mime-entity-parent entity message)))
 
 
 ;;; @ Entity Buffer
