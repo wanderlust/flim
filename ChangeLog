@@ -1,5 +1,10 @@
 1999-02-19  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* mel-b-ccl.el (base64-ccl-encode-string): New argument `no-line-break'.
+	(base64-ccl-encode-region): Ditto.
+
+1999-02-19  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mime.el (mime-read-field): Use `plain' instead of `native' for
 	third argument for `mime-decode-field-body'.
 
