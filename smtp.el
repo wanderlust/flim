@@ -73,8 +73,9 @@ don't define this value."
 
 ;;; @ SMTP package structure
 ;;; A package contains a mail message, an envelope sender address,
-;;; and one or more envelope recipient addresses.  In ESMTP model
-;;; we should guarantee the hook methods to access the current sending package.
+;;; and one or more envelope recipient addresses.  In ESMTP model,
+;;; we should guarantee the user to access the current sending package
+;;; anywhere from the hook methods (or SMTP commands).
 
 (defmacro smtp-package-sender-internal (package)
   `(aref ,package 0))
@@ -89,9 +90,9 @@ don't define this value."
   `(vector ,sender ,recipients ,buffer))
 
 ;;; @ SMTP connection structure
-;;; We should take care of emulation for other network streams.
-;;; They are likely to be implemented with sub program and the function
-;;; `process-contact' returns process ID instead of `(HOST SERVICE)' pair.
+;;; We should take care of a emulation for another network stream.
+;;; They are likely to be implemented with a external program and the function
+;;; `process-contact' returns the process ID instead of `(HOST SERVICE)' pair.
 
 (defmacro smtp-connection-process-internal (connection)
   `(aref ,connection 0))
