@@ -224,7 +224,7 @@ START and END are buffer positions."
 	 (completing-read "encoding: "
 			  mime-file-decoding-method-alist
 			  nil t "base64")))
-  (funcall (mel-find-function 'mime-insert-encoded-file encoding)
+  (funcall (mel-find-function 'mime-write-decoded-region encoding)
 	   start end filename))
 
 
