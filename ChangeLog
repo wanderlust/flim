@@ -1,10 +1,16 @@
+1998-05-09  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-q.el (quoted-printable-internal-decode-region): Use
+	'string-as-multibyte to avoid problem in Emacs 20.3.
+
 1998-05-08  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mel-u.el: Use mime-temp-directory instead of TMP.
-	
+
+
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J-Dþjò) was released.-A
+	* FLIM: Version 1.2.0 (J-Dþjò)-A was released.
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -55,7 +61,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Dòji) was released.-A
+	* FLIM: Version 1.1.0 (T-Dòji)-A was released.
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -91,7 +97,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòto) was released.-A
+	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
