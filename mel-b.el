@@ -70,15 +70,6 @@ external decoder is called."
 ;;; @ internal base64 decoder
 ;;;
 
-;; (defsubst base64-char-to-num (c)
-;;   (cond ((and (<= ?A c) (<= c ?Z)) (- c ?A))
-;;         ((and (<= ?a c) (<= c ?z)) (+ (- c ?a) 26))
-;;         ((and (<= ?0 c) (<= c ?9)) (+ (- c ?0) 52))
-;;         ((= c ?+) 62)
-;;         ((= c ?/) 63)
-;;         ((= c ?=) nil)
-;;         (t (error "not a base64 character %c" c))))
-
 (defconst base64-numbers
   [nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
    nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
@@ -92,10 +83,9 @@ external decoder is called."
 (defmacro base64-char-to-num (c)
   `(aref base64-numbers ,c))
 
-(defun base64-internal-decode-string (string)
+(defsubst base64-internal-decode (string buffer)
   (let* ((len (length string))
 	 (i 0)
-	 (dest (make-string len 0))
 	 (j 0)
 	 v1 v2 v3)
     (catch 'tag
@@ -106,30 +96,36 @@ external decoder is called."
 		i (1+ i)
 		v3 (base64-char-to-num (aref string i))
 		i (1+ i))
-	  (aset dest j (logior (lsh v1 2)(lsh v2 -4)))
+	  (aset buffer j (logior (lsh v1 2)(lsh v2 -4)))
 	  (setq j (1+ j))
 	  (if v3
 	      (let ((v4 (base64-char-to-num (aref string i))))
 		(setq i (1+ i))
-		(aset dest j (logior (lsh (logand v2 15) 4)(lsh v3 -2)))
+		(aset buffer j (logior (lsh (logand v2 15) 4)(lsh v3 -2)))
 		(setq j (1+ j))
 		(if v4
-		    (aset dest (prog1 j (setq j (1+ j)))
+		    (aset buffer (prog1 j (setq j (1+ j)))
 			  (logior (logand (lsh (logand v3 15) 6) 255)
 				  v4))
 		  (throw 'tag nil)
 		  ))
 	    (throw 'tag nil)
 	    ))))
-    (substring dest 0 j)
+    (substring buffer 0 j)
     ))
+
+(defun base64-internal-decode-string (string)
+  (base64-internal-decode string (make-string (length string) 0)))
+
+(defsubst base64-internal-decode-string! (string)
+  (base64-internal-decode string string))
 
 (defun base64-internal-decode-region (beg end)
   (save-excursion
     (let ((str (buffer-substring beg end)))
       (delete-region beg end)
       (goto-char beg)
-      (insert (base64-internal-decode-string str)))))
+      (insert (base64-internal-decode-string! str)))))
 
 
 ;;; @ internal base64 encoder
