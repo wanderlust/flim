@@ -385,6 +385,14 @@
 "Subject: \"a\"=?ISO-2022-JP?B?GyRCJCIbKEI=?=\"b\"")
 
 (decode
+"Subject: \"=?ISO-2022-JP?B?GyRCJCIbKEI=?=\""
+"Subject: \"=?ISO-2022-JP?B?GyRCJCIbKEI=?=\"")
+
+(decode
+"Subject: \" =?ISO-2022-JP?B?GyRCJCIbKEI=?= \""
+"Subject: \" あ \"")
+
+(decode
 "Subject: (Re: =?ISO-2022-JP?B?GyRCJCIbKEI=?=)"
 "Subject: (Re: =?ISO-2022-JP?B?GyRCJCIbKEI=?=)")
 
