@@ -8,7 +8,7 @@
 (defvar ew-ignore-76bytes-limit nil)
 (defvar ew-permit-sticked-comment nil)
 (defvar ew-permit-sticked-special nil)
-(defvar ew-permit-null-encoded-text nil) ; affect when loading time.
+(defvar ew-permit-null-encoded-text nil)
 
 (defvar ew-remove-bare-crlf nil)
 (defvar ew-default-mime-charset 'x-ctext)
@@ -123,10 +123,7 @@
 ;;; constants.
 
 (defconst ew-token-regexp "[-!#-'*+0-9A-Z^-~]+")
-(defconst ew-encoded-text-regexp
-  (if ew-permit-null-encoded-text
-      "[!->@-~]*"
-    "[!->@-~]+"))
+(defconst ew-encoded-text-regexp "[!->@-~]*")
 
 (defconst ew-encoded-word-regexp
   (concat (regexp-quote "=?")

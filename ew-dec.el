@@ -490,11 +490,13 @@ each line is separated by CRLF."
 	    (ew-ignore-76bytes-limit nil)
 	    (ew-permit-sticked-comment nil)
 	    (ew-permit-sticked-special nil)
+	    (ew-permit-null-encoded-text nil)
 	    (options
 	     '(ew-ignore-76bytes-limit
 	       ew-ignore-75bytes-limit
 	       ew-permit-sticked-special
 	       ew-permit-sticked-comment
+	       ew-permit-null-encoded-text
 	       ew-decode-sticked-encoded-word
 	       ew-decode-quoted-encoded-word
 	       ))

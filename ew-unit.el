@@ -25,13 +25,16 @@
 	    bdec cdec
 	    bcheck
 	    tmp)
-	(if (and (setq bdec (ew-byte-decoder encoding))
-		 (setq cdec (ew-char-decoder charset)))
-	    (if (or (null (setq bcheck (ew-byte-checker encoding)))
-		    (funcall bcheck encoding encoded-text))
-		(ew-quote (closure-call cdec (funcall bdec encoded-text)))
-	      (ew-quote str))
-	  (ew-quote-eword charset encoding encoded-text)))
+	(if (or ew-permit-null-encoded-text
+		(< 0 (length encoded-text)))
+	    (if (and (setq bdec (ew-byte-decoder encoding))
+		     (setq cdec (ew-char-decoder charset)))
+		(if (or (null (setq bcheck (ew-byte-checker encoding)))
+			(funcall bcheck encoding encoded-text))
+		    (ew-quote (closure-call cdec (funcall bdec encoded-text)))
+		  (ew-quote str))
+	      (ew-quote-eword charset encoding encoded-text))
+	  (ew-quote str)))
     (ew-quote str)))
 
 (defun ew-byte-decoder (encoding)
