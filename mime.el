@@ -289,9 +289,12 @@ If MESSAGE is specified, it is regarded as root entity."
 		    entity (put-alist field-name field header))
 		   field)))))))
 
-(mm-define-generic insert-decoded-header (entity &optional invisible-fields
-					  visible-fields)
+(mm-define-generic insert-header (entity &optional invisible-fields
+					 visible-fields)
   "Insert before point a decoded header of ENTITY.")
+
+(define-obsolete-function-alias
+  'mime-insert-decoded-header 'mime-insert-header)
 
 
 ;;; @ Entity Attributes
