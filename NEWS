@@ -96,6 +96,17 @@ body of ENTITY at point.
 
 Each mm-backend must have new method `insert-entity'.
 
+
+** New optional argument of `std11-field-end'
+
+Now `std11-field-end' can accept new optional argument BOUND.  Thus
+current interface is:
+
+  std11-field-end (&optional BOUND)
+
+If the optional argument BOUND is specified, it bounds the search; it
+is a buffer position.
+
 
 * Changes in FLIM 1.11
 
