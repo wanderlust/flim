@@ -1,8 +1,8 @@
 ;;; eword-encode.el --- RFC 2047 based encoded-word encoder for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
 
-;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -121,19 +121,19 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (while (> len 0)
       (let* ((chr (sref string 0))
 	     (charset (eword-encode-char-type chr))
-	     (i (char-length chr)))
+             (i 1)
+	     ;; (i (char-length chr))
+	     )
 	(while (and (< i len)
 		    (setq chr (sref string i))
-		    (eq charset (eword-encode-char-type chr))
-		    )
-	  (setq i (char-next-index chr i))
+		    (eq charset (eword-encode-char-type chr)))
+	  (setq i (1+ i))
+          ;; (setq i (char-next-index chr i))
 	  )
 	(setq dest (cons (cons charset (substring string 0 i)) dest)
 	      string (substring string i)
-	      len (- len i)
-	      )))
-    (nreverse dest)
-    ))
+	      len (- len i))))
+    (nreverse dest)))
 
 
 ;;; @ word
