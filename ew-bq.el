@@ -145,7 +145,7 @@
 
 (define-ccl-program ew-ccl-encode-uq
   (eval-when-compile
-    `(1
+    `(3
       (loop
        (loop
 	(read-branch
@@ -164,7 +164,7 @@
 
 (define-ccl-program ew-ccl-encode-cq
   (eval-when-compile
-    `(1
+    `(3
       (loop
        (loop
 	(read-branch
@@ -183,7 +183,7 @@
 
 (define-ccl-program ew-ccl-encode-pq
   (eval-when-compile
-    `(1
+    `(3
       (loop
        (loop
 	(read-branch
@@ -317,17 +317,91 @@
 
 ;;;
 
-(make-coding-system 'ew-ccl-uq 4 ?Q "Q-encoding in unstructured field"
+;; ew-ccl-encode-base64 does not works on 20.2 by same reason of ew-ccl-encode-b
+(define-ccl-program ew-ccl-encode-base64
+  (eval-when-compile
+    `(2
+      ((r3 = 0)
+       (loop
+	(r2 = 0)
+	(read-branch
+	 r1
+	 ,@(mapcar
+	    (lambda (r1)
+	      `((write ,(nth (lsh r1 -2) ew-ccl-64-to-256-table))
+		(r0 = ,(logand r1 3))))
+	    ew-ccl-256-table))
+	(r2 = 1)
+	(read-branch
+	 r1
+	 ,@(mapcar
+	    (lambda (r1)
+	      `((write r0 ,(vconcat
+			    (mapcar
+			     (lambda (r0)
+			       (nth (logior (lsh r0 4)
+					    (lsh r1 -4))
+				    ew-ccl-64-to-256-table))
+			     ew-ccl-4-table)))
+		(r0 = ,(logand r1 15))))
+	    ew-ccl-256-table))
+	(r2 = 2)
+	(read-branch
+	 r1
+	 ,@(mapcar
+	    (lambda (r1)
+	      `((write r0 ,(vconcat
+			    (mapcar
+			     (lambda (r0)
+			       (nth (logior (lsh r0 2)
+					    (lsh r1 -6))
+				    ew-ccl-64-to-256-table))
+			     ew-ccl-16-table)))))
+	    ew-ccl-256-table))
+	(r1 &= 63)
+	(write r1 ,(vconcat
+		    (mapcar
+		     (lambda (r1)
+		       (nth r1 ew-ccl-64-to-256-table))
+		     ew-ccl-64-table)))
+	(r3 += 1)
+	(if (r3 == 19) ; 4 * 19 = 76 --> line break.
+	    ((write "\r\n")
+	     (r3 = 0)))
+	(repeat)))
+      (branch
+       r2
+       (if (r0 > 0) (write "\r\n"))
+       ((write r0 ,(vconcat
+		    (mapcar
+		     (lambda (r0)
+		       (nth (lsh r0 4) ew-ccl-64-to-256-table))
+		     ew-ccl-4-table)))
+	(write "==\r\n"))
+       ((write r0 ,(vconcat
+		    (mapcar
+		     (lambda (r0)
+		       (nth (lsh r0 2) ew-ccl-64-to-256-table))
+		     ew-ccl-16-table)))
+	(write "=\r\n")))
+      )))
+
+;;;
+
+(make-coding-system 'ew-ccl-uq 4 ?Q "MIME Q-encoding in unstructured field"
 		    (cons ew-ccl-decode-q ew-ccl-encode-uq))
 
-(make-coding-system 'ew-ccl-cq 4 ?Q "Q-encoding in comment"
+(make-coding-system 'ew-ccl-cq 4 ?Q "MIME Q-encoding in comment"
 		    (cons ew-ccl-decode-q ew-ccl-encode-cq))
 
-(make-coding-system 'ew-ccl-pq 4 ?Q "Q-encoding in phrase"
+(make-coding-system 'ew-ccl-pq 4 ?Q "MIME Q-encoding in phrase"
 		    (cons ew-ccl-decode-q ew-ccl-encode-pq))
 
-(make-coding-system 'ew-ccl-b 4 ?B "B-encoding"
+(make-coding-system 'ew-ccl-b 4 ?B "MIME B-encoding"
 		    (cons ew-ccl-decode-b ew-ccl-encode-b))
+
+(make-coding-system 'ew-ccl-base64 4 ?B "MIME Base64-encoding"
+		    (cons ew-ccl-decode-b ew-ccl-encode-base64))
 
 ;;;
 

@@ -1,5 +1,13 @@
 1998-08-23  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-bq.el (ew-ccl-encode-uq): Change BUFFER_MAGNIFICATION to 3.
+	(ew-ccl-encode-cq): Ditto.
+	(ew-ccl-encode-pq): Ditto.
+	(ew-ccl-encode-base64): New CCL program.
+	(ew-ccl-base64): New coding system.
+
+1998-08-23  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-bq.el: Re-indented.
 
 1998-08-23  Tanaka Akira      <akr@jaist.ac.jp>
