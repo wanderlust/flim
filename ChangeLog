@@ -1,11 +1,177 @@
+2001-06-01  Kenichi OKADA  <okada@opaopa.org>
+
+	* SLIM: Version 1.14.7 released.
+
+2001-06-01  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mel-b-el.el: Require `pces' for the macro `as-binary-process'
+	when compiling.
+
+	* mel-q.el: Add a comment that the feature `poem' is also required
+	for the macro `as-binary-process'.
+
+2001-05-31  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	Merged MIME Parameter Value decoder.
+
+	* mime-parse.el (mime-decode-parameters): Renamed from
+	`mime-decode-parameter-plist'.
+	(mime-decode-parameter-alist): Removed.
+	(mime-decode-alist-to-plist): Ditto.
+
+	* FLIM-API.en (mime-entity-encoding): Abolish optional argument
+	`default-encoding'.
+	(mime-parse-Content-Tranfer-Encoding): Ditto.
+
+2001-05-02  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* eword-decode.el (eword-decode-encoded-word): Don't use `let'.
+
+	* mime-parse.el (mime-decode-parameter-plist): Modified
+	description of return value.
+	(mime-parse-Content-Type): Ditto.
+	(mime-read-Content-Type): Ditto.
+	(mime-parse-Content-Disposition): Ditto.
+	(mime-read-Content-Disposition): Ditto.
+	(mime-parse-Content-Transfer-Encoding): Ditto.
+	(mime-read-Content-Transfer-Encoding): Ditto.
+
+2001-05-01  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-parse-parameters): Don't use `equal' for
+	strings.
+	(mime-parse-Content-Type): Ditto.
+
+2001-04-30  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Use one temporary
+	buffer.
+	(mime-decode-parameter-plist): Changed internal data structure.
+
+2001-04-28  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* eword-decode.el (eword-encoded-word-regexp): Match for language.
+	(eword-decode-region): Refer the 7th parens, not 6th.
+	(eword-decode-encoded-word): Extract language information.
+	(eword-decode-encoded-text): New optional argument `language'.
+
+	* mime-def.el (mime-charset-regexp): Updated for RFC2231.
+
+	* mime-parse.el (mime-decode-parameter-plist): Fix regexp.
+	Use symbol for language information.
+
+	* tests/test-rfc2231.el: Renamed all testcases.
+
+2001-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Don't use
+	`int-char'.
+
+2001-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime.el (mime-entity-read-field): Would capitalize twice.
+
+	* mmbuffer.el (mime-entity-fetch-field): Ditto.
+
+	* mmexternal.el (mime-entity-fetch-field): Ditto.
+
+	* mmgeneric.el (mime-entity-fetch-field): Ditto.
+
+2001-04-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-plist): Modified
+	description of return value.
+	(mime-parse-Content-Type): Ditto.
+	(mime-read-Content-Type): Ditto.
+	(mime-parse-Content-Disposition): Ditto.
+	(mime-read-Content-Disposition): Ditto.
+	(mime-read-Content-Transfer-Encoding): Ditto.
+
+2001-04-25  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-lexical-analyze): Removed comments.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): New
+	implementation; use temporary buffer for conversion.
+	(mime-decode-parameter-encode-segment): Ditto.
+	(mime-decode-parameter-plist): Would put empty language info.
+
+	* test/test-rfc2231.el (test-rfc2231-10, test-rfc2231-11,
+	test-rfc2231-12): New testcases for language info.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el: Fixed comments.
+
+	* test/test-rfc2231.el (test-rfc2231-9): New testcase.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* test/test-rfc2231.el (test-rfc2231-7, test-rfc2231-8):
+	New testcases.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-def.el (mime-content-type-parameter): Expand
+	`mime-content-type-parameters'.
+
+	* mime-parse.el (mime-parse-Content-Disposition): Add
+	description of return value to the docstring.
+	(mime-parse-Content-Transfer-Encoding): Ditto.
+
+	* test/test-rfc2231.el: Made independent of internal
+	representation of Content-Type.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* FLIM-MK (check-flim): Limit filename of test files.
+
+	* test/test-rfc2231.el: New file.
+
+2001-04-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-plist): Shortcut for
+	parameters without extensions.
+
+2001-04-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-def.el (make-mime-content-type): Don't reverse parameters.
+	(make-mime-content-disposition): New function.
+
+	* mime-parse.el (mime-decode-parameter-value): Removed comments.
+	(mime-decode-parameter-encode-segment): New function.
+	(mime-decode-parameter-plist): New implementation.
+	Switched from decode-then-concat to concat-then-decode model.
+	(mime-parse-parameters): Strip quoted-pair in quoted-string.
+	(mime-parse-Content-Type): Use `make-mime-content-type'.
+	(mime-parse-Content-Disposition): Use
+	`make-mime-content-disposition'.
+
 2001-04-15  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* eword-decode.el (eword-lexical-analyze-internal):
 	Fix typo. [cf. <emacs-mime-ja:00425>]
 
+2001-04-11  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Allow lowercase.
+	(mime-decode-parameter-plist): Ditto.
+
 2001-04-10  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* std11.el (std11-lexical-analyze): Fix typo.
+
+2001-04-01   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el (lunit-test-listener-*): Abolish generic interface.
+	(lunit-test-result-notify): New function.
+	(lunit-test-result-run): Use it.
+	(lunit-test-result-error): Use it.
+	(lunit-test-result-failure): Use it.
+	(lunit-create-index-function): New function.
+	(lunit-generate-template): New command.
 
 2001-03-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
