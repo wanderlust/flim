@@ -1,3 +1,19 @@
+Wed Jul 22 16:40:07 GMT 1998
+1998-07-22  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* TESTPAT: Add 25 tests.
+
+	* TESTPAT: Fix comment convention.
+
+	* eword-decode.el (decode-entire-string): Add formal argument
+	`chars-must-be-quote'.
+	(eword-decode-unstructured): Add argument actual `chars-must-be-quote'.
+	(eword-decode-comment): Add argument actual `chars-must-be-quote'.
+	(eword-decode-quoted-string): Add argument actual `chars-must-be-quote'.
+	(eword-analyze-quoted-string): Does not quote result of
+	`eword-decode-quoted-string' as quoted-string because the result is
+	now already quoted-string form.
+
 1998-07-21  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: add two tests.

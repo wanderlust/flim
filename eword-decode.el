@@ -219,6 +219,7 @@ such as a version of Net$cape)."
 				   safe-regexp
 				   escape ; ?\\ or nil.
 				   delimiters ; list of chars.
+                                   chars-must-be-quote
 				   must-unfold
 				   code-conversion)
   (if (and code-conversion
@@ -240,14 +241,14 @@ such as a version of Net$cape)."
 	  (setq dst (concat dst
 	  	      (std11-wrap-as-quoted-pairs
 		        (decode-mime-charset-string buf code-conversion)
-			delimiters))
+			chars-must-be-quote))
 		buf ""))
 	(cond
 	  (decoded
 	    (setq dst (concat dst
 	    		(std11-wrap-as-quoted-pairs
 			  (car decoded)
-			  delimiters))
+			  chars-must-be-quote))
 		  src (cdr decoded)))
 	  ((memq ch delimiters)
 	    (setq dst (concat dst (list ch))
@@ -271,7 +272,7 @@ such as a version of Net$cape)."
       (setq dst (concat dst
       		  (std11-wrap-as-quoted-pairs
 		    (decode-mime-charset-string buf code-conversion)
-		    delimiters))))
+		    chars-must-be-quote))))
     dst))
 
 
@@ -286,6 +287,7 @@ such as a version of Net$cape)."
     "[^ \t\n=]*"
     nil
     nil
+    nil
     must-unfold
     code-conversion))
 
@@ -297,6 +299,7 @@ such as a version of Net$cape)."
     "[^ \t\n()\\\\=]*"
     ?\\
     '(?\( ?\))
+    '(?\( ?\) ?\\ ?\r ?\n)
     must-unfold
     code-conversion))
 
@@ -308,6 +311,7 @@ such as a version of Net$cape)."
     "[^ \t\n\"\\\\=]*"
     ?\\
     '(?\")
+    '(?\" ?\\ ?\r ?\n)
     must-unfold
     code-conversion))
 
@@ -577,10 +581,9 @@ be the result."
     (if p
         (cons (cons 'quoted-string
                     (if eword-decode-quoted-encoded-word
-                        (std11-wrap-as-quoted-string
-                         (eword-decode-quoted-string
-                          (substring string 1 (1- p))
-                          default-mime-charset))
+                        (eword-decode-quoted-string
+                          (substring string 0 p)
+                          default-mime-charset)
                       (std11-wrap-as-quoted-string
                        (decode-mime-charset-string
                         (std11-strip-quoted-pair (substring string 1 (1- p)))
