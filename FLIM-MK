@@ -47,14 +47,15 @@ LISPDIR=%s\n" PREFIX LISPDIR))
 
 (defun compile-flim-package ()
   (config-flim-package)
+
+  (setq autoload-package-name "flim")
+  (add-to-list 'command-line-args-left ".")
+  (batch-update-directory)
+
+  (add-to-list 'command-line-args-left ".")
+  (Custom-make-dependencies)
+
   (compile-elisp-modules flim-modules ".")
-  ;; (setq autoload-package-name "flim")
-  ;; (add-to-list 'command-line-args-left ".")
-  ;; (batch-update-directory)
-  ;; (add-to-list 'command-line-args-left ".")
-  ;; (Custom-make-dependencies)
-  ;; (byte-compile-file "auto-autoloads.el")
-  ;; (byte-compile-file "custom-load.el")
   )
 
 (defun install-flim-package ()
