@@ -1,8 +1,8 @@
 <!doctype sinfo system>
 <head>
-<title>FLIM 1.7 MIME 機能説明書
+<title>FLIM 1.8 MIME 機能説明書
 <author>守岡 知彦 <mail>morioka@jaist.ac.jp</mail>
-<date>1998/06/23
+<date>1998/07/01
 
 <toc>
 </head>
@@ -333,7 +333,6 @@ If <var>message</var> is not specified,
 
 <defun name="mime-insert-decoded-header">
 	    <args> entity <opts> invisible-fields visible-fields
-	    code-conversion
 <p>
 現在位置に <var>entity</var> の復号した header を挿入する。
 <p>
