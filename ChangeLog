@@ -1,3 +1,9 @@
+2004-02-17  Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-starttls-program): New user option.
+	(smtp-starttls-extra-args): New user option.
+	(smtp-send-buffer): Bind starttls-program and starttls-extra-args.
+
 2004-01-27  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* mel-q.el (quoted-printable-external-decoder-option-to-specify-file): 
