@@ -1,3 +1,11 @@
+1998-10-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el: New module.
+
+	* mmbuffer.el: Use `generic' as mother backend.
+
+	* FLIM-ELS (flim-modules): Add mmgeneric.
+
 1998-10-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-parse.el (mime-parse-message): Modify for
