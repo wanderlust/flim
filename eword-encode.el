@@ -595,7 +595,8 @@ Optional argument COLUMN is start-position of the field."
 	(or column eword-encode-default-start-column)
 	(eword-encode-split-string string 'text))))
 
-(defun eword-encode-field-body (field-body field-name)
+;;;###autoload
+(defun mime-encode-field-body (field-body field-name)
   "Encode FIELD-BODY as FIELD-NAME, and return the result.
 A lexical token includes non-ASCII character is encoded as MIME
 encoded-word.  ASCII token is not encoded."
@@ -614,18 +615,15 @@ encoded-word.  ASCII token is not encoded."
 		     Resent-Sender To Resent-To
 		     Cc Resent-Cc Bcc Resent-Bcc
 		     Dcc))
-	     (eword-encode-address-list field-body start)
-	     )
+	     (eword-encode-address-list field-body start))
 	    ((eq field-name 'In-Reply-To)
-	     (eword-encode-in-reply-to field-body start)
-	     )
+	     (eword-encode-in-reply-to field-body start))
 	    ((memq field-name '(Mime-Version User-Agent))
-	     (eword-encode-structured-field-body field-body start)
-	     )
+	     (eword-encode-structured-field-body field-body start))
 	    (t
-	     (eword-encode-unstructured-field-body field-body start)
-	     ))
-      )))
+	     (eword-encode-unstructured-field-body field-body start))))))
+(defalias 'eword-encode-field-body 'mime-encode-field-body)
+(make-obsolete 'eword-encode-field-body 'mime-encode-field-body)
 
 (defun eword-in-subject-p ()
   (let ((str (std11-field-body "Subject")))
@@ -672,9 +670,8 @@ It refer variable `mime-field-encoding-method-alist'."
 			       (buffer-substring-no-properties bbeg end)
 			       ))
 			  (delete-region bbeg end)
-			  (insert (eword-encode-field-body field-body
-							   field-name))
-			  ))
+			  (insert (mime-encode-field-body field-body
+							  field-name))))
 		       (code-conversion
 			(let ((cs
 			       (or (mime-charset-to-coding-system
