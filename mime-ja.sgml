@@ -111,8 +111,8 @@ depended on representation-type.
 <var>buffer</var> が省略された場合、現在の buffer を構文解析する。
 <p>
 <var>type</var> が指定された場合、その値を生成される mime-entity の表
-象型として用いる。<cf node="mm-backend"> 省略された場合は 
-<var>buffer</var> となる。
+象型として用いる。省略された場合は <var>buffer</var> となる。<cf
+node="mm-backend">
 </defun>
 
 
