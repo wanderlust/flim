@@ -1,3 +1,12 @@
+1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-string): Add DOC-string.
+	(eword-encode-address-list): Likewise.
+	(eword-encode-structured-field-body): Likewise.
+
+	* eword-encode.el (eword-encode-field): Regard `In-Reply-To' as a
+	structured field.
+
 1998-08-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-encode.el (eword-encode-field): Use `capitalize' instead
@@ -83,7 +92,7 @@
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.8.0 (Shij-Dò) was released.-A
+	* FLIM-Chao: Version 1.8.0 (Shij-Dò)-A was released.
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -195,7 +204,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-DÒkubo) was released.-A
+	* FLIM: Version 1.8.0 (-DÒkubo)-A was released.
 
 	* README.en: Delete `How to use'.
 
@@ -320,7 +329,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (Goj-Dò) was released.-A
+	* FLIM-Chao: Version 1.7.0 (Goj-Dò)-A was released.
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -579,7 +588,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae) was released.-A
+	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae)-A was released.
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -699,7 +708,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J-Dþjò) was released.-A
+	* FLIM: Version 1.2.0 (J-Dþjò)-A was released.
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -750,7 +759,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Dòji) was released.-A
+	* FLIM: Version 1.1.0 (T-Dòji)-A was released.
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -786,7 +795,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòto) was released.-A
+	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
