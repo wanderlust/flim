@@ -39,10 +39,10 @@ What's FLIM
 Installation
 ============
 
-(0) before installing it, please install APEL (9.21 or later) package.
+(0) before installing it, please install APEL (9.22 or later) package.
     APEL package is available at:
 
-	ftp://ftp.etl.go.jp/pub/mule/apel/
+	ftp://ftp.m17n.org/pub/mule/apel/
 
 (1-a) run in expanded place
 
