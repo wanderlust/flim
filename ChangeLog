@@ -1,5 +1,10 @@
 1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel-q.el (quoted-printable-internal-decode-region): New
+	implementation.
+
+1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel-q.el (q-encoding-decode-string): Use
 	`quoted-printable-hex-char-to-num'.
 
