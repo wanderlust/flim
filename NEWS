@@ -1,6 +1,41 @@
 FLIM NEWS --- history of major-changes.
 Copyright (C) 1998 Free Software Foundation, Inc.
 
+* Changes in FLIM 1.12
+
+** Restructure of field decoding features
+
+Introduce backend mechanism of field-decoder and
+field-presentation-method to restructure field decoding features.
+
+Field-decoder is registered into variable `mime-field-decoder-alist'.
+Each decoding function uses decoding method found from variable
+`mime-field-decoder-alist'.
+
+New function `mime-set-field-decoder' is added to register field
+decoding method.
+
+New function `mime-find-field-presentation-method' is added to get
+`field-presentation-method' object corresponding with specified
+field-presentation-mode.  Field-presentation-mode must be `plain',
+`wide', `summary' or `nov'.
+
+New function `mime-find-field-decoder' is added to find field decoding
+method corresponding with field-name and field-presentation-mode.
+   
+New function `mime-decode-field-body' is added.  It is general field
+decoder.
+
+
+** Function `mime-decode-header-in-buffer'
+
+Renamed from `eword-decode-header'.  `eword-decode-header' is defined
+as obsolete alias.
+
+
+** New function `mime-decode-header-in-region'
+
+
 * Changes in FLIM 1.11
 
 ** New function `mime-insert-text-content'
