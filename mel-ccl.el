@@ -1173,7 +1173,7 @@ abcdefghijklmnopqrstuvwxyz\
 ;;; @ B
 ;;;
 
-(unless-broken ccl-execute-eof-block-on-encoding-some
+(unless-broken ccl-execute-eof-block-on-decoding-some
 
   (defun base64-ccl-encode-string (string)
     "Encode STRING with base64 encoding."
@@ -1216,7 +1216,8 @@ abcdefghijklmnopqrstuvwxyz\
   (interactive
     (list (region-beginning) (region-end)
           (read-file-name "Write decoded region to file: ")))
-  (let ((coding-system-for-write 'mel-ccl-b-rev))
+  (let ((coding-system-for-write 'mel-ccl-b-rev)
+	jka-compr-compression-info-list)
     (write-region start end filename)))
 
 (mel-define-method-function (mime-decode-string string (nil "base64"))
@@ -1237,7 +1238,7 @@ abcdefghijklmnopqrstuvwxyz\
 ;;; @ quoted-printable
 ;;;
 
-(unless-broken ccl-execute-eof-block-on-encoding-some
+(unless-broken ccl-execute-eof-block-on-decoding-some
 
   (defun quoted-printable-ccl-encode-string (string)
     "Encode STRING with quoted-printable encoding."

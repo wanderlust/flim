@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(defconst mime-library-product ["Chao" (1 11 2) "Kita.DŽòji"]
+(defconst mime-library-product ["Chao" (1 11 3) "Kitayama"]
   "Product name, version number and code name of MIME-library package.")
 
 (defmacro mime-product-name (product)
