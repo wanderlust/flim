@@ -1,5 +1,11 @@
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* eword-encode.el (eword-encode): New group.
+	(eword-field-encoding-method-alist): Now a user option (was:
+	variable).
+
+1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* eword-encode.el: Rename `tm-eword::mailbox-to-rwl' ->
 	`eword-encode-mailbox-to-rword-list'.
 
