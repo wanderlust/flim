@@ -565,12 +565,14 @@ Return value of <var>parameter</var> of <var>content-type</var>.
 <defun name="mime-parse-Content-Type">
 	    <args> string
 <p>
-Parse <var>string</var> as a field-body of Content-Type field.
+Parse <var>string</var> as a field-body of Content-Type field, and
+return the result as <dref>mime-content-type</dref> structure.
 </defun>
 
 <defun name="mime-read-Content-Type">
 <p>
-Parse Content-Type field of the current buffer, and return the result.
+Parse Content-Type field of the current buffer, and return the result
+as <dref>mime-content-type</dref> structure.
 <p>
 Return <code>nil</code> if Content-Type field is not found.
 </defun>
