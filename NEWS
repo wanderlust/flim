@@ -36,7 +36,15 @@ as obsolete alias.
 ** New function `mime-decode-header-in-region'
 
 
-** Change interface of lexical-analyzers
+** Changes about lexical-analyzers
+
+*** New user option `std11-lexical-analyzer'
+
+Now function `std11-lexical-analyze' refers user option
+`std11-lexical-analyzer'.
+
+
+*** Change interface of lexical-analyzers
 
 Interface of function `eword-lexical-analyze' was changed from
 `(string &optional must-unfold)' to `(string &optional start
@@ -46,8 +54,9 @@ option `eword-lexical-analyzers' was changed likewise.
 Function `eword-extract-address-components' was added new optional
 argument `START' to specify start position of `STRING' to parse.
 
-Function `std11-lexical-analyze' was added new optional argument
-`START' to specify start position of `STRING' to analyze.
+Function `std11-lexical-analyze' was added new optional arguments
+`ANALYZER' to specify lexical-analyzer and `START' to specify start
+position of `STRING' to analyze.
 
 Interface of lexical analyzers for STD 11 was changed from `(string)'
 to `(string &optional start)'.
