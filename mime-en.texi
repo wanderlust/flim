@@ -445,15 +445,16 @@ mechanism to represent kind of character code like MIME charset.
 @end quotation
 
 
-FLIM は Content-Type 欄を構文解析する関数と Content-Type 欄の解析結果を
-格納する構造体 @strong{mime-content-type} を提供します。
+FLIM provides parser for Content-Type field and structure
+@strong{mime-content-type} to store information of
+Content-Type field.
 
 
 @menu
 * Content-Type field::          Format of Content-Type field
 * mime-content-type::           mime-content-type structure
-* Content-Type parser::         Parser for Content-Type field
-* Content-Type utility::        Content-Type
+* Content-Type parser::         Parser
+* Content-Type utility::        Utility functions
 @end menu
 
 @node Content-Type field, mime-content-type, Content-Type, Content-Type
@@ -552,7 +553,7 @@ content-type の生成子。
 
 
 @node Content-Type parser, Content-Type utility, mime-content-type, Content-Type
-@section Parser for Content-Type field
+@section Parser
 
 @defun mime-parse-Content-Type string
 
@@ -570,7 +571,7 @@ Content-Type 欄が存在しない場合は nil を返す。
 
 
 @node Content-Type utility,  , Content-Type parser, Content-Type
-@section Content-Type
+@section Utility functions
 
 @defun mime-type/subtype-string type  &optional  subtype
 
