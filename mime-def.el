@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "FLIM 1.2.2 - \"Takeda\"")
+  "Chao 1.2.0 - \"Takeda\"")
 
 
 ;;; @ variables
