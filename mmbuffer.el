@@ -117,9 +117,10 @@
 					    filename)
   (save-excursion
     (set-buffer (mime-buffer-entity-buffer-internal entity))
-    (write-region-as-binary (mime-buffer-entity-body-start-internal entity)
-			    (mime-buffer-entity-body-end-internal entity)
-			    filename)))
+    (binary-write-decoded-region
+     (mime-buffer-entity-body-start-internal entity)
+     (mime-buffer-entity-body-end-internal entity)
+     filename)))
 
 
 ;;; @ entity content

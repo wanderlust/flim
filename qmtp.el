@@ -35,6 +35,7 @@
 
 (require 'poem)
 (require 'pcustom)
+(require 'mel) ; binary-funcall
 
 (defgroup qmtp nil
   "QMTP protocol for sending mail."
@@ -127,10 +128,10 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
     (let (process)
       (unwind-protect
 	  (progn
-	    (as-binary-process
-	     (setq process
-		   (funcall qmtp-open-connection-function
-			    "QMTP" (current-buffer) qmtp-server qmtp-service)))
+	    (setq process
+		  (binary-funcall qmtp-open-connection-function
+				  "QMTP" (current-buffer)
+				  qmtp-server qmtp-service))
 	    (qmtp-send-package process sender recipients buffer))
 	(when (and process
 		   (memq (process-status process) '(open run)))

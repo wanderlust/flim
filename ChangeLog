@@ -1,3 +1,85 @@
+2000-12-26  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mel.el (binary-to-text-funcall): Bind
+	`default-process-coding-system', `input-coding-system',
+	`output-coding-system', `program-coding-system-alist', and
+	`selective-display' for old Emacsen.  It won't work with Nemacs.
+	(binary-funcall): Bind `default-kanji-flag',
+	`default-kanji-process-code', `default-mc-flag',
+	`default-process-coding-system', `input-coding-system',
+	`kanji-flag', `mc-flag', `output-coding-system',
+	`program-coding-system-alist', `program-kanji-code-alist'
+	and `selective-display' for old Emacsen.
+	(binary-find-file-noselect): Alias to
+	`find-file-noselect-as-binary'.
+	(binary-insert-encoded-file): Alias to
+	`insert-file-contents-as-binary'.
+	(binary-write-decoded-region): Alias to `write-region-as-binary'.
+	(8bit-write-decoded-region): Use `write-region-as-coding-system'
+	with the 1st arg `raw-text'.
+	(8bit-insert-encoded-file): Alias to
+	`insert-file-contents-as-raw-text'.
+
+
+2000-12-25  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.2 (Yagi-Nishiguchi) released.
+
+2000-12-23  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* smtpmail.el (smtpmail-send-it): Use
+	`binary-write-decoded-region' instead of `binary-write-region'.
+
+	* mmexternal.el (mmexternal-require-buffer): Use
+	`binary-insert-encoded-file' instead of
+	`binary-insert-file-contents'.
+	(mime-write-entity-body): Use `binary-write-decoded-region'
+	instead of `binary-write-region'.
+
+	* mmbuffer.el (mime-write-entity-body): Use
+	`binary-write-decoded-region' instead of `binary-write-region'.
+
+	* mel.el: - Don't require `raw-io'.
+	(8bit-insert-encoded-file): New function.
+	(8bit-write-decoded-region): New function.
+	(7bit-insert-encoded-file): New alias.
+	(7bit-write-decoded-region): New alias.
+	(binary-insert-encoded-file): New alias.
+	(binary-find-file-noselect): New function.
+	(binary-funcall): New function.
+	(binary-to-text-funcall): New function.
+	(mime-insert-encoded-file of "base64"): Use
+	`binary-insert-encoded-file' instead of
+	`binary-insert-file-contents'.
+
+	* FLIM-API.en (base64-decode-string): New function.
+	(base64-encode-string): New function.
+	(ENCODING-write-decoded-region): New function.
+	(ENCODING-insert-encoded-file): New function.
+
+	* raw-io.el: Deleted.
+
+	* FLIM-ELS (flim-modules): Delete `raw-io'.
+
+2000-12-22  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* smtp.el (smtp-open-connection-function): Revert initial value to
+	`open-network-stream'.
+	(qmtp-open-connection): Use `binary-funcall'.
+
+	* qmtp.el (qmtp-open-connection-function): Revert initial value to
+	`open-network-stream'.
+	(qmtp-send-buffer): Use `binary-funcall'.
+
+2000-12-23  OKAZAKI Tetsurou  <okazaki@be.to>
+
+	* FLIM-ELS (flim-modules): Delete `mmdbuffer'.
+
+
+2000-12-22  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.1 (Yagi) released.
+
 2000-12-22  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* raw-io.el (binary-start-process-shell-command): Replace #' with
@@ -48,6 +130,8 @@
 
 
 2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.0 (Ninokuchi) released.
 
 	* mime.el (mime-entity-media-type): Add DOC.
 	(mime-entity-media-subtype): Add DOC.
@@ -519,7 +603,7 @@
 
 2000-07-12  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-	* FLIM-Chao: Version 1.14.1 (Rokujiz~) released.
+	* FLIM-Chao: Version 1.14.1 (Rokujiz-Dò)-A released.
 
 2000-07-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -718,7 +802,7 @@
 
 1999-12-14  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* CLIME: Version 1.13.6 (Nakanosh~) released.
+	* CLIME: Version 1.13.6 (Nakanosh-Dò)-A released.
 
 1999-12-13  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -865,7 +949,7 @@
 
 1999-08-19  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* CLIME: Version 1.13.0 (Shin-H~ry~ji) released.
+	* CLIME: Version 1.13.0 (Shin-H-Dòryþji)-A released.
 
 1999-08-18  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -1297,7 +1381,7 @@
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.7 (Y~zaki) released.
+	* FLIM: Version 1.12.7 (Y-Dþzaki)-A released.
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -1472,7 +1556,7 @@
 
 1999-05-11  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.6 (Family-K~enmae) released.
+	* FLIM: Version 1.12.6 (Family-K-Dòenmae)-A released.
 
 1999-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
@@ -1589,7 +1673,7 @@
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.3 (Kintetsu-K~riyama) released.
+	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama)-A released.
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1632,7 +1716,7 @@
 
 1999-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.2 (Kuj~) released.
+	* FLIM: Version 1.12.2 (Kuj-Dò)-A released.
 
 1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1818,7 +1902,7 @@
 
 1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.1 (Nishinoky~) released.
+	* FLIM: Version 1.12.1 (Nishinoky-Dò)-A released.
 
 1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2036,7 +2120,7 @@
 
 1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.11.2 (Heij~) was released.
+	* FLIM: Version 1.11.2 (Heij-Dò)-A was released.
 
 	* NEWS (Abolish variable `mime-temp-directory'): New subsection.
 
@@ -2316,7 +2400,7 @@
 
 1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.4 (Shin-H~sono) was released.
+	* FLIM: Version 1.10.4 (Shin-H-Dòsono)-A was released.
 
 1998-10-12  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -2501,7 +2585,7 @@
 
 1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.0 (K~do) was released.
+	* FLIM: Version 1.10.0 (K-Dòdo)-A was released.
 
 	* README.en (What's FLIM): Add mel-ccl.el.
 
@@ -2788,7 +2872,7 @@
 
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.9.1 (Tonosh~) was released.
+	* FLIM: Version 1.9.1 (Tonosh-Dò)-A was released.
 
 	* mime-en.sgml (mm-backend): Translate a little.
 
@@ -2931,7 +3015,7 @@
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.8.0 (Shij~) was released.
+	* FLIM-Chao: Version 1.8.0 (Shij-Dò)-A was released.
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3043,7 +3127,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (~kubo) was released.
+	* FLIM: Version 1.8.0 (-DÒkubo)-A was released.
 
 	* README.en: Delete `How to use'.
 
@@ -3168,7 +3252,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (Goj~) was released.
+	* FLIM-Chao: Version 1.7.0 (Goj-Dò)-A was released.
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3427,7 +3511,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-Gory~mae) was released.
+	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae)-A was released.
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3547,7 +3631,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J~j~) was released.
+	* FLIM: Version 1.2.0 (J-Dþjò)-A was released.
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -3598,7 +3682,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T~ji) was released.
+	* FLIM: Version 1.1.0 (T-Dòji)-A was released.
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3634,7 +3718,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky~to) was released.
+	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
