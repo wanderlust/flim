@@ -57,9 +57,10 @@
 
 ;;-------------------------------------------------------------------------
 ;;	Keihan Electric Railway	$(B5~:eEE5$E4F;(B	http://www.keihan.co.jp/
-;;				$(B3{El@~(B
+;;	-DÒtò-A Line		$(B3{El@~(B
 ;;-------------------------------------------------------------------------
 1.14.5	Demachiyanagi		$(B=PD.Lx(B		; <=> $(B1CEE(B
+1.14.6	Marutamachi		$(B4]B@D.(B
 
 
 [Chao Version names]
@@ -125,7 +126,7 @@
 1.14.3	Terai-Nishikuchi	$B;{0f@>8}(B
 1.14.4	Jid-Dò-Asha-Renraku		$B<+F0<VO"Mm(B
 1.14.5	Hon-Terai		$BK\;{0f(B
-------	Suenobu-Ushijima	$BKv?.5mEg(B
+1.14.6	Suenobu-Ushijima	$BKv?.5mEg(B
 ------	Kaga-Sano		$B2C2l:4Ln(B
 ------	Yunotani-Ishiko		$BErC+@P;R(B
 ------	Tokuhisa		$BFA5W(B

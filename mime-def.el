@@ -1,6 +1,7 @@
 ;;; mime-def.el --- definition module about MIME -*- coding: iso-2022-jp; -*-
 
-;; Copyright (C) 1995,96,97,98,99,2000,2001,2002 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,2001,2002,2003
+;;   Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
@@ -34,7 +35,7 @@
 (eval-when-compile (require 'luna))	; luna-arglist-to-arguments
 
 (eval-and-compile
-  (defconst mime-library-product ["CLIME" (1 14 5) "本寺井"]
+  (defconst mime-library-product ["CLIME" (1 14 6) "末信牛島"]
     "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)
@@ -83,6 +84,12 @@
   :group 'mime-header
   :type '(choice (integer :tag "Limit (bytes)")
 		 (const :tag "Don't limit" nil)))
+
+(defcustom mime-header-accept-quoted-encoded-words nil
+  "*Accept encoded-words in quoted-strings."
+  :group 'mime-header
+  :type 'boolean)
+
 
 ;;; @@@ encoding
 ;;;

@@ -1,3 +1,20 @@
+2003-12-14  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-def.el (mime-header-accept-quoted-encoded-words): Change
+	default value to nil.
+
+2003-03-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-decode.el (eword-analyze-quoted-string): Decode
+	quoted-encoded-words when
+	`mime-header-accept-quoted-encoded-words' is not nil.
+
+	* mime.el (mime-entity-filename): Decode quoted-encoded-words when
+	`mime-header-accept-quoted-encoded-words' is not nil.
+
+	* mime-def.el (mime-header-accept-quoted-encoded-words): New user
+	option.
+
 2003-12-14  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
 
 	* eword-encode.el (mime-header-charset-encoding-alist): Add
