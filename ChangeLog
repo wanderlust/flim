@@ -1,3 +1,7 @@
+2000-11-16  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl-digest.el (sasl-digest-md5-response): Fix typo.
+
 2000-11-12   Daiki Ueno  <ueno@unixuser.org>
 
 	* smtp.el (smtp-primitive-data): Use `beginning-of-line' instead of
