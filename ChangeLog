@@ -1,3 +1,14 @@
+1999-01-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-find-entity-from-content-id): New function.
+	(mime-field-parser-alist): Use `mime-parse-msg-id' instead of
+	`std11-parse-msg-id' to parse `Message-Id', `Recent-Message-Id'
+	and `Content-Id' field.
+
+	* mime-parse.el (mime-parse-msg-id): New function.
+	(mime-uri-parse-cid): New function.
+
+
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama)-A released.
