@@ -1,5 +1,9 @@
 1999-03-09  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* digraph.el (digraph-saf-dfs): Use implicit control stack.
+
+1999-03-09  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* digraph.el: Refined.
 
 	* automata.el (automata): Adopted to above.
