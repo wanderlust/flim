@@ -1,5 +1,26 @@
 2000-12-04   Daiki Ueno  <ueno@unixuser.org>
 
+	* luna.el (luna-class-find-functions): Don't quote colon keywords.
+	(luna-send): Ditto.
+	(luna-call-next-method): Ditto.
+
+2000-11-28   Daiki Ueno  <ueno@unixuser.org>
+
+	* luna.el: Don't require `static'.
+	(luna-define-class-function): Don't bind colon keywords.
+	(luna-class-find-functions): Quote colon keywords.
+	(luna-send): Likewise.
+	(luna-call-next-method): Likewise.
+
+2000-11-12   Daiki Ueno  <ueno@unixuser.org>
+
+	* luna.el (luna-define-method): Clear method cache.
+	(luna-apply-generic): New function.
+	(luna-define-generic): Use `luna-apply-generic' instead of
+	`luna-send'.
+
+2000-12-04   Daiki Ueno  <ueno@unixuser.org>
+
         * smtpmail.el (smtpmail-send-it): Use `smtp-send-buffer' instead of
         `smtp-via-smtp'.
         (smtpmail-send-queued-mail): Ditto.
@@ -2586,7 +2607,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-DÉÅkubo)-A was released.
+	* FLIM: Version 1.8.0 (ÉÅkubo) was released.
 
 	* README.en: Delete `How to use'.
 
