@@ -32,11 +32,14 @@ LISPDIR=%s\n" PREFIX LISPDIR))
 
 (defun compile-flim ()
   (config-flim)
+  (compile-elisp-modules flim-version-specific-modules ".")
   (compile-elisp-modules flim-modules ".")
   )
 
 (defun install-flim ()
   (config-flim)
+  (install-elisp-modules flim-version-specific-modules "./"
+			 FLIM_VERSION_SPECIFIC_DIR)
   (install-elisp-modules flim-modules "./" FLIM_DIR)
   )
 
@@ -64,12 +67,14 @@ LISPDIR=%s\n" PREFIX LISPDIR))
   (add-to-list 'command-line-args-left ".")
   (Custom-make-dependencies)
 
+  (compile-elisp-modules flim-version-specific-modules ".")
   (compile-elisp-modules flim-modules ".")
   )
 
 (defun install-flim-package ()
   (config-flim-package)
-  (install-elisp-modules flim-modules
+  (install-elisp-modules (append flim-version-specific-modules
+				 flim-modules)
 			 "./"
 			 (expand-file-name FLIM_PREFIX
 					   (expand-file-name "lisp"

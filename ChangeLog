@@ -1,3 +1,20 @@
+2000-11-24  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+      * FLIM-MK (compile-flim): Compile `flim-version-specific-modules'.
+      (install-flim): Install `flim-version-specific-modules' to
+      `FLIM_VERSION_SPECIFIC_DIR'.
+      (compile-flim-package): Compile `flim-version-specific-modules'.
+      (install-flim-package): Install `flim-version-specific-modules'.
+  
+      * FLIM-ELS (flim-modules): Add `mime-conf' instead of `mailcap'.
+      (flim-version-specific-modules): New variable; specify `mailcap'.
+  
+      * FLIM-CFG (FLIM_VERSION_SPECIFIC_DIR): New variable.
+
+      * mailcap.el: Completely rewrote to use mime-conf.el.
+  
+      * mime-conf.el: New file.
+
 2000-11-26  Kenichi OKADA   <okada@opaopa.org>
 
 	* SLIM: Version 1.14.4 released.
