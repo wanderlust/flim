@@ -355,11 +355,25 @@ message/rfc822, `mime-entity' structures of them are included in
 ;;; @ for mel-backend
 ;;;
 
+(defmacro mel-define-service (name &optional args &rest rest)
+  (if args
+      `(progn
+	 (defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
+	 (defun ,name ,args
+	   ,@rest
+	   (funcall (mel-find-function ',name ,(car (last args)))
+		    ,@(mm-arglist-to-arguments (butlast args)))
+	   ))
+    `(defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
+    ))
+
+(put 'mel-define-service 'lisp-indent-function 'defun)
+
 (defmacro mel-define-method (name args &rest body)
   (let* ((specializer (car (last args)))
 	 (class (nth 1 specializer)))
     `(progn
-       (defvar ,(intern (format "%s-obarray" name)) [nil])
+       (mel-define-service ,name)
        (fset (intern ,class ,(intern (format "%s-obarray" name)))
 	     (lambda ,(butlast args)
 	       ,@body)))))
@@ -372,7 +386,7 @@ message/rfc822, `mime-entity' structures of them are included in
 	 (specializer (car (last args)))
 	 (class (nth 1 specializer)))
     `(progn
-       (defvar ,(intern (format "%s-obarray" name)) [nil])
+       (mel-define-service ,name)
        (fset (intern ,class ,(intern (format "%s-obarray" name)))
 	     (symbol-function ,function)))))
 
