@@ -1,5 +1,15 @@
 2000-08-16   Daiki Ueno  <ueno@unixuser.org>
 
+	* smtp.el (smtp-default-commands): Abolish.
+	(smtp-commands): Abolish.
+	(smtp-transaction): Delete slots about package information.
+	(smtp-transaction-function): Abolish.
+	(smtp-greeting,smtp-ehlo,smtp-helo,smtp-mailfrom,
+	smtp-rcptto,smtp-data): Define as function.
+	(smtp-default-transaction-compose-function): New function.
+	(smtp-closure-partial-apply): New function.
+	(smtp-transaction-compose-function): New variable.
+
 	* qmtp.el (qmtp-timeout): New user option.
 	(qmtp-read-point): New variable.
 	(qmtp-send-package): New function.
