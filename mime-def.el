@@ -24,7 +24,15 @@
 
 ;;; Code:
 
-(defconst mime-library-version-string "FLIM 1.9.1 - \"Tonosh,Dr(B\"")
+(defconst mime-library-version
+  '("FLIM" "Tonosh-Dò"-A 1 9 1)
+  "Implementation name, version name and numbers of MIME-library package.")
+
+(defconst mime-library-version-string
+  `,(concat (car mime-library-version) " "
+	    (mapconcat #'number-to-string
+		       (cddr mime-library-version) ".")
+	    " - \"" (cadr mime-library-version) "\""))
 
 
 ;;; @ variables
