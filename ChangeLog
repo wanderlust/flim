@@ -1,3 +1,13 @@
+1998-08-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-field): Use `capitalize' instead
+ 	of `downcase' for `field-name'.
+
+	* eword-encode.el (eword-encode-structured-field-body): New
+ 	function.
+	(eword-encode-field): Use `eword-encode-structured-field-body' for
+ 	"MIME-Version" and "User-Agent" field.
+
 1998-08-26  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* mime-def.el (mm-define-method): Put `edebug-form-spec'.
