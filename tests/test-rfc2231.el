@@ -96,3 +96,15 @@
  title*=us-ascii'en-us'This%20is%20%2a%2a%2afun%2a%2a%2a")
        "title")
       "This is ***fun***"))))
+
+;;; unencoded segments MUST NOT be decoded.
+(luna-define-method test-rfc2231-9 ((case test-rfc2231))
+  (lunit-assert
+   (string=
+    (mime-content-type-parameter
+     (mime-parse-Content-Type "application/x-stuff;
+ title*0*=us-ascii'en'This%20is%20even%20more%20;
+ title*1*=%2A%2A%2Afun%2A%2A%2A%20;
+ title*2=\"isn%27t%20it!\"")
+     "title")
+    "This is even more ***fun*** isn%27t%20it!")))
