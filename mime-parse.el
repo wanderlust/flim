@@ -31,6 +31,44 @@
 (eval-when-compile (require 'cl))
 
 
+;;; @ lexical analyzer
+;;;
+
+(defcustom mime-lexical-analyzer
+  '(std11-analyze-quoted-string
+    std11-analyze-domain-literal
+    std11-analyze-comment
+    std11-analyze-spaces
+    mime-analyze-tspecial
+    mime-analyze-token)
+  "*List of functions to return result of lexical analyze.
+Each function must have two arguments: STRING and START.
+STRING is the target string to be analyzed.
+START is start position of STRING to analyze.
+
+Previous function is preferred to next function.  If a function
+returns nil, next function is used.  Otherwise the return value will
+be the result."
+  :group 'mime
+  :type '(repeat function))
+
+(defun mime-analyze-tspecial (string start)
+  (if (and (> (length string) start)
+	   (memq (aref string start) mime-tspecial-char-list))
+      (cons (cons 'tpecials (substring string start (1+ start)))
+	    (1+ start))
+    ))
+
+(defun mime-analyze-token (string start)
+  (if (and (string-match mime-token-regexp string start)
+	   (= (match-beginning 0) start))
+      (let ((end (match-end 0)))
+	(cons (cons 'mime-token (substring string start end))
+	      ;;(substring string end)
+	      end)
+	)))
+
+
 ;;; @ field parser
 ;;;
 
@@ -134,14 +172,14 @@ and return parsed it."
 ;;;###autoload
 (defun mime-parse-Content-Transfer-Encoding (string)
   "Parse STRING as field-body of Content-Transfer-Encoding field."
-  (let ((tokens (std11-lexical-analyze string))
+  (let ((tokens (std11-lexical-analyze string mime-lexical-analyzer))
 	token)
     (while (and tokens
 		(setq token (car tokens))
 		(std11-ignored-token-p token))
       (setq tokens (cdr tokens)))
     (if token
-	(if (eq (car token) 'atom)
+	(if (eq (car token) 'mime-token)
 	    (downcase (cdr token))
 	  ))))
 
