@@ -25,7 +25,7 @@ GOMI	= *.elc \
 FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 VERSION	= $(API).$(RELEASE)
-ARC_DIR = /pub/mule/flim/$(PACKAGE)-$(API)
+ARC_DIR = /pub/mule/flim/flim-$(API)
 SEMI_ARC_DIR = /pub/mule/semi/semi-1.13-for-flim-$(API)
 
 elc:
