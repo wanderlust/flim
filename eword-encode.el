@@ -1,6 +1,6 @@
 ;;; eword-encode.el --- RFC 2047 based encoded-word encoder for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
@@ -575,8 +575,7 @@ Optional argument COLUMN is start-position of the field."
   (car (eword-encode-rword-list
 	(or column 13)
 	(eword-encode-in-reply-to-to-rword-list
-	 (std11-parse-in-reply-to
-	  (std11-lexical-analyze string))))))
+	 (std11-parse-msg-ids-string string)))))
 
 (defun eword-encode-structured-field-body (string &optional column)
   "Encode header field STRING as structured field, and return the result.
