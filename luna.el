@@ -133,6 +133,26 @@ The optional 2nd arg SLOTS is a list of slots CLASS will have."
 (defmacro luna-class-slot-index (class slot-name)
   (` (get (luna-class-find-member (, class) (, slot-name)) 'luna-slot-index)))
 
+(defun luna-make-clear-method-cache-function (name)
+  "Make a function to clear cached method functions.
+NAME is a symbol which has a cache as the property `luna-method-cache'.
+This function is exclusively used by the macro `luna-define-method'."
+  (if (fboundp 'unintern) ;; Emacs 19.29 and later, XEmacs 19.14 and later.
+      '(mapatoms
+	(function
+	 (lambda (s)
+	   (if (memq (symbol-function sym) (symbol-value s))
+	       (unintern s cache))))
+	cache)
+    (` (let ((new (make-vector (length cache) 0)))
+	 (mapatoms
+	  (function
+	   (lambda (s)
+	     (or (memq (symbol-function sym) (symbol-value s))
+		 (set (intern (symbol-name s) new) (symbol-value s)))))
+	  cache)
+	 (put '(, name) 'luna-method-cache new)))))
+
 (defmacro luna-define-method (name &rest definition)
   "Define NAME as a method of a luna class.
 
@@ -167,31 +187,27 @@ method.  If it is not string, it is treated as BODY.
 
 The optional 5th BODY is the body of the method."
   (let ((method-qualifier (pop definition))
-	args specializer class self)
+	args specializer class self clear-cache)
     (if (memq method-qualifier '(:before :after :around))
 	(setq args (pop definition))
       (setq args method-qualifier
 	    method-qualifier nil))
     (setq specializer (car args)
 	  class (nth 1 specializer)
-	  self (car specializer))
+	  self (car specializer)
+	  args (if self
+		   (cons self (cdr args))
+		 (cdr args))
+	  clear-cache (luna-make-clear-method-cache-function name))
     (` (let ((func (function
-		    (lambda (, (if self
-				   (cons self (cdr args))
-				 (cdr args)))
+		    (lambda (, args)
 		      (,@ definition))))
 	     (sym (luna-class-find-or-make-member
 		   (luna-find-class '(, class)) '(, name)))
 	     (cache (get '(, name) 'luna-method-cache)))
 	 (and cache
 	      (fboundp sym)
-	      (let ((new (make-vector (length cache) 0)))
-		(mapatoms
-		 (lambda (s)
-		   (or (memq (symbol-function sym) (symbol-value s))
-		       (set (intern (symbol-name s) new) (symbol-value s))))
-		 cache)
-		(put '(, name) 'luna-method-cache new)))
+	      (, clear-cache))
 	 (fset sym func)
 	 (put sym 'luna-method-qualifier (, method-qualifier))))))
 
