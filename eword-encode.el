@@ -165,15 +165,15 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ rule
 ;;;
 
-(defmacro tm-eword::make-rword (text charset encoding type)
+(defmacro make-ew-rword (text charset encoding type)
   (` (list (, text)(, charset)(, encoding)(, type))))
-(defmacro tm-eword::rword-text (rword)
+(defmacro ew-rword-text (rword)
   (` (car (, rword))))
-(defmacro tm-eword::rword-charset (rword)
+(defmacro ew-rword-charset (rword)
   (` (car (cdr (, rword)))))
-(defmacro tm-eword::rword-encoding (rword)
+(defmacro ew-rword-encoding (rword)
   (` (car (cdr (cdr (, rword))))))
-(defmacro tm-eword::rword-type (rword)
+(defmacro ew-rword-type (rword)
   (` (car (cdr (cdr (cdr (, rword)))))))
 
 (defun tm-eword::find-charset-rule (charsets)
@@ -188,7 +188,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
   (mapcar (function
 	   (lambda (word)
 	     (let ((ret (tm-eword::find-charset-rule (car word))))
-	       (tm-eword::make-rword (cdr word) (car ret)(nth 1 ret) mode)
+	       (make-ew-rword (cdr word) (car ret)(nth 1 ret) mode)
 	       )))
 	  wl))
 
@@ -198,13 +198,13 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
       (setq b (car seq))
       (setq seq (cdr seq))
       (setq c (car seq))
-      (setq cc (tm-eword::rword-charset c))
-      (if (null (tm-eword::rword-charset b))
+      (setq cc (ew-rword-charset c))
+      (if (null (ew-rword-charset b))
 	  (progn
 	    (setq a (car prev))
-	    (setq ac (tm-eword::rword-charset a))
-	    (if (and (tm-eword::rword-encoding a)
-		     (tm-eword::rword-encoding c))
+	    (setq ac (ew-rword-charset a))
+	    (if (and (ew-rword-encoding a)
+		     (ew-rword-encoding c))
 		(cond ((eq ac cc)
 		       (setq prev (cons
 				   (cons (concat (car a)(car b)(car c))
@@ -239,9 +239,9 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;;
 
 (defun tm-eword::encoded-word-length (rword)
-  (let ((string   (tm-eword::rword-text     rword))
-	(charset  (tm-eword::rword-charset  rword))
-	(encoding (tm-eword::rword-encoding rword))
+  (let ((string   (ew-rword-text     rword))
+	(charset  (ew-rword-charset  rword))
+	(encoding (ew-rword-encoding rword))
 	ret)
     (setq ret
 	  (cond ((string-equal encoding "B")
@@ -251,7 +251,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		((string-equal encoding "Q")
 		 (setq string (encode-mime-charset-string string charset))
 		 (q-encoding-encoded-length string
-					    (tm-eword::rword-type rword))
+					    (ew-rword-type rword))
 		 )))
     (if ret
 	(cons (+ 7 (length (symbol-name charset)) ret) string)
@@ -281,10 +281,10 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		  )
 	     (setq string
 		   (eword-encode-text
-		    (tm-eword::rword-charset rword)
-		    (tm-eword::rword-encoding rword)
+		    (ew-rword-charset rword)
+		    (ew-rword-encoding rword)
 		    (cdr ret)
-		    (tm-eword::rword-type rword)
+		    (ew-rword-type rword)
 		    ))
 	     (setq len (+ (length string) column))
 	     (setq rwl (cdr rwl))
@@ -313,10 +313,10 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 				 (cdr rwl)))
 		 (setq string
 		       (eword-encode-text
-			(tm-eword::rword-charset rword)
-			(tm-eword::rword-encoding rword)
+			(ew-rword-charset rword)
+			(ew-rword-encoding rword)
 			str
-			(tm-eword::rword-type rword)))
+			(ew-rword-type rword)))
 		 (setq len (+ (length string) column))
 		 )
 	       )))
@@ -393,7 +393,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 			   (list
 			    (let ((ret (tm-eword::find-charset-rule
 					(find-non-ascii-charset-string str))))
-			      (tm-eword::make-rword
+			      (make-ew-rword
 			       str (car ret)(nth 1 ret) 'phrase)
 			      )
 			    )))
