@@ -1,5 +1,12 @@
 1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel.el: Abolish constant `mel-version'.
+
+	* mel.el (mime-string-decoding-method-alist): New variable.
+	(mime-decode-string): New function.
+
+1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel-b.el (base64-external-decode-string): New function.
 	(base64-decode-string): New function.
 
