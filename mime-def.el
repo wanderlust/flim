@@ -27,7 +27,7 @@
 (require 'mcharset)
 
 (eval-and-compile
-  (defconst mime-library-product ["FLIM" (1 12 3) "Kintetsu-K.DŽòriyama"]
+  (defconst mime-library-product ["FLIM" (1 12 4) "Tsutsui"]
     "Product name, version number and code name of MIME-library package.")
   )
 
