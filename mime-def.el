@@ -152,6 +152,85 @@
 ;; (defconst eword-Q-encoding-and-encoded-text-regexp
 ;;   (concat "\\(Q\\)\\?" eword-Q-encoded-text-regexp))
 
+;;; @ Parameter
+;;;
+
+(defsubst make-mime-parameter (name &optional language charset
+				    raw-values encoded-value)
+  (cons name
+	(vector language charset raw-values encoded-value))
+  )
+
+(defsubst mime-parameter-language (parm)
+  (aref (cdr parm) 0)
+  )
+
+(defsubst mime-parameter-set-language (parm language)
+  (aset (cdr parm) 0 language)
+  )
+
+(defsubst mime-parameter-set-charset (parm mcs)
+  (aset (cdr parm) 1 mcs)
+  )
+
+(defsubst mime-parameter-charset (parm)
+  (aref (cdr parm) 1)
+  )
+
+(defsubst mime-parameter-raw-values (parm)
+  (aref (cdr parm) 2)
+  )
+
+(defsubst mime-parameter-append-raw-value (parm no encoded raw-value)
+  (aset (cdr parm) 2 (cons (cons no (cons encoded raw-value))
+			   (mime-parameter-raw-values parm)))
+  )
+
+(defun mime-parameter-value (parm)
+  (when parm
+    (or (aref (cdr parm) 3)
+	(let* ((mcs (mime-parameter-charset parm))
+	       (sorted-raw (sort (mime-parameter-raw-values parm)
+				 (function (lambda (a b)
+					     (< (car a) (car b))))))
+	       (val
+		(if mcs
+		    (with-temp-buffer
+		      (let (s raw)
+			(while sorted-raw
+			  (setq raw (cdar sorted-raw)
+				s (point))
+			  (insert (cdr raw))
+			  (when (car raw)
+			    (goto-char s)
+			    (while (re-search-forward "%\\([0-9a-z][0-9a-z]\\)"
+						      nil t)
+			      (replace-match
+			       (char-to-string
+				(string-to-int (buffer-substring
+						(match-beginning 1)
+						(match-end 1))
+					       16))))
+			    (goto-char (point-max)))
+			  (setq sorted-raw (cdr sorted-raw)))
+			(decode-mime-charset-region (point-min) (point-max)
+						    mcs)
+			(buffer-string)))
+		  (mapconcat #'cddr sorted-raw ""))))
+	  (put-text-property 0 (length val)
+			     'mime-language (mime-parameter-language parm) val)
+	  (aset (cdr parm) 3 val)
+	  ))))
+
+(defsubst mime-parameters (parms)
+  (mapcar (function (lambda (parm)
+		      (cons (car parm)
+			    (mime-parameter-value parm))))
+	  parms))
+
+(defsubst mime-parameter (parms name)
+  (let ((parm (assoc name parms)))
+    (cons (car parm) (mime-parameter-value parm))))
 
 ;;; @ Content-Type
 ;;;
@@ -172,11 +251,11 @@
 
 (defsubst mime-content-type-parameters (content-type)
   "Return primary-type of CONTENT-TYPE."
-  (cddr content-type))
+  (mime-parameters (cddr content-type)))
 
 (defsubst mime-content-type-parameter (content-type parameter)
   "Return PARAMETER value of CONTENT-TYPE."
-  (cdr (assoc parameter (mime-content-type-parameters content-type))))
+  (mime-parameter-value (assoc parameter (cddr content-type))))
 
 
 (defsubst mime-type/subtype-string (type &optional subtype)
@@ -196,11 +275,11 @@
 
 (defsubst mime-content-disposition-parameters (content-disposition)
   "Return disposition-parameters of CONTENT-DISPOSITION."
-  (cdr content-disposition))
+  (mime-parameters (cdr content-disposition)))
 
 (defsubst mime-content-disposition-parameter (content-disposition parameter)
   "Return PARAMETER value of CONTENT-DISPOSITION."
-  (cdr (assoc parameter (cdr content-disposition))))
+  (mime-parameter-value (assoc parameter (cdr content-disposition))))
 
 (defsubst mime-content-disposition-filename (content-disposition)
   "Return filename of CONTENT-DISPOSITION."
