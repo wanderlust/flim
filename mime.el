@@ -1,6 +1,6 @@
 ;;; mime.el --- MIME library module
 
-;; Copyright (C) 1998,1999,2000 Free Software Foundation, Inc.
+;; Copyright (C) 1998,1999,2000,2001,2003 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: MIME, multimedia, mail, news
