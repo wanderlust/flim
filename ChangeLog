@@ -1,5 +1,10 @@
 1999-11-24  Keiichi Suzuki  <keiichi@nanap.org>
 
+	* mime-parse.el (mime-parse-parameters-from-list): Downcase
+	attribute name.
+
+1999-11-24  Keiichi Suzuki  <keiichi@nanap.org>
+
 	* mime-parse.el (mime-parse-parameters): Use
 	`mime-parse-parameters-from-list'.
 	(mime-parse-parameters-from-list): New function.
