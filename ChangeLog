@@ -1,3 +1,7 @@
+1998-07-19  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* (TESTPAT): add quoted-encoded-word description and test.
+
 1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* (TESTPAT): add test result by FLIM-FLAM.

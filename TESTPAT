@@ -11,6 +11,7 @@
 ;separate-sticked-comment               ; violate policy preserving absence of space
 ;separate-sticked-special               ; violate policy preserving absence of space
 ;zero-characters-encoded-word-hack      ; violate common sense (very tricky)
+;quoted-encoded-word			; violate character sequence semantics
 
 ;;; test driver for FLIM-FLAM (and FLIM)
 
@@ -44,6 +45,8 @@
     (std11-field-end)
     (let ((result (buffer-substring (point-min) (point))))
       (if (member result dsts) t result))))
+
+;;;start-test;;;
 
 ;;; from RFC2047
 
@@ -531,15 +534,6 @@
 "Subject: =?ISO-2022-JP?B??=")
 
 (decode
-"Subject: =?ISO-2022-JP?B?DQoNCg==?="
-"Subject: ")
-
-(decode
-"Subject: =?US-ASCII?Q?a=0D=0A_b?="
-"Subject: a b")
-; FLIM-FLAM
-
-(decode
 "Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a
  =?ISO-2022-JP?B?GyRCJCQbKEI=?="
 "Subject: あ a い")
@@ -648,5 +642,152 @@
 (decode
 "Subject: =?ISO-8859-7?Q?=C3?= =?ISO-2022-JP?B?GyRCNFg/dBsoQg==?="
 "Subject: Γ関数")*B
+
+(decode
+"Subject: =?Shift_JIS?B?gqA=?="
+"Subject: あ"
+'quoted-encoded-word)
+
+(decode
+"Subject: =?EUC-JP?B?pKI=?="
+"Subject: あ"
+'quoted-encoded-word)
+
+;;; quoted-encoded-word 表現
+; 
+; RFC2047 のデコーダは潜在的に(デコード結果でなく) encoded-word そのものを
+; 出力しなければならないことがある。
+;
+; 1. 知らない charset もしくは encoding が指定されていたとき。
+;  =?unknown-charset?known-encoding?some-encoded-text?=
+;  =?known-charset?unknown-encoding?some-encoded-text?=
+;  =?unknown-charset?unknown-encoding?some-encoded-text?=
+;
+; 2. デコードできても内容が剣呑すぎるとき。
+;  Non ASCII 拡張 RFC822 の中に =?US-ASCII?Q?=0D=0A=0D=0A?= のデコード
+; 結果を埋め込むのは危険すぎる。
+;
+; また、デコーダは encoded-word のようにみえるデコード結果を出力しなけ
+; ればならないこともある。
+;
+;  =?US-ASCII?Q?=3D=3FUS-ASCII=3FQ=3Ftext=3F=3D?=
+;
+; デコーダが単なる文字列を出力する場合、単純にやると encoded-word そのものと
+; encoded-word を区別できない。
+; ここでは文字列中でそれらを確実に区別して表現する方法を示す。
+;
+; rule 1: 文字列中で =?charset?encoding?text?= というパターンに
+;  マッチしない部分はその部分のままの内容を表す。
+; 
+; rule 2: 文字列中で =?charset?encoding?text?= というパターンに
+;  マッチする部分は charset の先頭に '*' がいくつ付いているかで内容の
+;  解釈を変える。
+;
+;  偶数の場合(0, 2, 4, ...): charset の先頭の '*' の数を半分にした文字列
+;  奇数の場合(1, 3, 5, ...): charset の先頭の '*' の数を半分(小数点以下
+;   切捨て)にして、それを encoded-word と思ってデコードした文字列。
+;
+; NOTE: '*' を quoted-encoded-word 表現の quote 文字と呼ぶ。
+;
+; NOTE: 現時点で IANA のレジストリには '*' を含む charset は
+;  登録されていないので、登録されている charset を使った encoded-word を
+;  表現するには '*' を 1つつけることになる。
+;
+;  =?US-ASCII?Q?abcdef?= というencoded-word : =?*US-ASCII?Q?abcdef?=
+;
+;  =?US-ASCII?Q?abcdef?= という文字列	    : =?US-ASCII?Q?abcdef?=
+;  =?*US-ASCII?Q?abcdef?= という文字列	    : =?**US-ASCII?Q?abcdef?=
+;  =?**US-ASCII?Q?abcdef?= という文字列     : =?****US-ASCII?Q?abcdef?=
+;  =?***US-ASCII?Q?abcdef?= という文字列    : =?******US-ASCII?Q?abcdef?=
+;
+; rule 3: 文字列全体の内容は、rule 1 と rule 2 で解釈した各部分の
+;   文字列を単純に連結した文字列とする。
+;
+; NOTE: RFC2047 では encoded-word が空白で区切られなければならないとか、
+;  encoded-word が含まれる行は 76bytes 以下でなければならないなどという
+;  規約があるが、quoted-encoded-word 表現ではそれらは採用しない。
+;  単純に encoded-word 内部の文法だけを利用する。
+;  (本質的には異なる文法を採用することも可能である。)
+;
+; NOTE: quoted-encoded-word 表現した文字列の連結は安全ではない。
+;  =?*US-ASCII?Q?ab と cd?= という quoted-encoded-word 表現した文字列は
+;  それぞれその文字列そのものを表現するが、それらを連結した文字列
+;  =?*US-ASCII?Q?abcd?= は abcd という文字列を表現することになり、
+;  それぞれの内容の連結とはならない。
+;
+;  これはとくに Non ASCII 拡張 RFC822 の中に quoted-encoded-word 表現を
+;  埋め込むときに気を付けなければならない。(埋め込んだ結果は正しい
+;  quoted-encoded-word 表現とはならないかも知れない。)
+;
+
+(decode
+"Subject: =?Unknown-Charset?B?gqA=?="
+"Subject: =?*Unknown-Charset?B?gqA=?="
+'quoted-encoded-word)
+; FLIM-FLAM
+
+(decode
+"Subject: =?Unknown-Charset?B?gqA=?= =?Unknown-Charset?B?gqA=?="
+"Subject: =?*Unknown-Charset?B?gqA=?==?*Unknown-Charset?B?gqA=?="
+'quoted-encoded-word)
+; FLIM-FLAM
+
+(decode
+"Subject: =?Unknown-Charset?B?gqA=?=  =?Unknown-Charset?B?gqA=?="
+"Subject: =?*Unknown-Charset?B?gqA=?==?*Unknown-Charset?B?gqA=?="
+'quoted-encoded-word)
+; FLIM-FLAM
+
+(decode
+"Subject: =?Unknown-Charset?B?gqA=?=
+ =?Unknown-Charset?B?gqA=?="
+"Subject: =?*Unknown-Charset?B?gqA=?==?*Unknown-Charset?B?gqA=?="
+'quoted-encoded-word)
+; FLIM-FLAM
+
+(decode
+"Subject: =?Unknown-Charset?B?gqA=?=
+	=?Unknown-Charset?B?gqA=?="
+"Subject: =?*Unknown-Charset?B?gqA=?==?*Unknown-Charset?B?gqA=?="
+'quoted-encoded-word)
+; FLIM-FLAM
+
+(decode
+"Subject: a=?Unknown-Charset?B?gqA=?="
+"Subject: a=?Unknown-Charset?B?gqA=?="
+'quoted-encoded-word)
+; FLIM-FLAM
+
+(decode
+"Subject: =?Unknown-Charset?B?gqA=?=b"
+"Subject: =?Unknown-Charset?B?gqA=?=b"
+'quoted-encoded-word)
+; FLIM-FLAM
+
+(decode
+"Subject: a=?Unknown-Charset?B?gqA=?=b"
+"Subject: a=?Unknown-Charset?B?gqA=?=b"
+'quoted-encoded-word)
+; FLIM-FLAM
+
+(decode
+"Subject: a =?Unknown-Charset?B?gqA=?= b"
+"Subject: a =?*Unknown-Charset?B?gqA=?= b"
+'quoted-encoded-word)
+; FLIM-FLAM
+
+(decode
+"Subject: =?ISO-2022-JP?B?DQoNCg==?="
+"Subject: =?*US-ASCII?Q?=0D=0A=0D=0A?="
+'quoted-encoded-word)
+; FLIM-FLAM
+
+(decode
+"Subject: =?US-ASCII?Q?a=0D=0A_b?="
+"Subject: a=?*US-ASCII?Q?=0D=0A?= b"
+'quoted-encoded-word)
+; FLIM-FLAM
+
+;;;end-test;;;
 
 ;----------------------------------------------------------------------------
