@@ -125,9 +125,9 @@ be the result."
 			  0))
 		(encoded (if (match-beginning 4) t nil))
 		(parm (progn
-			(setq name (substring name
-					      (match-beginning 1)
-					      (match-end 1)))
+			(setq name (downcase (substring name
+							(match-beginning 1)
+							(match-end 1))))
 			(or (assoc name rest)
 			    (car (setq rest
 				       (cons (make-mime-parameter name)
