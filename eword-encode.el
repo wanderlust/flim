@@ -504,7 +504,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		      )))
     dest))
 
-(defsubst eword-encode-addresses-to-rwl (addresses)
+(defsubst eword-encode-addresses-to-rword-list (addresses)
   (let ((dest (tm-eword::mailbox-to-rwl (car addresses))))
     (if dest
 	(while (setq addresses (cdr addresses))
@@ -531,10 +531,10 @@ Default value is `phrase'."
 (defun eword-encode-address-list (string &optional column)
   "Encode header field STRING as list of address, and return the result.
 Optional argument COLUMN is start-position of the field."
-  (car (eword-encode-rword-list
-	(or column 0)
-	(eword-encode-addresses-to-rwl (std11-parse-addresses-string string))
-	)))
+  (car (eword-encode-rword-list (or column 0)
+				(eword-encode-addresses-to-rword-list
+				 (std11-parse-addresses-string string))
+				)))
 
 (defun eword-encode-structured-field-body (string &optional column)
   "Encode header field STRING as structured field, and return the result.
