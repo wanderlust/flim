@@ -1,0 +1,222 @@
+[README for MEL (English Version)]
+by MORIOKA Tomohiko <morioka@jaist.ac.jp>
+$Id$
+
+What's MEL
+===========
+
+  MEL stands for "MIME Encoding Library".  It consists of following
+  modules:
+
+	mel.el	 --- main module
+	mel-b.el --- base64 (b-encoding) encoder/decoder
+	mel-q.el --- quoted-printable and q-encoding encoder/decoder
+	mel-u.el --- unofficial module for uuencode
+	mel-g.el --- unofficial module for gzip64
+
+
+Installation
+============
+
+(0) before installing it, please install APEL package.  APEL package
+    is available at:
+
+	ftp://ftp.jaist.ac.jp/pub/GNU/elisp/mime/alpha/
+
+(1-a) run in expanded place
+
+  If you don't want to install other directories, please do only
+  following:
+
+	% make
+
+  You can specify the emacs command name, for example
+
+	% make install EMACS=xemacs
+
+  If `EMACS=...' is omitted, EMACS=emacs is used.
+
+(1-b) make install
+
+  If you want to install other directories, please do following:
+
+	% make install
+
+  You can specify the emacs command name, for example
+
+	% make install EMACS=xemacs
+
+  If `EMACS=...' is omitted, EMACS=emacs is used.
+
+  You can specify the prefix of the directory tree for Emacs Lisp
+  programs and shell scripts, for example:
+
+	% make install PREFIX=~/
+
+  If `PREFIX=...' is omitted, the prefix of the directory tree of the
+  specified emacs command is used (perhaps /usr/local).
+
+  For example, if PREFIX=/usr/local and EMACS 19.34 is specified, it
+  will create the following directory tree:
+
+	/usr/local/share/emacs/site-lisp/mel/   --- MEL
+
+  You can specify other optional settings by editing the file
+  MEL-CFG.  Please read comments in it.
+
+
+load-path (for Emacs or MULE)
+=============================
+
+  If you are using Emacs or Mule, please add directory of MEL to
+  load-path.  If you install by default setting, you can write
+  subdirs.el for example:
+
+  --------------------------------------------------------------------
+  (normal-top-level-add-to-load-path '("apel" "mel"))
+  --------------------------------------------------------------------
+
+  If you are using XEmacs, there are no need of setting about
+  load-path.
+
+
+How to use
+==========
+
+Region
+------
+
+Command mime-encode-region (START END ENCODING)
+
+  Encode region START to END of current buffer using ENCODING.
+
+Command mime-decode-region (start end encoding)
+
+  Decode region START to END of current buffer using ENCODING.
+
+Command base64-encode-region (start end)
+
+  Encode region START to END of current buffer using base64.
+
+Command base64-decode-region (start end)
+
+  Decode region START to END of current buffer using base64.
+
+Command quoted-printable-encode-region (start end)
+
+  Encode region START to END of current buffer using quoted-printable.
+
+Command quoted-printable-decode-region (start end)
+
+  Decode region START to END of current buffer using quoted-printable.
+
+Command uuencode-encode-region (start end)
+
+  Encode region START to END of current buffer using uuencode.
+
+Command uuencode-decode-region (start end)
+
+  Decode region START to END of current buffer using uuencode.
+
+Command gzip64-encode-region (start end)
+
+  Encode region START to END of current buffer using x-gzip64.
+
+Command gzip64-decode-region (start end)
+
+  Decode region START to END of current buffer using x-gzip64.
+
+Variable mime-encoding-method-alist
+
+  Alist of encoding vs. corresponding method to encode region.
+  Each element looks like (STRING . FUNCTION) or (STRING . nil).
+  STRING is content-transfer-encoding.
+  FUNCTION is region encoder and nil means not to encode.
+
+Variable mime-decoding-method-alist
+
+  Alist of encoding vs. corresponding method to decode region.
+  Each element looks like (STRING . FUNCTION).
+  STRING is content-transfer-encoding.
+  FUNCTION is region decoder.
+
+File
+----
+
+Command mime-insert-encoded-file (FILENAME ENCODING)
+
+  Insert file FILENAME encoded by ENCODING format.
+
+Command base64-insert-encoded-file (FILENAME)
+
+  Insert base64 encoded file.
+
+Command quoted-printable-insert-encoded-file (FILENAME)
+
+  Insert quoted-printable encoded file.
+
+Command uuencode-insert-encoded-file (FILENAME)
+
+  Insert uuencode encoded file.
+
+Command gzip64-insert-encoded-file (FILENAME)
+
+  Insert gzip64 encoded file.
+
+Variable mime-file-encoding-method-alist
+
+  Alist of encoding vs. corresponding method to insert encoded file.
+  Each element looks like (STRING . FUNCTION).
+  STRING is content-transfer-encoding.
+  FUNCTION is function to insert encoded file.
+
+String
+------
+
+Function base64-encode-string (STRING)
+
+  Encode STRING as base64 and return it.
+
+Function base64-decode-string (STRING)
+
+  Decode STRING as base64 and return it.
+
+Function q-encoding-encode-string (STRING &optional MODE)
+
+  Encode STRING as Q-encoding of encoded-word.
+  MODE allows `text', `comment', `phrase' or nil.  Default value is
+  `phrase'.
+
+Function q-encoding-decode-string (STRING)
+
+  Decode STRING as Q-encoding of encoded-word.
+
+Function base64-encoded-length (STRING)
+
+  Return length of base64 encoded STRING.
+
+Function q-encoded-length (STRING &optional MODE)
+
+  Return length of Q-encoding encoded STRING.
+  MODE allows `text', `comment', `phrase' or nil.  Default value is
+  `phrase'.
+
+
+Bug reports
+===========
+
+  If you write bug-reports and/or suggestions for improvement, please
+  send them to the tm Mailing List:
+
+	bug-tm-en@chamonix.jaist.ac.jp	(English)
+	bug-tm-ja@chamonix.jaist.ac.jp	(Japanese)
+
+  Via the tm ML, you can report tm bugs, obtain the latest release of
+  tm, and discuss future enhancements to tm. To join the tm ML, send
+  e-mail to
+
+	tm-ja-admin@chamonix.jaist.ac.jp	(Japanese)
+	tm-en-admin@chamonix.jaist.ac.jp	(English)
+
+  Since the user registration is done manually, please write the mail
+  body in human-recognizable language (^_^).
