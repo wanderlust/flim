@@ -1,3 +1,7 @@
+2000-06-27  Kenichi OKADA <okada@opaopa.org>
+
+	* smtp.el (smtp-via-smtp): additional HELO for sendmail warning.
+
 2000-06-25  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM-VERION: Add code name.

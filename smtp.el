@@ -199,7 +199,10 @@ don't define this value."
 		      (not (integerp (car response)))
 		      (>= (car response) 400))
 		  (throw 'done (car (cdr response))))
-	      (starttls-negotiate process))
+	      (starttls-negotiate process)
+	      ;; for sendmail warning XXX
+	      (smtp-send-command process (format "HELO %s" (smtp-make-fqdn)))
+	      (setq response (smtp-read-response process)))
 
 	    ;; AUTH --- SMTP Service Extension for Authentication (RFC2554)
 	    (when smtp-authenticate-type
