@@ -1,4 +1,6 @@
-2002-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+2002-09-24  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* mime-ja.texi (CVS): Escape @.
 
 	* luna.el (luna-define-method): Fix the bug that method cache is
 	not cleard.
