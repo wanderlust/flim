@@ -16,7 +16,7 @@
 		     md4 ntlm sasl-ntlm sasl-scram
 		     smtp qmtp smtpmail))
 
-(setq flim-version-specific-modules '(mailcap))
+(setq flim-version-specific-modules nil)
 
 (setq hmac-modules '(hex-util
 		     hmac-def md5 sha1
