@@ -99,12 +99,14 @@
 (defconst std11-quoted-pair-regexp "\\\\.")
 (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
 (defconst std11-qtext-regexp
-  (concat "[^" (char-list-to-string std11-non-qtext-char-list) "]"))
+  (eval-when-compile
+    (concat "[^" (apply #'string std11-non-qtext-char-list) "]")))
 (defconst std11-quoted-string-regexp
-  (concat "\""
-	  (regexp-*
-	   (regexp-or std11-qtext-regexp std11-quoted-pair-regexp))
-	  "\""))
+  (eval-when-compile
+    (concat "\""
+	    (regexp-*
+	     (regexp-or std11-qtext-regexp std11-quoted-pair-regexp))
+	    "\"")))
 
 
 ;;; @ about MIME
@@ -407,8 +409,13 @@ specialized parameter.  (car (car ARGS)) is name of variable and (nth
 	 ))))
 
 (put 'mm-define-method 'lisp-indent-function 'defun)
-(put 'mm-define-method 'edebug-form-spec
-     '(&define name ((arg symbolp) &rest arg) def-body))
+(def-edebug-spec mm-define-method
+  (&define name ((arg symbolp)
+		 [&rest arg]
+		 [&optional ["&optional" arg &rest arg]]
+		 &optional ["&rest" arg]
+		 )
+	   def-body))
 
 (defsubst mm-arglist-to-arguments (arglist)
   (let (dest)
