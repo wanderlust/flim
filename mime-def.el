@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "Chao 1.2.0 - \"Takeda\"")
+  "Chao 1.3.0 - \"Kuinabashi\"")
 
 
 ;;; @ variables
@@ -77,8 +77,29 @@
       (substring string (match-end 0))
     string))
 
+(defsubst regexp-* (regexp)
+  (concat regexp "*"))
 
-;;; @ definitions about MIME
+(defsubst regexp-or (&rest args)
+  (concat "\\(" (mapconcat (function identity) args "\\|") "\\)"))
+
+
+;;; @ about STD 11
+;;;
+
+(defconst std11-quoted-pair-regexp "\\\\.")
+(defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
+(defconst std11-qtext-regexp
+  (concat "[^" (char-list-to-string std11-non-qtext-char-list) "]"))
+(defconst std11-quoted-string-regexp
+  (concat "\""
+	  (regexp-*
+	   (regexp-or std11-qtext-regexp std11-quoted-pair-regexp)
+	   )
+	  "\""))
+
+
+;;; @ about MIME
 ;;;
 
 (defconst mime-tspecials "][()<>@,\;:\\\"/?=")
