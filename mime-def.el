@@ -1,6 +1,6 @@
 ;;; mime-def.el --- definition module about MIME -*- coding: iso-8859-4; -*-
 
-;; Copyright (C) 1995,96,97,98,99,2000,2001 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,2001,2002 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
@@ -32,7 +32,7 @@
 (eval-when-compile (require 'luna))	; luna-arglist-to-arguments
 
 (eval-and-compile
-  (defconst mime-library-product ["FLIM" (1 14 3) "Unebigoryòmae"]
+  (defconst mime-library-product ["FLIM" (1 14 4) "Kashiharajingþ-mae"]
     "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)
