@@ -27,6 +27,10 @@
 (require 'mime-def)
 (require 'std11)
 
+(autoload 'mime-entity-body-buffer "mime")
+(autoload 'mime-entity-body-start-point "mime")
+(autoload 'mime-entity-body-end-point "mime")
+
 
 ;;; @ lexical analyzer
 ;;;
