@@ -182,6 +182,78 @@ order.  Otherwise result is not sorted."
     (mailcap-parse-buffer (current-buffer) order)
     ))
 
+(defun mailcap-format-command (mtext situation)
+  "Return formated command string from MTEXT and SITUATION.
+
+MTEXT is a command text of mailcap specification, such as
+view-command.
+
+SITUATION is an association-list about information of entity.  Its key
+may be:
+
+	'type		primary media-type
+	'subtype	media-subtype
+	'filename	filename
+	STRING		parameter of Content-Type field"
+  (let ((i 0)
+	(len (length mtext))
+	(p 0)
+	dest)
+    (while (< i len)
+      (let ((chr (aref mtext i)))
+	(cond ((eq chr ?%)
+	       (setq i (1+ i)
+		     chr (aref mtext i))
+	       (cond ((eq chr ?s)
+		      (let ((file (cdr (assq 'filename situation))))
+			(if (null file)
+			    (error "'filename is not specified in situation.")
+			  (setq dest (concat dest
+					     (substring mtext p (1- i))
+					     file)
+				i (1+ i)
+				p i)
+			  )))
+		     ((eq chr ?t)
+		      (let ((type (or (mime-type/subtype-string
+				       (cdr (assq 'type situation))
+				       (cdr (assq 'subtype situation)))
+				      "text/plain")))
+			(setq dest (concat dest
+					   (substring mtext p (1- i))
+					   type)
+			      i (1+ i)
+			      p i)
+			))
+		     ((eq chr ?\{)
+		      (setq i (1+ i))
+		      (if (not (string-match "}" mtext i))
+			  (error "parse error!!!")
+			(let* ((me (match-end 0))
+			       (attribute (substring mtext i (1- me)))
+			       (parameter (cdr (assoc attribute situation))))
+			  (if (null parameter)
+			      (error "\"%s\" is not specified in situation."
+				     attribute)
+			    (setq dest (concat dest
+					       (substring mtext p (- i 2))
+					       parameter)
+				  i me
+				  p i)
+			    )
+			  )))
+		     (t (error "Invalid sequence `%%%c'." chr))
+		     ))
+	      ((eq chr ?\\)
+	       (setq dest (concat dest (substring mtext p i))
+		     p (1+ i)
+		     i (+ i 2))
+	       )
+	      (t (setq i (1+ i)))
+	      )))
+    (concat dest (substring mtext p))
+    ))
+
 
 ;;; @ end
 ;;;
