@@ -1,3 +1,12 @@
+1998-10-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el (std11-qtext-regexp): Use `eval-when-compile'; don't
+	use `char-list-to-string'.
+	(std11-quoted-string-regexp): Use `eval-when-compile'.
+	- Use `def-edebug-spec' to define edebug-form-spec of
+	  mm-define-method; fix definition of edebug-form-spec of
+	  mm-define-method.
+
 1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-en.sgml, mime-ja.sgml (Header encoder/decoder): Add
