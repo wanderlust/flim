@@ -1,3 +1,16 @@
+1999-05-24  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* eword-encode.el (tm-eword::space-process): Don't concatenate
+	`special's.
+	(ew-encode-rword-1): Renamed from `tm-eword::encode-string-1'; add
+	new optional argument `must-output'; return nil if it can't encode
+	literally.
+	(eword-encode-rword-list): Fold SPACE or TAB in the encoded string
+	if `ew-encode-rword-1' can't encode literally and it is possible
+	to encode the rest literally with the folding.
+	(eword-encode-phrase-to-rword-list): Add `special' flag to
+	brackets of comments.
+
 1999-05-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* smtpmail.el: Require 'poe and 'pcustom.
