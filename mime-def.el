@@ -1,8 +1,6 @@
-;;; mime-def.el --- definition module about MIME
+;;; mime-def.el --- definition module about MIME -*- coding: iso-8859-4; -*-
 
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
-;; Copyright (C) 1999 Electrotechnical Laboratory, JAPAN.
-;; Licensed to the Free Software Foundation.
+;; Copyright (C) 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: definition, MIME, multimedia, mail, news
@@ -35,7 +33,7 @@
 (eval-when-compile (require 'cl))	; list*
 
 (eval-and-compile
-  (defconst mime-library-product ["Chao" (1 14 0) "Momoyama"]
+  (defconst mime-library-product ["Chao" (1 14 1) "Rokujizò"]
     "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)
@@ -214,6 +212,7 @@
 (autoload 'mime-entity-content-type "mime")
 (autoload 'mime-parse-multipart "mime-parse")
 (autoload 'mime-parse-encapsulated "mime-parse")
+(autoload 'mime-parse-external "mime-parse")
 (autoload 'mime-entity-content "mime")
 
 (luna-define-class mime-entity ()
