@@ -1,13 +1,13 @@
 \input texinfo.tex
 @setfilename mime-ja.info
-@settitle{FLIM 1.7 MIME 機能説明書}
+@settitle{FLIM 1.8 MIME 機能説明書}
 @titlepage
-@title FLIM 1.7 MIME 機能説明書
+@title FLIM 1.8 MIME 機能説明書
 @author 守岡 知彦 <morioka@@jaist.ac.jp>
-@subtitle 1998/06/23
+@subtitle 1998/07/01
 @end titlepage
 @node Top, Introduction, (dir), (dir)
-@top FLIM 1.7 MIME 機能説明書
+@top FLIM 1.8 MIME 機能説明書
 
 @ifinfo
 
@@ -301,7 +301,6 @@ used.
 
 
 @defun mime-insert-decoded-header entity  &optional  invisible-fields visible-fields
-	    code-conversion
 
 現在位置に @var{entity} の復号した header を挿入する。@refill
 

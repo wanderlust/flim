@@ -1,3 +1,12 @@
+1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmcooked.el (mmcooked-insert-decoded-header): New function.
+
+	* mmbuffer.el (mmbuffer-insert-decoded-header): New function.
+
+	* mime.el (mime-insert-decoded-header): Use implementation of
+	mm-backend; abolish optional argument `code-conversion'.
+
 1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-encoded-text): Use
