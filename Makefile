@@ -10,7 +10,8 @@ RM	= /bin/rm -f
 CP	= /bin/cp -p
 
 EMACS	= emacs
-FLAGS   = -batch -q -no-site-file -l FLIM-MK
+FLAGS   = -batch -q -no-site-file -eval "$${EVALARGS:-nil}"
+FLAGS_CURDIR   = $(FLAGS) -eval '(setq load-path (cons "." load-path))'
 
 PREFIX = NONE
 LISPDIR = NONE
@@ -20,10 +21,10 @@ FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 
 elc: ew-parse.el
-	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR)
+	$(EMACS) $(FLAGS) -l FLIM-MK -f compile-flim $(PREFIX) $(LISPDIR)
 
 install:	elc
-	$(EMACS) $(FLAGS) -f install-flim $(PREFIX) $(LISPDIR)
+	$(EMACS) $(FLAGS) -l FLIM-MK -f install-flim $(PREFIX) $(LISPDIR)
 
 clean:
 	-$(RM) $(GOMI)
@@ -53,10 +54,10 @@ ew-parse.el: ew-parse.scm lalr-el.scm
 	-scm -f lalr-el.scm -f ew-parse.scm > ew-parse.out
 
 check:
-	$(EMACS) -q -batch -eval '(setq load-path (cons "." load-path))' -l ./TESTPAT -eval '(report)'
+	$(EMACS) $(FLAGS_CURDIR) -l ./TESTPAT -eval '(report)'
 
 
-# BENCHMARK is not a part of FLAM-DOODLE because it is so large.
+# The file BENCHMARK is not a part of FLAM-DOODLE because it is so large.
 benchmark:
-	$(EMACS) -q -batch -eval '(setq load-path (cons "." load-path))' -l ./BENCHMARK -eval '(report)'
+	$(EMACS) $(FLAGS_CURDIR) -l ./BENCHMARK -eval '(report)'
 

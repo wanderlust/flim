@@ -1,3 +1,15 @@
+1998-08-27  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* DOODLE-TIPS: Add a notice about EVALARGS.
+
+	* Makefile: evaluate environment variable EVALARGS if it is not
+	empty.
+
+	* ew-bq.el:
+	  - Use CCL emulating stuff of APEL.
+	  - Delete useless `eval-when-compile' in body of
+	  `define-ccl-program'.
+
 1998-08-26  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ew-scan-n.el: New file.

@@ -1,7 +1,8 @@
 * You should byte-compile(make).
 Because DOODLE uses very complex macro.
 
-Especialy ew-line.el, ew-scan-m.el, ew-scan-s.el and ew-scan-u.el that are require 'lex.
+Especialy ew-line.el, ew-scan-m.el, ew-scan-s.el and ew-scan-u.el that
+are require 'lex.
 (lex is scanner generator.)
 
 * Multiline field-bodies fetched from XOVER is already concatinated,
@@ -15,17 +16,25 @@ field name information.
    (lambda (string)
      (if (fboundp 'ew-decode-field)
          (let ((ew-ignore-76bytes-limit t))
-           (ew-cut-cr-lf (ew-decode-field "From" (ew-lf-crlf-to-crlf string))))
+           (ew-cut-cr-lf
+             (ew-decode-field "From" (ew-lf-crlf-to-crlf string))))
        (eword-decode-and-unfold-structured-field string))))
 
 (setq gnus-unstructured-field-decoder
    (lambda (string)
      (if (fboundp 'ew-decode-field)
          (let ((ew-ignore-76bytes-limit t))
-           (ew-cut-cr-lf (ew-decode-field "Subject" (ew-lf-crlf-to-crlf string))))
-       (eword-decode-unstructured-field-body (std11-unfold-string string) 'must-unfold))))
+           (ew-cut-cr-lf
+             (ew-decode-field "Subject" (ew-lf-crlf-to-crlf string))))
+       (eword-decode-unstructured-field-body
+         (std11-unfold-string string) 'must-unfold))))
 
 * Ignore warnings about args-eword-* when byte-compiling.
 
-* If you have a problem with ew-ccl-b or other CCL based coding-system, set ew-bq-use-mel to t.
+* If you have a problem with ew-ccl-b or other CCL based coding-system,
+set ew-bq-use-mel to t.
 
+* If you want to modify load-path or other variables when
+byte-compiling without editing files, set EVALARGS environment variable.
+
+  % EVALARGS='(setq load-path (cons "../apel" load-path))' make

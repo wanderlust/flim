@@ -50,6 +50,7 @@
   (path                 ew-scan-unibyte-none)
   (lines                ew-scan-unibyte-none)
   (xref                 ew-scan-unibyte-none)
+  (followup-to          ew-scan-unibyte-none)
 ))
 
 (defvar ew-decode-field-default-syntax '(ew-scan-unibyte-unstructured))
