@@ -78,7 +78,7 @@ variable `uuencode-external-decoder'."
 				(buffer-substring (match-beginning 0)
 						  (match-end 0))
 			      )))))
-	  (default-directory mime-temp-directory))
+	  (default-directory temporary-file-directory))
       (if filename
 	  (as-binary-process
 	   (apply (function call-process-region)
@@ -147,7 +147,7 @@ START and END are buffer positions."
 			    (buffer-substring (match-beginning 0)
 					      (match-end 0))
 			  )))))
-	  (default-directory mime-temp-directory))
+	  (default-directory temporary-file-directory))
       (if file
 	  (as-binary-process
 	   (apply (function call-process-region)
