@@ -5,11 +5,12 @@
 ;;; Copyright (C) 1995,1996 MORIOKA Tomohiko
 ;;;
 ;;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;; modified by Shuhei KOBAYASHI <shuhei@cmpt01.phys.tohoku.ac.jp>
 ;;; Maintainer: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Created: 1995/6/25
 ;;; Version:
 ;;;	$Id$
-;;; Keywords: MIME, Quoted-Printable
+;;; Keywords: MIME, Base64, Quoted-Printable, uuencode, gzip64
 ;;;
 ;;; This file is part of MEL (MIME Encoding Library).
 ;;;
@@ -48,10 +49,14 @@
 (autoload 'uuencode-encode-region "mel-u" nil t)
 (autoload 'uuencode-decode-region "mel-u" nil t)
 
+(autoload 'gzip64-encode-region "mel-g" nil t)
+(autoload 'gzip64-decode-region "mel-g" nil t)
+
 (defvar mime-encoding-method-alist
   '(("base64"           . base64-encode-region)
     ("quoted-printable" . quoted-printable-encode-region)
     ("x-uue"            . uuencode-encode-region)
+    ("x-gzip64"         . gzip64-encode-region)
     ("7bit")
     ("8bit")
     ("binary")
@@ -61,6 +66,7 @@
   '(("base64"           . base64-decode-region)
     ("quoted-printable" . quoted-printable-decode-region)
     ("x-uue"            . uuencode-decode-region)
+    ("x-gzip64"         . gzip64-decode-region)
     ))
 
 
@@ -101,3 +107,5 @@
 ;;;
 
 (provide 'mel)
+
+;;; mel.el ends here.

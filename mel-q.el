@@ -29,7 +29,6 @@
 ;;;
 ;;; Code:
 
-
 ;;; @ constants
 ;;;
 
@@ -61,6 +60,11 @@ external decoder is called.")
 
 ;;; @ Quoted-Printable (Q-encode) encoder/decoder
 ;;;
+
+(defun byte-to-hex-string (num)
+  (concat (char-to-string (elt quoted-printable-hex-chars (ash num -4)))
+	  (char-to-string (elt quoted-printable-hex-chars (logand num 15)))
+	  ))
 
 (defun quoted-printable-quote-char (chr)
   (concat "="
@@ -323,3 +327,5 @@ external decoder is called.")
 ;;;
 
 (provide 'mel-q)
+
+;;; mel-q.el ends here
