@@ -292,6 +292,16 @@ list $B$G!"$=$l$>$l!"I=<($7$?$/$J$$(B field $BL>$HI=<($7$?$$MsL>$rI=8=$7$?$b$
 </defun>
 
 
+<h2> Entity $B$NB0@-(B
+<node> Entity Attributes
+<p>
+<defun name="mime-entity-filename">
+	    <args> entity
+<p>
+Entity $B$N(B file $BL>$rJV$9!#(B
+</defun>
+
+
 <h1> Content-Type $BMs$N>pJs(B
 <node> Content-Type
 <p>
