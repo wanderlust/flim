@@ -77,6 +77,7 @@ If method is nil, this field will not be encoded."
     (iso-8859-8		. "Q")
     (iso-8859-9		. "Q")
     (iso-2022-jp	. "B")
+    (iso-2022-jp-3	. "B")
     (iso-2022-kr	. "B")
     (gb2312		. "B")
     (cn-gb		. "B")

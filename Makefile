@@ -3,8 +3,8 @@
 #
 
 PACKAGE = slim
-API	= 1.13
-RELEASE = 6
+API	= 1.14
+RELEASE = 0
 
 TAR	= tar
 RM	= /bin/rm -f
@@ -26,7 +26,7 @@ FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 VERSION	= $(API).$(RELEASE)
 ARC_DIR = /ftp/pub/mule/flim/flim-$(API)
-SEMI_ARC_DIR = /ftp/pub/mule/semi/semi-1.13-for-flim-$(API)
+SEMI_ARC_DIR = /ftp/pub/mule/semi/semi-1.14-for-flim-$(API)
 
 elc:
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \

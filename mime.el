@@ -1,8 +1,6 @@
 ;;; mime.el --- MIME library module
 
-;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
-;; Copyright (C) 1999 Electrotechnical Laboratory, JAPAN.
-;; Licensed to the Free Software Foundation.
+;; Copyright (C) 1998,1999,2000 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: MIME, multimedia, mail, news
@@ -30,6 +28,8 @@
 (require 'std11)
 (require 'mime-def)
 (require 'eword-decode)
+
+(eval-when-compile (require 'mmgeneric))
 
 (eval-and-compile
 
@@ -90,17 +90,15 @@ representation-type."
   (or (mime-entity-children-internal entity)
       (luna-send entity 'mime-entity-children entity)))
 
-(defalias 'mime-entity-node-id 'mime-entity-node-id-internal)
+(defun mime-entity-node-id (entity)
+  (mime-entity-node-id-internal entity))
 
 (defun mime-entity-number (entity)
   "Return entity-number of ENTITY."
   (reverse (mime-entity-node-id-internal entity)))
 
-(defun mime-find-entity-from-number (entity-number &optional message)
-  "Return entity from ENTITY-NUMBER in MESSAGE.
-If MESSAGE is not specified, `mime-message-structure' is used."
-  (or message
-      (setq message mime-message-structure))
+(defun mime-find-entity-from-number (entity-number message)
+  "Return entity from ENTITY-NUMBER in MESSAGE."
   (let ((sn (car entity-number)))
     (if (null sn)
 	message
@@ -110,16 +108,12 @@ If MESSAGE is not specified, `mime-message-structure' is used."
 	  ))
       )))
 
-(defun mime-find-entity-from-node-id (entity-node-id &optional message)
-  "Return entity from ENTITY-NODE-ID in MESSAGE.
-If MESSAGE is not specified, `mime-message-structure' is used."
+(defun mime-find-entity-from-node-id (entity-node-id message)
+  "Return entity from ENTITY-NODE-ID in MESSAGE."
   (mime-find-entity-from-number (reverse entity-node-id) message))
 
-(defun mime-find-entity-from-content-id (cid &optional message)
-  "Return entity from CID in MESSAGE.
-If MESSAGE is not specified, `mime-message-structure' is used."
-  (or message
-      (setq message mime-message-structure))
+(defun mime-find-entity-from-content-id (cid message)
+  "Return entity from CID in MESSAGE."
   (if (equal cid (mime-entity-read-field message "Content-Id"))
       message
     (let ((children (mime-entity-children message))
@@ -142,76 +136,131 @@ If MESSAGE is specified, it is regarded as root entity."
 If MESSAGE is specified, it is regarded as root entity."
   (null (mime-entity-parent entity message)))
 
+(defun mime-find-root-entity (entity)
+  "Return root entity of ENTITY."
+  (let ((p (mime-entity-parent entity)))
+    (if (null p)
+	entity
+      (mime-entity-parent p))))
 
-;;; @ Header buffer
+
+;;; @ Header buffer (obsolete)
 ;;;
 
-(luna-define-generic mime-entity-header-buffer (entity))
+;; (luna-define-generic mime-entity-header-buffer (entity))
 
-(luna-define-generic mime-goto-header-start-point (entity)
-  "Set buffer and point to header-start-position of ENTITY.")
+;; (luna-define-generic mime-goto-header-start-point (entity)
+;;   "Set buffer and point to header-start-position of ENTITY.")
 
-(luna-define-generic mime-entity-header-start-point (entity)
-  "Return header-start-position of ENTITY.")
+;; (luna-define-generic mime-entity-header-start-point (entity)
+;;   "Return header-start-position of ENTITY.")
 
-(luna-define-generic mime-entity-header-end-point (entity)
-  "Return header-end-position of ENTITY.")
+;; (luna-define-generic mime-entity-header-end-point (entity)
+;;   "Return header-end-position of ENTITY.")
+
+;; (make-obsolete 'mime-entity-header-buffer "don't use it.")
+;; (make-obsolete 'mime-goto-header-start-point "don't use it.")
+;; (make-obsolete 'mime-entity-header-start-point "don't use it.")
+;; (make-obsolete 'mime-entity-header-end-point "don't use it.")
 
 
-;;; @ Body buffer
+;;; @ Body buffer (obsolete)
 ;;;
 
-(luna-define-generic mime-entity-body-buffer (entity))
+;; (luna-define-generic mime-entity-body-buffer (entity))
 
-(luna-define-generic mime-goto-body-start-point (entity)
-  "Set buffer and point to body-start-position of ENTITY.")
+;; (luna-define-generic mime-goto-body-start-point (entity)
+;;   "Set buffer and point to body-start-position of ENTITY.")
 
-(luna-define-generic mime-goto-body-end-point (entity)
-  "Set buffer and point to body-end-position of ENTITY.")
+;; (luna-define-generic mime-goto-body-end-point (entity)
+;;   "Set buffer and point to body-end-position of ENTITY.")
 
-(luna-define-generic mime-entity-body-start-point (entity)
-  "Return body-start-position of ENTITY.")
+;; (luna-define-generic mime-entity-body-start-point (entity)
+;;   "Return body-start-position of ENTITY.")
 
-(define-obsolete-function-alias
-  'mime-entity-body-start 'mime-entity-body-start-point)
+;; (luna-define-generic mime-entity-body-end-point (entity)
+;;   "Return body-end-position of ENTITY.")
 
-(luna-define-generic mime-entity-body-end-point (entity)
-  "Return body-end-position of ENTITY.")
+;; (defalias 'mime-entity-body-start 'mime-entity-body-start-point)
+;; (defalias 'mime-entity-body-end 'mime-entity-body-end-point)
 
-(define-obsolete-function-alias
-  'mime-entity-body-end 'mime-entity-body-end-point)
+;; (make-obsolete 'mime-entity-body-buffer "don't use it.")
+;; (make-obsolete 'mime-goto-body-start-point "don't use it.")
+;; (make-obsolete 'mime-goto-body-end-point "don't use it.")
+;; (make-obsolete 'mime-entity-body-start-point "don't use it.")
+;; (make-obsolete 'mime-entity-body-end-point "don't use it.")
+;; (make-obsolete 'mime-entity-body-start "don't use it.")
+;; (make-obsolete 'mime-entity-body-end "don't use it.")
 
 
 ;;; @ Entity buffer (obsolete)
 ;;;
 
-(luna-define-generic mime-entity-buffer (entity))
-(make-obsolete 'mime-entity-buffer
- "use mime-entity-header-buffer or mime-entity-body-buffer instead.")
+;; (luna-define-generic mime-entity-buffer (entity))
+;; (make-obsolete 'mime-entity-buffer "don't use it.")
 
-(luna-define-generic mime-entity-point-min (entity))
-(make-obsolete 'mime-entity-point-min 'mime-entity-header-start-point)
+;; (luna-define-generic mime-entity-point-min (entity))
+;; (make-obsolete 'mime-entity-point-min "don't use it.")
 
-(luna-define-generic mime-entity-point-max (entity))
-(make-obsolete 'mime-entity-point-max 'mime-entity-body-end-point)
+;; (luna-define-generic mime-entity-point-max (entity))
+;; (make-obsolete 'mime-entity-point-max "don't use it.")
 
 
-;;; @ Entity Header
+;;; @ Entity
+;;;
+
+(luna-define-generic mime-insert-entity (entity)
+  "Insert header and body of ENTITY at point.")
+
+(luna-define-generic mime-write-entity (entity filename)
+  "Write header and body of ENTITY into FILENAME.")
+
+
+;;; @ Entity Body
+;;;
+
+(luna-define-generic mime-entity-body (entity)
+  "Return network representation of ENTITY body.")
+
+(luna-define-generic mime-insert-entity-body (entity)
+  "Insert network representation of ENTITY body at point.")
+
+(luna-define-generic mime-write-entity-body (entity filename)
+  "Write body of ENTITY into FILENAME.")
+
+
+;;; @ Entity Content
+;;;
+
+(luna-define-generic mime-entity-content (entity)
+  "Return content of ENTITY as byte sequence (string).")
+
+(luna-define-generic mime-insert-entity-content (entity)
+  "Insert content of ENTITY at point.")
+
+(luna-define-generic mime-write-entity-content (entity filename)
+  "Write content of ENTITY into FILENAME.")
+
+(luna-define-generic mime-insert-text-content (entity)
+  "Insert decoded text body of ENTITY.")
+
+
+;;; @ Header fields
 ;;;
 
 (luna-define-generic mime-entity-fetch-field (entity field-name)
   "Return the value of the ENTITY's header field whose type is FIELD-NAME.")
 
-(defun mime-fetch-field (field-name &optional entity)
-  "Return the value of the ENTITY's header field whose type is FIELD-NAME."
-  (if (symbolp field-name)
-      (setq field-name (symbol-name field-name))
-    )
-  (or entity
-      (setq entity mime-message-structure))
-  (mime-entity-fetch-field entity field-name)
-  )
-(make-obsolete 'mime-fetch-field 'mime-entity-fetch-field)
+;; (defun mime-fetch-field (field-name &optional entity)
+;;   "Return the value of the ENTITY's header field whose type is FIELD-NAME."
+;;   (if (symbolp field-name)
+;;       (setq field-name (symbol-name field-name))
+;;     )
+;;   (or entity
+;;       (setq entity mime-message-structure))
+;;   (mime-entity-fetch-field entity field-name)
+;;   )
+;; (make-obsolete 'mime-fetch-field 'mime-entity-fetch-field)
 
 (defun mime-entity-content-type (entity)
   (or (mime-entity-content-type-internal entity)
@@ -301,12 +350,12 @@ If MESSAGE is specified, it is regarded as root entity."
 		      entity (put-alist sym field header))
 		     field))))))))
 
-(defun mime-read-field (field-name &optional entity)
-  (or entity
-      (setq entity mime-message-structure))
-  (mime-entity-read-field entity field-name)
-  )
-(make-obsolete 'mime-read-field 'mime-entity-read-field)
+;; (defun mime-read-field (field-name &optional entity)
+;;   (or entity
+;;       (setq entity mime-message-structure))
+;;   (mime-entity-read-field entity field-name)
+;;   )
+;; (make-obsolete 'mime-read-field 'mime-entity-read-field)
 
 (luna-define-generic mime-insert-header (entity &optional invisible-fields
 						visible-fields)
@@ -321,10 +370,9 @@ If MESSAGE is specified, it is regarded as root entity."
 
 (defun mime-entity-uu-filename (entity)
   (if (member (mime-entity-encoding entity) mime-uuencode-encoding-name-list)
-      (save-excursion
-	(mime-goto-body-start-point entity)
-	(if (re-search-forward "^begin [0-9]+ "
-			       (mime-entity-body-end-point entity) t)
+      (with-temp-buffer
+	(mime-insert-entity-body entity)
+	(if (re-search-forward "^begin [0-9]+ " nil t)
 	    (if (looking-at ".+$")
 		(buffer-substring (match-beginning 0)(match-end 0))
 	      )))))
@@ -351,30 +399,11 @@ If MESSAGE is specified, it is regarded as root entity."
   (mime-type/subtype-string (mime-entity-media-type entity-info)
 			    (mime-entity-media-subtype entity-info)))
 
+(defun mime-entity-set-content-type (entity content-type)
+  (mime-entity-set-content-type-internal entity content-type))
 
-;;; @ Entity Content
-;;;
-
-(luna-define-generic mime-entity-content (entity)
-  "Return content of ENTITY as byte sequence (string).")
-
-(luna-define-generic mime-insert-entity-content (entity)
-  "Insert content of ENTITY at point.")
-
-(luna-define-generic mime-write-entity-content (entity filename)
-  "Write content of ENTITY into FILENAME.")
-
-(luna-define-generic mime-insert-text-content (entity)
-  "Insert decoded text body of ENTITY.")
-
-(luna-define-generic mime-insert-entity (entity)
-  "Insert header and body of ENTITY at point.")
-
-(luna-define-generic mime-write-entity (entity filename)
-  "Write header and body of ENTITY into FILENAME.")
-
-(luna-define-generic mime-write-entity-body (entity filename)
-  "Write body of ENTITY into FILENAME.")
+(defun mime-entity-set-encoding (entity encoding)
+  (mime-entity-set-encoding-internal entity encoding))
 
 
 ;;; @ end

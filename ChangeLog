@@ -2,6 +2,78 @@
 
 	* mime-def.el (mime-library-product): Up.
 
+2000-06-23  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmexternal.el (initialize-instance): New method.
+	(mime-entity-name): Fixed.
+	(mmexternal-require-buffer): New function.
+	(mime-insert-entity): New implementation.
+	(mime-write-entity): Likewise.
+	(mime-entity-body): New method.
+	(mime-insert-entity-body): New method.
+	(mime-write-entity-body): New implementation.
+	(mime-entity-content): Likewise.
+	(mime-insert-entity-content): Likewise.
+	(mime-write-entity-content): Likewise.
+	(mime-entity-fetch-field): Likewise.
+	(mime-insert-header): Likewise.
+
+	* mmbuffer.el (initialize-instance): Store buffer instead of name
+	of buffer to `buffer' slot.
+
+2000-06-21  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmgeneric.el (mime-entity-children): Deleted.
+
+	* mmbuffer.el (mime-insert-entity-body): New method.
+	(mmbuffer-parse-multipart): New function.
+	(mmbuffer-parse-encapsulated): New function.
+	(mime-entity-children): New function.
+
+2000-06-21  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-find-root-entity): New function.
+	(mime-entity-header-buffer): Comment out.
+	(mime-goto-header-start-point): Likewise.
+	(mime-entity-header-start-point): Likewise.
+	(mime-entity-header-end-point): Likewise.
+	(mime-entity-body-buffer): Likewise.
+	(mime-goto-body-start-point): Likewise.
+	(mime-goto-body-end-point): Likewise.
+	(mime-entity-body-start-point): Likewise.
+	(mime-entity-body-end-point): Likewise.
+	(mime-entity-body-start): Likewise.
+	(mime-entity-body-end): Likewise.
+	(mime-entity-buffer): Likewise.
+	(mime-entity-point-min): Likewise.
+	(mime-entity-point-max): Likewise.
+	(mime-insert-entity-body): New generic function.
+	(mime-entity-uu-filename): Use `mime-insert-entity-body'.
+	(mime-entity-set-content-type): New function.
+	(mime-entity-set-encoding): New function.
+
+	* mime-parse.el (mime-parse-multipart): Comment out.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-external): Likewise.
+
+	* mmbuffer.el (mime-entity-header-buffer): Comment out.
+	(mime-goto-header-start-point): Likewise.
+	(mime-entity-header-start-point): Likewise.
+	(mime-entity-header-end-point): Likewise.
+	(mime-entity-body-buffer): Likewise.
+	(mime-goto-body-start-point): Likewise.
+	(mime-goto-body-end-point): Likewise.
+	(mime-entity-body-start-point): Likewise.
+	(mime-entity-body-end-point): Likewise.
+	(mime-entity-buffer): Likewise.
+	(mime-entity-point-min): Likewise.
+	(mime-entity-point-max): Likewise.
+
+2000-05-30  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el (eword-charset-encoding-alist): Add
+	`iso-2022-jp-3'.
+
 2000-05-25  Tanaka Akira      <akr@m17n.org>
 
 	* mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
@@ -11,11 +83,17 @@
 	* smtp.el (smtp-deduce-address-list): Set `case-fold-search' to `t'
 	in the working buffer.
 
+2000-04-26  Yoshiki Hayashi  <yoshiki@xemacs.org>
+
+	* mime.el (mime-entity-body): New function.
+	* mmbuffer.el (mime-entity-body): Implement it.
+
 2000-04-17  Yoshiki Hayashi  <yoshiki@xemacs.org>
 
 	* mel.el (mime-decode-string): Return original string
 	when it failed to decode.
 
+
 2000-04-16  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.13.7 released.
@@ -24,6 +102,74 @@
 2000-04-16  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl.el (sasl-scram-md5-client-security-info): eval-when-compile.
+
+2000-03-03  Keiichi Suzuki  <keiichi@nanap.org>
+
+	* mime.el (mime-entity-node-id): Change to function.
+
+2000-03-03  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmdbuffer.el, mmbuffer.el (initialize-instance): Don't setup
+	`mime-message-structure'.
+
+	* mime-parse.el (mime-parse-buffer): Don't setup
+	`mime-message-structure'.
+
+2000-03-02  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmgeneric.el (mime-visible-field-p): Moved from mmbuffer.el.
+	(mime-insert-header-from-buffer): Moved from mmbuffer.el.
+
+	* mmexternal.el, mmdbuffer.el, mmbuffer.el (mime-visible-field-p):
+	Moved to mmgeneric.el.
+	(mime-insert-header-from-buffer): Moved to mmgeneric.el.
+
+2000-03-02  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* FLIM-ELS (flim-modules): Add `mmgeneric'.
+
+	* mmgeneric.el: New file.
+
+	* mmbuffer.el: Require `mmgeneric'.
+
+	* mime.el: Require `mmgeneric' when compiling.
+
+	* mime-def.el: Move mime-entity related definitions to
+	mmgeneric.el.
+
+2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime.el (mime-find-entity-from-number): Now second argument
+	`message' is not an optional argument.
+	(mime-find-entity-from-node-id): Likewise.
+	(mime-find-entity-from-content-id): Likewise.
+	(mime-fetch-field): Delete obsolete function.
+	(mime-read-field): Likewise.
+
+2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime.el (mime-entity-header-buffer): Mark it as obsolete.
+	(mime-goto-header-start-point): Likewise.
+	(mime-entity-header-start-point): Likewise.
+	(mime-entity-header-end-point): Likewise.
+	(mime-entity-body-start): Use `defalias'; don't recommend to use
+	`mime-entity-body-start-point' instead.
+	(mime-entity-body-end): Use `defalias'; don't recommend to use
+	`mime-entity-body-end-point' instead.
+	(mime-entity-body-buffer): Mark it as obsolete.
+	(mime-goto-body-start-point): Likewise.
+	(mime-goto-body-end-point): Likewise.
+	(mime-entity-body-start-point): Likewise.
+	(mime-entity-body-end-point): Likewise.
+	(mime-entity-buffer): Don't recommend to use
+	`mime-entity-header-buffer' or `mime-entity-body-buffer' instead.
+	(mime-entity-point-min): Don't recommend to use
+	`mime-entity-header-start-point' instead.
+	(mime-entity-point-max): Don't recommend to use
+	`mime-entity-body-end-point' instead.
+
+	* mime-def.el (mime-library-version): update to 1.14.1.
+	- Add autoload setting for `mime-parse-external'.
 
 2000-02-03  Kenichi OKADA <okada@opaopa.org>
 
@@ -135,6 +281,17 @@
 	(base64-external-encode-region): Likewise.
 	(base64-internal-encode-region): Likewise.
 	(base64-encode-string): Likewise.
+
+1999-12-16  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* FLIM-ELS (flim-modules): Add `mmexternal'.
+
+	* mime-parse.el (mime-parse-external): New function.
+
+	* mime-def.el (mime-entity-children [mime-entity]): Use
+	`mime-parse-external' for message/external-body.
+
+	* mmexternal.el: New module.
 
 1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
@@ -491,7 +648,45 @@
 	* smtp.el (smtp-via-smtp): Use sasl.el for SASL.
 	* FLIM-ELS (flim-modules): Add `sasl'.
 
+1999-10-17  Yoshiki Hayashi  <t90553@mail.ecc.u-tokyo.ac.jp>
+
+	* FLIM-MK (install-flim-package): Delete auto-autoloads.el
+	and custom-load.el
+
+1999-09-20  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mailcap.el (mailcap-look-at-schar): Protect against unexpected
+	eof.  [cf. <tm-ja:5177>]
+
+1999-09-13  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Remove needless `concat'.
+
+1999-09-08  Yoshiki Hayashi  <t90553@mail.ecc.u-tokyo.ac.jp>
+
+	* mime-ja.sgml, mime-en.sgml (Entity creation): Fix typo.
+
+1999-09-01  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Make directory
+	`smtpmail-queue-dir' if it does not exist; convert filename of
+	queued mail using `convert-standard-filename'.
+	(smtpmail-queue-index): Treat `smtpmail-queue-dir' as a directory
+	name using `file-name-as-directory'.
+	(smtpmail-queue-dir, smtpmail-queue-mail): Remove "*" from doc
+	strings.
+
+1999-08-26  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Use `time-stamp-yyyy-mm-dd' and
+	`time-stamp-hh:mm:ss' instead of `current-time'.
+
+1999-08-25  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* FLIM-ELS: Use `if' instead of `unless'.
+
 
+>>>>>>> 1.134.2.18
 1999-08-17  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM: Version 1.13.2 (Kasanui) released.
