@@ -1,3 +1,22 @@
+2000-11-12   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-primitive-data): Use `beginning-of-line' instead of
+	`forward-char'.
+	(smtp-read-response): Don't bind `case-fold-search'.
+	(smtp-send-data): Don't save excursion.
+
+2000-11-10   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl-digest.el (sasl-digest-md5-challenge): Abolish.
+	(sasl-digest-md5-syntax-table): Rename from
+	`sasl-digest-md5-parse-digest-challenge-syntax-table'.
+	(sasl-digest-md5-parse-string): Rename from
+	`sasl-digest-md5-parse-digest-challenge'; only return a property list.
+	(sasl-digest-md5-challenge): Abolish.
+	(sasl-digest-md5-build-response-value-1): Abolish.
+	(sasl-digest-md5-response-value): Define as function.
+	(sasl-digest-md5-response): Rewrite.
+
 2000-11-07   Kenichi OKADA  <okada@opaopa.org>
 
 	* sasl.el (sasl-login-response-1): Fix.
