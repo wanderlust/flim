@@ -163,7 +163,11 @@ Command mime-insert-encoded-file (FILENAME ENCODING)
 
 Command base64-insert-encoded-file (FILENAME)
 
-  Insert base64 encoded file.
+  Encode contents of file FILENAME to base64, and insert the result.
+
+  It calls external base64 encoder specified by
+  `base64-external-encoder'.  So you must install the program (maybe
+  mmencode included in metamail or XEmacs package).
 
 Command quoted-printable-insert-encoded-file (FILENAME)
 
