@@ -72,6 +72,12 @@ don't define this value."
   :type 'boolean
   :group 'smtp)
 
+(defcustom smtp-notify-success nil
+  "*If non-nil, notification for successful mail delivery is returned 
+ to user (RFC1891)."
+  :type 'boolean
+  :group 'smtp)
+ 
 (defvar smtp-read-point nil)
 
 (defun smtp-make-fqdn ()
@@ -202,7 +208,11 @@ don't define this value."
 	    ;; RCPT TO:<recipient>
 	    (while recipients
 	      (smtp-send-command process
-				 (format "RCPT TO:<%s>" (car recipients)))
+				 (format
+				  (if smtp-notify-success
+				      "RCPT TO:<%s> NOTIFY=SUCCESS" 
+				    "RCPT TO:<%s>")
+				  (car recipients)))
 	      (setq recipients (cdr recipients))
 	      (setq response (smtp-read-response process))
 	      (if (or (null (car response))
