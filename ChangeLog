@@ -1,3 +1,12 @@
+2001-02-20  Kenichi OKADA <okada@opaopa.org>
+
+	* SLIM: Version 1.14.8 released.
+
+2002-01-16  Hiroya Murata     <lapis-lazuli@pop06.odn.ne.jp>
+
+	* luna.el (luna-class-find-member): Don't search parents'
+	method-spaces.
+
 2002-02-01  Kenichi OKADA  <okada@opaopa.org>
 
 	* eword-encode.el (mime-header-encode-method-alist): New variable.
