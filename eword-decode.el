@@ -454,7 +454,7 @@ If SEPARATOR is not nil, it is used as header separator."
 	 (match-beginning 0)
        (point-max)
        ))
-   ))
+   code-conversion))
 
 (define-obsolete-function-alias 'eword-decode-header
   'mime-decode-header-in-buffer)
