@@ -246,7 +246,7 @@ If BOUNDARY is not nil, it is used as message header separator.
     ))
 
 (defun std11-strip-quoted-string (string)
-  "Strip quoted-string STRING. [std11.el]"
+  "Strip quoted-string STRING."
   (let ((len (length string)))
     (or (and (>= len 2)
 	     (let ((max (1- len)))
@@ -261,21 +261,21 @@ If BOUNDARY is not nil, it is used as message header separator.
 ;;;
 
 (eval-and-compile
-  (defconst std11-space-chars " \t\n")
+  (defconst std11-space-char-list '(?  ?\t ?\n))
   (defconst std11-special-char-list '(?\] ?\[
 					  ?\( ?\) ?< ?> ?@
 					  ?, ?\; ?: ?\\ ?\"
 					  ?.))
   )
 ;; (defconst std11-spaces-regexp
-;;   (eval-when-compile (concat "[" std11-space-chars "]+")))
+;;   (eval-when-compile (concat "[" std11-space-char-list "]+")))
 (defconst std11-atom-regexp
   (eval-when-compile
-    (concat "^[^" std11-special-char-list std11-space-chars "]+")))
+    (concat "^[^" std11-special-char-list std11-space-char-list "]+")))
 
 (defun std11-analyze-spaces (string)
   (if (and (string-match
-	    (eval-when-compile (concat "[" std11-space-chars "]+"))
+	    (eval-when-compile (concat "[" std11-space-char-list "]+"))
 	    string)
 	   (= (match-beginning 0) 0))
       (let ((end (match-end 0)))
