@@ -1,9 +1,14 @@
+1999-08-25  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* FLIM-ELS: Use `if' instead of `unless'.
+
+
 1999-08-17  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM: Version 1.13.2 (Kasanui) released.
 
 1999-08-03  Yuuichi Teranishi <teranisi@gohome.org>
-	
+
 	* smtp.el (smtp-notify-success): New option.
 	* (smtp-via-smtp): Request return receipt (defined in RFC1891) to
 	SMTP server if `smtp-notify-success' is non-nil.
