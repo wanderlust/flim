@@ -53,6 +53,12 @@ and return parsed it.")
   "Read field-body of Content-Transfer-Encoding field from
 current-buffer, and return it.")
 
+(autoload 'mime-parse-msg-id "mime-parse"
+  "Parse TOKENS as msg-id of Content-Id or Message-Id field.")
+
+(autoload 'mime-uri-parse-cid "mime-parse"
+  "Parse STRING as cid URI.")
+
 (autoload 'mime-parse-buffer "mime-parse"
   "Parse BUFFER as a MIME message.")
 
@@ -138,6 +144,21 @@ If MESSAGE is not specified, `mime-message-structure' is used."
   "Return entity from ENTITY-NODE-ID in MESSAGE.
 If MESSAGE is not specified, `mime-message-structure' is used."
   (mime-find-entity-from-number (reverse entity-node-id) message))
+
+(defun mime-find-entity-from-content-id (cid &optional message)
+  "Return entity from CID in MESSAGE.
+If MESSAGE is not specified, `mime-message-structure' is used."
+  (or message
+      (setq message mime-message-structure))
+  (if (equal cid (mime-read-field 'Content-Id message))
+      message
+    (let ((children (mime-entity-children message))
+	  ret)
+      (while (and children
+		  (null (setq ret (mime-find-entity-from-content-id
+				   cid (car children)))))
+	(setq children (cdr children)))
+      ret)))
 
 (defun mime-entity-parent (entity &optional message)
   "Return mother entity of ENTITY.
@@ -264,11 +285,13 @@ If MESSAGE is specified, it is regarded as root entity."
     (Bcc		. std11-parse-addresses)
     (Resent-Bcc		. std11-parse-addresses)
     
-    (Message-Id		. std11-parse-msg-id)
-    (Recent-Message-Id	. std11-parse-msg-id)
+    (Message-Id		. mime-parse-msg-id)
+    (Recent-Message-Id	. mime-parse-msg-id)
     
     (In-Reply-To	. std11-parse-msg-ids)
     (References		. std11-parse-msg-ids)
+    
+    (Content-Id		. mime-parse-msg-id)
     ))
 
 (defun mime-read-field (field-name &optional entity)
