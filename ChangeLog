@@ -1,3 +1,11 @@
+2000-03-03  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmdbuffer.el, mmbuffer.el (initialize-instance): Don't setup
+	`mime-message-structure'.
+
+	* mime-parse.el (mime-parse-buffer): Don't setup
+	`mime-message-structure'.
+
 2000-03-02  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mmgeneric.el (mime-visible-field-p): Moved from mmbuffer.el.
