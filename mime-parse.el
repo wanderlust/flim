@@ -76,34 +76,88 @@ be the result."
 (defconst mime/content-parameter-value-regexp
   (concat "\\("
 	  std11-quoted-string-regexp
-	  "\\|[^; \t\n]*\\)"))
+	  "\\|[^; \t\n]*\\)")
+  )
+
+(defconst mime::attribute-char-regexp "[^][*'%()<>@,;:\\\"/?=\000- ]")
+(defconst mime::attribute-regexp (concat mime::attribute-char-regexp "+")
+  )
+
+(defconst mime::ext-octet-regexp "%[0-9a-f][0-9a-f]")
+(defconst mime::extended-other-values-regexp
+  (concat "\\(" mime::attribute-char-regexp "\\|"
+	  mime::ext-octet-regexp "\\)+")
+  )
+(defconst mime::extended-initial-value-regexp
+  (concat "\\(" mime-charset-regexp "\\)'\\(" mime-charset-regexp "\\)'\\("
+	  mime::extended-other-values-regexp "\\)")
+  )
 
 (defconst mime::parameter-regexp
-  (concat "^[ \t]*\;[ \t]*\\(" mime-token-regexp "\\)"
-	  "[ \t]*=[ \t]*\\(" mime/content-parameter-value-regexp "\\)"))
+  (concat "[ \t]*\;[ \t]*\\(" mime::attribute-regexp "\\)"
+	  "\\(\\*\\([0-9]+\\)\\)?\\(\\*\\)?"
+	  "[ \t]*=[ \t]*\\(" mime/content-parameter-value-regexp "\\)")
+  )
 
-(defun mime-parse-parameter (str)
-  (if (string-match mime::parameter-regexp str)
-      (let ((e (match-end 2)))
-	(cons
-	 (cons (downcase (substring str (match-beginning 1) (match-end 1)))
-	       (std11-strip-quoted-string
-		(substring str (match-beginning 2) e))
-	       )
-	 (substring str e)
-	 ))))
-
+(defun mime-parse-parameters (str)
+  (with-temp-buffer
+    (let (rest)
+      (insert str)
+      (goto-char (point-min))
+      (while (looking-at mime::parameter-regexp)
+	(let* ((name (buffer-substring (match-beginning 1) (match-end 1)))
+	       (no (or (and (match-beginning 3)
+			    (string-to-int
+			     (buffer-substring (match-beginning 3)
+					       (match-end 3)
+					       )))
+		       0))
+	       (encoded (and (match-beginning 4) t))
+	       (next (match-end 0))
+	       (parm (or (assoc name rest)
+			 (car (setq rest
+				    (cons (make-mime-parameter name) rest)
+				    )))))
+	  (mime-parameter-append-raw-value
+	   parm
+	   no
+	   encoded
+	   (if encoded
+	       (if (and (eq no 0)
+			(progn
+			  (goto-char (match-beginning 5))
+			  (looking-at mime::extended-initial-value-regexp)
+			  ))
+		   (progn
+		     (mime-parameter-set-charset
+		      parm
+		      (intern (downcase
+			       (buffer-substring (match-beginning 1)
+						 (match-end 1)
+						 ))))
+		     (mime-parameter-set-language
+		      parm
+		      (intern (downcase
+				(buffer-substring (match-beginning 2)
+						  (match-end 2)
+						  ))))
+		     (buffer-substring (match-beginning 3) (match-end 3))
+		     )
+		 (buffer-substring (match-beginning 5) (match-end 5))
+		 )
+	     (std11-strip-quoted-string
+	      (buffer-substring (match-beginning 5) (match-end 5))
+	      )))
+	  (goto-char next)
+	  ))
+      rest)))
 
 ;;; @ Content-Type
 ;;;
 
 ;;;###autoload
 (defun mime-parse-Content-Type (string)
-  "Parse STRING as field-body of Content-Type field.
-Return value is
-    (PRIMARY-TYPE SUBTYPE (NAME1 . VALUE1)(NAME2 . VALUE2) ...)
-or nil.  PRIMARY-TYPE and SUBTYPE are symbol and NAME_n and VALUE_n
-are string."
+  "Parse STRING as field-body of Content-Type field."
   (setq string (std11-unfold-string string))
   (if (string-match `,(concat "^\\(" mime-token-regexp
 			      "\\)/\\(" mime-token-regexp "\\)") string)
@@ -113,19 +167,14 @@ are string."
 		       (substring string (match-beginning 2) (match-end 2))))
 	     ret dest)
 	(setq string (substring string (match-end 0)))
-	(while (setq ret (mime-parse-parameter string))
-	  (setq dest (cons (car ret) dest)
-		string (cdr ret))
-	  )
 	(make-mime-content-type (intern type)(intern subtype)
-				(nreverse dest))
-	)))
+				(nreverse (mime-parse-parameters string))
+				))))
 
 ;;;###autoload
 (defun mime-read-Content-Type ()
   "Read field-body of Content-Type field from current-buffer,
-and return parsed it.  Format of return value is as same as
-`mime-parse-Content-Type'."
+and return parsed it."
   (let ((str (std11-field-body "Content-Type")))
     (if str
 	(mime-parse-Content-Type str)
@@ -149,12 +198,8 @@ and return parsed it.  Format of return value is as same as
 	     (type (downcase (substring string 0 e)))
 	     ret dest)
 	(setq string (substring string e))
-	(while (setq ret (mime-parse-parameter string))
-	  (setq dest (cons (car ret) dest)
-		string (cdr ret))
-	  )
 	(cons (cons 'type (intern type))
-	      (nreverse dest))
+	      (nreverse (mime-parse-parameters string)))
 	)))
 
 ;;;###autoload
