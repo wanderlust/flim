@@ -283,22 +283,25 @@ of the host to connect to.  SERVICE is name of the service desired."
       (kill-buffer dig-buf))))
 
 (defun smtp-find-server (recipients)
-  (let ((rec
-	 (mapcar (lambda (recipient)
-		   (if (string-match "@\\([^\t\n ]*\\)" recipient)
-		       (cons
-			(smtp-find-mx
-			 (match-string 1 recipient))
-			(list recipient))))
-		 recipients))
-	ret rets rlist)
-    (while (setq rets (pop rec))
-      (if (setq ret (assoc (car rets) rec))
-	  (setcdr ret
-		  (append (cdr ret) (cdr rets)))
-	(setq rlist
-	      (append rlist (list rets)))))
-    rlist))
+  (save-excursion
+    (let ((rec
+	   (mapcar (lambda (recipient)
+		     (let (server)
+		       (if (and (string-match "@\\([^\t\n ]*\\)" recipient)
+				(setq server
+				      (smtp-find-mx
+				       (match-string 1 recipient))))
+			   (cons server (list recipient))
+			 (error (format "cannot find server for %s." recipient)))))
+		   recipients))
+	  ret rets rlist)
+      (while (setq rets (pop rec))
+	(if (setq ret (assoc (car rets) rec))
+	    (setcdr ret
+		    (append (cdr ret) (cdr rets)))
+	  (setq rlist
+		(append rlist (list rets)))))
+      rlist)))
 
 ;;;###autoload
 (defun smtp-via-smtp (sender recipients buffer)
@@ -380,28 +383,28 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	     #'starttls-open-stream
 	   smtp-open-connection-function))
 	server package)
-    (while (car servers)
-      (setq server (caar servers))
-      (setq recipients (cdar servers))
-      (if (not (and server recipients))
-	  ;; MAILER-DAEMON is required. :)
-	  (error (format "Cannot send <%s>"
-			 (mapconcat 'concat recipients ">,<"))))
-      (setq package
-	    (smtp-make-package sender recipients buffer))
-      (save-excursion
-	(set-buffer
-	 (get-buffer-create
-	  (format "*trace of SMTP session to %s*" server)))
-	(erase-buffer)
-	(buffer-disable-undo)
-	(unless (smtp-find-connection (current-buffer))
-	  (smtp-open-connection (current-buffer) server smtp-service))
-	(make-local-variable 'smtp-read-point)
-	(setq smtp-read-point (point-min))
-	(let ((smtp-use-sasl nil)
-	      (smtp-use-starttls-ignore-error t))
-	  (funcall smtp-submit-package-function package)))
+      (while (car servers)
+	(setq server (caar servers))
+	(setq recipients (cdar servers))
+	(if (not (and server recipients))
+	    ;; MAILER-DAEMON is required. :)
+	    (error (format "Cannot send <%s>"
+			   (mapconcat 'concat recipients ">,<"))))
+	(setq package
+	      (smtp-make-package sender recipients buffer))
+	(save-excursion
+	  (set-buffer
+	   (get-buffer-create
+	    (format "*trace of SMTP session to %s*" server)))
+	  (erase-buffer)
+	  (buffer-disable-undo)
+	  (unless (smtp-find-connection (current-buffer))
+	    (smtp-open-connection (current-buffer) server smtp-service))
+	  (make-local-variable 'smtp-read-point)
+	  (setq smtp-read-point (point-min))
+	  (let ((smtp-use-sasl nil)
+		(smtp-use-starttls-ignore-error t))
+	    (funcall smtp-submit-package-function package)))
       (setq servers (cdr servers)))))
 
 ;;; @ hook methods for `smtp-submit-package'
