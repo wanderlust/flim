@@ -1,3 +1,8 @@
+1999-03-04  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel.el (mime-decode-string): Return `string' itself if
+	`encoding' is unknown.
+
 1999-02-26  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE

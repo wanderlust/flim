@@ -204,9 +204,11 @@ ENCODING must be string."
 ENCODING must be string.  If ENCODING is found in
 `mime-string-decoding-method-alist' as its key, this function decodes
 the STRING by its value."
-  (funcall (mel-find-function 'mime-decode-string encoding)
-	   string))
-
+  (let ((fun (mel-find-function 'mime-decode-string encoding)))
+    (if fun
+	(funcall (mel-find-function 'mime-decode-string encoding)
+		 string)
+      string)))
 
 (mel-define-service encoded-text-encode-string (string encoding)
   "Encode STRING as encoded-text using ENCODING.
