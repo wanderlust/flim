@@ -955,7 +955,7 @@ FLIM はこれらを符号化・復号化する機能を提供します。
 @node Header encoder/decoder,  , encoded-word, encoded-word
 @section Header encoding/decoding
 
-@defun eword-encode-header &optional  code-conversion separator
+@defun eword-decode-header &optional  code-conversion separator
 
 Decode MIME encoded-words in header fields.@refill
 
