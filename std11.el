@@ -289,6 +289,11 @@ be the result."
   )
 ;; (defconst std11-spaces-regexp
 ;;   (eval-when-compile (concat "[" std11-space-char-list "]+")))
+
+(defconst std11-non-atom-regexp
+  (eval-when-compile
+    (concat "[" std11-special-char-list std11-space-char-list "]")))
+
 (defconst std11-atom-regexp
   (eval-when-compile
     (concat "[^" std11-special-char-list std11-space-char-list "]+")))
@@ -313,13 +318,21 @@ be the result."
     ))
 
 (defun std11-analyze-atom (string start)
-  (if (and (string-match std11-atom-regexp string start)
-	   (= (match-beginning 0) start))
-      (let ((end (match-end 0)))
-	(cons (cons 'atom (substring string start end))
-	      ;;(substring string end)
-	      end)
-	)))
+  (if (string-match std11-non-atom-regexp string start)
+      (if (> (match-beginning 0) start)
+	  (cons (cons 'atom (substring string start (match-beginning 0)))
+		(match-beginning 0))
+	nil)
+    (cons (cons 'atom (substring string start))
+	  (length string)))
+  ;; (if (and (string-match std11-atom-regexp string start)
+  ;;          (= (match-beginning 0) start))
+  ;;     (let ((end (match-end 0)))
+  ;;       (cons (cons 'atom (substring string start end))
+  ;;             ;;(substring string end)
+  ;;             end)
+  ;;       ))
+  )
 
 (defun std11-check-enclosure (string open close &optional recursive from)
   (let ((len (length string))
