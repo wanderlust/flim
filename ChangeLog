@@ -1,3 +1,11 @@
+1998-10-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-parse.el (mime-parse-message): Modify for
+	`make-mime-entity-internal'.
+
+	* mime-def.el (make-mime-entity-internal): Change interface to be
+	able to specify original-header and parsed-header.
+
 1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-and-unfold-unstructured-field):
