@@ -11,9 +11,10 @@
 		     mime mime-parse mmgeneric mmbuffer mmcooked
 		     mailcap))
 
-(if (fboundp 'dynamic-link)
-    (setq flim-modules (cons 'mel-b-dl flim-modules))
-  )
+(or (subrp 'base64-encode-string)
+    (if (fboundp 'dynamic-link)
+	(setq flim-modules (cons 'mel-b-dl flim-modules))
+      ))
 
 (if (and (featurep 'mule)
 	 (not (or (and (boundp 'MULE) MULE)
