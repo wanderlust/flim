@@ -36,6 +36,20 @@
 
 (defun mmcooked-cooked-p () t)
 
+(defalias 'mmcooked-entity-content	'mmbuffer-entity-content)
+
+(defun mmcooked-write-entity-content (entity filename)
+  (save-excursion
+    (set-buffer (mime-entity-buffer-internal entity))
+    (let ((encoding (or (mime-entity-encoding entity) "7bit")))
+      (if (member encoding '("7bit" "8bit" "binary"))
+	  (write-region (mime-entity-body-start-internal entity)
+			(mime-entity-body-end-internal entity) filename)
+	(mime-write-decoded-region (mime-entity-body-start-internal entity)
+				   (mime-entity-body-end-internal entity)
+				   filename encoding)
+	))))
+
 
 ;;; @ end
 ;;;
