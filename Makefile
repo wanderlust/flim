@@ -2,7 +2,7 @@
 # Makefile for FLIM.
 #
 
-PACKAGE = chao
+PACKAGE = flim-chao
 API	= 1.14
 RELEASE = 1
 
