@@ -191,15 +191,24 @@
 (mm-define-method entity-point-max ((entity buffer))
   (mime-buffer-entity-body-end-internal entity))
 
-(luna-define-method mime-entity-fetch-field ((entity mime-buffer-entity)
-					     field-name)
-  (save-excursion
-    (set-buffer (mime-buffer-entity-buffer-internal entity))
-    (save-restriction
-      (narrow-to-region (mime-buffer-entity-header-start-internal entity)
-			(mime-buffer-entity-header-end-internal entity))
-      (std11-fetch-field field-name)
-      )))
+(luna-define-method mime-entity-fetch-field :around
+  ((entity mime-buffer-entity) field-name)
+  (or (luna-call-next-method)
+      (save-excursion
+	(set-buffer (mime-buffer-entity-buffer-internal entity))
+	(save-restriction
+	  (narrow-to-region (mime-buffer-entity-header-start-internal entity)
+			    (mime-buffer-entity-header-end-internal entity))
+	  (let ((ret (std11-fetch-field field-name)))
+	    (when ret
+	      (or (symbolp field-name)
+		  (setq field-name
+			(intern (capitalize (capitalize field-name)))))
+  	      (mime-entity-set-original-header-internal
+	       entity
+	       (put-alist field-name ret
+			  (mime-entity-original-header-internal entity)))
+	      ret))))))
 
 (mm-define-method insert-entity-content ((entity buffer))
   (insert (with-current-buffer (mime-buffer-entity-buffer-internal entity)
