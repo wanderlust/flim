@@ -57,6 +57,13 @@
 		  (mime-entity-point-max entity) filename)
     ))
 
+(defun mmcooked-write-entity-body (entity filename)
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (write-region (mime-entity-body-start entity)
+		  (mime-entity-body-end entity) filename)
+    ))
+
 
 ;;; @ end
 ;;;
