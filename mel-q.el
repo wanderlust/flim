@@ -1,6 +1,6 @@
 ;;; mel-q.el --- Quoted-Printable encoder/decoder.
 
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,2001 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Created: 1995/6/25
@@ -29,7 +29,10 @@
 (require 'path-util)
 (eval-when-compile
   ;; XXX: should provide char-list instead of string-to-char-list.
+  ;; XXx: and also the macro `as-binary-process' should be provided
+  ;; XXx: by the module "pces" which will be loaded by way of "poem".
   (require 'poem))
+
 
 ;;; @ Quoted-Printable encoder
 ;;;

@@ -1,8 +1,9 @@
 ;;; mime-def.el --- definition module about MIME -*- coding: iso-2022-jp; -*-
 
-;; Copyright (C) 1995,96,97,98,99,2000 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,2001 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
+;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: definition, MIME, multimedia, mail, news
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -30,10 +31,7 @@
 (require 'mcharset)
 (require 'alist)
 
-(eval-when-compile
-  (require 'cl)   ; list*
-  (require 'luna) ; luna-arglist-to-arguments
-  )
+(eval-when-compile (require 'luna))	; luna-arglist-to-arguments
 
 (eval-and-compile
   (defconst mime-library-product ["CLIME" (1 14 0) "五間堂"]
@@ -128,36 +126,28 @@ If method is nil, this field will not be encoded."
   (concat "\\(" (mapconcat (function identity) args "\\|") "\\)"))
 
 
-;;; @ about STD 11
+;;; @ MIME constants
 ;;;
 
-(eval-and-compile
-  (defconst std11-quoted-pair-regexp "\\\\.")
-  (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
-  (defconst std11-qtext-regexp
-    (eval-when-compile
-      (concat "[^" std11-non-qtext-char-list "]"))))
-(defconst std11-quoted-string-regexp
-  (eval-when-compile
-    (concat "\""
-	    (regexp-*
-	     (regexp-or std11-qtext-regexp std11-quoted-pair-regexp))
-	    "\"")))
-
-
-;;; @ about MIME
-;;;
-
-(eval-and-compile
-  (defconst mime-tspecial-char-list
-    '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=)))
+(defconst mime-tspecial-char-list
+  '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=))
 (defconst mime-token-regexp
-  (eval-when-compile
-    (concat "[^" mime-tspecial-char-list "\000-\040]+")))
-(defconst mime-charset-regexp mime-token-regexp)
+  (concat "[^" mime-tspecial-char-list "\000-\040]+"))
+(defconst mime-attribute-char-regexp
+  (concat "[^" mime-tspecial-char-list "\000-\040"
+	  "*'%"				; introduced in RFC 2231.
+	  "]"))
 
-(defconst mime-media-type/subtype-regexp
-  (concat mime-token-regexp "/" mime-token-regexp))
+(defconst mime-charset-regexp
+  (concat "[^" mime-tspecial-char-list "\000-\040"
+	  "*'%"				; should not include "%"?
+	  "]+"))
+
+;; More precisely, length of "[A-Za-z]+" is limited to at most 8.
+;; (defconst mime-language-regexp "[A-Za-z]+\\(-[A-Za-z]+\\)*")
+(defconst mime-language-regexp "[-A-Za-z]+")
+
+(defconst mime-encoding-regexp mime-token-regexp)
 
 
 ;;; @@ base64 / B
@@ -205,7 +195,7 @@ If method is nil, this field will not be encoded."
 (defsubst make-mime-content-type (type subtype &optional parameters)
   (cons (cons 'type type)
 	(cons (cons 'subtype subtype)
-	      (nreverse parameters))))
+	      parameters)))
 
 (defsubst mime-content-type-primary-type (content-type)
   "Return primary-type of CONTENT-TYPE."
@@ -213,15 +203,15 @@ If method is nil, this field will not be encoded."
 
 (defsubst mime-content-type-subtype (content-type)
   "Return subtype of CONTENT-TYPE."
-  (cdr (cadr content-type)))
+  (cdr (car (cdr content-type))))
 
 (defsubst mime-content-type-parameters (content-type)
   "Return parameters of CONTENT-TYPE."
-  (cddr content-type))
+  (cdr (cdr content-type)))
 
 (defsubst mime-content-type-parameter (content-type parameter)
   "Return PARAMETER value of CONTENT-TYPE."
-  (cdr (assoc parameter (mime-content-type-parameters content-type))))
+  (cdr (assoc parameter (cdr (cdr content-type)))))
 
 
 (defsubst mime-type/subtype-string (type &optional subtype)
@@ -234,6 +224,10 @@ If method is nil, this field will not be encoded."
 
 ;;; @ Content-Disposition
 ;;;
+
+(defsubst make-mime-content-disposition (type &optional parameters)
+  (cons (cons 'type type)
+	parameters))
 
 (defsubst mime-content-disposition-type (content-disposition)
   "Return disposition-type of CONTENT-DISPOSITION."

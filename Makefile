@@ -25,7 +25,7 @@ GOMI	= *.elc \
 FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 VERSION	= $(API).$(RELEASE)
-ARC_DIR_PREFIX = /home/tomo/public_html/comp/emacsen/lisp
+ARC_DIR_PREFIX = /home/kanji/tomo/public_html/comp/emacsen/lisp
 ARC_DIR = $(ARC_DIR_PREFIX)/flim/flim-$(API)
 SEMI_ARC_DIR = $(ARC_DIR_PREFIX)/semi/semi-1.14-for-flim-$(API)
 
