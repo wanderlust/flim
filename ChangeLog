@@ -1,5 +1,19 @@
 1998-08-23  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* Makefile (check): New rule.
+
+	* TESTPAT: Add batch testing facility.
+
+	* lex.el (lex-use-ccl): Abolished.
+	(lex-ccl-execute): New variable.
+	(lex-ccl-use-name): New variable.
+	(lex-gen-machine): Use `lex-ccl-execute' instead of `lex-use-ccl'.
+	(lex-gen-ccl-unibyte-automata): Use `lex-ccl-execute' and
+	`lex-ccl-use-name' for generating codes.
+	(lex-gen-ccl-unibyte-automata-program): Use `lex-ccl-execute'.
+
+1998-08-23  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* lex.el (lex-gen-ccel-unibyte-automata-state): Jump start of loop
 	on end of states.
 

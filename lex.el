@@ -9,12 +9,27 @@
 ;;;
 
 (eval-and-compile
-;; CCL is not so fast for this library.
-;; Because it requires quadratic time for skipping string prefix.
-;; However, it is bit faster than emacs-lisp on average for common case,
-;; it is default if available.
-(defvar lex-use-ccl (fboundp 'ccl-execute-on-string))
-(when lex-use-ccl
+
+;; As a result of profiling, CCL is slower than Emacs-Lisp, sigh...
+(setq lex-ccl-execute nil)
+
+(defvar lex-ccl-execute
+  (eval-when-compile
+    (or (when (fboundp 'ccl-execute-on-substring) 'ccl-execute-on-substring)
+	(when (fboundp 'ccl-execute-on-string) 'ccl-execute-on-string))))
+
+(defvar lex-ccl-use-name
+  (eval-when-compile
+    (and
+     lex-ccl-execute
+     (condition-case nil
+	 (progn
+	   (register-ccl-program 'test-ccl (ccl-compile '(0 (r0 = 1))))
+	   (ccl-execute-with-args 'test-ccl)
+	   t)
+       (error nil)))))
+
+(when lex-ccl-execute
   (require 'ccl))
 )
 
@@ -137,7 +152,7 @@
 
 (defun lex-gen-machine (states cs acts read-macro save-macro)
   `(let (,lex-pc-var ,lex-act-var)
-     ,(if (and lex-use-ccl
+     ,(if (and lex-ccl-execute
 	       (eq read-macro 'lex-scan-unibyte-read)
 	       (eq save-macro 'lex-scan-unibyte-save))
 	  (lex-gen-ccl-unibyte-automata states cs)
@@ -183,35 +198,53 @@
 (defun lex-gen-ccl-unibyte-automata (states cs)
   ;; read-macro is lex-scan-unibyte-read
   ;; save-macro is lex-scan-unibyte-save
-  `(let ((status [nil nil nil nil nil nil nil nil nil]))
-     (aset status 0 nil)                       ; r0: pc
-     (aset status 1 0)                         ; r1: state
-     (aset status 2 ,lex-scan-unibyte-ptr-var) ; r2: ptr
-     (aset status 3 ,lex-scan-unibyte-ptr-var) ; r3: start
-     (aset status 4 ,lex-scan-unibyte-end-var) ; r4: end
-     (aset status 5 nil)                       ; r5: mch
-     (aset status 6 0)                         ; r6: act
-     (aset status 7 nil)                       ; r7
-     (aset status 8 nil)                       ; ic
-     (ccl-execute-on-string
-      (eval-when-compile
-	(ccl-compile
-	 ',(lex-gen-ccl-unibyte-automata-program states cs)))
-      status
-      ,lex-scan-unibyte-str-var)
-     (setq ,lex-scan-unibyte-ptr-var (aref status 2))
-     (when (< 0 (aref status 6))
-       (setq ,lex-act-var (aref status 6)
-	     ,lex-scan-unibyte-mch-var (aref status 5)))))
+  (let ((name (make-symbol "ccl-prog-name"))
+	(frag-vector (make-vector 1 nil))
+		       )
+    `(let ((frag ,frag-vector)
+	   (status [nil nil nil nil nil nil nil nil nil])
+	   (prog (eval-when-compile
+		   (ccl-compile
+		    ',(lex-gen-ccl-unibyte-automata-program states cs)))))
+       (unless (aref frag 0)
+	 (register-ccl-program
+	  ',name prog)
+	 (aset frag 0 t))
+       (aset status 0 nil)                       ; r0: pc
+       (aset status 1 0)                         ; r1: state
+       (aset status 2 ,lex-scan-unibyte-ptr-var) ; r2: ptr
+       (aset status 3 ,lex-scan-unibyte-ptr-var) ; r3: start
+       (aset status 4 ,lex-scan-unibyte-end-var) ; r4: end
+       (aset status 5 nil)                       ; r5: mch
+       (aset status 6 0)                         ; r6: act
+       (aset status 7 nil)                       ; r7
+       (aset status 8 nil)                       ; ic
+       ,(if (eval-when-compile (eq lex-ccl-execute 'ccl-execute-on-string))
+	    `(ccl-execute-on-string
+	      ,(if (eval-when-compile lex-ccl-use-name) `',name `prog)
+	      status
+	      ,lex-scan-unibyte-str-var)
+	  `(ccl-execute-on-substring
+	    ,(if (eval-when-compile lex-ccl-use-name) `',name `prog)
+	    status
+	    ,lex-scan-unibyte-str-var
+	    ,lex-scan-unibyte-ptr-var
+	    ,lex-scan-unibyte-end-var))
+       (setq ,lex-scan-unibyte-ptr-var (aref status 2))
+       (when (< 0 (aref status 6))
+	 (setq ,lex-act-var (aref status 6)
+	       ,lex-scan-unibyte-mch-var (aref status 5))))))
 
 (defun lex-gen-ccl-unibyte-automata-program (states cs)
   `(0
-    ((loop
-      (if (r3 > 0)
-	  ((r3 -= 1)
-	   (read r0)
-	   (repeat))
-	(break)))
+    (,@(eval-when-compile
+	 (when (eq lex-ccl-execute 'ccl-execute-on-string)
+	   '((loop
+	      (if (r3 > 0)
+		  ((r3 -= 1)
+		   (read r0)
+		   (repeat))
+		(break))))))
      (loop
       (branch r1
         ,@(mapcar

@@ -19,71 +19,71 @@
 
 ;;; test driver
 
-;;; FLIM or FLAM
-'(progn
-(require 'mime)
-(require 'ew-line)
+(defvar target 'doodle)
+(cond
+ ((eq target 'flim) ; FLIM or FLAM
+  (require 'mime)
+  (require 'ew-line)
 
-(if (< max-specpdl-size 1000)
-  (setq max-specpdl-size 1000))
+  (if (< max-specpdl-size 1000)
+    (setq max-specpdl-size 1000))
 
-(defun decode-test (src dsts &rest opts)
-  (setq src (ew-crlf-to-lf src))
-  (setq eword-lexical-analyze-cache nil)
-  (setq eword-decode-sticked-encoded-word
-    (or (memq 'permit-sticked-comment opts)
-  	(memq 'permit-sticked-special opts)))
-  (setq eword-decode-quoted-encoded-word nil)
-  (with-temp-buffer
-    (insert src "\n" mail-header-separator)
-    (eword-decode-header 'us-ascii mail-header-separator)
-    (goto-char (point-min))
-    (std11-narrow-to-header mail-header-separator)
-    (std11-field-end)
-    (let ((result (std11-unfold-string
-		   (buffer-substring (point-min) (point)))))
-      (if (member result dsts) t result))))
+  (defun decode-test (src dsts &rest opts)
+    (setq src (ew-crlf-to-lf src))
+    (setq eword-lexical-analyze-cache nil)
+    (setq eword-decode-sticked-encoded-word
+      (or (memq 'permit-sticked-comment opts)
+	  (memq 'permit-sticked-special opts)))
+    (setq eword-decode-quoted-encoded-word nil)
+    (with-temp-buffer
+      (insert src "\n" mail-header-separator)
+      (eword-decode-header 'us-ascii mail-header-separator)
+      (goto-char (point-min))
+      (std11-narrow-to-header mail-header-separator)
+      (std11-field-end)
+      (let ((result (std11-unfold-string
+		     (buffer-substring (point-min) (point)))))
+	(if (member result dsts) t result))))
 
-(defun encode-test (src dsts &rest opts)
-  (setq eword-lexical-analyze-cache nil)
-  (setq eword-decode-sticked-encoded-word nil)
-  (setq eword-decode-quoted-encoded-word nil)
-  (with-temp-buffer
-    (insert src "\n" mail-header-separator)
-    (goto-char (point-min))
-    (eword-encode-header 'us-ascii)
-    (goto-char (point-min))
-    (std11-narrow-to-header mail-header-separator)
-    (std11-field-end)
-    (let ((result (buffer-substring (point-min) (point))))
-      (if (member result dsts) t result))))
-)
+  (defun encode-test (src dsts &rest opts)
+    (setq eword-lexical-analyze-cache nil)
+    (setq eword-decode-sticked-encoded-word nil)
+    (setq eword-decode-quoted-encoded-word nil)
+    (with-temp-buffer
+      (insert src "\n" mail-header-separator)
+      (goto-char (point-min))
+      (eword-encode-header 'us-ascii)
+      (goto-char (point-min))
+      (std11-narrow-to-header mail-header-separator)
+      (std11-field-end)
+      (let ((result (buffer-substring (point-min) (point))))
+	(if (member result dsts) t result)))))
 
-;;; EW
-(progn
-(require 'ew-dec)
-(require 'ew-line)
+ ((eq target 'doodle) ; DOODLE
+  (require 'ew-dec)
+  (require 'ew-line)
 
-(defun decode-test (src dsts &rest opts)
-  (setq ew-decode-field-cache-buf nil)
-  (let ((ew-decode-sticked-encoded-word nil)
-	(ew-decode-quoted-encoded-word nil)
-	(ew-ignore-75bytes-limit (memq 'ignore-75bytes-limit opts))
-	(ew-ignore-76bytes-limit (memq 'ignore-76bytes-limit opts))
-	(ew-permit-sticked-comment (memq 'permit-sticked-comment opts))
-	(ew-permit-sticked-special (memq 'permit-sticked-special opts)))
-    (string-match "\\`[^:]*:" src)
-    (let* ((field-name (substring src
-				  (match-beginning 0)
-				  (1- (match-end 0))))
-	   (field-body (substring src (match-end 0)))
-	   (result (ew-crlf-unfold
-		    (concat field-name ":"
-			    (ew-decode-field field-name field-body)))))
-      (if (member result dsts) t result))))
+  (defun decode-test (src dsts &rest opts)
+    (setq ew-decode-field-cache-buf nil)
+    (let ((ew-decode-sticked-encoded-word nil)
+	  (ew-decode-quoted-encoded-word nil)
+	  (ew-ignore-75bytes-limit (memq 'ignore-75bytes-limit opts))
+	  (ew-ignore-76bytes-limit (memq 'ignore-76bytes-limit opts))
+	  (ew-permit-sticked-comment (memq 'permit-sticked-comment opts))
+	  (ew-permit-sticked-special (memq 'permit-sticked-special opts)))
+      (string-match "\\`[^:]*:" src)
+      (let* ((field-name (substring src
+				    (match-beginning 0)
+				    (1- (match-end 0))))
+	     (field-body (substring src (match-end 0)))
+	     (result (ew-crlf-unfold
+		      (concat field-name ":"
+			      (ew-decode-field field-name field-body)))))
+	(if (member result dsts) t result))))
 
-(defun encode-test (src dsts &rest opts)
-  nil)
+  (defun encode-test (src dsts &rest opts)
+    nil)
+  )
 )
 
 ;;;
@@ -119,12 +119,14 @@
     res))
 
 (defun report ()
-  (insert
-    (format "\n\"Decode: %d/%d  Encode: %d/%d  Total: %d/%d\""
-      decode-succ-count decode-all-count
-      encode-succ-count encode-all-count
-      (+ decode-succ-count encode-succ-count)
-      (+ decode-all-count encode-all-count))))
+  (let ((report (format "Decode: %d/%d  Encode: %d/%d  Total: %d/%d"
+		  decode-succ-count decode-all-count
+		  encode-succ-count encode-all-count
+		  (+ decode-succ-count encode-succ-count)
+		  (+ decode-all-count encode-all-count))))
+    (if noninteractive
+      (princ (concat report "\n"))
+      (insert "\n\"" report "\""))))
 
 ;;;start-test
 

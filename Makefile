@@ -52,3 +52,10 @@ release:
 
 ew-parse.el: ew-parse.scm lalr-el.scm
 	-scm -f lalr-el.scm -f ew-parse.scm > ew-parse.out
+
+check:
+	$(EMACS) -q -batch -eval '(setq load-path (cons "." load-path))' -l ./TESTPAT -eval '(report)'
+
+benchmark:
+	$(EMACS) -q -batch -eval '(setq load-path (cons "." load-path))' -l ./BENCHMARK -eval '(report)'
+
