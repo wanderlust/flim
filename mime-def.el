@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(defconst mime-library-version-string "FLIM 1.6.1 - \"Iseda\"")
+(defconst mime-library-version-string "FLIM 1.7.0 - \"Iseda\"")
 
 
 ;;; @ variables
