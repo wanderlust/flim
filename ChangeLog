@@ -1,3 +1,7 @@
+2001-03-09  Akihiro Arisawa  <ari@atesoft.advantest.co.jp>
+
+	* mime.el (mime-find-root-entity): Find root entity recursively.
+
 2001-02-20  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.14.6 released.

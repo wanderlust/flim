@@ -144,10 +144,9 @@ If MESSAGE is specified, it is regarded as root entity."
 
 (defun mime-find-root-entity (entity)
   "Return root entity of ENTITY."
-  (let ((p (mime-entity-parent entity)))
-    (if (null p)
-	entity
-      (mime-entity-parent p))))
+  (while (not (mime-root-entity-p entity))
+    (setq entity (mime-entity-parent entity)))
+  entity)
 
 
 ;;; @ Header buffer (obsolete)
