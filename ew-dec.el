@@ -464,8 +464,23 @@ each line is separated by CRLF."
 (defun ew-decode-field-test (field-name field-body)
   (interactive
    (list
-    (read-string "field-name:" (or (get-text-property (point) 'original-field-name) ""))
-    (read-string "field-body:" (or (get-text-property (point) 'original-field-body) ""))))
+    (read-string "field-name:" (or (get-text-property (point) 'original-field-name)
+				   (save-excursion
+				     (end-of-line)
+				     (and
+				      (re-search-backward "^\\([!-9;-~]+\\):" nil t)
+				      (match-string 1)))
+				   ""))
+    (read-string "field-body:" (or (get-text-property (point) 'original-field-body)
+				   (save-excursion
+				     (end-of-line)
+				     (and
+				      (re-search-backward "^\\([!-9;-~]+\\):" nil t)
+				      (progn
+					(goto-char (match-end 0))
+					(looking-at ".*\\(\n[ \t].*\\)*")
+					(ew-lf-crlf-to-crlf (match-string 0)))))
+				   ""))))
   (with-output-to-temp-buffer "*DOODLE*"
     (save-excursion
       (set-buffer standard-output)
