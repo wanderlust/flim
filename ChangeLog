@@ -1,7 +1,14 @@
 1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* NEWS:
-	(User option `eword-lexical-analyzers' ->
+	* eword-decode.el (eword-lexical-analyzer): Modify DOC-string
+	about interface change.
+	(eword-analyze-comment): Renamed from `eword-parse-comment';
+	change second argument `from' to required argument; abolish alias
+	`eword-analyze-comment' of `eword-parse-comment'.
+
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* NEWS (User option `eword-lexical-analyzers' ->
 	`eword-lexical-analyzer'): New subsection.
 
 	* eword-decode.el (eword-lexical-analyzer): Renamed from user
