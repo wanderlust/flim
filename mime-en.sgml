@@ -858,8 +858,8 @@ FLIM はこれらを符号化・復号化する機能を提供します。
 <h2> Header encoding/decoding
 <node> Header encoder/decoder
 <p>
-<defun name="eword-encode-header">
-	      <opts> code-conversion separator
+<defun name="eword-decode-header">
+	    <opts> code-conversion separator
 <p>
 Decode MIME encoded-words in header fields.
 <p>
