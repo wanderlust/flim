@@ -1,3 +1,13 @@
+1999-05-21  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* README.en (Installation): Modify URL and required version of
+	APEL.
+
+	* eword-encode.el (ew-find-charset-rule): Renamed from
+	`tm-eword::find-charset-rule'; use
+	`find-mime-charset-by-charsets'.
+
+
 1999-05-11  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM: Version 1.12.6 (Family-K-Dòenmae)-A released.
