@@ -5,7 +5,7 @@
 (defun ew-make-anchor (column str)
   (let ((anchor (make-symbol str)))
     (put anchor 'anchor anchor)
-    (put anchor 'type 'ew:anchor-tok)
+    (put anchor 'type 'ew:*anchor*)
     (put anchor 'prev-frag anchor)
     (put anchor 'next-frag anchor)
     (put anchor 'column column)
@@ -113,9 +113,9 @@
     (ew-separate-eword
      frag1 frag2
      (if ew-decode-quoted-encoded-word
-	 '(ew:atom-tok
-	   ew:qs-texts-tok)
-       '(ew:atom-tok)))
+	 '(ew:atom
+	   ew:qs-texts)
+       '(ew:atom)))
     (setq frag1 (get (get frag1 'prev-frag) 'next-frag)))
   (while (not (eq frag1 frag2))
     (unless (ew-comment-frag-p frag2)
@@ -133,42 +133,42 @@
 
 (defun ew-token-last-frag-p (frag)
   (member (get frag 'type)
-	  '(ew:anchor-tok
-	    ew:lt-tok
-	    ew:gt-tok
-	    ew:at-tok
-	    ew:comma-tok
-	    ew:semicolon-tok
-	    ew:colon-tok
-	    ew:dot-tok
-	    ew:atom-tok
-	    ew:qs-end-tok
-	    ew:dl-end-tok)))
+	  '(ew:*anchor*
+	    ew:lt
+	    ew:gt
+	    ew:at
+	    ew:comma
+	    ew:semicolon
+	    ew:colon
+	    ew:dot
+	    ew:atom
+	    ew:qs-end
+	    ew:dl-end)))
 
 (defun ew-comment-frag-p (frag)
   (member (get frag 'type)
-	  '(ew:cm-begin-tok
-	    ew:cm-end-tok
-	    ew:cm-nested-begin-tok
-	    ew:cm-nested-end-tok
-	    ew:cm-texts-tok
-	    ew:cm-wsp-tok
-	    ew:cm-fold-tok
-	    ew:cm-qfold-tok
-	    ew:cm-qpair-tok)))
+	  '(ew:cm-begin
+	    ew:cm-end
+	    ew:cm-nested-begin
+	    ew:cm-nested-end
+	    ew:cm-texts
+	    ew:cm-wsp
+	    ew:cm-fold
+	    ew:cm-qfold
+	    ew:cm-qpair)))
 
 (defun ew-special-frag-p (frag)
   (member (get frag 'type)
-	  '(ew:lt-tok
-	    ew:gt-tok
-	    ew:at-tok
-	    ew:comma-tok
-	    ew:semicolon-tok
-	    ew:colon-tok
-	    ew:dot-tok
-	    ew:qs-begin-tok
-	    ew:qs-end-tok
-	    ew:dl-begin-tok
-	    ew:dl-end-tok
-	    ew:cm-begin-tok
-	    ew:cm-end-tok)))
+	  '(ew:lt
+	    ew:gt
+	    ew:at
+	    ew:comma
+	    ew:semicolon
+	    ew:colon
+	    ew:dot
+	    ew:qs-begin
+	    ew:qs-end
+	    ew:dl-begin
+	    ew:dl-end
+	    ew:cm-begin
+	    ew:cm-end)))

@@ -60,7 +60,7 @@ instead of its argument."
 	       ew-decode-sticked-encoded-word)
       (ew-separate-eword (get frag-anchor 'next-frag)
 			 frag-anchor
-			 '(ew:us-texts-tok)))
+			 '(ew:us-texts)))
     (when (cdr tmp)
       (ew-mark (cdr tmp) frag-anchor))
     (setq frag1 (get frag-anchor 'next-frag))
@@ -216,16 +216,16 @@ instead of its argument."
    anchor start end
    'ew-decode-unstructured-ewords
    'ew-decode-unstructured-others
-   '(ew:us-texts-tok)
-   '(ew:us-wsp-tok
-     ew:us-fold-tok)
-   '(ew:us-texts-tok
-     ew:us-wsp-tok
-     ew:us-fold-tok)
+   '(ew:us-texts)
+   '(ew:us-wsp
+     ew:us-fold)
+   '(ew:us-texts
+     ew:us-wsp
+     ew:us-fold)
    eword-filter))
 
 (defun ew-decode-phrase-ewords (ewords eword-filter)
-  (let ((qs (eq (get (car ewords) 'type) 'ew:qs-texts-tok))
+  (let ((qs (eq (get (car ewords) 'type) 'ew:qs-texts))
 	require-quoting
 	result)
     (while ewords
@@ -248,16 +248,16 @@ instead of its argument."
 (defun ew-decode-phrase-others (frags)
   (ew-decode-generic-others
    frags
-   '(ew:qs-begin-tok
-     ew:qs-end-tok)
-   '(ew:qs-qfold-tok
-     ew:qs-qpair-tok)
-   '(ew:atom-tok
-     ew:wsp-tok
-     ew:fold-tok
-     ew:qs-texts-tok
-     ew:qs-wsp-tok
-     ew:qs-fold-tok)))
+   '(ew:qs-begin
+     ew:qs-end)
+   '(ew:qs-qfold
+     ew:qs-qpair)
+   '(ew:atom
+     ew:wsp
+     ew:fold
+     ew:qs-texts
+     ew:qs-wsp
+     ew:qs-fold)))
 
 (defun ew-decode-phrase (anchor start end eword-filter)
   (ew-decode-generic
@@ -265,20 +265,20 @@ instead of its argument."
    'ew-decode-phrase-ewords
    'ew-decode-phrase-others
    (if ew-decode-quoted-encoded-word
-       '(ew:atom-tok ew:qs-texts-tok)
-     '(ew:atom-tok))
-   '(ew:wsp-tok
-     ew:fold-tok)
-   '(ew:atom-tok
-     ew:wsp-tok
-     ew:fold-tok
-     ew:qs-begin-tok
-     ew:qs-end-tok
-     ew:qs-texts-tok
-     ew:qs-wsp-tok
-     ew:qs-fold-tok
-     ew:qs-qfold-tok
-     ew:qs-qpair-tok)
+       '(ew:atom ew:qs-texts)
+     '(ew:atom))
+   '(ew:wsp
+     ew:fold)
+   '(ew:atom
+     ew:wsp
+     ew:fold
+     ew:qs-begin
+     ew:qs-end
+     ew:qs-texts
+     ew:qs-wsp
+     ew:qs-fold
+     ew:qs-qfold
+     ew:qs-qpair)
    eword-filter))
 
 (defun ew-decode-comment-ewords (ewords eword-filter)
@@ -304,25 +304,25 @@ instead of its argument."
   (ew-decode-generic-others
    frags
    '()
-   '(ew:cm-qfold-tok
-     ew:cm-qpair-tok)
-   '(ew:cm-texts-tok
-     ew:cm-wsp-tok
-     ew:cm-fold-tok)))
+   '(ew:cm-qfold
+     ew:cm-qpair)
+   '(ew:cm-texts
+     ew:cm-wsp
+     ew:cm-fold)))
 
 (defun ew-decode-comment (anchor start end eword-filter)
   (ew-decode-generic
    anchor start end
    'ew-decode-comment-ewords
    'ew-decode-comment-others
-   '(ew:cm-texts-tok)
-   '(ew:cm-wsp-tok
-     ew:cm-fold-tok)
-   '(ew:cm-texts-tok
-     ew:cm-wsp-tok
-     ew:cm-fold-tok
-     ew:cm-qfold-tok
-     ew:cm-qpair-tok)
+   '(ew:cm-texts)
+   '(ew:cm-wsp
+     ew:cm-fold)
+   '(ew:cm-texts
+     ew:cm-wsp
+     ew:cm-fold
+     ew:cm-qfold
+     ew:cm-qpair)
    eword-filter))
 
 ;;;
@@ -361,11 +361,11 @@ instead of its argument."
    (or ew-ignore-76bytes-limit
        (<= (get frag 'line-length) 76))
    (cond
-    ((eq (get frag 'type) 'ew:cm-texts-tok)
+    ((eq (get frag 'type) 'ew:cm-texts)
      (ew-eword-p (symbol-name frag)))
-    ((eq (get frag 'type) 'ew:qs-texts-tok)
+    ((eq (get frag 'type) 'ew:qs-texts)
      (ew-eword-p (symbol-name frag)))
-    ((eq (get frag 'type) 'ew:atom-tok)
+    ((eq (get frag 'type) 'ew:atom)
      (and
       (or ew-permit-sticked-comment
 	  (and
@@ -378,7 +378,7 @@ instead of its argument."
 	   (or (ew-comment-frag-p (get frag 'next-frag))
 	       (not (ew-special-frag-p (get frag 'next-frag))))))
       (ew-eword-p (symbol-name frag))))
-    ((eq (get frag 'type) 'ew:us-texts-tok)
+    ((eq (get frag 'type) 'ew:us-texts)
      (and
       (or ew-permit-sticked-special
 	  (not (ew-special-frag-p (get frag 'prev-frag))))

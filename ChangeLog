@@ -1,5 +1,21 @@
 1998-08-19  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-parse.el: Remove token suffix "-tok".
+
+	* ew-data.el: Ditto.
+
+	* ew-dec.el: Ditto.
+
+	* ew-scan-m.el: Ditto.
+
+	* ew-scan-s.el: Ditto.
+
+	* ew-scan-u.el: Ditto.
+
+	* ew-var.el: Ditto.
+
+1998-08-19  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* DOODLE-TIPS: Add desctiptions about byte-compile warnings.
 
 	* ew-data.el (ew-mark-phrase): Does not update right end of
