@@ -81,6 +81,11 @@ don't define this value."
   :type '(choice (const nil) string)
   :group 'smtp)
 
+(defcustom smtp-fqdn nil
+  "*User's fully qualified domain name."
+  :type '(choice (const nil) string)
+  :group 'smtp)
+
 (defcustom smtp-debug-info nil
   "*smtp debug info printout. messages and process buffer."
   :type 'boolean
@@ -119,12 +124,14 @@ don't define this value."
   "Return user's fully qualified domain name."
   (let ((system-name (system-name)))
     (cond
+     (smtp-fqdn
+      smtp-fqdn)
      (smtp-local-domain
       (concat system-name "." smtp-local-domain))
      ((string-match "[^.]\\.[^.]" system-name)
       system-name)
      (t
-      (error "Cannot generate valid FQDN. Set `smtp-local-domain' correctly.")))))
+      (error "Cannot generate valid FQDN. Set `smtp-fqdn' or `smtp-local-domain' correctly.")))))
 
 (defun smtp-via-smtp (sender recipients smtp-text-buffer)
   (let ((server (if (functionp smtp-server)

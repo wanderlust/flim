@@ -1,7 +1,7 @@
 2000-08-23  Kenichi OKADA <okada@opaopa.org>
 
-	* smtp.el (smtp-system-name): New variable.
-	(smtp-make-fqdn): Use `smtp-system-name' if non-nil.
+	* smtp.el (smtp-fqdn): New variable.
+	(smtp-make-fqdn): Use `smtp-fqdn' if non-nil.
 
 2000-08-23  Yuuichi Teranishi <teranisi@gohome.org>
 
@@ -13,7 +13,7 @@
 2000-08-23  Kenichi OKADA <okada@opaopa.org>
 
 	* mime-def.el (mime-library-product): Up.
-
+	* SLIM-VERSION: Up.
 
 2000-08-12  Kenichi OKADA   <okada@opaopa.org>
 
