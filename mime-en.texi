@@ -1,4 +1,5 @@
 \input texinfo.tex
+@c Generated automatically from mime-en.sgml by sinfo 3.7.
 @setfilename mime-en.info
 @settitle{FLIM 1.10 Manual about MIME Features}
 @titlepage
@@ -293,7 +294,7 @@ If @var{field-name} field is not found, this function returns
 @end defun
 
 
-@defun mime-insert-decoded-header entity  &optional  invisible-fields visible-fields
+@defun mime-insert-header entity  &optional  invisible-fields visible-fields
 
 Insert before point a decoded contents of header of @var{entity}.@refill
 
