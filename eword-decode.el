@@ -152,9 +152,11 @@ however this behaviour violates RFC2047."
   :group 'eword-decode
   :type 'boolean)
 
-(defvar eword-decode-quoted-encoded-word nil
+(defcustom eword-decode-quoted-encoded-word nil
   "*If non-nil, decode encoded-words in quoted-string
-however this behaviour violates RFC2047.")
+however this behaviour violates RFC2047."
+  :group 'eword-decode
+  :type 'boolean)
 
 (defun eword-decode-first-encoded-words (string
 					 eword-regexp
