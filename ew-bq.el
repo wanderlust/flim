@@ -5,35 +5,37 @@
 
 ;;;
 
+(eval-and-compile
 (defvar ew-ccl-use-symbol
   (eval-when-compile
-    (define-ccl-program ew-ccl-identity
+    (define-ccl-program ew-ccl-identity-program
       '(1 ((read r0) (loop (write-read-repeat r0)))))
     (condition-case nil
 	(progn
 	  (make-coding-system
 	   'ew-ccl-identity 4 ?I
 	   "Identity coding system for byte-compile time checking"
-	   '(ew-ccl-identity . ew-ccl-identity))
+	   '(ew-ccl-identity-program . ew-ccl-identity-program))
 	  t)
       (error nil))))
+)
 
-(defvar ew-ccl-untrusted-eof-block
-  (eval-when-compile
-    (let ((status (make-vector 9 nil)))
-      (ccl-execute-on-string
-       (ccl-compile
-        '(0 (read r0) (r0 = 1)))
-       status
-       "")
-      (= (aref status 0) 0))))
-
+(eval-and-compile
 (defun ew-make-ccl-coding-system (coding-system mnemonic doc-string decoder encoder)
   (make-coding-system
    coding-system 4 mnemonic doc-string
    (if ew-ccl-use-symbol
        (cons decoder encoder)
      (cons (symbol-value decoder) (symbol-value encoder)))))
+)
+
+(defvar ew-ccl-untrusted-eof-block
+  (eval-when-compile
+    (define-ccl-program ew-ccl-eof-checker-program '(1 (read r0) (write "[EOF]")))
+    (ew-make-ccl-coding-system
+      'ew-ccl-eof-checker ?E "coding system for checking CCL_EOF_BLOCK when byte-compile time."
+      'ew-ccl-eof-checker-program 'ew-ccl-eof-checker-program)
+    (not (equal (encode-coding-string "" 'ew-ccl-eof-checker) "[EOF]"))))
 
 ;;;
 

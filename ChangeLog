@@ -1,5 +1,10 @@
 1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-bq.el (ew-ccl-untrusted-eof-block): Check by coding system instead
+	of CCL directly.
+
+1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-bq.el (ew-ccl-decode-b): Eliminate `>8=' before `write'.
 
 1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
