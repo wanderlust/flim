@@ -2,7 +2,7 @@
 # Makefile for FLIM.
 #
 
-PACKAGE = flim
+PACKAGE = flim-chao
 VERSION = 1.10.0
 
 TAR	= tar
