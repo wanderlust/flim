@@ -3,10 +3,10 @@ Copyright (C) 1998 Free Software Foundation, Inc.
 
 * Changes in FLIM 1.11
 
-** Add new mm-backend `generic'
+** New function `mime-insert-text-content'
 
-Add new mm-backend `generic'.  mm-backend `buffer' inherits the
-mm-backend `generic'.
+Add new generic function `mime-insert-text-content' and new mm-service
+`insert-text-content'.
 
 
 ** `insert-decoded-header' -> `insert-header'
@@ -18,6 +18,12 @@ as an obsolete alias.
 
 
 ** Add new function `eword-decode-and-unfold-unstructured-field'
+
+
+** Add new mm-backend `generic'
+
+Add new mm-backend `generic'.  mm-backend `buffer' inherits the
+mm-backend `generic'.
 
 
 ** Change internal representation of `mime-entity' structure
