@@ -67,17 +67,20 @@
 	   (or field
 	       (let ((field-body (mime-entity-fetch-field entity field-name)))
 		 (when field-body
-		   (cond ((memq field-name '(From
-					     To Recent-To
-					     Cc Recent-Cc
-					     Bcc Resent-Bcc))
+		   (cond ((memq field-name '(From Resent-From
+					     To Resent-To
+					     Cc Resent-Cc
+					     Bcc Resent-Bcc
+					     Reply-To Resent-Reply-To))
 			  (setq field (std11-parse-addresses
 				       (eword-lexical-analyze field-body)))
 			  )
-			 ((eq field-name 'Sender)
+			 ((eq field-name '(Sender Resent-Sender))
 			  (setq field (std11-parse-address
 				       (eword-lexical-analyze field-body)))
 			  )
+			 ((memq field-name eword-decode-ignored-field-list)
+			  (setq field field-body))
 			 ((memq field-name eword-decode-structured-field-list)
 			  (setq field (eword-decode-structured-field-body
 				       field-body)))
