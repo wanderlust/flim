@@ -37,7 +37,8 @@
 ;; (luna-define-method test-2 ((case silly-test-case))
 ;;   (lunit-assert (stringp "b")))
 ;;
-;; (lunit-class 'silly-test-case)
+;; (with-output-to-temp-buffer "*Lunit Results*"
+;;   (lunit (lunit-make-test-suite-from-class 'silly-test-case)))
 ;; ______________________________________________________________________
 ;; Starting test `silly-test-case#test-1'
 ;; failure: (integerp "a")
@@ -250,8 +251,6 @@ TESTS holds a number of instances of `lunit-test'."
     `(unless ,condition
        (signal 'lunit-failure (list ',condition-expr)))))
 
-(defvar lunit-test-results-buffer "*Lunit Results*")
-
 (luna-define-class lunit-test-printer (lunit-test-listener))
 
 (luna-define-method lunit-test-listener-error ((printer lunit-test-printer)
@@ -274,8 +273,8 @@ Starting test `%S#%S'\n"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 "))
 
-(defun lunit-class (class)
-  "Run all test methods of the CLASS and display the result."
+(defun lunit-make-test-suite-from-class (class)
+  "Make a test suite from all test methods of the CLASS."
   (let (tests)
     (mapatoms
      (lambda (symbol)
@@ -283,8 +282,7 @@ Starting test `%S#%S'\n"
 		(null (get symbol 'luna-method-qualifier)))
 	   (push (lunit-make-test-case class symbol) tests)))
      (luna-class-obarray (luna-find-class class)))
-    (lunit
-     (apply #'lunit-make-test-suite tests))))
+    (apply #'lunit-make-test-suite tests)))
 
 (defun lunit (test)
   "Run TEST and display the result."
@@ -294,15 +292,13 @@ Starting test `%S#%S'\n"
 	  (lunit-make-test-result printer))
 	 failures
 	 errors)
-    (with-output-to-temp-buffer lunit-test-results-buffer
-      (lunit-test-run test result)
-      (setq failures (lunit-test-result-failures-internal result)
-	    errors (lunit-test-result-errors-internal result))
-      (princ (format "%d runs, %d failures, %d errors"
-		     (lunit-test-number-of-tests test)
-		     (length failures)
-		     (length errors))))
-    nil))
+    (lunit-test-run test result)
+    (setq failures (lunit-test-result-failures-internal result)
+	  errors (lunit-test-result-errors-internal result))
+    (princ (format "%d runs, %d failures, %d errors\n"
+		   (lunit-test-number-of-tests test)
+		   (length failures)
+		   (length errors)))))
 
 (provide 'lunit)
 

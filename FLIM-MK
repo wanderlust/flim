@@ -40,6 +40,23 @@ LISPDIR=%s\n" PREFIX LISPDIR))
   (install-elisp-modules flim-modules "./" FLIM_DIR)
   )
 
+(defun check-flim ()
+  (config-flim)
+  (require 'lunit)
+  (let ((files (directory-files "tests" t))
+	(suite (lunit-make-test-suite)))
+    (while files
+      (if (file-regular-p (car files))
+	  (progn
+	    (load-file (car files))
+	    (lunit-test-suite-add-test
+	     suite (lunit-make-test-suite-from-class
+		    (intern (file-name-sans-extension
+			     (file-name-nondirectory
+			      (car files))))))))
+      (setq files (cdr files)))
+    (lunit suite)))
+
 (defun config-flim-package ()
   (let (package-dir)
     (and (setq package-dir (car command-line-args-left))

@@ -33,6 +33,10 @@ elc:
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
 		$(VERSION_SPECIFIC_LISPDIR)
 
+check:
+	$(EMACS) $(FLAGS) -f check-flim $(PREFIX) $(LISPDIR) \
+		$(VERSION_SPECIFIC_LISPDIR)
+
 install:	elc
 	$(EMACS) $(FLAGS) -f install-flim $(PREFIX) $(LISPDIR) \
 		$(VERSION_SPECIFIC_LISPDIR)

@@ -1,3 +1,20 @@
+2000-11-10   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el (lunit-make-test-suite-from-class): New function.
+	(lunit-class): Abolish.
+	(lunit-test-results-buffer): Abolish.
+
+	* FLIM-ELS (check-flim): New function.
+
+	* Makefile (check): New target.
+
+	* tests: New directory.
+
+2000-11-09   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el (lunit-test-method-regexp): New variable.
+	(lunit-class): New function.
+
 2000-11-09   Daiki Ueno  <ueno@unixuser.org>
 
 	* lunit.el: New file.
