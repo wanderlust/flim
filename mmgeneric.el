@@ -196,6 +196,16 @@
 		(insert "\n")
 		))))))))
 
+(mm-define-method insert-text-content ((entity generic))
+  (insert
+   (decode-mime-charset-string (mime-entity-content entity)
+			       (or (mime-content-type-parameter
+				    (mime-entity-content-type entity)
+				    "charset")
+				   default-mime-charset)
+			       'CRLF)
+   ))
+
 
 ;;; @ end
 ;;;

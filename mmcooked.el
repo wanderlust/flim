@@ -66,6 +66,20 @@
 	     entity invisible-fields visible-fields)
     ))
 
+(mm-define-method insert-text-content ((entity cooked))
+  (let ((str (mime-entity-content entity)))
+    (insert
+     (if (member (mime-entity-encoding entity)
+		 '(nil "7bit" "8bit" "binary"))
+	 str
+       (decode-mime-charset-string str
+				   (or (mime-content-type-parameter
+					(mime-entity-content-type entity)
+					"charset")
+				       default-mime-charset)
+				   'CRLF)
+       ))))
+
 
 ;;; @ end
 ;;;
