@@ -44,12 +44,18 @@ Now function `std11-lexical-analyze' refers user option
 `std11-lexical-analyzer'.
 
 
+*** User option `eword-lexical-analyzers' -> `eword-lexical-analyzer'
+
+User option `eword-lexical-analyzers' was renamed to
+`eword-lexical-analyzer'.
+
+
 *** Change interface of lexical-analyzers
 
 Interface of function `eword-lexical-analyze' was changed from
 `(string &optional must-unfold)' to `(string &optional start
-must-unfold)'.  Interface of lexical analyzers specified by user
-option `eword-lexical-analyzers' was changed likewise.
+must-unfold)'.  Interface of lexical analyzer specified by user option
+`eword-lexical-analyzer' was changed likewise.
 
 Function `eword-extract-address-components' was added new optional
 argument `START' to specify start position of `STRING' to parse.
