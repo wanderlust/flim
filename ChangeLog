@@ -1,3 +1,7 @@
+1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
+
+       * (TESTPAT): add test driver for FLIM-FLAM.
+
 1998-07-16  Tanaka Akira  <akr@jaist.ac.jp>
 
        * (TESTPAT): change format to s-exp.
@@ -170,7 +174,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-DÒkubo)-A was released.
+	* FLIM: Version 1.8.0 (.DNRkubo) was released.*B
 
 	* README.en: Delete `How to use'.
 
@@ -295,7 +299,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (Goj-Dò)-A was released.
+	* FLIM-Chao: Version 1.7.0 (Goj.DNr) was released.*B
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -554,7 +558,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae)-A was released.
+	* FLIM: Version 1.4.1 (Momoyama-Gory.DNrmae) was released.*B
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -674,7 +678,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J-Dþêò©-A was released.
+	* FLIM: Version 1.2.0 (J.DN~NjNrN) was released.*B
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -725,7 +729,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Dòêi)-A was released.
+	* FLIM: Version 1.1.0 (T.DNrNji) was released.*B
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -761,7 +765,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòôo)-A was released.
+	* FLIM: Version 1.0.1 (Ky.DNrNto) was released.*B
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
