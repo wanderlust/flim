@@ -129,11 +129,6 @@ however this behaviour violates RFC2047."
 ;;; @@ Quoted-Printable
 ;;;
 
-(defconst quoted-printable-hex-chars "0123456789ABCDEF")
-(defconst quoted-printable-octet-regexp
-  (concat "=[" quoted-printable-hex-chars
-	  "][" quoted-printable-hex-chars "]"))
-
 (defconst eword-Q-encoded-text-regexp
   (concat "\\([^=?]\\|" quoted-printable-octet-regexp "\\)+"))
 ;; (defconst eword-Q-encoding-and-encoded-text-regexp

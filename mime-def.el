@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "FLIM-FLAM 1.0.1 - \"紅梅\" 2.5R7.0/8.0")
+  "FLIM-FLAM 1.1.0 - \"韓紅花\" 4.0R4.0/14.0")
 
 (require 'custom)
 
@@ -69,6 +69,16 @@
 
 (defconst mime-media-type/subtype-regexp
   (concat mime-token-regexp "/" mime-token-regexp))
+
+
+;;; @@ Quoted-Printable
+;;;
+
+(defconst quoted-printable-hex-chars "0123456789ABCDEF")
+
+(defconst quoted-printable-octet-regexp
+  (concat "=[" quoted-printable-hex-chars
+	  "][" quoted-printable-hex-chars "]"))
 
 
 ;;; @ end

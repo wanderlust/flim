@@ -1,3 +1,7 @@
+1998-05-06  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* Sync up with flim-1_0_1 to flim-1_1_0.
+
 1998-04-25  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-string): Fix arguments order to calling
@@ -80,7 +84,45 @@
 
 	* Sync up with flim-1_0_0 to flim-1_0_1.
 
+1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.1.0 (T-Dòji) was released.-A
+
+1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el (quoted-printable-hex-chars): New constant.
+	(quoted-printable-octet-regexp): New constant.
+
+	* mel-q.el, eword-decode.el: Move definition of constant
+	'quoted-printable-hex-chars and 'quoted-printable-octet-regexp to
+	mime-def.el.
+
+1998-05-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mailcap.el (mailcap-look-at-mtext): Strip quoted character.
+
+1998-05-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mailcap.el (mailcap-look-at-mtext): Fix typo.
+
+1998-05-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS (flim-modules): Add mailcap.
+
+	* mailcap.el: New file (copied from SEMI).
+
+1998-04-23  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-ignored-field-list): Add
+	`received'.
+	
+	* mel.el (mime-temp-directory): Use TMPDIR, TMP, or TEMP
+	environment variables.
+
+
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.0.1 (Ky-Dòto) was released.-A
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
