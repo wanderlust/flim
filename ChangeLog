@@ -1,3 +1,7 @@
+1998-09-15  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* mel-b.el (base64-numbers): Fix a position of 63.
+
 1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel-b.el (base64): New group.
