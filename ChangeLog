@@ -1,5 +1,9 @@
 2000-01-23  Kenichi OKADA <okada@opaopa.org>
 
+	* sha1.el (TopLevel): Defun-maybe `sha1-string' when compile.
+
+2000-01-23  Kenichi OKADA <okada@opaopa.org>
+
 	* smtp.el (smtp-auth-digest-md5): Don't save insecure words.
 
 2000-01-22  Kenichi OKADA <okada@opaopa.org>
