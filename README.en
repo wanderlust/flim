@@ -47,7 +47,7 @@ Installation
 
   You can specify the emacs command name, for example
 
-	% make install EMACS=xemacs
+	% make EMACS=xemacs
 
   If `EMACS=...' is omitted, EMACS=emacs is used.
 
