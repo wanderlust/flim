@@ -626,7 +626,7 @@ and return parsed it.
   [Suggest]
 
 
-** Decoder
+** String
 
 [Function] mime-decode-string (string encoding)
   Decode STRING using ENCODING.
@@ -637,15 +637,32 @@ and return parsed it.
   [Required]<Suggest>
 
 
-[Function] mime-decode-region (start end encoding)
-  Decode region START to END of current buffer using ENCODING.
+[Function] mime-encode-string (string encoding)
+  Encode STRING using ENCODING.
 
   ENCODING must be string.
 
-  [Suggest]<Not Suggest>
+  [Required]<Suggest>
 
 
-[Function] mime-write-decoded-region (start end filename encoding)
+[Function] base64-decode-string (STRING)
+  Base64-decode STRING and return the result.
+
+  [Required]
+
+
+[Function] base64-encode-string (STRING &optional NO-LINE-BREAK)
+  Base64-encode STRING and return the result.
+
+  Optional second argument NO-LINE-BREAK means do not break long lines
+  into shorter lines.
+
+  [Required]
+
+
+** File
+
+[Command] mime-write-decoded-region (start end filename encoding)
   Decode and write current region encoded by ENCODING into FILENAME.
 
   START and END are buffer positions.
@@ -653,17 +670,94 @@ and return parsed it.
   [Required]<Suggest>
 
 
-** Encoder
+[Command] mime-insert-encoded-file (filename encoding)
+  Insert file FILENAME encoded by ENCODING format.
 
-[Function] mime-encode-string (string encoding)
-  Encode STRING using ENCODING.
+  [Required]<Suggest>
+
+
+[Command] 7bit-write-decoded-region (start end filename)
+  Decode and write current region encoded by "7bit" into FILENAME.
+
+  START and END are buffer positions.
+
+  [Optional]
+
+
+[Command] 7bit-insert-encoded-file (filename)
+  Insert file FILENAME encoded by "7bit" format.
+
+  [Optional]
+
+
+[Command] 8bit-write-decoded-region (start end filename)
+  Decode and write current region encoded by "8bit" into FILENAME.
+
+  START and END are buffer positions.
+
+  [Optional]
+
+
+[Command] 8bit-insert-encoded-file (filename)
+  Insert file FILENAME encoded by "8bit" format.
+
+  [Optional]
+
+
+[Command] binary-write-decoded-region (start end filename)
+  Decode and write current region encoded by "binary" into FILENAME.
+
+  START and END are buffer positions.
+
+  [Required]
+
+
+[Command] binary-insert-encoded-file (filename)
+  Insert file FILENAME encoded by "binary" format.
+
+  [Required]
+
+
+[Command] base64-write-decoded-region (start end filename)
+  Decode and write current region encoded by "base64" into FILENAME.
+
+  START and END are buffer positions.
+
+  [Optional]
+
+
+[Command] base64-insert-encoded-file (filename)
+  Insert file FILENAME encoded by "base64" format.
+
+  [Optional]
+
+
+[Command] quoted-printable-write-decoded-region (start end filename)
+  Decode and write current region encoded by "quoted-printable" into
+  FILENAME.
+
+  START and END are buffer positions.
+
+  [Optional]
+
+
+[Command] quoted-printable-insert-encoded-file (filename)
+  Insert file FILENAME encoded by "quoted-printable" format.
+
+  [Optional]
+
+
+** Region
+
+[Command] mime-decode-region (start end encoding)
+  Decode region START to END of current buffer using ENCODING.
 
   ENCODING must be string.
 
-  [Optional]<Not Suggest>
+  [Suggest]<Not Suggest>
 
 
-[Function] mime-encode-region (start end encoding)
+[Command] mime-encode-region (start end encoding)
   Encode region START to END of current buffer using ENCODING.
 
   ENCODING must be string.
@@ -671,10 +765,26 @@ and return parsed it.
   [Suggest]<Not Suggest>
 
 
-[Function] mime-insert-encoded-file (filename encoding)
-  Insert file FILENAME encoded by ENCODING format.
+[Command] base64-decode-region (BEG END)
+  Base64-decode the region between BEG and END.
 
-  [Required]<Suggest>
+  Return the length of the decoded text.
+  
+  If the region can't be decoded, return nil and don't modify the
+  buffer.
+
+  [Suggest]<Not Suggest>
+
+
+[Command] base64-encode-region (BEG END &optional NO-LINE-BREAK)
+  Base64-encode the region between BEG and END.
+
+  Return the length of the encoded text.
+
+  Optional third argument NO-LINE-BREAK means do not break long lines
+  into shorter lines.
+
+  [Suggest]<Not Suggest>
 
 
 ** encoded-text
