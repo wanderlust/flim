@@ -479,6 +479,10 @@
 "=?ISO-2022-JP?B?GyRCJCIbKEI=?=: test"
 'permit-sticked-special)
 
+(decode
+"From: =?US-ASCII?Q?=22?= <akr@jaist.ac.jp>"
+"From: \"\\\"\" <akr@jaist.ac.jp>")
+
 ;;; Section 3: Decoding melancholic inputs.
 
 (decode
