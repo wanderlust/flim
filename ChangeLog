@@ -1,3 +1,10 @@
+1999-12-13   Daiki Ueno  <ueno@ueda.info.waseda.ac.jp>
+
+	* digest-md5.el
+	(digest-md5-parse-digest-challenge-syntax-table): New variable.
+	(digest-md5-parse-digest-challenge): Use it; return parsed
+	result as a property list.
+
 1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl.el (sasl-scram-md5-make-salted-pass): New function.
