@@ -83,9 +83,14 @@ instead of its argument."
   (let ((tlist (cons (list (symbol-value tag)) (ew-pair-list anchor))))
     ;;(insert (format "%s" tlist))
     (ew-parse
-     (lambda () (if (null tlist) '(0)
-		  (prog1 (car tlist) (setq tlist (cdr tlist)))))
-     (lambda (msg tok) (message "%s%s : %s" msg tok anchor)))))
+     (lambda ()
+       (if (null tlist)
+           (cons 0 anchor)
+         (prog1 (car tlist) (setq tlist (cdr tlist)))))
+     (lambda (msg tok)
+       (message "%s%s : %s" msg tok anchor)
+       (when (< 0 ew-parse-error-sit-for-seconds)
+	 (sit-for ew-parse-error-sit-for-seconds))))))
 
 (defun ew-decode-none (anchor frag end eword-filter)
   (while (not (eq frag end))

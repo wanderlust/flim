@@ -9,6 +9,8 @@
 (defvar ew-permit-sticked-comment nil)
 (defvar ew-permit-sticked-special nil)
 
+(defvar ew-parse-error-sit-for-seconds 0)
+
 ;;; anonymous function to decode ground string.
 ;; NOTE: STR is CRLF-form and it should return as CRLF-form.
 (defvar ew-decode-us-ascii (lambda (str) (decode-coding-string str 'iso-latin-1-unix)))

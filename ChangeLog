@@ -1,3 +1,41 @@
+1998-08-19  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* DOODLE-TIPS: Add desctiptions about byte-compile warnings.
+
+	* ew-data.el (ew-mark-phrase): Does not update right end of
+	fragments separation.
+
+	* ew-dec.el (ew-mark): Wait `ew-parse-error-sit-for-seconds'
+	seconds after parse error.
+
+	* ew-line.el (ew-tab-to-space): New function.
+	(ew-crlf-generic): New function.
+	(ew-crlf-line-generic): Rewrited.
+	(ew-lf-generic): New function.
+	(ew-lf-line-generic): Rewrited.
+	(ew-crlf-convert): New function.
+	(ew-crlf-line-convert): Rewrited.
+	(ew-lf-convert): New function.
+	(ew-lf-line-convert): Rewrited.
+	(ew-crlf-fold): New function.
+	(ew-lf-fold): New function.
+	(ew-crlf-refold): New function.
+	(ew-lf-refold): New function.
+
+	* ew-parse.el: Parser actions are now accesible to a lookahead
+	token.
+
+	* ew-var.el (ew-parse-error-sit-for-seconds): New variable.
+
+	* eword-decode.el: Enable debug code `rotate-memo'.
+	(eword-decode-header): Refold decoded field.
+	(eword-decode-and-fold-structured-field): Use `ew-crlf-refold'.
+
+	* lr-driver.el (lr-parse): Provides a lookahead token to parser
+	actions.
+
+	* mmbuffer.el (insert-decoded-header): Refold decoded field.
+
 1998-08-18  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* DOODLE-TIPS: Change `gnus-unstructured-field-decoder' and

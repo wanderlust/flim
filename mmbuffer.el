@@ -153,7 +153,7 @@
     (let ((the-buf (current-buffer))
 	  (src-buf (mime-entity-buffer-internal entity))
 	  (h-end (mime-entity-header-end-internal entity))
-	  beg p end field-name len field)
+	  beg p end field-name len field-body decoded)
       (save-excursion
 	(set-buffer src-buf)
 	(goto-char (mime-entity-header-start-internal entity))
@@ -167,19 +167,21 @@
 		  end (std11-field-end))
 	    (when (mime-visible-field-p field-name
 					visible-fields invisible-fields)
-	      (setq field (intern (capitalize field-name)))
 	      (save-excursion
 		(set-buffer the-buf)
+		(setq field-body (ew-lf-crlf-to-crlf
+				  (save-excursion
+				    (set-buffer src-buf)
+				    (buffer-substring p end))))
+		(setq decoded (ew-decode-field field-name field-body))
+		(unless (equal field-body decoded)
+		  (setq decoded (ew-crlf-refold
+				 decoded
+				 (1+ (string-width field-name))
+				 fill-column)))
 		(insert field-name)
 		(insert ":")
-		(insert (ew-crlf-to-lf
-			 (ew-decode-field
-			  field-name
-			  (ew-lf-crlf-to-crlf
-			   (save-excursion
-			     (set-buffer src-buf)
-			     (buffer-substring p end)
-			     )))))
+		(insert (ew-crlf-to-lf decoded))
 		(insert "\n")
 		))))))))
 

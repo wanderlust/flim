@@ -69,4 +69,4 @@
 
            ;; Reduce by rule (- act)
            (t 
-            (setq sp (funcall (aref reduction-table (- act)) stack sp goto-table)))))))))
+            (setq sp (funcall (aref reduction-table (- act)) stack sp goto-table (cdr input))))))))))
