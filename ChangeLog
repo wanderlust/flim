@@ -1,4 +1,4 @@
-1999-09-14  Katsumi Yamaoka   <yamaoka@jpl.org>
+1999-09-13  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtpmail.el (smtpmail-send-it): Remove needless `concat'.
 
