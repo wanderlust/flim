@@ -3,7 +3,7 @@
 	* smtp.el (smtp-via-smtp): Assume that `smtp-authenticate-type'
 	is a symbol.
 
-2000-01-28  Kenichi OKADA <okada@opaopa.org>
+2000-02-01  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-via-smtp): Downcase `smtp-authenticate-type'.
 
