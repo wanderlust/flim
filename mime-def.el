@@ -27,7 +27,7 @@
 (require 'mcharset)
 
 (eval-and-compile
-  (defconst mime-library-product ["FLAM-DOODLE" (1 12 0) "檜皮 2.0YR3.5/4.0"]
+  (defconst mime-library-product ["FLAM-DOODLE" (1 12 1) "ベンガラ 7.5R4.0/7.0"]
     "Product name, version number and code name of MIME-library package.")
   )
 
