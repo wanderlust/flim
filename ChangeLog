@@ -1,3 +1,18 @@
+1999-05-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-def.el: Require 'poe, 'poem, and 'pcustom.
+	(mime): Declare `default-mime-charset' as an initial member.
+
+	* mime-parse.el: Don't require 'cl at compile-time.
+
+	* mailcap.el (mailcap-look-at-qchar): Use `char-after'.
+
+	* std11.el: Require 'poe, 'poem, and 'pcustom.
+
+	* smtp.el: Update header.
+	Require 'poe, 'poem, and 'pcustom.
+	Require 'cl at compile-time.
+
 1999-05-21  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* README.en (Installation): Modify URL and required version of
