@@ -244,14 +244,29 @@ local 変数。
 @end defun
 
 
-@defun mime-entity-parent entity  &optional  message-structure
+@defun mime-find-entity-from-number entity-number  &optional  message
+
+Return entity from @var{entity-number} in @var{message}.@refill
+
+If @var{message} is not specified, @code{mime-message-structure} is
+used.
+@end defun
+
+
+@defun mime-find-entity-from-node-id entity-node-id  &optional  message
+
+Return entity from @var{entity-node-id} in @var{message}.@refill
+
+If @var{message} is not specified, @code{mime-message-structure} is
+used.
+@end defun
+
+
+@defun mime-entity-parent entity  &optional  message
 
 @var{entity} の親の entity を返す。@refill
 
-@var{message-structure} が省略された場合は entity が存在する buffer にお
-ける @code{mime-message-structure} の値を用いる。@refill
-
-@var{message-structure} が指定された場合、これを根と見倣す。
+@var{message} が指定された場合、これを根と見倣す。
 @end defun
 
 
@@ -266,8 +281,7 @@ local 変数。
 @node Entity-header, Entity-content, Entity as node in message, Entity
 @section Entity header の情報
 
-@defun mime-fetch-field field-name
-	     &optional  entity
+@defun mime-fetch-field field-name  &optional  entity
 
 @var{entity} の header 中の @var{field-name} 欄の body を返す。@refill
 
@@ -280,8 +294,7 @@ local 変数。
 @end defun
 
 
-@defun mime-read-field field-name
-	     &optional  entity
+@defun mime-read-field field-name  &optional  entity
 
 @var{entity} の header 中の @var{field-name} 欄を構文解析した結果を返す。
 @refill
