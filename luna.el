@@ -165,7 +165,7 @@ The optional 5th BODY is the body of the method."
 		 (luna-find-class ',class) ',name))
 	   (cache (get ',name 'luna-method-cache)))
        (if cache
-	   (unintern ',class cache))
+	   (unintern (symbol-name ',class) cache))
        (fset sym func)
        (put sym 'luna-method-qualifier ,method-qualifier))))
 
