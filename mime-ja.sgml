@@ -246,55 +246,41 @@ If <var>message</var> is not specified,
 </defun>
 
 
-<h2> Entity $B$N(B buffer $B$K$h$kI=8=(B
-<node> Entity buffer
+<h2> Entity $B$NB0@-(B
+<node> Entity Attributes
 <p>
-<defun name="mime-entity-buffer">
+<defun name="mime-entity-content-type">
 	    <args> entity
 <p>
-<var>entity</var> $B$,B8:_$9$k(B buffer $B$rJV$9!#(B
+<var>entity</var> $B$N(B content-type $B$rJV$9!#(B<cf
+node="mime-content-type">
 </defun>
 
-<defun name="mime-entity-point-min">
+<defun name="mime-entity-content-disposition">
 	    <args> entity
 <p>
-<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(B<var>entity</var> $B$,@j$a$k(B
-$BNN0h$N@hF,0LCV$rJV$9!#(B
+<var>entity</var> $B$N(B content-disposition $B$rJV$9!#(B<cf
+node="mime-content-disposition">
 </defun>
 
-<defun name="mime-entity-point-max">
+<defun name="mime-entity-filename">
 	    <args> entity
 <p>
-<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(B<var>entity</var> $B$,@j$a$k(B
-$BNN0h$NKvHx0LCV$rJV$9!#(B
+Entity $B$N(B file $BL>$rJV$9!#(B
 </defun>
 
-<defun name="mime-entity-header-start">
+<defun name="mime-entity-encoding">
 	    <args> entity
 <p>
-<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bheader $B$,@j$a$kNN0h$N@hF,(B
-$B0LCV$rJV$9!#(B
+<var>entity</var> $B$N(B content-transfer-encoding $B$rJV$9!#(B<cf
+node="Content-Transfer-Encoding">
 </defun>
 
-<defun name="mime-entity-header-end">
+<defun name="mime-entity-cooked-p">
 	    <args> entity
 <p>
-<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bheader $B$,@j$a$kNN0h$NKvHx(B
-$B0LCV$rJV$9!#(B
-</defun>
-
-<defun name="mime-entity-body-start">
-	    <args> entity
-<p>
-<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bbody $B$,@j$a$kNN0h$N@hF,0L(B
-$BCV$rJV$9!#(B
-</defun>
-
-<defun name="mime-entity-body-end">
-	    <args> entity
-<p>
-<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bbody $B$,@j$a$kNN0h$NKvHx0L(B
-$BCV$rJV$9!#(B
+Return non-nil if contents of <var>entity</var> has been already
+code-converted.
 </defun>
 
 
@@ -345,44 +331,6 @@ list $B$G!"$=$l$>$l!"I=<($7$?$/$J$$(B field $BL>$HI=<($7$?$$MsL>$rI=8=$7$?$b$
 </defun>
 
 
-<h2> Entity $B$NB0@-(B
-<node> Entity Attributes
-<p>
-<defun name="mime-entity-content-type">
-	    <args> entity
-<p>
-<var>entity</var> $B$N(B content-type $B$rJV$9!#(B<cf
-node="mime-content-type">
-</defun>
-
-<defun name="mime-entity-content-disposition">
-	    <args> entity
-<p>
-<var>entity</var> $B$N(B content-disposition $B$rJV$9!#(B<cf
-node="mime-content-disposition">
-</defun>
-
-<defun name="mime-entity-filename">
-	    <args> entity
-<p>
-Entity $B$N(B file $BL>$rJV$9!#(B
-</defun>
-
-<defun name="mime-entity-encoding">
-	    <args> entity
-<p>
-<var>entity</var> $B$N(B content-transfer-encoding $B$rJV$9!#(B<cf
-node="Content-Transfer-Encoding">
-</defun>
-
-<defun name="mime-entity-cooked-p">
-	    <args> entity
-<p>
-Return non-nil if contents of <var>entity</var> has been already
-code-converted.
-</defun>
-
-
 <h2> Entity $B$NFbMF(B
 <node> Entity-content
 <p>
@@ -408,6 +356,58 @@ Write representation of <var>entity</var> into <var>filename</var>.
 	    <args> entity filename
 <p>
 Write body of <var>entity</var> into <var>filename</var>.
+</defun>
+
+
+<h2> Entity $B$N(B buffer $B$K$h$kI=8=(B
+<node> Entity buffer
+<p>
+<defun name="mime-entity-buffer">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-point-min">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(B<var>entity</var> $B$,@j$a$k(B
+$BNN0h$N@hF,0LCV$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-point-max">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(B<var>entity</var> $B$,@j$a$k(B
+$BNN0h$NKvHx0LCV$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-header-start">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bheader $B$,@j$a$kNN0h$N@hF,(B
+$B0LCV$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-header-end">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bheader $B$,@j$a$kNN0h$NKvHx(B
+$B0LCV$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-body-start">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bbody $B$,@j$a$kNN0h$N@hF,0L(B
+$BCV$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-body-end">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bbody $B$,@j$a$kNN0h$NKvHx0L(B
+$BCV$rJV$9!#(B
 </defun>
 
 
