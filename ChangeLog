@@ -1,3 +1,13 @@
+1999-12-13   Daiki Ueno  <ueno@ueda.info.waseda.ac.jp>
+
+	* digest-md5.el (digest-md5-challenge): New variable.
+	(digest-md5-nonce-count): New variable.
+	(digest-md5-parse-digest-challenge-syntax-table): Fix document.
+	(digest-md5-parse-digest-challenge): Add autoload cookie.
+	(digest-md5-challenge): New macro.
+	(digest-md5-build-response-value): New macro.
+	(digest-md5-digest-response): Use it; Add autoload cookie.
+
 1999-12-13  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* README.en,README.ja,mime-en.sgml,mime-en.texi,mime-ja.sgml,
