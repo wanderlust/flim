@@ -1,7 +1,14 @@
+..
 To use starttls, get next package.
 
 http://www.unixuser.org/~ueno/tmp/starttls-0.2.tar.gz
 
+To obtain updates to this software, ftp directly from
+
+ftp://opaopa.org/pub/elisp/
+ftp://opaopa.org/pub/elisp/starttls-0.4.tar.gz
+
+..
 To use DL modules(md5 and sha1), get next package.
 
 Original:
