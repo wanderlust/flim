@@ -549,18 +549,18 @@ encoded-word.  ASCII token is not encoded."
 	      (if (setq ret
 			(cond ((string= field-body "") "")
 			      ((memq (setq field-name-symbol
-					   (intern (downcase field-name)))
-				     '(reply-to
-				       from sender
-				       resent-reply-to resent-from
-				       resent-sender to resent-to
-				       cc resent-cc
-				       bcc resent-bcc dcc))
+					   (intern (capitalize field-name)))
+				     '(Reply-To
+				       From Sender
+				       Resent-Reply-To Resent-From
+				       Resent-Sender To Resent-To
+				       Cc Resent-Cc
+				       Bcc Resent-Bcc Dcc))
                                (eword-encode-address-list
 				field-body (+ (length field-name) 2))
 			       )
 			      ((memq field-name-symbol
-				     '(mime-version user-agent))
+				     '(Mime-Version User-Agent))
                                (eword-encode-structured-field-body
 				field-body (+ (length field-name) 2))
 			       )
