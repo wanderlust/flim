@@ -1,5 +1,9 @@
 2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
+	* mel.el: Don't require `path-util'.
+
+2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
 	* std11.el, smtpmail.el, mime-def.el: Don't require `poe'.
 
 	* mel.el: Don't require `poem'.
