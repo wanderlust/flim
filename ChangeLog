@@ -1,3 +1,13 @@
+1999-08-26  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Use `time-stamp-yyyy-mm-dd' and
+	`time-stamp-hh:mm:ss' instead of `current-time'.
+
+	* FLIM-ELS (flim-modules): Add `time-stamp' if Emacs version is
+	less than 19.16.
+
+	* time-stamp.el: New file imported from Emacs 19.28.
+
 1999-08-25  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* FLIM-ELS: Use `if' instead of `unless'.
