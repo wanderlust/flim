@@ -12,6 +12,9 @@
 ;separate-sticked-special          ; violate the policy preserving absence of space
 ;zero-characters-encoded-word-hack ; violate common sense (very tricky)
 ;quoted-encoded-word		   ; violate character sequence semantics
+;separate-sticked-tokens-for-fold  ; violate the policy preserving absence of space
+;encode-long-ascii-string-for-fold ; violate the policy preserving US-ASCII string
+;divide-atom-for-fold		   ; violate tne policy preserving absence of space
 
 ;;; test driver
 
@@ -50,9 +53,11 @@
 
 (defun report ()
   (insert
-    (format "\n\"Decode: %d/%d  Encode: %d/%d\""
+    (format "\n\"Decode: %d/%d  Encode: %d/%d  Total: %d/%d\""
       decode-succ-count decode-all-count
-      encode-succ-count encode-all-count)))
+      encode-succ-count encode-all-count
+      (+ decode-succ-count encode-succ-count)
+      (+ decode-all-count encode-all-count))))
 
 ;;; FLAM specific part (FLIM is OK)
 
@@ -686,6 +691,95 @@
 "From: aaaaaaaaaaaaaaaaaaaaa(=?ISO-2022-JP?B?GyRCJCIbKEI=?=
  =?ISO-2022-JP?B?GyRCJCQbKEI=?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>")
 
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaa (あい)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'("From: aaaaaaaaaaaaaaaaaaaaa
+ (=?ISO-2022-JP?B?GyRCJCIkJBsoQg==?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+  "From: aaaaaaaaaaaaaaaaaaaaa (=?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ =?ISO-2022-JP?B?GyRCJCQbKEI=?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"))
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaa( あい)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'("From: aaaaaaaaaaaaaaaaaaaaa(
+ =?ISO-2022-JP?B?GyRCJCIkJBsoQg==?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+  "From: aaaaaaaaaaaaaaaaaaaaa( =?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ =?ISO-2022-JP?B?GyRCJCQbKEI=?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"))
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaa(あい )aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'("From: aaaaaaaaaaaaaaaaaaaaa(=?ISO-2022-JP?B?GyRCJCIkJBsoQg==?=
+ )aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+  "From: aaaaaaaaaaaaaaaaaaaaa(=?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ =?ISO-2022-JP?B?GyRCJCQbKEI=?= )aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"))
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaa(あい) aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaa(=?ISO-2022-JP?B?GyRCJCIkJBsoQg==?=)
+ aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>")
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaa(あ い)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaa(=?ISO-2022-JP?B?GyRCJCIbKEIgCg==?=
+ =?ISO-2022-JP?B?GyRCJCQbKEI=?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>")
+
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>")
+
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaa
+ <akr@jaist.ac.jp>")
+
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ <akr@jaist.ac.jp>")
+
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From:
+ (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ <akr@jaist.ac.jp>")
+
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From:
+ (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ <akr@jaist.ac.jp>")
+
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ =?ISO-2022-JP?B?GyhC?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ <akr@jaist.ac.jp>"
+'zero-characters-encoded-word-hack)
+
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ =?ISO-2022-JP?B?GyhC?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ <akr@jaist.ac.jp>"
+'zero-characters-encoded-word-hack)
+
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)
+ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'separate-sticked-tokens-for-fold)
+
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)=?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaa?=
+ =?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?= <akr@jaist.ac.jp>"
+'encode-long-ascii-string-for-fold 'permit-sticked-special)
+
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ aaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'divide-atom-for-fold)
+
 ;; Section 6: Encoding melancholic inputs.
 
 (encode
@@ -876,13 +970,19 @@
 'quoted-encoded-word)
 
 (decode
-"Subject: =?US-ASCII?G?H4sIAMsIsjUCA0tMSk5JTQMA7zmOSwYAAAA?="
-"Subject: =?*US-ASCII?G?H4sIAMsIsjUCA0tMSk5JTQMA7zmOSwYAAAA?="
+"Subject: =?US-ASCII?G?H4sIACqUszUAA8tIzcnJBwCGphA2BQAAAA==?="
+"Subject: =?*US-ASCII?G?H4sIACqUszUAA8tIzcnJBwCGphA2BQAAAA==?="
 'quoted-encoded-word)
 
 (decode
-"Subject: =?US-ASCII?Unknown-Encoding?H4sIAMsIsjUCA0tMSk5JTQMA7zmOSwYAAAA?="
-"Subject: =?*US-ASCII?Unknown-Encoding?H4sIAMsIsjUCA0tMSk5JTQMA7zmOSwYAAAA?="
+"Subject: =?US-ASCII?Unknown-Encoding?H4sIAGOUszUAAwtyczYyMDEHAEpvqpIHAAAA?="
+"Subject: =?*US-ASCII?Unknown-Encoding?H4sIAGOUszUAAwtyczYyMDEHAEpvqpIHAAAA?="
+'quoted-encoded-word)
+
+(decode
+"Subject: =?ISO-2022-JP?G?H4sIAGiTszUAA5NWcVIBAhMtaQ0nAGLSaeEMAAAA?=
+ =?ISO-2022-JP?G?H4sIAH6TszUAA5NWcVIxV3FTyVbxldZwAgAuIikKDgAAAA==?="
+"Subject: =?*ISO-2022-JP?G?H4sIAGiTszUAA5NWcVIBAhMtaQ0nAGLSaeEMAAAA?==?*ISO-2022-JP?G?H4sIAH6TszUAA5NWcVIxV3FTyVbxldZwAgAuIikKDgAAAA==?="
 'quoted-encoded-word)
 
 (decode
