@@ -1,5 +1,18 @@
 1999-10-19  Kenichi OKADA <okada@opaopa.org>
 
+	* md5.el: New file. (import from hmac package)
+	* md5-el.el: New file. (import from hmac package)
+	* md5-dl.el: New file. (import from hmac package)
+	* sha1.el: New file. (import from hmac package)
+	* sha1-el.el: New file. (import from hmac package)
+	* sha1-dl.el: New file. (import from hmac package)
+	* hmac-def.el: New file. (import from hmac package)
+	* hmac-util.el: New file. (import from hmac package)
+	* hmac-md5.el: New file. (import from hmac package)
+	* hmac-sha1.el: New file. (import from hmac package)
+
+1999-10-19  Kenichi OKADA <okada@opaopa.org>
+
 	* SLIM-VERSION: New file.
 	* sasl.el: Add keyword.
 

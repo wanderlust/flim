@@ -10,7 +10,10 @@
 		     eword-decode eword-encode
 		     mime mime-parse mmbuffer mmcooked mmdbuffer
 		     mailcap
-		     smtp smtpmail sasl))
+		     smtp smtpmail sasl
+		     md5 md5-el md5-dl
+		     sha1 sha1-el sha1-dl
+		     hmac-def hmac-util hmac-md5 hmac-sha1))
 
 (unless (and (fboundp 'base64-encode-string)
 	     (subrp (symbol-function 'base64-encode-string)))
