@@ -1064,7 +1064,7 @@ Internet $B0J30$N(B network $B$r7PM3$9$k>l9g$G$b0BA4$KE>Aw$G$-$k$h$&$K@_7W$5
 MIME (@ref{MIME}) $B$K$*$1$k(B entity (@ref{entity}) $B$N<oN`!#(B
 @strong{primary-type} $B$H(B @strong{subtype} $B$+$i$J$k!#(BRFC 2046 (@ref{RFC 2046}) $B$GDj5A$5$l$F$$$k!#(B@refill
 
-type $B$OI8=`$G$O(B
+primary-type $B$OI8=`$G$O(B
 
 @itemize @bullet
 @item
