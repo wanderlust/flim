@@ -1,5 +1,10 @@
 1998-09-19  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* mel-ccl.el (q-encoding-ccl-encoded-length): Check
+	(featurep 'xemacs) instead of running-xemacs.
+
+1998-09-19  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mel-ccl.el (base64-ccl-insert-encoded-file): Use
 	`mel-ccl-base64-lf-rev' instead of `mel-ccl-b-rev'.
 

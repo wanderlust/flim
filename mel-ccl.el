@@ -1275,7 +1275,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
    string
    'mel-ccl-uq-rev))
 
-(unless running-xemacs
+(unless (featurep 'xemacs)
   (defun q-encoding-ccl-encoded-length (string &optional mode)
     (let ((status [nil nil nil nil nil nil nil nil nil]))
       (fillarray status nil)
