@@ -148,7 +148,7 @@
 					      &optional invisible-fields
 					      visible-fields)
   (let ((the-buf (current-buffer))
-	f-b p f-e field-name field field-body)
+	f-b p f-e field-name len field field-body)
     (save-excursion
       (set-buffer buffer)
       (save-restriction
@@ -158,14 +158,25 @@
 	  (setq f-b (match-beginning 0)
 		p (match-end 0)
 		field-name (buffer-substring f-b p)
+		len (string-width field-name)
 		f-e (std11-field-end))
 	  (when (mime-visible-field-p field-name
 				      visible-fields invisible-fields)
-	    (setq field (buffer-substring f-b (1- p))
+	    (setq field (intern
+			 (capitalize (buffer-substring f-b (1- p))))
 		  field-body (buffer-substring p f-e))
 	    (with-current-buffer the-buf
 	      (insert field-name)
-	      (insert (eword-decode-field-body field field-body nil t))
+	      (insert
+	       (if (memq field eword-decode-ignored-field-list)
+		   ;; Don't decode
+		   field-body
+		 (if (memq field eword-decode-structured-field-list)
+		     ;; Decode as structured field
+		     (eword-decode-and-fold-structured-field field-body len)
+		   ;; Decode as unstructured field
+		   (eword-decode-unstructured-field-body field-body len)
+		   )))
 	      (insert "\n")
 	      )))))))
 
