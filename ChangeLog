@@ -1,5 +1,20 @@
 1999-08-19  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* smtpmail.el (smtpmail-send-it): Don't use bare lambda.
+
+	* mime-def.el (mm-define-backend): Don't use bare lambda.
+	(mel-define-backend): Likewise.
+	(mel-define-method): Likewise.
+
+	* luna.el (luna-define-class-function): Don't use bare lambda.
+	(luna-define-method): Likewise.
+	(luna-define-internal-accessors): Likewise.
+
+	* mime-def.el: Delete <(require 'custom)>.
+
+
+1999-08-19  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* CLIME: Version 1.13.0 (Shin-H-Dòryþji)-A released.
 
 1999-08-18  MORIOKA Tomohiko  <tomo@m17n.org>
