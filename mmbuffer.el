@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(require 'mime-parse)
+(require 'mime)
 
 (defun mmbuffer-open-entity (location)
   (mime-parse-buffer location)
@@ -48,6 +48,23 @@
       )))
 
 (defun mmbuffer-cooked-p () nil)
+
+(defun mmbuffer-entity-content (entity)
+  (save-excursion
+    (set-buffer (mime-entity-buffer-internal entity))
+    (mime-decode-string
+     (buffer-substring (mime-entity-body-start-internal entity)
+		       (mime-entity-body-end-internal entity))
+     (mime-entity-encoding entity))))
+
+(defun mmbuffer-write-entity-content (entity filename)
+  (save-excursion
+    (set-buffer (mime-entity-buffer-internal entity))
+    (mime-write-decoded-region (mime-entity-body-start-internal entity)
+			       (mime-entity-body-end-internal entity)
+			       filename
+			       (or (mime-entity-encoding entity) "7bit"))
+    ))
 
 
 ;;; @ end
