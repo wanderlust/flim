@@ -133,25 +133,26 @@ The optional 2nd arg SLOTS is a list of slots CLASS will have."
 (defmacro luna-class-slot-index (class slot-name)
   (` (get (luna-class-find-member (, class) (, slot-name)) 'luna-slot-index)))
 
-(defun luna-make-clear-method-cache-function (name)
-  "Make a function to clear cached method functions.
+(eval-when-compile
+  (defmacro luna-make-clear-method-cache-function (name)
+    "Make a function to clear cached method functions.
 NAME is a symbol which has a cache as the property `luna-method-cache'.
-This function is exclusively used by the macro `luna-define-method'."
-  (if (fboundp 'unintern) ;; Emacs 19.29 and later, XEmacs 19.14 and later.
-      '(mapatoms
-	(function
-	 (lambda (s)
-	   (if (memq (symbol-function sym) (symbol-value s))
-	       (unintern s cache))))
-	cache)
-    (` (let ((new (make-vector (length cache) 0)))
-	 (mapatoms
-	  (function
-	   (lambda (s)
-	     (or (memq (symbol-function sym) (symbol-value s))
-		 (set (intern (symbol-name s) new) (symbol-value s)))))
-	  cache)
-	 (put '(, name) 'luna-method-cache new)))))
+This macro will be unbound at run-time."
+    (if (fboundp 'unintern) ;; Emacs 19.29 and later, XEmacs 19.14 and later.
+	''(mapatoms
+	   (function
+	    (lambda (s)
+	      (if (memq (symbol-function sym) (symbol-value s))
+		  (unintern s cache))))
+	   cache)
+      '(` (let ((new (make-vector (length cache) 0)))
+	    (mapatoms
+	     (function
+	      (lambda (s)
+		(or (memq (symbol-function sym) (symbol-value s))
+		    (set (intern (symbol-name s) new) (symbol-value s)))))
+	     cache)
+	    (put '(, name) 'luna-method-cache new))))))
 
 (defmacro luna-define-method (name &rest definition)
   "Define NAME as a method of a luna class.

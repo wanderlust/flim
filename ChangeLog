@@ -1,5 +1,10 @@
 2002-09-26  Katsumi Yamaoka   <yamaoka@jpl.org>
 
+	* luna.el (luna-make-clear-method-cache-function): Redefine it as
+	a compiler macro.
+
+2002-09-26  Katsumi Yamaoka   <yamaoka@jpl.org>
+
 	* luna.el (luna-make-clear-method-cache-function): New function.
 	(luna-define-method): Use it.
 
