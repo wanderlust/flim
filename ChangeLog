@@ -1,3 +1,7 @@
+2001-07-30  AMAKAWA Shuhei <sa264@cam.ac.uk>
+
+	* smtp.el(smtp-submit-package): Send EHLO after starttls.
+
 2001-06-07  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mime-def.el (mime-library-product): 1.14.3 (Terai-Nishikuchi).
