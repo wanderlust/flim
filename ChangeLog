@@ -1,4 +1,21 @@
-1998-04-25  Tanaka Akira  <shuhei-k@jaist.ac.jp>
+1998-04-25  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-first-encoded-words): Update DOC-string.
+	(eword-decode-first-encoded-words): Update DOC-string.
+	(eword-decode-unstructured): Argument `code-conversion' is now required.
+	(eword-decode-comment): Argument `code-conversion' is now required.
+	(eword-decode-quoted-string): Argument `code-conversion' is now
+	required.
+	(eword-decode-string): Update DOC-string. Reorder arguments to calling
+	`eword-decode-unstructured'.
+	(eword-decode-region): Update DOC-string. Reorder arguments to calling
+	`eword-decode-unstructured'.
+	(eword-analyze-quoted-string): Add `default-mime-charset' argument to
+	calling eword-decode-quoted-string.
+	(eword-analyze-comment): Add `default-mime-charset' argument to
+	calling eword-decode-comment.
+
+1998-04-25  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-entire-string): Delete argument
 	`default-charset'. Add argument `code-conversion'.
