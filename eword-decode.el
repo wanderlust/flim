@@ -254,6 +254,25 @@ If SEPARATOR is not nil, it is used as header separator."
 	    ))
       )))
 
+(defun eword-visible-field-p (field-name visible-fields invisible-fields)
+  (or (catch 'found
+	(while visible-fields
+	  (let ((regexp (car visible-fields)))
+	    (if (string-match regexp field-name)
+		(throw 'found t)
+	      ))
+	  (setq visible-fields (cdr visible-fields))
+	  ))
+      (catch 'found
+	(while invisible-fields
+	  (let ((regexp (car invisible-fields)))
+	    (if (string-match regexp field-name)
+		(throw 'found nil)
+	      ))
+	  (setq invisible-fields (cdr invisible-fields))
+	  )
+	t)))
+		
 (defun mime-insert-decoded-header (entity
 				   &optional invisible-fields visible-fields
 				   code-conversion)
@@ -280,16 +299,8 @@ If SEPARATOR is not nil, it is used as header separator."
 		    field-name (buffer-substring beg (1- p))
 		    len (string-width field-name)
 		    end (std11-field-end))
-	      (when (or (member-if (function
-				    (lambda (regexp)
-				      (string-match regexp field-name)
-				      ))
-				   visible-fields)
-			(not (member-if (function
-					 (lambda (regexp)
-					   (string-match regexp field-name)
-					   ))
-					invisible-fields)))
+	      (when (eword-visible-field-p field-name
+					   visible-fields invisible-fields)
 		(setq field (intern (capitalize field-name)))
 		(save-excursion
 		  (set-buffer the-buf)
@@ -301,14 +312,18 @@ If SEPARATOR is not nil, it is used as header separator."
 			 )
 			((memq field-name eword-decode-structured-field-list)
 			 ;; Decode as structured field
-			 (let ((body (buffer-substring p end src-buf))
+			 (let ((body (save-excursion
+				       (set-buffer src-buf)
+				       (buffer-substring p end)))
 			       (default-mime-charset default-charset))
 			   (insert (eword-decode-and-fold-structured-field
 				    body (1+ len)))
 			   ))
 			(t
 			 ;; Decode as unstructured field
-			 (let ((body (buffer-substring p end src-buf))
+			 (let ((body (save-excursion
+				       (set-buffer src-buf)
+				       (buffer-substring p end)))
 			       (default-mime-charset default-charset))
 			   (insert (eword-decode-unstructured-field-body
 				    body (1+ len)))
