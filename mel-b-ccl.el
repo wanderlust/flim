@@ -144,7 +144,7 @@ abcdefghijklmnopqrstuvwxyz\
 )
 
 (if-broken ccl-cascading-read
-    (define-long-ccl-program mel-ccl-decode-b
+    (define-ccl-program mel-ccl-decode-b
       `(1
 	(loop
 	 (loop
@@ -354,14 +354,14 @@ abcdefghijklmnopqrstuvwxyz\
     ))
 )
 
-(define-long-ccl-program mel-ccl-encode-b
+(define-ccl-program mel-ccl-encode-b
   (mel-ccl-encode-base64-generic))
 
 ;; 19 * 4 = 76
-(define-long-ccl-program mel-ccl-encode-base64-crlf-crlf
+(define-ccl-program mel-ccl-encode-base64-crlf-crlf
   (mel-ccl-encode-base64-generic 19 t))
 
-(define-long-ccl-program mel-ccl-encode-base64-crlf-lf
+(define-ccl-program mel-ccl-encode-base64-crlf-lf
   (mel-ccl-encode-base64-generic 19 nil))
 
 
