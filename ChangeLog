@@ -1,5 +1,19 @@
 2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
+	* FLIM-1.14-API.en: New file.
+
+	* smtp.el (smtp-open-connection-function): Add autoload cookie.
+
+	* qmtp.el (qmtp-open-connection-function): Add autoload cookie.
+
+	* mime.el (mime-entity-children): Add DOC.
+	(mime-entity-node-id): Add DOC.
+	(mime-entity-content-type): Add DOC.
+	(mime-entity-content-disposition): Add DOC.
+	(mime-entity-encoding): Add DOC.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
 	* mime.el (mime-encode-field-body): Add autoload setting.
 
 	* eword-encode.el (mime-encode-field-body): Renamed from
