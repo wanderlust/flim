@@ -1,6 +1,6 @@
 ;;; hmac-sha1.el --- Compute HMAC-SHA1.
 
-;; Copyright (C) 1999 Shuhei KOBAYASHI
+;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: HMAC, RFC 2104, HMAC-SHA1, SHA1, Cancel-Lock
@@ -44,6 +44,7 @@
 ;; (encode-hex-string
 ;;  (hmac-sha1 "Test With Truncation" (make-string 20 ?\x0c)))
 ;;  => "4c1a03424b55e07fe7f27be1d58bb9324a9a5a04"
+;;
 ;; (encode-hex-string
 ;;  (hmac-sha1-96 "Test With Truncation" (make-string 20 ?\x0c)))
 ;;  => "4c1a03424b55e07fe7f27be1"

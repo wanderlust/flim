@@ -1,6 +1,20 @@
+2001-03-11  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mel-g.el: Update Copyright header.
+
 2001-03-09  Akihiro Arisawa  <ari@atesoft.advantest.co.jp>
 
 	* mime.el (mime-find-root-entity): Find root recursively.
+
+2001-02-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hmac-md5.el, hmac-sha1.el: Modify comments.
+
+2001-02-25  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hex-util.el, hmac-def.el, hmac-md5.el, hmac-sha1.el,
+	md5-dl.el, md5.el, sha1-dl.el, sha1-el.el, sha1.el:
+	Update Copyright header.
 
 2000-12-27  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 

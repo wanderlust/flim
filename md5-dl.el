@@ -1,6 +1,6 @@
 ;;; md5-dl.el --- MD5 Message Digest Algorithm using DL module.
 
-;; Copyright (C) 1999 Shuhei KOBAYASHI
+;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: MD5, RFC 1321
@@ -67,4 +67,4 @@ hash of a portion of OBJECT."
 
 (provide 'md5-dl)
 
-;;; md5-dl.el ends here.
+;;; md5-dl.el ends here
