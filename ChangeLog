@@ -1,5 +1,11 @@
 1998-07-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime.el (mime-entity-encoding): Add new optional argument
+	`default-encoding'; set default encoding if
+	Content-Transfer-Encoding field is not found.
+
+1998-07-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmbuffer.el (mmbuffer-write-entity): Use
 	`mime-entity-buffer-internal', `mmbuffer-entity-point-min' and
 	`mmbuffer-entity-point-max'.

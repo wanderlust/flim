@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(defconst mime-library-version-string "FLIM 1.8.0 - \",DR(Bkubo\"")
+(defconst mime-library-version-string "FLIM 1.8.1 - \"Kutsukawa\"")
 
 
 ;;; @ variables
