@@ -28,8 +28,6 @@
 
 (require 'emu)
 
-(defconst mel-version "7.5")
-
 
 ;;; @ variable
 ;;;
