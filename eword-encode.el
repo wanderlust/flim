@@ -651,36 +651,39 @@ encoded-word.  ASCII token is not encoded."
 ;;;###autoload
 (defun mime-encode-header-in-buffer (&optional code-conversion)
   "Encode header fields to network representation, such as MIME encoded-word.
-It refers the variable `mime-field-encoding-method-alist'."
+It refers the `mime-field-encoding-method-alist' variable."
   (interactive "*")
   (save-excursion
     (save-restriction
       (std11-narrow-to-header mail-header-separator)
       (goto-char (point-min))
       (let ((default-cs (mime-charset-to-coding-system default-mime-charset))
-	    (regexp (concat "\\(" std11-field-head-regexp "\\)" " ?"))
 	    bbeg end field-name)
-	(while (re-search-forward regexp nil t)
+	(while (re-search-forward std11-field-head-regexp nil t)
 	  (setq bbeg (match-end 0)
-		field-name (buffer-substring (match-beginning 0)
-					     (1- (match-end 1)))
+		field-name (buffer-substring-no-properties (match-beginning 0)
+							   (1- bbeg))
 		end (std11-field-end))
 	  (and (delq 'ascii (find-charset-region bbeg end))
 	       (let ((method (eword-find-field-encoding-method
 			      (downcase field-name))))
 		 (cond ((eq method 'mime)
-			(let ((field-body
-			       (buffer-substring-no-properties bbeg end)))
-			  (delete-region bbeg end)
-			  (insert (mime-encode-field-body field-body
-							  field-name))))
+			(let* ((field-body
+				(buffer-substring-no-properties bbeg end))
+			       (encoded-body
+				(mime-encode-field-body
+				 field-body field-name)))
+			  (if (not encoded-body)
+			      (error "Cannot encode %s:%s"
+				     field-name field-body)
+			    (delete-region bbeg end)
+			    (insert encoded-body))))
 		       (code-conversion
 			(let ((cs
 			       (or (mime-charset-to-coding-system
 				    method)
 				   default-cs)))
 			  (encode-coding-region bbeg end cs)))))))))))
-
 (defalias 'eword-encode-header 'mime-encode-header-in-buffer)
 (make-obsolete 'eword-encode-header 'mime-encode-header-in-buffer)
 
