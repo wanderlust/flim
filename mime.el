@@ -29,6 +29,8 @@
 (require 'mime-def)
 (require 'eword-decode)
 
+(eval-when-compile (require 'mmgeneric))
+
 (eval-and-compile
 
 (autoload 'eword-encode-header "eword-encode"
