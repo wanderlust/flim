@@ -1,5 +1,4 @@
-;;; mel-ccl.el: CCL based encoder/decoder of Quoted-Printable
-;;;             and Q-encoding
+;;; mel-q-ccl.el --- Quoted-Printable encoder/decoder using CCL.
 
 ;; Copyright (C) 1998 Tanaka Akira
 
@@ -20,7 +19,7 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; along with this program; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
@@ -237,16 +236,36 @@ abcdefghijklmnopqrstuvwxyz\
 
 (eval-when-compile
 
-(defun mel-ccl-try-to-read-crlf (input-crlf reg eof-reg cr-eof lf-eof crlf-eof succ fail-cr fail-lf fail-crlf)
+(defvar eof-block-branches)
+(defvar eof-block-reg)
+(defun mel-ccl-set-eof-block (branch)
+  (let ((p (assoc branch eof-block-branches)))
+    (unless p
+      (setq p (cons branch (length eof-block-branches))
+	    eof-block-branches (cons p eof-block-branches)))
+    `(,eof-block-reg = ,(cdr p))))
+
+)
+
+(eval-when-compile
+
+(defun mel-ccl-try-to-read-crlf (input-crlf reg
+					    succ
+					    cr-eof cr-fail
+					    lf-eof lf-fail
+					    crlf-eof crlf-fail)
   (if input-crlf
-      `((,eof-reg = ,cr-eof) (read-if (,reg == ?\r)
-	((,eof-reg = ,lf-eof) (read-if (,reg == ?\n)
-	 ,succ
-	 ,fail-lf))
-	,fail-cr))
-    `((,eof-reg = ,crlf-eof) (read-if (,reg == ?\n)
-      ,succ
-      ,fail-crlf))))
+      `(,(mel-ccl-set-eof-block cr-eof)
+	(read-if (,reg == ?\r)
+	  (,(mel-ccl-set-eof-block lf-eof)
+	   (read-if (,reg == ?\n)
+	     ,succ
+	     ,lf-fail))
+	  ,cr-fail))
+    `(,(mel-ccl-set-eof-block crlf-eof)
+      (read-if (,reg == ?\n)
+	,succ
+	,crlf-fail))))
 
 )
 
@@ -255,360 +274,317 @@ abcdefghijklmnopqrstuvwxyz\
 ;; Generated CCL program works not properly on 20.2 because CCL_EOF_BLOCK
 ;; is not executed.
 (defun mel-ccl-encode-quoted-printable-generic (input-crlf output-crlf)
-  `(4
-    ((r6 = 0)				; column
-     (r5 = 0)				; previous character is white space
-     (r4 = 0)
-     (read r0)
-     (loop				; r6 <= 75
-      (loop
-       (loop
-        (branch
-         r0
-         ,@(mapcar
-            (lambda (r0)
-              (let ((tmp (aref mel-ccl-qp-table r0)))
-                (cond
-		 ((eq r0 (char-int ?F))
-		  `(if (r6 == 0)
-		       ((r4 = 15) (read-if (r0 == ?r)
-			((r4 = 16) (read-if (r0 == ?o)
-			 ((r4 = 17) (read-if (r0 == ?m)
-			  ((r4 = 18) (read-if (r0 == ? )
-			   ((r6 = 7)
-			    (r5 = 1)
-			    (write "=46rom ")
-			    (r4 = 19)
-			    (read r0)
-			    (repeat))
-			   ((r6 = 4)
-			    (write-repeat "From"))))
-			  ((r6 = 3)
-			   (write-repeat "Fro"))))
-			 ((r6 = 2)
-			  (write-repeat "Fr"))))
-			((r6 = 1)
-			 (write-repeat "F"))))
-		     ((r3 = 0) (break)) ; RAW
-		     ))
-		 ((eq r0 (char-int ?.))
-		  `(if (r6 == 0)
-		       ,(mel-ccl-try-to-read-crlf
-			 input-crlf
-			 'r0 'r4 20 21 22
-			 `((write ,(if output-crlf "=2E\r\n" "=2E\n"))
-			   (r4 = 23)
-			   (read r0)
-			   (repeat))
-			 '((r6 = 1)
-			   (write-repeat "."))
-			 '((r6 = 4)
-			   (write-repeat ".=0D"))
-			 '((r6 = 1)
-			   (write-repeat ".")))
-		     ((r3 = 0) (break)) ; RAW
-		     ))
-                 ((eq tmp 'raw) '((r3 = 0) (break))) ; RAW
-                 ((eq tmp 'enc) '((r3 = 1) (break))) ; ENC
-                 ((eq tmp 'wsp) '((r3 = 2) (break))) ; WSP
-                 ((eq tmp 'cr) (if input-crlf
-                                   '((r3 = 3) (break)) ; CR
-                                 '((r3 = 1) (break)))) ; ENC
-                 ((eq tmp 'lf) (if input-crlf
-                                   '((r3 = 1) (break)) ; ENC
-                                 '((r3 = 3) (break)))) ; CRLF
-                 )))
-            mel-ccl-256-table)))
-       (branch
-        r3
-        ;; r0:r3=RAW
-        (if (r6 < 75)
-            ((r6 += 1)
-             (r5 = 0)
-             (r4 = 1)
-             (write-read-repeat r0))
-          (break))
-        ;; r0:r3=ENC
-        ((r5 = 0)
-         (if (r6 < 73)
-             ((r6 += 3)
-              (write "=")
-              (write r0 ,mel-ccl-high-table)
-              (r4 = 2)
-              (write-read-repeat r0 ,mel-ccl-low-table))
-           (if (r6 > 73)
-               ((r6 = 3)
-                (write ,(if output-crlf "=\r\n=" "=\n="))
-                (write r0 ,mel-ccl-high-table)
-                (r4 = 3)
-                (write-read-repeat r0 ,mel-ccl-low-table))
-             (break))))
-        ;; r0:r3=WSP
-        ((r5 = 1)
-         (if (r6 < 75)
-             ((r6 += 1)
-              (r4 = 4)
-              (write-read-repeat r0))
-           ((r6 = 1)
-            (write ,(if output-crlf "=\r\n" "=\n"))
-            (r4 = 5)
-            (write-read-repeat r0))))
-        ;; r0:r3=CR/CRLF
-        ,(if input-crlf
-             ;; r0:r3=CR
-             `((if ((r6 > 73) & r5)
-                   ((r6 = 0)
-                    (r5 = 0)
-                    (write ,(if output-crlf "=\r\n" "=\n"))))
-               (break))
-           ;; r0:r3=CRLF
-           `(if r5
-                ;; WSP ; r0:r3=CRLF
-                ((r5 = 0)
-                 (r6 = 0)
-                 (write ,(if output-crlf "=\r\n" "=\n"))
-                 ,@(if output-crlf '((write ?\r)) '())
-		 (r4 = 0)
-                 (write-read-repeat r0))
-              ;; noWSP ; r0:r3=CRLF
-              ((r5 = 0)
-	       (r6 = 0)
-	       ,@(if output-crlf '((write ?\r)) '())
-	       (r4 = 0)
-	       (write-read-repeat r0)))
-	   )))
-      ;; r0:r3={RAW,ENC,CR}
-      (loop
-       ,(funcall
-         (lambda (after-cr after-raw-enc)
-           (if input-crlf
-               `(if (r0 == ?\r)
-                    ,after-cr
-                  ,after-raw-enc)
-             after-raw-enc))
-         ;; r0=\r:r3=CR
-         `((r4 = 6)
-           (read r0)
-           ;; CR:r3=CR r0
-           (if (r0 == ?\n)
-               ;; CR:r3=CR r0=LF
-               (if r5
-                   ;; r5=WSP ; CR:r3=CR r0=LF
-                   ((r6 = 0)
-                    (r5 = 0)
-                    (write ,(if output-crlf "=\r\n\r\n" "=\n\n"))
-                    (r4 = 7)
-                    (read r0)
-                    (break))
-                 ;; r5=noWSP ; CR:r3=CR r0=LF
-                 ((r6 = 0)
-                  (r5 = 0)
-                  (write ,(if output-crlf "\r\n" "\n"))
-                  (r4 = 8)
-                  (read r0)
-                  (break)))
-             ;; CR:r3=CR r0=noLF
-             (if (r6 < 73)
-                 ((r6 += 3)
-                  (r5 = 0)
-                  (write "=0D")
-                  (break))
-               (if (r6 == 73)
-                   (if (r0 == ?\r)
-                       ;; CR:r3=CR r0=CR
-                       ((r4 = 9)
-                        (read r0)
-                        ;; CR:r3=CR CR r0
-                        (if (r0 == ?\n)
-                            ;; CR:r3=CR CR LF
-                            ((r6 = 0)
-                             (r5 = 0)
-                             (write ,(if output-crlf "=0D\r\n" "=0D\n"))
-                             (r4 = 10)
-                             (read r0)
-                             (break))
-                          ;; CR:r3=CR CR noLF
-                          ((r6 = 6)
-                           (r5 = 0)
-                           (write ,(if output-crlf "=\r\n=0D=0D" "=\n=0D=0D"))
-                           (break))))
-                     ;; CR:r3=CR r0=noLFnorCR
-                     ((r6 = 3)
-                      (r5 = 0)
-                      (write ,(if output-crlf "=\r\n=0D" "=\n=0D"))
-                      (break)))
-                 ((r6 = 3)
-                  (r5 = 0)
-                  (write ,(if output-crlf "=\r\n=0D" "=\n=0D"))
-                  (break))))))
-         (funcall
-          (lambda (after-newline after-cr-nolf after-nonewline)
-            (if input-crlf
-                ;; r0:r3={RAW,ENC}
-                `((r4 = 11)
-                  (read r1)
-                  ;; r0:r3={RAW,ENC} r1
-                  (if (r1 == ?\r)
-                      ;; r0:r3={RAW,ENC} r1=CR
-                      ((r4 = 12)
-                       (read r1)
-                       ;; r0:r3={RAW,ENC} CR r1
-                       (if (r1 == ?\n)
-                           ;; r0:r3=RAW CR r1=LF
-                           ,after-newline
-                         ;; r0:r3=RAW CR r1=noLF
-                         ,after-cr-nolf))
-                    ;; r0:r3={RAW,ENC} r1:noCR
-                    ,after-nonewline))
-              ;; r0:r3={RAW,ENC}
-              `((r4 = 11)
-                (read r1)
-                ;; r0:r3={RAW,ENC} r1
-                (if (r1 == ?\n)
-                    ;; r0:r3={RAW,ENC} r1=CRLF
-                    ,after-newline
-                  ;; r0:r3={RAW,ENC} r1:noCRLF
-                  ,after-nonewline))))
-          ;; r0:r3={RAW,ENC} CR r1=LF
-          ;; r0:r3={RAW,ENC} r1=CRLF
-          `((r6 = 0)
-            (r5 = 0)
-            (branch
-             r3
-             ;; r0:r3=RAW CR r1=LF
-             ;; r0:r3=RAW r1=CRLF
-             ((write r0)
-              (write ,(if output-crlf "\r\n" "\n"))
-              (r4 = 13)
-              (read r0)
-              (break))
-             ;; r0:r3=ENC CR r1=LF
-             ;; r0:r3=ENC r1=CRLF
-             ((write ?=)
-              (write r0 ,mel-ccl-high-table)
-              (write r0 ,mel-ccl-low-table)
-              (write ,(if output-crlf "\r\n" "\n"))
-              (r4 = 14)
-              (read r0)
-              (break))))
-          ;; r0:r3={RAW,ENC} CR r1=noLF
-          `((branch
-             r3
-             ;; r0:r3=RAW CR r1:noLF
-             ((r6 = 4)
-              (r5 = 0)
-              (write ,(if output-crlf "=\r\n" "=\n"))
-              (write r0)
-              (write "=0D")
-              (r0 = (r1 + 0)) ; "+ 0" is workaround for mule 2.3@19.34.
-              (break))
-             ;; r0:r3=ENC CR r1:noLF
-             ((r6 = 6)
-              (r5 = 0)
-              (write ,(if output-crlf "=\r\n=" "=\n="))
-              (write r0 ,mel-ccl-high-table)
-              (write r0 ,mel-ccl-low-table)
-              (write "=0D")
-              (r0 = (r1 + 0))
-              (break))))
-          ;; r0:r3={RAW,ENC} r1:noCR
-          ;; r0:r3={RAW,ENC} r1:noCRLF
-          `((branch
-             r3
-             ;; r0:r3=RAW r1:noCR
-             ;; r0:r3=RAW r1:noCRLF
-             ((r6 = 1)
-              (r5 = 0)
-              (write ,(if output-crlf "=\r\n" "=\n"))
-              (write r0)
-              (r0 = (r1 + 0))
-              (break))
-             ;; r0:r3=ENC r1:noCR
-             ;; r0:r3=ENC r1:noCRLF
-             ((r6 = 3)
-              (r5 = 0)
-              (write ,(if output-crlf "=\r\n=" "=\n="))
-              (write r0 ,mel-ccl-high-table)
-              (write r0 ,mel-ccl-low-table)
-              (r0 = (r1 + 0))
-              (break)))))))
-      (repeat)))
-    ;; EOF
-    (					;(write "[EOF:") (write r4 ,mel-ccl-high-table) (write r4 ,mel-ccl-low-table) (write "]")
-     (branch
-      r4
-      ;; 0: (start) ;
-      (end)
-      ;; 1: RAW ;
-      (end)
-      ;; 2: r0:r3=ENC ;
-      (end)
-      ;; 3: SOFTBREAK r0:r3=ENC ;
-      (end)
-      ;; 4: r0:r3=WSP ;
-      ((write ,(if output-crlf "=\r\n" "=\n")) (end))
-      ;; 5: SOFTBREAK r0:r3=WSP ;
-      ((write ,(if output-crlf "=\r\n" "=\n")) (end))
-      ;; 6: ; r0=\r:r3=CR
-      (if (r6 <= 73)
-          ((write "=0D") (end))
-	((write ,(if output-crlf "=\r\n=0D" "=\n=0D")) (end)))
-      ;; 7: r5=WSP SOFTBREAK CR:r3=CR r0=LF ;
-      (end)
-      ;; 8: r5=noWSP CR:r3=CR r0=LF ;
-      (end)
-      ;; 9: (r6=73) ; CR:r3=CR r0=CR
-      ((write ,(if output-crlf "=\r\n=0D=0D" "=\n=0D=0D")) (end))
-      ;; 10: (r6=73) CR:r3=CR CR LF ;
-      (end)
-      ;; 11: ; r0:r3={RAW,ENC}
+  (let ((hard (if output-crlf "\r\n" "\n"))
+	(soft (if output-crlf "=\r\n" "=\n"))
+	(eof-block-branches nil)
+	(eof-block-reg 'r4)
+	(after-wsp 'r5)
+	(column 'r6)
+	(type 'r3)
+	(current 'r0)
+	(type-raw 0)
+	(type-enc 1)
+	(type-wsp 2)
+	(type-brk 3)
+	)
+    `(4
+      ((,column = 0)
+       (,after-wsp = 0)
+       ,(mel-ccl-set-eof-block '(end))
+       (read r0)
+       (loop	; invariant: column <= 75
+	(loop
+	 (loop
+	  (branch
+	   r0
+	   ,@(mapcar
+	      (lambda (r0)
+		(let ((tmp (aref mel-ccl-qp-table r0)))
+		  (cond
+		   ((eq r0 (char-int ?F))
+		    `(if (,column == 0)
+			 (,(mel-ccl-set-eof-block '((write "F") (end)))
+			  (read-if (r0 == ?r)
+			    (,(mel-ccl-set-eof-block '((write "Fr") (end)))
+			     (read-if (r0 == ?o)
+			       (,(mel-ccl-set-eof-block '((write "Fro") (end)))
+				(read-if (r0 == ?m)
+				  (,(mel-ccl-set-eof-block '((write "From") (end)))
+				   (read-if (r0 == ? )
+				     ((,column = 7)
+				      (,after-wsp = 1)
+				      ,(mel-ccl-set-eof-block '((write "From=20") (end)))
+				      (read r0)
+				      (write-repeat "=46rom "))
+				     ((,column = 4)
+				      (write-repeat "From"))))
+				  ((,column = 3)
+				   (write-repeat "Fro"))))
+			       ((,column = 2)
+				(write-repeat "Fr"))))
+			    ((,column = 1)
+			     (write-repeat "F"))))
+		       ((,type = ,type-raw) (break)) ; RAW
+		       ))
+		   ((eq r0 (char-int ?.))
+		    `(if (,column == 0)
+			 ,(mel-ccl-try-to-read-crlf
+			    input-crlf 'r0
+			    ;; "." CR LF (input-crlf: t)
+			    ;; "." LF (input-crlf: nil)
+			    `((write ,(concat "=2E" hard))
+			      ,(mel-ccl-set-eof-block '(end))
+			      (read r0)
+			      (repeat))
+			    ;; "." <EOF>
+			    '((write ".") (end))
+			    ;; "." noCR (input-crlf: t)
+			    `((,column = 1)
+			      (write-repeat "."))
+			    ;; "." CR <EOF> (input-crlf: t)
+			    '((write ".=0D") (end))
+			    ;; "." CR noLF (input-crlf: t)
+			    `((,column = 4)
+			      (write-repeat ".=0D"))
+			    ;; "." <EOF> (input-crlf: nil)
+			    '((write ".") (end))
+			    ;; "." noLF (input-crlf: nil)
+			    `((,column = 1)
+			      (write-repeat ".")))
+		       ((,type = ,type-raw) (break)) ; RAW
+		       ))
+		   ((eq tmp 'raw) `((,type = ,type-raw) (break)))
+		   ((eq tmp 'enc) `((,type = ,type-enc) (break)))
+		   ((eq tmp 'wsp) `((,type = ,type-wsp) (break)))
+		   ((eq tmp 'cr) `((,type = ,(if input-crlf type-brk type-enc))
+				   (break)))
+		   ((eq tmp 'lf) `((,type = ,(if input-crlf type-enc type-brk))
+				   (break)))
+		   )))
+	      mel-ccl-256-table)))
+	 ;; r0:type{raw,enc,wsp,brk}
+	 (branch
+	  ,type
+	  ;; r0:type-raw
+	  (if (,column < 75)
+	      ((,column += 1)
+	       (,after-wsp = 0)
+	       ,(mel-ccl-set-eof-block '(end))
+	       (write-read-repeat r0))
+	    ((r1 = (r0 + 0))
+	     (,after-wsp = 0)
+	     ,@(mel-ccl-try-to-read-crlf
+		input-crlf 'r0
+		`((,column = 0)
+		  (write r1)
+		  ,(mel-ccl-set-eof-block `((write ,hard) (end)))
+		  (read r0)
+		  (write-repeat ,hard))
+		'((write r1) (end))
+		`((,column = 1)
+		  (write ,soft) (write-repeat r1))
+		`((write ,soft) (write r1) (write "=0D") (end))
+		`((,column = 4)
+		  (write ,soft) (write r1) (write-repeat "=0D"))
+		'((write r1) (end))
+		`((,column = 1)
+		  (write ,soft) (write-repeat r1)))))
+	  ;; r0:type-enc
+	  ((,after-wsp = 0)
+	   (if (,column < 73)
+	       ((,column += 3)
+		(write "=")
+		(write r0 ,mel-ccl-high-table)
+		,(mel-ccl-set-eof-block '(end))
+		(write-read-repeat r0 ,mel-ccl-low-table))
+	     (if (,column < 74)
+		 ((r1 = (r0 + 0))
+		  (,after-wsp = 0)
+		  ,@(mel-ccl-try-to-read-crlf
+		     input-crlf 'r0
+		     `((,column = 0)
+		       (write "=")
+		       (write r1 ,mel-ccl-high-table)
+		       (write r1 ,mel-ccl-low-table)
+		       (write ,hard)
+		       ,(mel-ccl-set-eof-block '(end))
+		       (read r0)
+		       (repeat))
+		     `((write "=")
+		       (write r1 ,mel-ccl-high-table)
+		       (write r1 ,mel-ccl-low-table)
+		       (end))
+		     `((,column = 3)
+		       (write ,(concat soft "="))
+		       (write r1 ,mel-ccl-high-table)
+		       (write r1 ,mel-ccl-low-table)
+		       (repeat))
+		     `((write ,(concat soft "="))
+		       (write r1 ,mel-ccl-high-table)
+		       (write r1 ,mel-ccl-low-table)
+		       (write "=0D")
+		       (end))
+		     `((,column = 6)
+		       (write ,(concat soft "="))
+		       (write r1 ,mel-ccl-high-table)
+		       (write r1 ,mel-ccl-low-table)
+		       (write-repeat "=0D"))
+		     `((write "=")
+		       (write r1 ,mel-ccl-high-table)
+		       (write r1 ,mel-ccl-low-table)
+		       (end))
+		     `((,column = 3)
+		       (write ,(concat soft "="))
+		       (write r1 ,mel-ccl-high-table)
+		       (write r1 ,mel-ccl-low-table)
+		       (repeat))))
+	       ((,column = 3)
+		(write ,(concat soft "="))
+		(write r0 ,mel-ccl-high-table)
+		,(mel-ccl-set-eof-block '(end))
+		(write-read-repeat r0 ,mel-ccl-low-table)))))
+	  ;; r0:type-wsp
+	  (if (,column < 73)
+	      ((r1 = (r0 + 0))
+	       ,@(mel-ccl-try-to-read-crlf
+		  input-crlf 'r0
+		  `((,column = 0)
+		    (,after-wsp = 0)
+		    (write "=")
+		    (write r1 ,mel-ccl-high-table)
+		    (write r1 ,mel-ccl-low-table)
+		    (write ,hard)
+		    ,(mel-ccl-set-eof-block `(end))
+		    (read r0)
+		    (repeat))
+		  `((write "=")
+		    (write r1 ,mel-ccl-high-table)
+		    (write r1 ,mel-ccl-low-table)
+		    (end))
+		  `((,column += 1)
+		    (,after-wsp = 1)
+		    (write-repeat r1))
+		  `((write r1)
+		    (write "=0D")
+		    (end))
+		  `((,column += 4)
+		    (,after-wsp = 0)
+		    (write r1)
+		    (write-repeat "=0D"))
+		  `((write "=")
+		    (write r1 ,mel-ccl-high-table)
+		    (write r1 ,mel-ccl-low-table)
+		    (end))
+		  `((,column += 1)
+		    (,after-wsp = 1)
+		    (write-repeat r1))))
+	    (if (,column < 74)
+		((r1 = (r0 + 0))
+		 ,@(mel-ccl-try-to-read-crlf
+		    input-crlf 'r0
+		    `((,column = 0)
+		      (,after-wsp = 0)
+		      (write "=")
+		      (write r1 ,mel-ccl-high-table)
+		      (write r1 ,mel-ccl-low-table)
+		      (write ,hard)
+		      ,(mel-ccl-set-eof-block `(end))
+		      (read r0)
+		      (repeat))
+		    `((write "=")
+		      (write r1 ,mel-ccl-high-table)
+		      (write r1 ,mel-ccl-low-table)
+		      (end))
+		    `((,column += 1)
+		      (,after-wsp = 1)
+		      (write-repeat r1))
+		    `((write r1)
+		      (write ,(concat soft "=0D"))
+		      (end))
+		    `((,column = 3)
+		      (,after-wsp = 0)
+		      (write r1)
+		      (write-repeat ,(concat soft "=0D")))
+		    `((write "=")
+		      (write r1 ,mel-ccl-high-table)
+		      (write r1 ,mel-ccl-low-table)
+		      (end))
+		    `((,column += 1)
+		      (,after-wsp = 1)
+		      (write-repeat r1))))
+	      (if (,column < 75)
+		  ((,column += 1)
+		   (,after-wsp = 1)
+		   ,(mel-ccl-set-eof-block `((write ,soft) (end)))
+		   (write-read-repeat r0))
+		((write ,soft)
+		 (,column = 0)
+		 (,after-wsp = 0)
+		 (repeat)))))
+	  ;; r0:type-brk
+	  ,(if input-crlf
+	       ;; r0{CR}:type-brk
+	       `((if ((,column > 73) & ,after-wsp)
+		     ((,column = 0)
+		      (,after-wsp = 0)
+		      (write ,soft)))
+		 ,(mel-ccl-set-eof-block `((if (,column > 73) (write ,soft))
+					   (write "=0D") (end)))
+		 (read-if (r0 == ?\n)
+		   (if ,after-wsp
+		       ((,after-wsp = 0)
+			(,column = 0)
+			(write ,(concat soft hard))
+			,(mel-ccl-set-eof-block '(end))
+			(read r0)
+			(repeat))
+		     ((,after-wsp = 0)
+		      (,column = 0)
+		      (write ,hard)
+		      ,(mel-ccl-set-eof-block '(end))
+		      (read r0)
+		      (repeat)))
+		   (if (,column < 73)
+		       ((,after-wsp = 0)
+			(,column += 3)
+			(write-repeat "=0D"))
+		     (if (,column < 74)
+			 (if (r0 == ?\r)
+			     ((,after-wsp = 0)
+			      ,(mel-ccl-set-eof-block
+				`((write ,(concat soft "=0D=0D")) (end)))
+			      (read-if (r0 == ?\n)
+				((,column = 0)
+				 ,(mel-ccl-set-eof-block
+				   `((write ,(concat "=0D" hard)) (end)))
+				 (read r0)
+				 (write-repeat ,(concat "=0D" hard)))
+				((,column = 6)
+				 (write-repeat ,(concat soft "=0D=0D")))))
+			   ((,after-wsp = 0)
+			    (,column = 3)
+			    (write-repeat ,(concat soft "=0D"))))
+		       ((,after-wsp = 0)
+			(,column = 3)
+			(write-repeat ,(concat soft "=0D")))))))
+	     ;; r0{LF}:type-brk
+	     `(if ,after-wsp
+		  ;; WSP ; r0{LF}:type-brk
+		  ((,after-wsp = 0)
+		   (,column = 0)
+		   (write ,(concat soft (if output-crlf "\r" "")))
+		   ,(mel-ccl-set-eof-block `(end))
+		   (write-read-repeat r0))
+		;; noWSP ; r0{LF}:type-brk
+		((,after-wsp = 0)
+		 (,column = 0)
+		 ,@(if output-crlf '((write ?\r)) '())
+		 ,(mel-ccl-set-eof-block `(end))
+		 (write-read-repeat r0)))
+	     )))))
       (branch
-       r3
-       ((write r0) (end))
-       ((write "=")
-        (write r0 ,mel-ccl-high-table)
-        (write r0 ,mel-ccl-low-table)
-        (end)))
-      ;; 12: ; r0:r3={RAW,ENC} r1=CR
-      (branch
-       r3
-       ;; ; r0:r3=RAW r1=CR
-       ((write ,(if output-crlf "=\r\n" "=\n"))
-        (write r0)
-        (write "=0D")
-        (end))
-       ;; ; r0:r3=ENC r1=CR
-       ((write ,(if output-crlf "=\r\n=" "=\n="))
-        (write r0 ,mel-ccl-high-table)
-        (write r0 ,mel-ccl-low-table)
-        (write "=0D")
-        (end)))
-      ;; 13: r0:r3=RAW CR LF ;
-      ;; 13: r0:r3=RAW CRLF ;
-      (end)
-      ;; 14: r0:r3=ENC CR LF ;
-      ;; 14: r0:r3=ENC CRLF ;
-      (end)
-      ;; 15: r6=0 ; "F"
-      ((write "F") (end))
-      ;; 16: r6=0 ; "Fr"
-      ((write "Fr") (end))
-      ;; 17: r6=0 ; "Fro"
-      ((write "Fro") (end))
-      ;; 18: r6=0 ; "From"
-      ((write "From") (end))
-      ;; 19: r6=0 "From " ;
-      (end)
-      ;; 20: r6=0 ; "."
-      ((write ".") (end))
-      ;; 21: r6=0 ; ".\r"
-      ((write ".=0D") (end))
-      ;; 22: r6=0 ; "."
-      ((write ".") (end))
-      ;; 23: r6=0 ".\r\n" ;
-      (end)
-      ))
-    ))
+       ,eof-block-reg
+       ,@(reverse (mapcar 'car eof-block-branches))))))
 
 (defun mel-ccl-decode-quoted-printable-generic (input-crlf output-crlf)
   `(1
@@ -916,12 +892,12 @@ abcdefghijklmnopqrstuvwxyz\
 
   (defun quoted-printable-ccl-encode-region (start end)
     "Encode the region from START to END with quoted-printable encoding."
-    (interactive "r")
+    (interactive "*r")
     (decode-coding-region start end 'mel-ccl-quoted-printable-lf-lf-rev))
 
   (defun quoted-printable-ccl-insert-encoded-file (filename)
     "Encode contents of the file named as FILENAME, and insert it."
-    (interactive (list (read-file-name "Insert encoded file: ")))
+    (interactive "*fInsert encoded file: ")
     (insert-file-contents-as-coding-system
      'mel-ccl-quoted-printable-lf-lf-rev filename))
 
@@ -945,15 +921,12 @@ abcdefghijklmnopqrstuvwxyz\
 (defun quoted-printable-ccl-decode-region (start end)
   "Decode the region from START to END with quoted-printable
 encoding."
-  (interactive "r")
+  (interactive "*r")
   (encode-coding-region start end 'mel-ccl-quoted-printable-lf-lf-rev))
 
-(defun quoted-printable-ccl-write-decoded-region
-  (start end filename)
+(defun quoted-printable-ccl-write-decoded-region (start end filename)
   "Decode quoted-printable encoded current region and write out to FILENAME."
-  (interactive
-   (list (region-beginning) (region-end)
-         (read-file-name "Write decoded region to file: ")))
+  (interactive "*r\nFWrite decoded region to file: ")
   (write-region-as-coding-system 'mel-ccl-quoted-printable-lf-lf-rev
 				 start end filename))
 
@@ -991,7 +964,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 (unless (featurep 'xemacs)
   (defun q-encoding-ccl-encoded-length (string &optional mode)
     (let ((status [nil nil nil nil nil nil nil nil nil]))
-      (fillarray status nil)
+      (fillarray status nil)		; XXX: Is this necessary?
       (ccl-execute-on-string
        (cond
 	((eq mode 'text) 'mel-ccl-count-uq)
@@ -1006,8 +979,9 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 			    'q-encoding-ccl-encode-string)
 
 (mel-define-method encoded-text-decode-string (string (nil "Q"))
-  (if (and (string-match Q-encoded-text-regexp string)
-	   (string= string (match-string 0 string)))
+  (if (string-match (eval-when-compile
+		      (concat "\\`" Q-encoded-text-regexp "\\'"))
+		    string)
       (q-encoding-ccl-decode-string string)
     (error "Invalid encoded-text %s" string)))
 
@@ -1017,4 +991,4 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 
 (provide 'mel-q-ccl)
 
-;;; mel-q-ccl.el ends here
+;;; mel-q-ccl.el ends here.

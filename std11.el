@@ -24,10 +24,9 @@
 
 ;;; Code:
 
-(or (fboundp 'buffer-substring-no-properties)
-    (require 'poe))
-
-(require 'custom)
+(require 'poe)
+(require 'poem)				; find-non-ascii-charset-string
+(require 'pcustom)			; std11-lexical-analyzer
 
 
 ;;; @ fetch

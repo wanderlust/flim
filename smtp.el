@@ -3,8 +3,9 @@
 ;; Copyright (C) 1995, 1996, 1998 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
-;;         Simon Leinen <simon@switch.ch> (ESMTP support)
-;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
+;;	Simon Leinen <simon@switch.ch> (ESMTP support)
+;;	MORIOKA Tomohiko <tomo@m17n.org> (separate smtp.el from smtpmail.el)
+;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: SMTP, mail
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -20,13 +21,18 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; along with this program; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Code:
 
-(require 'mail-utils) ; pick up mail-strip-quoted-names
+(require 'poe)
+(require 'poem)
+(require 'pcustom)
+(require 'mail-utils)			; mail-strip-quoted-names
+
+(eval-when-compile (require 'cl))	; push
 
 (defgroup smtp nil
   "SMTP protocol for sending mail."
@@ -62,7 +68,11 @@ don't define this value."
   :type '(choice (const nil) string)
   :group 'smtp)
 
-(defvar smtp-debug-info nil)
+(defcustom smtp-debug-info nil
+  "*smtp debug info printout. messages and process buffer."
+  :type 'boolean
+  :group 'smtp)
+
 (defvar smtp-read-point nil)
 
 (defun smtp-make-fqdn ()
