@@ -48,7 +48,7 @@
 
 (mm-define-method cooked-p ((entity buffer)) nil)
 
-(mm-define-method entity-content ((entity buffer))
+(mm-define-method get-content ((entity buffer))
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (mime-decode-string
