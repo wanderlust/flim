@@ -780,6 +780,19 @@
  aaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
 'divide-atom-for-fold)
 
+(encode
+"From: (あ)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'("From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+  "From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ <akr@jaist.ac.jp>")
+'ignore-76bytes-limit)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa(あ)aa <akr@jaist.ac.jp>"
+"From: =?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?=
+ =?US-ASCII?Q?a?=(=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aa <akr@jaist.ac.jp>"
+'encode-long-ascii-string-for-fold)
+
 ;; Section 6: Encoding melancholic inputs.
 
 (encode
@@ -917,31 +930,31 @@
 ;  マッチしない部分はその部分のままの内容を表す。
 ; 
 ; rule 2: 文字列中で =?charset?encoding?text?= というパターンに
-;  マッチする部分は charset の先頭に * がいくつ付いているかで内容の
+;  マッチする部分は charset の先頭に + がいくつ付いているかで内容の
 ;  解釈を変える。
 ;
-;  偶数の場合(0, 2, 4, ...): charset の先頭の * の数を半分にした文字列
-;  奇数の場合(1, 3, 5, ...): charset の先頭の * の数を半分(小数点以下
+;  偶数の場合(0, 2, 4, ...): charset の先頭の + の数を半分にした文字列
+;  奇数の場合(1, 3, 5, ...): charset の先頭の + の数を半分(小数点以下
 ;   切捨て)にして、それを encoded-word と思ってデコードした文字列。
 ;
-; NOTE: * を quoted-encoded-word 表現の quote 文字と呼ぶ。
+; NOTE: + を quoted-encoded-word 表現の quote 文字と呼ぶ。
 ;
-; NOTE: 現時点(1998/07/19)で IANA には * を含む charset は
+; NOTE: 現時点(1998/07/19)で IANA には + を含む charset は
 ;  登録されていないので、それらの charset を使った
-;  encoded-word を表現するには * を 1つつけることになる。
+;  encoded-word を表現するには + を 1つつけることになる。
 ;
-;  =?US-ASCII?Q?abcdef?= というencoded-word : =?*US-ASCII?Q?abcdef?=
+;  =?US-ASCII?Q?abcdef?= というencoded-word : =?+US-ASCII?Q?abcdef?=
 ;
 ;  =?US-ASCII?Q?abcdef?= という文字列	    : =?US-ASCII?Q?abcdef?=
-;  =?*US-ASCII?Q?abcdef?= という文字列	    : =?**US-ASCII?Q?abcdef?=
-;  =?**US-ASCII?Q?abcdef?= という文字列     : =?****US-ASCII?Q?abcdef?=
-;  =?***US-ASCII?Q?abcdef?= という文字列    : =?******US-ASCII?Q?abcdef?=
-;  =?US-ASCII*?Q?abcdef?= という文字列      : =?US-ASCII*?Q?abcdef?=
-;  =?U*S-ASCII?Q?abcdef?= という文字列      : =?U*S-ASCII?Q?abcdef?=
+;  =?+US-ASCII?Q?abcdef?= という文字列	    : =?++US-ASCII?Q?abcdef?=
+;  =?++US-ASCII?Q?abcdef?= という文字列     : =?++++US-ASCII?Q?abcdef?=
+;  =?+++US-ASCII?Q?abcdef?= という文字列    : =?++++++US-ASCII?Q?abcdef?=
+;  =?US-ASCII+?Q?abcdef?= という文字列      : =?US-ASCII+?Q?abcdef?=
+;  =?U+S-ASCII?Q?abcdef?= という文字列      : =?U+S-ASCII?Q?abcdef?=
 ;
-; NOTE: encoded-word に見える文字列で * が倍増されるのは charset の
-;  先頭だけであり、encoding や encoded-text はたとえ * が入っていても
-;  変化しない。また、charset 中でも 先頭以外の * は変化しない。
+; NOTE: encoded-word に見える文字列で + が倍増されるのは charset の
+;  先頭だけであり、encoding や encoded-text はたとえ + が入っていても
+;  変化しない。また、charset 中でも 先頭以外の + は変化しない。
 ;
 ; rule 3: 文字列全体の内容は、rule 1 と rule 2 で解釈した各部分の
 ;   文字列を単純に連結した文字列とする。
@@ -955,9 +968,9 @@
 ;  表して encoded-word の文法を採用する。)
 ;
 ; NOTE: quoted-encoded-word 表現した文字列の連結は安全ではない。
-;  =?*US-ASCII?Q?ab と cd?= という quoted-encoded-word 表現した文字列は
+;  =?+US-ASCII?Q?ab と cd?= という quoted-encoded-word 表現した文字列は
 ;  それぞれその文字列そのものを表現するが、それらを連結した文字列
-;  =?*US-ASCII?Q?abcd?= は abcd という文字列を表現することになり、
+;  =?+US-ASCII?Q?abcd?= は abcd という文字列を表現することになり、
 ;  それぞれの内容の連結とはならない。
 ;
 ;  これはとくに Non ASCII 拡張 RFC822 の中に quoted-encoded-word 表現を
@@ -966,45 +979,45 @@
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?="
-"Subject: =?*Unknown-Charset?B?gqA=?="
+"Subject: =?+Unknown-Charset?B?gqA=?="
 'quoted-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?G?H4sIACqUszUAA8tIzcnJBwCGphA2BQAAAA==?="
-"Subject: =?*US-ASCII?G?H4sIACqUszUAA8tIzcnJBwCGphA2BQAAAA==?="
+"Subject: =?+US-ASCII?G?H4sIACqUszUAA8tIzcnJBwCGphA2BQAAAA==?="
 'quoted-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?Unknown-Encoding?H4sIAGOUszUAAwtyczYyMDEHAEpvqpIHAAAA?="
-"Subject: =?*US-ASCII?Unknown-Encoding?H4sIAGOUszUAAwtyczYyMDEHAEpvqpIHAAAA?="
+"Subject: =?+US-ASCII?Unknown-Encoding?H4sIAGOUszUAAwtyczYyMDEHAEpvqpIHAAAA?="
 'quoted-encoded-word)
 
 (decode
 "Subject: =?ISO-2022-JP?G?H4sIAGiTszUAA5NWcVIBAhMtaQ0nAGLSaeEMAAAA?=
  =?ISO-2022-JP?G?H4sIAH6TszUAA5NWcVIxV3FTyVbxldZwAgAuIikKDgAAAA==?="
-"Subject: =?*ISO-2022-JP?G?H4sIAGiTszUAA5NWcVIBAhMtaQ0nAGLSaeEMAAAA?==?*ISO-2022-JP?G?H4sIAH6TszUAA5NWcVIxV3FTyVbxldZwAgAuIikKDgAAAA==?="
+"Subject: =?+ISO-2022-JP?G?H4sIAGiTszUAA5NWcVIBAhMtaQ0nAGLSaeEMAAAA?==?+ISO-2022-JP?G?H4sIAH6TszUAA5NWcVIxV3FTyVbxldZwAgAuIikKDgAAAA==?="
 'quoted-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?= =?Unknown-Charset?B?gqA=?="
-"Subject: =?*Unknown-Charset?B?gqA=?==?*Unknown-Charset?B?gqA=?="
+"Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
 'quoted-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=  =?Unknown-Charset?B?gqA=?="
-"Subject: =?*Unknown-Charset?B?gqA=?==?*Unknown-Charset?B?gqA=?="
+"Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
 'quoted-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=
  =?Unknown-Charset?B?gqA=?="
-"Subject: =?*Unknown-Charset?B?gqA=?==?*Unknown-Charset?B?gqA=?="
+"Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
 'quoted-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=
 	=?Unknown-Charset?B?gqA=?="
-"Subject: =?*Unknown-Charset?B?gqA=?==?*Unknown-Charset?B?gqA=?="
+"Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
 'quoted-encoded-word)
 
 (decode
@@ -1024,22 +1037,22 @@
 
 (decode
 "Subject: a =?Unknown-Charset?B?gqA=?= b"
-"Subject: a =?*Unknown-Charset?B?gqA=?= b"
+"Subject: a =?+Unknown-Charset?B?gqA=?= b"
 'quoted-encoded-word)
 
 (decode
 "Subject: =?ISO-2022-JP?B?DQoNCg==?="
-"Subject: =?*US-ASCII?Q?=0D=0A=0D=0A?="
+"Subject: =?+US-ASCII?Q?=0D=0A=0D=0A?="
 'quoted-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?Q?a=0D=0A_b?="
-"Subject: a=?*US-ASCII?Q?=0D=0A?= b"
+"Subject: a=?+US-ASCII?Q?=0D=0A?= b"
 'quoted-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?Q?a=0D=0Ab?="
-"Subject: a=?*US-ASCII?Q?=0D=0A?=b"
+"Subject: a=?+US-ASCII?Q?=0D=0A?=b"
 'quoted-encoded-word)
 
 ;;;end-test;;;
