@@ -5,34 +5,17 @@ Especialy ew-line.el, ew-scan-m.el, ew-scan-s.el and ew-scan-u.el that
 are require 'lex.
 (lex is scanner generator.)
 
-* Multiline field-bodies fetched from XOVER is already concatinated,
-you should set ew-ignore-76bytes-limit to true.
-Currentry Gnus use these variables to decode and "Subject" and "From",
-tell it here. Unless doing it, DOODLE does not decode atoms in phrase
-because DOODLE cannot decide whether an atom is in phrase or not without
-field name information.
+* Multiline field-bodies fetched from XOVER is already unfolded,
+so special care is needed for gnus-structured-field-decoder and
+gnus-unstructured-field-decoder.
 
-(setq gnus-structured-field-decoder
-   (lambda (string)
-     (if (fboundp 'ew-decode-field)
-         (let ((ew-ignore-76bytes-limit t))
-           (ew-cut-cr-lf
-             (ew-decode-field "From" (ew-lf-crlf-to-crlf string))))
-       (eword-decode-and-unfold-structured-field string))))
+(autoload 'ew-gnus-structured-field-decoder "ew-compat")
+(setq gnus-structured-field-decoder 'ew-gnus-structured-field-decoder)
 
-(setq gnus-unstructured-field-decoder
-   (lambda (string)
-     (if (fboundp 'ew-decode-field)
-         (let ((ew-ignore-76bytes-limit t))
-           (ew-cut-cr-lf
-             (ew-decode-field "Subject" (ew-lf-crlf-to-crlf string))))
-       (eword-decode-unstructured-field-body
-         (std11-unfold-string string) 'must-unfold))))
+(autoload 'ew-gnus-unstructured-field-decoder "ew-compat")
+(setq gnus-unstructured-field-decoder 'ew-gnus-unstructured-field-decoder)
 
 * Ignore warnings about args-eword-* when byte-compiling.
-
-* If you have a problem with ew-ccl-b or other CCL based coding-system,
-set ew-bq-use-mel to t.
 
 * If you want to modify load-path or other variables when
 byte-compiling without editing files, set EVALARGS environment variable.

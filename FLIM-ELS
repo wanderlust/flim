@@ -26,6 +26,7 @@
                      ew-scan-n
                      ew-dec
 		     eword-decode eword-encode
+                     ew-compat
 		     mime mime-parse mmbuffer mmcooked
 		     mailcap
                      ))
