@@ -1,3 +1,7 @@
 To use starttls, get next package.
 
 http://www.ueda.info.waseda.ac.jp/~ueno/tmp/starttls-0.1.tar.gz
+
+To use DL modules(md5 and sha1), get next package.
+
+ftp://opaopa.org/pub/elisp/hmac-0.2.tar.gz

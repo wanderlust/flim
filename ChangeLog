@@ -1,3 +1,11 @@
+1999-10-20  Kenichi OKADA <okada@opaopa.org>
+
+	* SLIM: Version 1.13.1 released.
+
+1999-10-20  Kenichi OKADA <okada@opaopa.org>
+
+	* SLIM-TIPS: Add comment.
+
 1999-10-21  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-via-smtp): Add autoload for
