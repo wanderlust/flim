@@ -15,4 +15,8 @@
     (setq flim-modules (cons 'mel-b-dl flim-modules))
   )
 
+(if (featurep 'mule)
+    (setq flim-modules (cons 'mel-ccl flim-modules))
+  )
+
 ;;; FLIM-ELS ends here

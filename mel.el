@@ -70,10 +70,13 @@
 (mel-use-module 'mel-g '("x-gzip64"))
 (mel-use-module 'mel-u '("x-uue" "x-uuencode"))
 
+(if (featurep 'mule)
+    (mel-use-module 'mel-ccl '("base64" "quoted-printable" "B" "Q"))
+  )
+
 (if base64-dl-module
     (mel-use-module 'mel-b-dl '("base64" "B"))
   )
-
 
 (mel-define-method-function (mime-encode-string string (nil "7bit"))
 			    'identity)
