@@ -1,13 +1,13 @@
-;;; mel-b-el.el: Base64 encoder/decoder for GNU Emacs
+;;; mel-b-el.el --- Base64 encoder/decoder.
 
-;; Copyright (C) 1992,1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1992,1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
-;;         MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;         MORIOKA Tomohiko <tomo@m17n.org>
 ;; Created: 1995/6/24
 ;; Keywords: MIME, Base64
 
-;; This file is part of MEL (MIME Encoding Library).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -20,13 +20,12 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; along with this program; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Code:
 
-(require 'poe)
 (require 'mime-def)
 
 
@@ -72,6 +71,26 @@ external decoder is called."
 		 (integer :tag "Size")))
 
 
+;;; @ utility function
+;;;
+
+(defun pack-sequence (seq size)
+  "Split sequence SEQ into SIZE elements packs, and return list of packs.
+\[mel-b-el; tl-seq function]"
+  (let ((len (length seq))
+	(p 0)
+	dest unit)
+    (while (< p len)
+      (setq unit (cons (elt seq p) unit))
+      (setq p (1+ p))
+      (when (zerop (mod p size))
+	(setq dest (cons (nreverse unit) dest))
+	(setq unit nil)))
+    (if unit
+	(nreverse (cons (nreverse unit) dest))
+      (nreverse dest))))
+
+
 ;;; @ internal base64 encoder
 ;;;	based on base64 decoder by Enami Tsugutomo
 
@@ -84,33 +103,31 @@ external decoder is called."
   `(aref base64-characters ,n))
 
 (defun base64-encode-1 (pack)
-  (let ((a (car pack))
-	(b (nth 1 pack))
-	(c (nth 2 pack)))
-    (concat
-     (char-to-string (base64-num-to-char (ash a -2)))
-     (if b
-	 (concat
-	  (char-to-string
-	   (base64-num-to-char (logior (ash (logand a 3) 4) (ash b -4))))
-	  (if c
-	      (concat
-	       (char-to-string
-		(base64-num-to-char (logior (ash (logand b 15) 2) (ash c -6))))
-	       (char-to-string (base64-num-to-char (logand c 63)))
-	       )
-	    (concat (char-to-string
-		     (base64-num-to-char (ash (logand b 15) 2))) "=")
-	    ))
-       (concat (char-to-string
-		(base64-num-to-char (ash (logand a 3) 4))) "==")
-       ))))
+  (let ((buf (make-string 4 ?=)))
+    (aset buf 0 (base64-num-to-char (ash (car pack) -2)))
+    (if (nth 1 pack)
+	(progn
+	  (aset buf 1 (base64-num-to-char
+		       (logior (ash (logand (car pack) 3) 4)
+			       (ash (nth 1 pack) -4))))
+	  (if (nth 2 pack)
+	      (progn
+		(aset buf 2 (base64-num-to-char
+			     (logior (ash (logand (nth 1 pack) 15) 2)
+				     (ash (nth 2 pack) -6))))
+		(aset buf 3 (base64-num-to-char
+			     (logand (nth 2 pack) 63))))
+	    (aset buf 2 (base64-num-to-char
+			 (ash (logand (nth 1 pack) 15) 2)))))
+      (aset buf 1 (base64-num-to-char
+		   (ash (logand (car pack) 3) 4))))
+    buf))
 
 (defun-maybe base64-encode-string (string)
   "Encode STRING to base64, and return the result."
-  (let ((len (length string))
-	(b 0)(e 57)
-	dest)
+  (let* ((len (length string))
+	 (b 0)(e 57)
+	 (dest ""))
     (while (< e len)
       (setq dest
 	    (concat dest
@@ -120,32 +137,23 @@ external decoder is called."
 		     "")
 		    "\n"))
       (setq b e
-	    e (+ e 57)
-	    )
-      )
-    (let* ((es (mapconcat
-		(function base64-encode-1)
-		(pack-sequence (substring string b) 3)
-		""))
-	   (m (mod (length es) 4))
-	   )
-      (concat dest es (cond ((= m 3) "=")
-			    ((= m 2) "==")
-			    ))
-      )))
+	    e (+ e 57)))
+    (concat dest
+	    (mapconcat
+	     (function base64-encode-1)
+	     (pack-sequence (substring string b) 3)
+	     ""))))
 
 (defun base64-internal-encode-region (beg end)
   (save-excursion
     (save-restriction
       (narrow-to-region beg end)
-      (let ((str (buffer-substring beg end)))
-	(delete-region beg end)
-	(insert (base64-encode-string str))
-	)
-      (or (bolp)
-	  (insert "\n")
-	  )
-      )))
+      (insert
+       (prog1
+	   (base64-encode-string
+	    (buffer-substring beg end))
+	 (delete-region beg end)))
+      (or (bolp) (insert ?\n)))))
 
 
 ;;; @ internal base64 decoder
@@ -166,8 +174,7 @@ external decoder is called."
 
 (defsubst base64-internal-decode (string buffer)
   (let* ((len (length string))
-	 (i 0)
-	 (j 0)
+	 (i 0)(j 0)
 	 v1 v2 v3)
     (catch 'tag
       (while (< i len)
@@ -187,12 +194,9 @@ external decoder is called."
 		(if v4
 		    (aset buffer (prog1 j (setq j (1+ j)))
 			  (logior (lsh (logand v3 3) 6) v4))
-		  (throw 'tag nil)
-		  ))
-	    (throw 'tag nil)
-	    ))))
-    (substring buffer 0 j)
-    ))
+		  (throw 'tag nil)))
+	    (throw 'tag nil)))))
+    (substring buffer 0 j)))
 
 (defun base64-internal-decode-string (string)
   (base64-internal-decode string (make-string (length string) 0)))
@@ -204,9 +208,10 @@ external decoder is called."
 (defun base64-internal-decode-region (beg end)
   (save-excursion
     (let ((str (string-as-unibyte (buffer-substring beg end))))
-      (delete-region beg end)
-      (goto-char beg)
-      (insert (base64-internal-decode str str)))))
+      (insert
+       (prog1
+	   (base64-internal-decode str str)
+	 (delete-region beg end))))))
 
 ;; (defun base64-internal-decode-region2 (beg end)
 ;;   (save-excursion
@@ -233,30 +238,30 @@ external decoder is called."
       (as-binary-process
        (apply (function call-process-region)
 	      beg end (car base64-external-encoder)
-	      t t nil (cdr base64-external-encoder)))
+	      t t nil
+	      (cdr base64-external-encoder)))
       ;; for OS/2
       ;;   regularize line break code
       (goto-char (point-min))
       (while (re-search-forward "\r$" nil t)
-	(replace-match ""))
-      )))
+	(replace-match "")))))
 
 (defun base64-external-decode-region (beg end)
   (save-excursion
     (as-binary-process
      (apply (function call-process-region)
 	    beg end (car base64-external-decoder)
-	    t t nil (cdr base64-external-decoder)))
-    ))
+	    t t nil
+	    (cdr base64-external-decoder)))))
 
 (defun base64-external-decode-string (string)
   (with-temp-buffer
     (insert string)
     (as-binary-process
      (apply (function call-process-region)
-	    (point-min) (point-max)
-	    (car base64-external-decoder)
-	    t t nil (cdr base64-external-decoder)))
+	    (point-min)(point-max) (car base64-external-decoder)
+	    t t nil
+	    (cdr base64-external-decoder)))
     (buffer-string)))
 
 
@@ -271,7 +276,7 @@ smaller than `base64-internal-encoding-limit', otherwise it calls
 external base64 encoder specified by `base64-external-encoder'.  In
 this case, you must install the program (maybe mmencode included in
 metamail or XEmacs package)."
-  (interactive "r")
+  (interactive "*r")
   (if (and base64-internal-encoding-limit
 	   (> (- end start) base64-internal-encoding-limit))
       (base64-external-encode-region start end)
@@ -285,7 +290,7 @@ smaller than `base64-internal-decoding-limit', otherwise it calls
 external base64 decoder specified by `base64-external-decoder'.  In
 this case, you must install the program (maybe mmencode included in
 metamail or XEmacs package)."
-  (interactive "r")
+  (interactive "*r")
   (if (and base64-internal-decoding-limit
 	   (> (- end start) base64-internal-decoding-limit))
       (base64-external-decode-region start end)
@@ -298,7 +303,6 @@ smaller than `base64-internal-decoding-limit', otherwise it calls
 external base64 decoder specified by `base64-external-decoder'.  In
 this case, you must install the program (maybe mmencode included in
 metamail or XEmacs package)."
-  (interactive "r")
   (if (and base64-internal-decoding-limit
 	   (> (length string) base64-internal-decoding-limit))
       (base64-external-decode-string string)
@@ -318,8 +322,9 @@ metamail or XEmacs package)."
 			    'base64-encode-string)
 
 (mel-define-method encoded-text-decode-string (string (nil "B"))
-  (if (and (string-match B-encoded-text-regexp string)
-	   (string= string (match-string 0 string)))
+  (if (string-match (eval-when-compile
+		      (concat "\\`" B-encoded-text-regexp "\\'"))
+		    string)
       (base64-decode-string string)
     (error "Invalid encoded-text %s" string)))
 
@@ -328,21 +333,21 @@ metamail or XEmacs package)."
 It calls external base64 encoder specified by
 `base64-external-encoder'.  So you must install the program (maybe
 mmencode included in metamail or XEmacs package)."
-  (interactive (list (read-file-name "Insert encoded file: ")))
+  (interactive "*fInsert encoded file: ")
   (if (and base64-internal-encoding-limit
 	   (> (nth 7 (file-attributes filename))
 	      base64-internal-encoding-limit))
-      (apply (function call-process) (car base64-external-encoder)
-	     filename t nil (cdr base64-external-encoder))
+      (apply (function call-process)
+	     (car base64-external-encoder)
+	     filename t nil
+	     (cdr base64-external-encoder))
     (insert
      (base64-encode-string
       (with-temp-buffer
 	(set-buffer-multibyte nil)
 	(insert-file-contents-as-binary filename)
 	(buffer-string))))
-    (or (bolp)
-	(insert "\n"))
-     ))
+    (or (bolp) (insert ?\n))))
 
 (mel-define-method-function (mime-insert-encoded-file filename (nil "base64"))
 			    'base64-insert-encoded-file)
@@ -350,9 +355,7 @@ mmencode included in metamail or XEmacs package)."
 (defun base64-write-decoded-region (start end filename)
   "Decode and write current region encoded by base64 into FILENAME.
 START and END are buffer positions."
-  (interactive
-   (list (region-beginning) (region-end)
-	 (read-file-name "Write decoded region to file: ")))
+  (interactive "*r\nFWrite decoded region to file: ")
   (if (and base64-internal-decoding-limit
 	   (> (- end start) base64-internal-decoding-limit))
       (as-binary-process
@@ -365,42 +368,13 @@ START and END are buffer positions."
     (let ((str (buffer-substring start end)))
       (with-temp-buffer
 	(insert (base64-internal-decode-string str))
-	(write-region-as-binary (point-min) (point-max) filename)
-	))))
+	(write-region-as-binary (point-min) (point-max) filename)))))
 
 (mel-define-method-function
  (mime-write-decoded-region start end filename (nil "base64"))
  'base64-write-decoded-region)
 
        
-;;; @ etc
-;;;
-
-(defun pack-sequence (seq size)
-  "Split sequence SEQ into SIZE elements packs,
-and return list of packs. [mel-b-el; tl-seq function]"
-  (let ((len (length seq)) (p 0) obj
-	unit (i 0)
-	dest)
-    (while (< p len)
-      (setq obj (elt seq p))
-      (setq unit (cons obj unit))
-      (setq i (1+ i))
-      (if (= i size)
-	  (progn
-	    (setq dest (cons (reverse unit) dest))
-	    (setq unit nil)
-	    (setq i 0)
-	    ))
-      (setq p (1+ p))
-      )
-    (if unit
-	(setq dest (cons (reverse unit) dest))
-      )
-    (reverse dest)
-    ))
-
-
 ;;; @ end
 ;;;
 

@@ -32,11 +32,11 @@
 
 ;;; Code:
 
-(require 'std11)
-(require 'mel)
 (require 'mime-def)
+(require 'mel)
+(require 'std11)
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl))	; list*, pop
 
 (defgroup eword-decode nil
   "Encoded-word decoding"

@@ -1,15 +1,15 @@
-;;; mel-g.el: Gzip64 encoder/decoder for GNU Emacs
+;;; mel-g.el --- Gzip64 encoder/decoder.
 
 ;; Copyright (C) 1995,1996,1997,1998 MORIOKA Tomohiko
-;; Copyright (C) 1996,1997 Shuhei KOBAYASHI
+;; Copyright (C) 1996,1997,1999 Shuhei KOBAYASHI
 
-;; Author: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;;	modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;; Maintainer: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
+;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;;         MORIOKA Tomohiko <tomo@m17n.org>
+;; Maintainer: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Created: 1995/10/25
 ;; Keywords: Gzip64, base64, gzip, MIME
 
-;; This file is part of MEL (MIME Encoding Library).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -22,7 +22,7 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; along with this program; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
@@ -33,9 +33,8 @@
 
 ;;; Code:
 
-(require 'poem)
+(require 'mime-def)
 (require 'path-util)
-(require 'mel)
 
 
 ;;; @ variables
@@ -44,15 +43,13 @@
 (defvar gzip64-external-encoder
   (let ((file (exec-installed-p "mmencode")))
     (and file
-	 (` ("sh" "-c" (, (concat "gzip -c | " file))))
-	 ))
+	 (` ("sh" "-c" (, (concat "gzip -c | " file))))))
   "*list of gzip64 encoder program name and its arguments.")
 
 (defvar gzip64-external-decoder
   (let ((file (exec-installed-p "mmencode")))
     (and file
-	 (` ("sh" "-c" (, (concat file " -u | gzip -dc"))))
-	 ))
+	 (` ("sh" "-c" (, (concat file " -u | gzip -dc"))))))
   "*list of gzip64 decoder program name and its arguments.")
 
 
@@ -62,26 +59,25 @@
 (defun gzip64-external-encode-region (beg end)
   (interactive "*r")
   (save-excursion
-    (as-binary-process (apply (function call-process-region)
-			      beg end (car gzip64-external-encoder)
-			      t t nil (cdr gzip64-external-encoder))
-		       )
+    (as-binary-process
+     (apply (function call-process-region)
+	    beg end (car gzip64-external-encoder)
+	    t t nil
+	    (cdr gzip64-external-encoder)))
     ;; for OS/2
     ;;   regularize line break code
     (goto-char (point-min))
     (while (re-search-forward "\r$" nil t)
-      (replace-match "")
-      )
-    ))
+      (replace-match ""))))
 
 (defun gzip64-external-decode-region (beg end)
   (interactive "*r")
   (save-excursion
-    (as-binary-process (apply (function call-process-region)
-			      beg end (car gzip64-external-decoder)
-			      t t nil (cdr gzip64-external-decoder))
-		       )
-    ))
+    (as-binary-process
+     (apply (function call-process-region)
+	    beg end (car gzip64-external-decoder)
+	    t t nil
+	    (cdr gzip64-external-decoder)))))
 
 (mel-define-method-function (mime-encode-region start end (nil "x-gzip64"))
 			    'gzip64-external-encode-region)
@@ -109,27 +105,24 @@
 ;;;
 
 (mel-define-method mime-insert-encoded-file (filename (nil "x-gzip64"))
-  (interactive (list (read-file-name "Insert encoded file: ")))
-  (apply (function call-process) (car gzip64-external-encoder)
+  (interactive "*fInsert encoded file: ")
+  (apply (function call-process)
+	 (car gzip64-external-encoder)
 	 filename t nil
-	 (cdr gzip64-external-encoder))
-  )
+	 (cdr gzip64-external-encoder)))
 
 (mel-define-method mime-write-decoded-region (start end filename
 						    (nil "x-gzip64"))
   "Decode and write current region encoded by gzip64 into FILENAME.
 START and END are buffer positions."
-  (interactive
-   (list (region-beginning) (region-end)
-	 (read-file-name "Write decoded region to file: ")))
+  (interactive "*r\nFWrite decoded region to file: ")
   (as-binary-process
    (apply (function call-process-region)
 	  start end (car gzip64-external-decoder)
 	  nil nil nil
 	  (let ((args (cdr gzip64-external-decoder)))
 	    (append (butlast args)
-		    (list (concat (car (last args)) ">" filename))))
-	  )))
+		    (list (concat (car (last args)) ">" filename)))))))
 
 
 ;;; @ end

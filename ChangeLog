@@ -52,10 +52,6 @@
 
 1999-05-25  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* README.ja (install): Fixed
-
-1999-05-25  MORIOKA Tomohiko  <tomo@m17n.org>
-
 	* mmbuffer.el (mime-entity-body-end-point): New method.
 	(mime-goto-header-start-point): New method.
 	(mime-goto-body-start-point): New method.
@@ -64,11 +60,6 @@
 	* mime.el (mime-goto-body-end-point): New generic function.
 
 	* mel.el (Q-encoded-text-length): Fixed.
-
-1999-05-25  Yoshiki Hayashi  <g740685@komaba.ecc.u-tokyo.ac.jp>
-
-	* README.ja: Sync up with the latest README.en of flim-1_12
-	branch.
 
 1999-05-24  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -268,6 +259,181 @@
 1999-05-14  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* luna.el: New module.
+
+
+1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* FLIM: Version 1.12.7 (Y-Dþzaki)-A released.
+
+1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime-en.sgml (Network representation of header): Translate.
+
+1999-05-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mel-b-el.el (pack-sequence): Eliminate local variable `i'.
+	(base64-encode-1): Avoid concat.
+	(base64-encode-string): Fixed last change; extra padding.
+
+1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* smtpmail.el (smtpmail-default-smtp-server): Define obsolete
+	variable alias for XEmacs.
+	(smtpmail-smtp-server): Likewise.
+	(smtpmail-smtp-service): Likewise.
+	(smtpmail-local-domain): Likewise.
+	(smtpmail-debug-info): Likewise.
+	(smtpmail-send-it): Check function `expand-mail-aliases' is
+	defined.
+
+1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* smtp.el (smtp-debug-info): Now a user option.
+
+1999-05-25  Yoshiki Hayashi  <g740685@komaba.ecc.u-tokyo.ac.jp>
+
+	* README.ja: Modify URL and required version of APEL.
+
+1999-05-24  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* mel-b-ccl.el (base64-encode-string): New alias.
+	(base64-encode-region): Ditto.
+	(base64-decode-string): Ditto.
+	(base64-decode-region): Ditto.
+
+1999-05-24  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* mel-b-ccl.el, mel-q-ccl.el: Sync up with doodle-1.12.5.
+
+1999-05-24  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* eword-encode.el (ew-space-process): Renamed from
+	`tm-eword::space-process'.
+
+1999-05-24  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* eword-encode.el (tm-eword::space-process): Don't concatenate
+	`special's.
+	(ew-encode-rword-1): Renamed from `tm-eword::encode-string-1'; add
+	new optional argument `must-output'; return nil if it can't encode
+	literally.
+	(eword-encode-rword-list): Fold SPACE or TAB in the encoded string
+	if `ew-encode-rword-1' can't encode literally and it is possible
+	to encode the rest literally with the folding.
+	(eword-encode-phrase-to-rword-list): Add `special' flag to
+	brackets of comments.
+
+1999-05-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* smtpmail.el: Require 'poe and 'pcustom.
+
+1999-05-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mel.el: Update header.
+	Require 'path-util and don't require 'poem.
+	(mel-use-module): Eliminate local variable `encoding'.
+	(mime-insert-encoded-file for mel-b-builtin):
+	Use built-in `interactive' spec.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+	(mime-encode-region): Capitalize prompt string.
+	(mime-decode-region): Ditto.
+	(mime-insert-encoded-file): Ditto.
+	(mime-write-decoded-region): Ditto.
+
+	* mel-b-ccl.el: Update header.
+	(base64-ccl-encode-region): Use read-only `interactive' spec.
+	(base64-ccl-decode-region): Ditto.
+	(base64-ccl-insert-encoded-file): Use built-in `interactive' spec.
+	(base64-ccl-write-decoded-region): Ditto.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+
+	* mel-b-dl.el: Update header.
+	Don't require 'poe; it is required implicitly via 'mime-def.
+	(base64-dl-handle): Chech whether `base64-dl-module' is string.
+	Defalias `base64-encode-string' and `base64-decode-string' just
+	after `dynamic-call'ing "emacs_base64_init".
+	(base64-encode-region): Use read-only `interactive' spec.
+	Use `base64-encode-string'.
+	Changed order of evaluation to "encode, delete, then insert".
+	(base64-decode-region): Renamed from `decode-base64-region'.
+	Use read-only `interactive' spec.
+	Use `base64-decode-string'.
+	Changed order of evaluation to "decode, delete, then insert".
+	(mime-encode-string): Use `base64-encode-string'.
+	(mime-decode-string): Use `base64-decode-string'.
+	(mime-decode-region): Use `base64-decode-region'.
+	(encoded-text-encode-string): Use `base64-encode-string'.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+	(mime-insert-encoded-file): Use built-in `interactive' spec.
+	(mime-write-decoded-region in comment): Ditto.
+
+	* mel-b-el.el: Update header.
+	Don't require 'poe; it is required implicitly via 'mime-def.
+	(pack-sequence): Moved to top of the function definitions.
+	(base64-encode-string): Calculate padding first.
+	(base64-internal-encode-region): Changed order of evaluation to
+	"encode, delete, then insert".
+	(base64-internal-decode-string): Changed order of evaluation to
+	"decode, delete, then insert".
+	(base64-encode-region): Use read-only `interactive' spec.
+	(base64-decode-region): Ditto.
+	(base64-decode-string): Not interactive.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+	(base64-insert-encoded-file): Use built-in `interactive' spec.
+	(base64-write-decoded-region): Ditto.
+
+	* mel-g.el: Update header.
+	Require 'mime-def instead of 'poem and 'mel.
+	(mime-insert-encoded-file): Use built-in `interactive' spec.
+	(mime-write-decoded-region): Ditto.
+
+	* mel-q-ccl.el: Update header.
+	(quoted-printable-ccl-encode-region):
+	Use read-only `interactive' spec.
+	(quoted-printable-ccl-decode-region): Ditto.
+	(quoted-printable-ccl-insert-encoded-file):
+	Use built-in `interactive' spec.
+	(quoted-printable-ccl-write-decoded-region): Ditto.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+
+	* mel-q.el: Update header.
+	Require 'path-util instead of 'emu.
+	(quoted-printable-internal-encode-region): Rewrite without regexp.
+	(quoted-printable-internal-decode-region): Ditto.
+	(quoted-printable-encode-region): Use read-only `interactive' spec.
+	(quoted-printable-decode-region): Ditto.
+	(mime-insert-encoded-file): Use built-in `interactive' spec.
+	(mime-write-decoded-region): Ditto.
+	(encoded-text-decode-string): Anchor regexp with "\\`" and "\\'".
+
+	* mel-u.el: Update header.
+	Require 'path-util instead of 'emu.
+	(mime-insert-encoded-file): Use built-in `interactive' spec.
+	(mime-write-decoded-region): Ditto.
+
+1999-05-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-def.el: Require 'poe, 'poem, and 'pcustom.
+	(mime): Declare `default-mime-charset' as an initial member.
+
+	* mime-parse.el: Don't require 'cl at compile-time.
+
+	* mailcap.el (mailcap-look-at-qchar): Use `char-after'.
+
+	* std11.el: Require 'poe, 'poem, and 'pcustom.
+
+	* smtp.el: Update header.
+	Require 'poe, 'poem, and 'pcustom.
+	Require 'cl at compile-time.
+
+1999-05-21  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* README.en (Installation): Modify URL and required version of
+	APEL.
+
+	* eword-encode.el (ew-find-charset-rule): Renamed from
+	`tm-eword::find-charset-rule'; use
+	`find-mime-charset-by-charsets'.
 
 
 1999-05-11  MORIOKA Tomohiko  <tomo@m17n.org>
