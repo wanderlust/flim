@@ -1,3 +1,16 @@
+2000-11-04   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-make-instantiator): Define as function.
+	(sasl-instantiator-name): Ditto.
+	(sasl-instantiator-service): Ditto.
+	(sasl-instantiator-server): Ditto.
+	(sasl-instantiator-set-properties): Ditto.
+	(sasl-instantiator-set-property): Ditto.
+	(sasl-instantiator-property): Ditto.
+	(sasl-instantiator-properties): Ditto.
+	(sasl-authenticator-mechanism): Ditto.
+	(sasl-authenticator-continuations): Ditto.
+
 2000-11-02   Daiki Ueno  <ueno@unixuser.org>
 
 	* sasl.el: Rename `sasl-*principal*' to `sasl-*instantiator*'.

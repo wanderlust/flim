@@ -59,41 +59,40 @@
 ;;; @ SASL instantiator
 ;;;
 
-(defmacro sasl-make-instantiator (name service server)
+(defun sasl-make-instantiator (name service server)
   "Return a newly allocated SASL instantiator.
 NAME is name of the authorization.  SERVICE is name of the service desired.
 SERVER is the fully qualified host name of the server to authenticate to."
-  (let ((props (make-symbol "sasl-instantiator-properties")))
-    `(vector ,name ,service ,server ',props)))
+  (vector name service server (make-symbol "sasl-instantiator-properties")))
 
-(defmacro sasl-instantiator-name (instantiator)
+(defun sasl-instantiator-name (instantiator)
   "Return the authorization name of INSTANTIATOR, a string."
-  `(aref ,instantiator 0))
+  (aref instantiator 0))
 
-(defmacro sasl-instantiator-service (instantiator)
+(defun sasl-instantiator-service (instantiator)
   "Return the service name of INSTANTIATOR, a string."
-  `(aref ,instantiator 1))
+  (aref instantiator 1))
 
-(defmacro sasl-instantiator-server (instantiator)
+(defun sasl-instantiator-server (instantiator)
   "Return the server name of INSTANTIATOR, a string."
-  `(aref ,instantiator 2))
+  (aref instantiator 2))
 
-(defmacro sasl-instantiator-set-properties (instantiator plist)
+(defun sasl-instantiator-set-properties (instantiator plist)
   "Destructively set the properties of INSTANTIATOR.
 The second argument PLIST is the new property list."
-  `(setplist (aref ,instantiator 3) ,plist))
+  (setplist (aref instantiator 3) plist))
 
-(defmacro sasl-instantiator-set-property (instantiator property value)
+(defun sasl-instantiator-set-property (instantiator property value)
   "Add the given property/value to INSTANTIATOR."
-  `(put (aref ,instantiator 3) ,property ,value))
+  (put (aref instantiator 3) property value))
 
-(defmacro sasl-instantiator-property (instantiator property)
+(defun sasl-instantiator-property (instantiator property)
   "Return the value of the PROPERTY of INSTANTIATOR."
-  `(get (aref ,instantiator 3) ,property))
+  (get (aref instantiator 3) property))
 
-(defmacro sasl-instantiator-properties (instantiator)
+(defun sasl-instantiator-properties (instantiator)
   "Return the properties of INSTANTIATOR."
-  `(symbol-plist (aref ,instantiator 3)))
+  (symbol-plist (aref instantiator 3)))
 
 ;;; @ SASL authenticator
 ;;;
@@ -110,13 +109,13 @@ CONTINUATIONS is list of continuation function."
 	       symbol))
 	   continuations)))
 
-(defmacro sasl-authenticator-mechanism (authenticator)
+(defun sasl-authenticator-mechanism (authenticator)
   "Return name of the mechanism AUTHENTICATOR supports, a string."
-  `(aref ,authenticator 0))
+  (aref authenticator 0))
 
-(defmacro sasl-authenticator-continuations (authenticator)
+(defun sasl-authenticator-continuations (authenticator)
   "Return continuation steps of AUTHENTICATOR, a list of functions."
-  `(aref ,authenticator 1))
+  (aref authenticator 1))
 
 (defun sasl-find-authenticator (mechanisms)
   "Retrieve an apropriate authenticator object from MECHANISMS hints."
