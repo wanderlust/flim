@@ -1,5 +1,7 @@
 1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* FLIM: Version 1.10.2 (Kintetsu-Miyazu) was released.
+
 	* mime-def.el, mel.el, mel-b-dl.el: Move variable
 	`base64-dl-module' from mel-b-dl.el and mel.el to mime-def.el.
 
