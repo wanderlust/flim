@@ -1,3 +1,7 @@
+1999-07-27  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmdbuffer.el: New module.
+
 1999-07-28  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mime-parse.el: Add autoload setting for
