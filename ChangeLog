@@ -1,3 +1,78 @@
+1998-10-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* std11.el (std11-unfold-string): New implementation.
+
+1998-10-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el: New module.
+
+	* mmbuffer.el: Use `generic' as mother backend.
+
+	* FLIM-ELS (flim-modules): Add mmgeneric.
+
+1998-10-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-parse.el (mime-parse-message): Modify for
+	`make-mime-entity-internal'.
+
+	* mime-def.el (make-mime-entity-internal): Change interface to be
+	able to specify original-header and parsed-header.
+
+1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-and-unfold-unstructured-field):
+	New function.
+
+1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-entity-content-type): New implementation.
+	(mime-entity-content-disposition): New implementation.
+	(mime-entity-encoding): New implementation.
+
+	* mime.el (mime-fetch-field): Refer internal slots for Date,
+	Message-Id and References fields.
+
+	* mime-parse.el (mime-parse-message): Modify for
+	`make-mime-entity-internal'.
+
+	* mime-def.el: Change `mime-entity-*-internal' and
+	`mime-entity-set-*-internal' to macro.
+	(make-mime-entity-internal): Change interface and data format for
+	NOV data; changed to macro.
+	(mime-entity-set-location-internal): New macro.
+	(mime-entity-decoded-subject-internal): New macro.
+	(mime-entity-set-decoded-subject-internal): New macro.
+	(mime-entity-decoded-from-internal): New macro.
+	(mime-entity-set-decoded-from-internal): New macro.
+	(mime-entity-date-internal): New macro.
+	(mime-entity-set-date-internal): New macro.
+	(mime-entity-message-id-internal): New macro.
+	(mime-entity-set-message-id-internal): New macro.
+	(mime-entity-references-internal): New macro.
+	(mime-entity-set-references-internal): New macro.
+	(mime-entity-chars-internal): New macro.
+	(mime-entity-set-chars-internal): New macro.
+	(mime-entity-lines-internal): New macro.
+	(mime-entity-set-lines-internal): New macro.
+	(mime-entity-xref-internal): New macro.
+	(mime-entity-set-xref-internal): New macro.
+	(mime-entity-original-header-internal): Modify for new structure;
+	changed to macro.
+	(mime-entity-set-original-header-internal): Likewise.
+	(mime-entity-parsed-header-internal): Likewise.
+	(mime-entity-set-parsed-header-internal): Likewise.
+	(mime-entity-buffer-internal): Likewise.
+	(mime-entity-set-buffer-internal): Likewise.
+	(mime-entity-header-start-internal): Likewise.
+	(mime-entity-set-header-start-internal): Likewise.
+	(mime-entity-header-end-internal): Likewise.
+	(mime-entity-set-header-end-internal): Likewise.
+	(mime-entity-body-start-internal): Likewise.
+	(mime-entity-set-body-start-internal): Likewise.
+	(mime-entity-body-end-internal): Likewise.
+	(mime-entity-set-body-end-internal): Likewise.
+
+
 1998-10-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.10.5 (Kizugawadai) was released.
