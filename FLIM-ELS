@@ -6,16 +6,18 @@
 
 (setq flim-modules '(std11
 		     mime-def
-		     mel mel-b-el mel-q mel-u mel-g
+		     mel mel-q mel-u mel-g
 		     eword-decode eword-encode
 		     mime mime-parse mmgeneric mmbuffer mmcooked
 		     mailcap))
 
-(or (and (fboundp 'base64-encode-string)
-	 (subrp (symbol-function 'base64-encode-string)))
-    (if (fboundp 'dynamic-link)
-	(setq flim-modules (cons 'mel-b-dl flim-modules))
-      ))
+(unless (and (fboundp 'base64-encode-string)
+	     (subrp (symbol-function 'base64-encode-string)))
+  (if (fboundp 'dynamic-link)
+      (setq flim-modules (cons 'mel-b-dl flim-modules))
+    )
+  (setq flim-modules (cons 'mel-b-el flim-modules))
+  )
 
 (if (and (featurep 'mule)
 	 (not (or (and (boundp 'MULE) MULE)
