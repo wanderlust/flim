@@ -18,8 +18,8 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; along with this program; see the file COPYING.  If not, write to
+;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
@@ -42,9 +42,22 @@
 
 ;;; Code:
 
+(require 'poe)
+(require 'pcustom)
 (require 'smtp)
 (require 'sendmail)
 (require 'time-stamp)
+
+(eval-when-compile (require 'static))
+
+(static-when (featurep 'xemacs)
+  (define-obsolete-variable-alias 'smtpmail-default-smtp-server
+    'smtp-default-server)
+  (define-obsolete-variable-alias 'smtpmail-smtp-server 'smtp-server)
+  (define-obsolete-variable-alias 'smtpmail-smtp-service 'smtp-service)
+  (define-obsolete-variable-alias 'smtpmail-local-domain 'smtp-local-domain)
+  (define-obsolete-variable-alias 'smtpmail-debug-info 'smtp-debug-info)
+  )
 
 ;;;
 
@@ -102,7 +115,7 @@ This is relative to `smtpmail-queue-dir'.")
 	  (backward-char 1)
 	  (setq delimline (point-marker))
 ;;	  (sendmail-synch-aliases)
-	  (if mail-aliases
+	  (if (and mail-aliases (fboundp 'expand-mail-aliases)) ; XEmacs
 	      (expand-mail-aliases (point-min) delimline))
 	  (goto-char (point-min))
 	  ;; ignore any blank lines in the header

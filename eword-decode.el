@@ -32,14 +32,14 @@
 
 ;;; Code:
 
-(require 'std11)
-(require 'mel)
 (require 'mime-def)
+(require 'mel)
+(require 'std11)
 
 (require 'ew-dec)
 (require 'ew-line)
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl))	; list*, pop
 
 (defgroup eword-decode nil
   "Encoded-word decoding"
@@ -65,7 +65,7 @@
 	      mime-charset-regexp
 	      "\\)"
 	      (regexp-quote "?")
-	      "\\(B\\|Q\\)"
+	      "\\([BbQq]\\)"
 	      (regexp-quote "?")
 	      "\\("
 	      eword-encoded-text-regexp

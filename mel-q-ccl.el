@@ -1,5 +1,4 @@
-;;; mel-ccl.el: CCL based encoder/decoder of Quoted-Printable
-;;;             and Q-encoding
+;;; mel-q-ccl.el --- Quoted-Printable encoder/decoder using CCL.
 
 ;; Copyright (C) 1998 Tanaka Akira
 
@@ -20,7 +19,7 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; along with this program; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
@@ -237,6 +236,8 @@ abcdefghijklmnopqrstuvwxyz\
 
 (eval-when-compile
 
+(defvar eof-block-branches)
+(defvar eof-block-reg)
 (defun mel-ccl-set-eof-block (branch)
   (let ((p (assoc branch eof-block-branches)))
     (unless p
@@ -244,6 +245,9 @@ abcdefghijklmnopqrstuvwxyz\
 	    eof-block-branches (cons p eof-block-branches)))
     `(,eof-block-reg = ,(cdr p))))
 
+)
+
+(eval-when-compile
 
 (defun mel-ccl-try-to-read-crlf (input-crlf reg
 					    succ
@@ -262,6 +266,10 @@ abcdefghijklmnopqrstuvwxyz\
       (read-if (,reg == ?\n)
 	,succ
 	,crlf-fail))))
+
+)
+
+(eval-when-compile
 
 ;; Generated CCL program works not properly on 20.2 because CCL_EOF_BLOCK
 ;; is not executed.
@@ -884,12 +892,12 @@ abcdefghijklmnopqrstuvwxyz\
 
   (defun quoted-printable-ccl-encode-region (start end)
     "Encode the region from START to END with quoted-printable encoding."
-    (interactive "r")
+    (interactive "*r")
     (decode-coding-region start end 'mel-ccl-quoted-printable-lf-lf-rev))
 
   (defun quoted-printable-ccl-insert-encoded-file (filename)
     "Encode contents of the file named as FILENAME, and insert it."
-    (interactive (list (read-file-name "Insert encoded file: ")))
+    (interactive "*fInsert encoded file: ")
     (insert-file-contents-as-coding-system
      'mel-ccl-quoted-printable-lf-lf-rev filename))
 
@@ -913,15 +921,12 @@ abcdefghijklmnopqrstuvwxyz\
 (defun quoted-printable-ccl-decode-region (start end)
   "Decode the region from START to END with quoted-printable
 encoding."
-  (interactive "r")
+  (interactive "*r")
   (encode-coding-region start end 'mel-ccl-quoted-printable-lf-lf-rev))
 
-(defun quoted-printable-ccl-write-decoded-region
-  (start end filename)
+(defun quoted-printable-ccl-write-decoded-region (start end filename)
   "Decode quoted-printable encoded current region and write out to FILENAME."
-  (interactive
-   (list (region-beginning) (region-end)
-         (read-file-name "Write decoded region to file: ")))
+  (interactive "*r\nFWrite decoded region to file: ")
   (write-region-as-coding-system 'mel-ccl-quoted-printable-lf-lf-rev
 				 start end filename))
 
@@ -959,7 +964,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 (unless (featurep 'xemacs)
   (defun q-encoding-ccl-encoded-length (string &optional mode)
     (let ((status [nil nil nil nil nil nil nil nil nil]))
-      (fillarray status nil)
+      (fillarray status nil)		; XXX: Is this necessary?
       (ccl-execute-on-string
        (cond
 	((eq mode 'text) 'mel-ccl-count-uq)
@@ -974,8 +979,9 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 			    'q-encoding-ccl-encode-string)
 
 (mel-define-method encoded-text-decode-string (string (nil "Q"))
-  (if (and (string-match Q-encoded-text-regexp string)
-	   (string= string (match-string 0 string)))
+  (if (string-match (eval-when-compile
+		      (concat "\\`" Q-encoded-text-regexp "\\'"))
+		    string)
       (q-encoding-ccl-decode-string string)
     (error "Invalid encoded-text %s" string)))
 
@@ -985,4 +991,4 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 
 (provide 'mel-q-ccl)
 
-;;; mel-q-ccl.el ends here
+;;; mel-q-ccl.el ends here.

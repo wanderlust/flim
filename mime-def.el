@@ -24,10 +24,16 @@
 
 ;;; Code:
 
+(require 'poe)
+(require 'poem)
+(require 'pcustom)
 (require 'mcharset)
+(require 'alist)
+
+(eval-when-compile (require 'cl))	; list*
 
 (eval-and-compile
-  (defconst mime-library-product ["FLAM-DOODLE" (1 12 5) "鳶 10R4.0/7.0"]
+  (defconst mime-library-product ["FLAM-DOODLE" (1 12 6) "蒲 10R4.0/5.0"]
     "Product name, version number and code name of MIME-library package.")
   )
 
@@ -51,17 +57,10 @@
 ;;; @ variables
 ;;;
 
-(require 'custom)
-
-(eval-when-compile (require 'cl))
-
-(defgroup mime nil
+(defgroup mime '((default-mime-charset custom-variable))
   "Emacs MIME Interfaces"
   :group 'news
   :group 'mail)
-
-(custom-handle-keyword 'default-mime-charset :group 'mime
-		       'custom-variable)
 
 (defcustom mime-uuencode-encoding-name-list '("x-uue" "x-uuencode")
   "*List of encoding names for uuencode format."
@@ -87,7 +86,7 @@
   (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
   (defconst std11-qtext-regexp
     (eval-when-compile
-      (concat "[^" (apply #'string std11-non-qtext-char-list) "]"))))
+      (concat "[^" std11-non-qtext-char-list "]"))))
 (defconst std11-quoted-string-regexp
   (eval-when-compile
     (concat "\""
@@ -99,8 +98,9 @@
 ;;; @ about MIME
 ;;;
 
-(defconst mime-tspecial-char-list
-  '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=))
+(eval-and-compile
+  (defconst mime-tspecial-char-list
+    '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=)))
 (defconst mime-token-regexp
   (eval-when-compile
     (concat "[^" mime-tspecial-char-list "\000-\040]+")))
@@ -357,8 +357,6 @@ message/rfc822, `mime-entity' structures of them are included in
 ;;; @ for mm-backend
 ;;;
 
-(require 'alist)
-
 (defvar mime-entity-implementation-alist nil)
 
 (defmacro mm-define-backend (type &optional parents)
@@ -443,7 +441,7 @@ If ARGS is specified, NAME is defined as a generic function for the
 service."
   `(progn
      (add-to-list 'mel-service-list ',name)
-     (defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
+     (defvar ,(intern (format "%s-obarray" name)) (make-vector 7 0))
      ,@(if args
 	   `((defun ,name ,args
 	       ,@rest

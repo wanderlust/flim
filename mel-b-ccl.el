@@ -1,4 +1,4 @@
-;;; mel-b-ccl.el: CCL based encoder/decoder of Base64
+;;; mel-b-ccl.el --- Base64 encoder/decoder using CCL.
 
 ;; Copyright (C) 1998 Tanaka Akira
 
@@ -19,7 +19,7 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; along with this program; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
@@ -104,6 +104,10 @@ abcdefghijklmnopqrstuvwxyz\
    (lsh (logand v (lsh 255 16)) -16)
    (logand v (lsh 255 8))
    (lsh (logand v 255) 16)))
+
+)
+
+(eval-when-compile
 
 (defconst mel-ccl-decode-b-0-table
   (vconcat
@@ -402,17 +406,19 @@ abcdefghijklmnopqrstuvwxyz\
     (if no-line-break
 	(decode-coding-string string 'mel-ccl-b-rev)
       (decode-coding-string string 'mel-ccl-base64-lf-rev)))
+  (defalias-maybe 'base64-encode-string 'base64-ccl-encode-string)
 
   (defun base64-ccl-encode-region (start end &optional no-line-break)
     "Encode region from START to END with base64 encoding."
-    (interactive "r")
+    (interactive "*r")
     (if no-line-break
 	(decode-coding-region start end 'mel-ccl-b-rev)
       (decode-coding-region start end 'mel-ccl-base64-lf-rev)))
+  (defalias-maybe 'base64-encode-region 'base64-ccl-encode-region)
 
   (defun base64-ccl-insert-encoded-file (filename)
     "Encode contents of file FILENAME to base64, and insert the result."
-    (interactive (list (read-file-name "Insert encoded file: ")))
+    (interactive "*fInsert encoded file: ")
     (insert-file-contents-as-coding-system 'mel-ccl-base64-lf-rev filename))
 
   (mel-define-method-function (mime-encode-string string (nil "base64"))
@@ -430,17 +436,17 @@ abcdefghijklmnopqrstuvwxyz\
 (defun base64-ccl-decode-string (string)
   "Decode base64 encoded STRING"
   (encode-coding-string string 'mel-ccl-b-rev))
+(defalias-maybe 'base64-decode-string 'base64-ccl-decode-string)
 
 (defun base64-ccl-decode-region (start end)
   "Decode base64 encoded the region from START to END."
-  (interactive "r")
+  (interactive "*r")
   (encode-coding-region start end 'mel-ccl-b-rev))
+(defalias-maybe 'base64-decode-region 'base64-ccl-decode-region)
 
 (defun base64-ccl-write-decoded-region (start end filename)
   "Decode the region from START to END and write out to FILENAME."
-  (interactive
-    (list (region-beginning) (region-end)
-          (read-file-name "Write decoded region to file: ")))
+  (interactive "*r\nFWrite decoded region to file: ")
   (write-region-as-coding-system 'mel-ccl-b-rev start end filename))
 
 (mel-define-method-function (mime-decode-string string (nil "base64"))
@@ -452,8 +458,9 @@ abcdefghijklmnopqrstuvwxyz\
  'base64-ccl-write-decoded-region)
 
 (mel-define-method encoded-text-decode-string (string (nil "B"))
-  (if (and (string-match B-encoded-text-regexp string)
-	   (string= string (match-string 0 string)))
+  (if (string-match (eval-when-compile
+		      (concat "\\`" B-encoded-text-regexp "\\'"))
+		    string)
       (base64-ccl-decode-string string)
     (error "Invalid encoded-text %s" string)))
 
@@ -463,4 +470,4 @@ abcdefghijklmnopqrstuvwxyz\
 
 (provide 'mel-b-ccl)
 
-;;; mel-b-ccl.el ends here
+;;; mel-b-ccl.el ends here.

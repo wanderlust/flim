@@ -1,6 +1,6 @@
-;;; mel.el : a MIME encoding/decoding library
+;;; mel.el --- A MIME encoding/decoding library.
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Created: 1995/6/25
@@ -19,14 +19,14 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; along with this program; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Code:
 
 (require 'mime-def)
-(require 'poem)
+(require 'path-util)
 
 (defcustom mime-encoding-list
   '("7bit" "8bit" "binary" "base64" "quoted-printable")
@@ -59,17 +59,15 @@ Content-Transfer-Encoding for it."
 
 (defun mime-encoding-alist (&optional service)
   "Return table of Content-Transfer-Encoding for completion."
-  (mapcar #'list (mime-encoding-list service))
-  )
+  (mapcar #'list (mime-encoding-list service)))
 
 (defsubst mel-use-module (name encodings)
-  (let (encoding)
-    (while (setq encoding (car encodings))
-      (set-alist 'mel-encoding-module-alist
-		 encoding
-		 (cons name (cdr (assoc encoding mel-encoding-module-alist))))
-      (setq encodings (cdr encodings))
-      )))
+  (while encodings
+    (set-alist 'mel-encoding-module-alist
+	       (car encodings)
+	       (cons name (cdr (assoc (car encodings)
+				      mel-encoding-module-alist))))
+    (setq encodings (cdr encodings))))
 
 (defsubst mel-find-function (service encoding)
   (mel-find-function-from-obarray
@@ -115,21 +113,20 @@ Content-Transfer-Encoding for it."
 It calls external base64 encoder specified by
 `base64-external-encoder'.  So you must install the program (maybe
 mmencode included in metamail or XEmacs package)."
-    (interactive (list (read-file-name "Insert encoded file: ")))
+    (interactive "*fInsert encoded file: ")
     (insert (base64-encode-string
 	     (with-temp-buffer
 	       (set-buffer-multibyte nil)
 	       (insert-file-contents-as-binary filename)
 	       (buffer-string))))
-    (or (bolp)
-	(insert "\n"))
-    )
+    (or (bolp) (insert ?\n)))
     
   (mel-define-method-function (encoded-text-encode-string string (nil "B"))
 			      'base64-encode-string)
   (mel-define-method encoded-text-decode-string (string (nil "B"))
-    (if (and (string-match B-encoded-text-regexp string)
-	     (string= string (match-string 0 string)))
+    (if (string-match (eval-when-compile
+			(concat "\\`" B-encoded-text-regexp "\\'"))
+		      string)
 	(base64-decode-string string)
       (error "Invalid encoded-text %s" string)))
   )
@@ -143,27 +140,22 @@ mmencode included in metamail or XEmacs package)."
   (and (featurep 'mule)
        (progn
 	 (require 'path-util)
-	 (module-installed-p 'mel-b-ccl)
-	 )))
+	 (module-installed-p 'mel-b-ccl))))
 
 (defvar mel-q-ccl-module
   (and (featurep 'mule)
        (progn
 	 (require 'path-util)
-	 (module-installed-p 'mel-q-ccl)
-	 )))
+	 (module-installed-p 'mel-q-ccl))))
 
-(if mel-b-ccl-module
-    (mel-use-module 'mel-b-ccl '("base64" "B"))
-  )
+(when mel-b-ccl-module
+  (mel-use-module 'mel-b-ccl '("base64" "B")))
 
-(if mel-q-ccl-module
-    (mel-use-module 'mel-q-ccl '("quoted-printable" "Q"))
-  )
+(when mel-q-ccl-module
+  (mel-use-module 'mel-q-ccl '("quoted-printable" "Q")))
 
-(if base64-dl-module
-    (mel-use-module 'mel-b-dl '("base64" "B"))
-  )
+(when base64-dl-module
+  (mel-use-module 'mel-b-dl '("base64" "B")))
 
 
 ;;; @ region
@@ -174,12 +166,11 @@ mmencode included in metamail or XEmacs package)."
   "Encode region START to END of current buffer using ENCODING.
 ENCODING must be string."
   (interactive
-   (list (region-beginning) (region-end)
-	 (completing-read "encoding: "
+   (list (region-beginning)(region-end)
+	 (completing-read "Encoding: "
 			  (mime-encoding-alist)
 			  nil t "base64")))
-  (funcall (mel-find-function 'mime-encode-region encoding) start end)
-  )
+  (funcall (mel-find-function 'mime-encode-region encoding) start end))
 
 
 ;;;###autoload
@@ -187,8 +178,8 @@ ENCODING must be string."
   "Decode region START to END of current buffer using ENCODING.
 ENCODING must be string."
   (interactive
-   (list (region-beginning) (region-end)
-	 (completing-read "encoding: "
+   (list (region-beginning)(region-end)
+	 (completing-read "Encoding: "
 			  (mime-encoding-alist 'mime-decode-region)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-decode-region encoding)
@@ -204,33 +195,29 @@ ENCODING must be string."
 ENCODING must be string.  If ENCODING is found in
 `mime-string-decoding-method-alist' as its key, this function decodes
 the STRING by its value."
-  (let ((fun (mel-find-function 'mime-decode-string encoding)))
-    (if fun
-	(funcall (mel-find-function 'mime-decode-string encoding)
-		 string)
+  (let ((f (mel-find-function 'mime-decode-string encoding)))
+    (if f
+	(funcall f string)
       string)))
 
+
 (mel-define-service encoded-text-encode-string (string encoding)
-  "Encode STRING as encoded-text using ENCODING.
-ENCODING must be string.")
+  "Encode STRING as encoded-text using ENCODING.  ENCODING must be string.")
 
 (mel-define-service encoded-text-decode-string (string encoding)
-  "Decode STRING as encoded-text using ENCODING.
-ENCODING must be string.")
+  "Decode STRING as encoded-text using ENCODING.  ENCODING must be string.")
 
 (defun base64-encoded-length (string)
   (* (/ (+ (length string) 2) 3) 4))
 
 (defsubst Q-encoding-printable-char-p (chr mode)
   (and (not (memq chr '(?= ?? ?_)))
-       (<= ?\   chr)(<= chr ?~)
+       (<= ?\  chr)(<= chr ?~)
        (cond ((eq mode 'text) t)
 	     ((eq mode 'comment)
-	      (not (memq chr '(?\( ?\) ?\\)))
-	      )
+	      (not (memq chr '(?\( ?\) ?\\))))
 	     (t
-	      (string-match "[A-Za-z0-9!*+/=_---]" (char-to-string chr))
-	      ))))
+	      (string-match "[A-Za-z0-9!*+/=_---]" (char-to-string chr))))))
 
 (defun Q-encoded-text-length (string &optional mode)
   (let ((l 0)(i 0)(len (length string)) chr)
@@ -238,9 +225,8 @@ ENCODING must be string.")
       (setq chr (elt string i))
       (if (Q-encoding-printable-char-p chr mode)
 	  (setq l (+ l 1))
-	(setq l (+ l 3))
-	)
-      (setq i (+ i 1)) )
+	(setq l (+ l 3)))
+      (setq i (+ i 1)))
     l))
 
 
@@ -252,7 +238,7 @@ ENCODING must be string.")
   "Insert file FILENAME encoded by ENCODING format."
   (interactive
    (list (read-file-name "Insert encoded file: ")
-	 (completing-read "encoding: "
+	 (completing-read "Encoding: "
 			  (mime-encoding-alist)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-insert-encoded-file encoding)
@@ -264,9 +250,9 @@ ENCODING must be string.")
   "Decode and write current region encoded by ENCODING into FILENAME.
 START and END are buffer positions."
   (interactive
-   (list (region-beginning) (region-end)
+   (list (region-beginning)(region-end)
 	 (read-file-name "Write decoded region to file: ")
-	 (completing-read "encoding: "
+	 (completing-read "Encoding: "
 			  (mime-encoding-alist 'mime-write-decoded-region)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-write-decoded-region encoding)

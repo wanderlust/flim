@@ -60,12 +60,12 @@ FLIM $B$O(B entity $B$N>pJs$rI=8=$9$k$?$a$K(B<concept>mime-entity</concept> 
 <defun name="mime-open-entity">
 	  <opts> type location
 <p>
-Open an entity and return it.
+Entity $B$r3+$$$F!"$=$l$rJV$7$^$9!#(B
 <p>
-<var>type</var> is representation-type. <cf node="mm-backend">
+<var>type</var> $B$O(B representation-type $B$G$9!#(B <cf node="mm-backend">
 <p>
-<var>location</var> is location of entity.  Specification of it is
-depended on representation-type.
+<var>location</var> $B$O(B entity $B$N0LCV$G$9!#;XDjJ}K!$O(B
+representation-type $B$K0M$C$FJQ$o$j$^$9!#(B
 </defun>
 
 <defun name="mime-parse-buffer">
@@ -176,28 +176,29 @@ buffer local $BJQ?t!#(B
 <defun name="mime-find-entity-from-number">
 	    <args> entity-number <opts> message
 <p>
-Return entity from <var>entity-number</var> in <var>message</var>.
+<var>message</var> $B$+$i!"(B<var>enity-number</var> $B$N(B entity $B$rJV$7$^$9!#(B
 <p>
-If <var>message</var> is not specified,
-<code>mime-message-structure</code> is used.
+<var>message</var> $B$,;XDj$5$l$F$$$J$$>l9g$O!"(B
+<code>mime-message-structrue</code> $B$,;H$o$l$^$9!#(B
 </defun>
 
 <defun name="mime-find-entity-from-node-id">
 	    <args> entity-node-id <opts> message
 <p>
-Return entity from <var>entity-node-id</var> in <var>message</var>.
+<var>message</var> $B$+$i!"(B<var>entity-node-id</var> $B$N(B entity $B$rJV$7$^(B
+$B$9!#(B
 <p>
-If <var>message</var> is not specified,
-<code>mime-message-structure</code> is used.
+<var>message</var> $B$,;XDj$5$l$F$$$J$$>l9g$O!"(B
+<code>mime-message-structure</code> $B$,;H$o$l$^$9!#(B
 </defun>
 
 <defun name="mime-find-entity-from-content-id">
 	    <args> cid <opts> message
 <p>
-Return entity from <var>cid</var> in <var>message</var>.
+<var>message</var> $B$+$i!"(B<var>cid</var> $B$N(B entity $B$rJV$7$^$9!#(B
 <p>
-If <var>message</var> is not specified,
-<code>mime-message-structure</code> is used.
+<var>message</var> $B$,;XDj$5$l$F$$$J$$>l9g$O!"(B
+<code>mime-message-structure</code> $B$,;H$o$l$^$9!#(B
 </defun>
 
 
@@ -238,8 +239,8 @@ node="Content-Transfer-Encoding">
 <defun name="mime-entity-cooked-p">
 	    <args> entity
 <p>
-Return non-nil if contents of <var>entity</var> has been already
-code-converted.
+<var>entity</var> $B$NFbMF$,4{$K%3!<%IJQ49$5$l$F$$$k>l9g$O(B nil $B$GL5$$CM(B
+$B$rJV$9!#(B
 </defun>
 
 
@@ -300,12 +301,11 @@ list $B$G!"$=$l$>$l!"I=<($7$?$/$J$$(B field $BL>$HI=<($7$?$$MsL>$rI=8=$7$?$b$
 <defun name="mime-insert-text-content">
 	    <args> entity
 <p>
-Insert before point a contents of <var>entity</var> as text entity.
+point $B$NA0$K(B <var>entity</var> $B$r(B text entity $B$H$7$FA^F~$7$^$9!#(B
 <p>
-Contents of the <var>entity</var> are decoded as <dref>MIME
-charset</dref>.  If the <var>entity</var> does not have charset
-parameter of Content-Type field, <code>default-mime-charset</code> is
-used as default value.
+<var>entity</var> $B$NFbMF$O(B <dref>MIMe charset</dref> $B$H$7$FI|9f2=$5$l(B
+$B$^$9!#(B<var>entity</var> $B$N(B Content-Type field $B$K(B charset paramter $B$,L5(B
+$B$$$H!"(B<code>default-mime-charset</code> $B$,=i4|CM$H$7$F;H$o$l$^$9!#(B
 </defun>
 
 <defvar name="default-mime-charset">
@@ -329,13 +329,13 @@ MIME charset.
 <defun name="mime-insert-entity-content">
 	    <args> entity
 <p>
-Insert content of <var>entity</var> at point.
+pointo $B$N0LCV$K(B <var>entity</var> $B$NFbMF$rA^F~$7$^$9!#(B
 </defun>
 
 <defun name="mime-write-entity-content">
 	    <args> entity filename
 <p>
-Write content of <var>entity</var> into <var>filename</var>.
+<var>entity</var> $B$NFbMF$r(B <var>filename</var> $B$K=q$-9~$_$^$9!#(B
 </defun>
 
 
@@ -345,19 +345,19 @@ Write content of <var>entity</var> into <var>filename</var>.
 <defun name="mime-insert-entity">
 	    <args> entity
 <p>
-Insert header and body of <var>entity</var> at point.
+<var>entity</var> $B$N(B header $B$H(B body $B$r(B point $B$N$H$3$m$KA^F~$7$^$9!#(B
 </defun>
 
 <defun name="mime-write-entity">
 	    <args> entity filename
 <p>
-Write representation of <var>entity</var> into <var>filename</var>.
+<var>entity</var> $B$NI=8=$r(B <var>filename</var> $B$K=q$-9~$_$^$9!#(B
 </defun>
 
 <defun name="mime-write-entity-body">
 	    <args> entity filename
 <p>
-Write body of <var>entity</var> into <var>filename</var>.
+<var>entity</var> $B$N(B body $B$r(B <var>filename</var> $B$K=q$-9~$_$^$9!#(B
 </defun>
 
 
@@ -456,12 +456,13 @@ representation-type $B$NL>A0$N@hF,$K(B <code>mm</code> $B$rIU$1$?$b$N$K$J$C$F
 <args> type
 <opts> parents
 <p>
-Define <var>type</var> as a mm-backend.
+<var>type</var> $B$r(B mm-backend $B$H$7$FDj5A$7$^$9!#(B
 <p>
-If <var>PARENTS</var> is specified, <var>type</var> inherits parents.
-Each parent must be representation-type.
+<var>PARENTS</var> $B$,;XDj$5$l$F$$$k>l9g$O!"(B<var>type</var> $B$O(B prents
+$B$r7Q>5$7$^$9!#$=$l$>$l$N(B parent $B$O(B representation-type $B$G$"$kI,MW$,$"(B
+$B$j$^$9!#(B
 <p>
-Example:
+$BNc(B:
 <p>
 <lisp>
 (mm-define-backend chao (generic))
@@ -471,15 +472,15 @@ Example:
 <defmacro name="mm-define-method">
 <args> name args <rest> body
 <p>
-Define <var>name</var> as a method function of (nth 1 (car
-<var>args</var>)) backend.
+<var>name</var> $B$r(B (nth 1 (car <var>args</var>)) backend $B$N(B method $B4X(B
+$B?t$H$7$FDj5A$7$^$9!#(B
 <p>
-<var>args</var> is like an argument list of lambda, but (car
-<var>args</var>) must be specialized parameter.  (car (car
-<var>args</var>)) is name of variable and (nth 1 (car
-<var>args</var>)) is name of backend (representation-type).
+<var>args</var> $B$O(B lambda $B$N0z?t%j%9%H$N$h$&$J$b$N$G$9$,!"(B(car
+<var>args</var>) $B$O;XDj$5$l$?(B parameter $B$G$"$kI,MW$,$"$j$^$9!#(B(car
+(car <var>args</var>)) $B$OJQ?t$NL>A0$G!"(B(nth 1 (car <var>args</var>))
+$B$O(B backend $B$NL>A0(B (representation-type) $B$G$9!#(B
 <p>
-Example:
+$BNc(B:
 <p>
 <lisp>
 (mm-define-method entity-cooked-p ((entity chao)) nil)
@@ -724,15 +725,15 @@ Content-Transfer-Encoding $BMs$,B8:_$7$J$$>l9g$O(B
 <defun name="mime-encode-region">
 	    <args> start end encoding
 <p>
-Encode region <var>start</var> to <var>end</var> of current buffer
-using <var>encoding</var>.
+$B8=:_$N(B buffer $B$N(B <var>start</var> $B$+$i(B <var>end</var> $B$^$G$N(B region $B$r(B
+<var>encoding</var> $B$r;H$C$FId9f2=$7$^$9!#(B
 </defun>
 
 <defun name="mime-decode-region">
 	    <args> start end encoding
 <p>
-Decode region <var>start</var> to <var>end</var> of current buffer
-using <var>encoding</var>.
+$B8=:_$N(B buffer $B$N(B <var>start</var> $B$+$i(B <var>end</var> $B$^$G$N(B region $B$r(B
+<var>encoding</var> $B$r;H$C$FI|9f2=$7$^$9!#(B
 </defun>
 
 
@@ -746,56 +747,57 @@ using <var>encoding</var>.
 <defun name="mime-insert-encoded-file">
 	    <args> filename encoding
 <p>
-Insert file <var>FILENAME</var> encoded by <var>ENCODING</var> format.
+<var>ENCODING</var> format $B$GId9f2=$5$l$?(B file <var>FILENAME</var> $B$r(B
+$BA^F~$9$k!#(B
 </defun>
 
 <defun name="mime-write-decoded-region">
 	      <args> start end filename encoding
 <p>
-Decode and write current region encoded by <var>encoding</var> into
-<var>filename</var>.
+<var>encoding</var> $B$GId9f2=$5$l$?8=:_$N(B region $B$rI|9f2=$7$F(B
+<var>filename</var>$B$K=q$-9~$_$^$9!#(B
 <p>
-<var>start</var> and <var>end</var> are buffer positions.
+<var>start<var> $B$H(B <var>end</var> $B$O(B buffer $B$N0LCV$G$9!#(B
 </defun>
 
 
-<h2> Other utilities
+<h2> $BB>$N(B utility
 <node> Encoding information
 <p>
 <defun name="mime-encoding-list">
 	    <opts> SERVICE
 <p>
-Return list of Content-Transfer-Encoding.
+Content-Transfer-Encoding $B$N(B list $B$rJV$7$^$9!#(B
 <p>
-If <var>service</var> is specified, it returns available list of
-Content-Transfer-Encoding for it.
+<var>service</var> $B$,;XDj$5$l$F$$$k$H!"$=$l$KBP$9$k(B
+Content-Transfer-Encoding $B$rJV$7$^$9!#(B
 </defun>
 
 <defun name="mime-encoding-alist">
 	    <opts> SERVICE
 <p>
-Return table of Content-Transfer-Encoding for completion.
+$BJd40$N$?$a$N(B Content-Transfer-Encoding $B$NI=$rJV$7$^$9!#(B
 <p>
-If <var>service</var> is specified, it returns available list of
-Content-Transfer-Encoding for it.
+<var>service</var> $B$,;XDj$5$l$F$$$k>l9g$O$=$l$KBP$9$k(B
+Content-Transfer-Encoding $B$N(B list $B$rJV$7$^$9!#(B
 </defun>
 
 
-<h2> How to write encoder/decoder module
+<h2> $BId9f2=(B/$BI|9f2=(B module $B$N=q$-J}(B
 <node> mel-backend
 <p>
 <defmacro name="mel-define-method">
 <args> name args <rest> body
 <p>
-Define <var>name</var> as a method function of (nth 1 (car (last
-<var>args</var>))) backend.
+<var>name</var> $B$r(B (nth 1 (car (last <var>args</var>))) backend $B$N(B
+method $B4X?t$H$7$FDj5A$7$^$9!#(B
 <p>
-<var>args</var> is like an argument list of lambda, but (car (last
-<var>args</var>)) must be specialized parameter.  (car (car (last
-<var>args</var>))) is name of variable and (nth 1 (car (last
-<var>args</var>))) is name of backend (encoding).
+<var>args</var> $B$O(B lambda $B$N0z?t(B list $B$H;w$F$$$^$9$,!"(B(car (last
+<var>args</var>)) $B$O;XDj$5$l$?(B parameter $B$G$"$kI,MW$,$"$j$^$9!#(B(car
+(car (last <var>args</var>))) $B$OJQ?t$NL>A0$G!"(B(nth 1 (car (last
+<var>args</var>))) $B$O(B backend $B$NL>A0(B (encoding) $B$G$9!#(B
 <p>
-Example:
+$BNc(B:
 <p>
 <lisp>
 (mel-define-method mime-write-decoded-region (start end filename
@@ -816,16 +818,16 @@ START and END are buffer positions."
 <defmacro name="mel-define-method-function">
 <args> spec function
 <p>
-Set <var>spec</var>'s function definition to <var>function</var>.
+<var>spec</var> $B$N4X?tDj5A$r(B <var>function</var> $B$K@_Dj$7$^$9!#(B
 <p>
-First element of <var>spec</var> is service.
+<var>spec</var> $B$N:G=i$NMWAG$O(B service $B$G$9!#(B
 <p>
-Rest of <var>args</var> is like an argument list of lambda, but (car
-(last <var>args</var>)) must be specialized parameter.  (car (car
-(last <var>args</var>))) is name of variable and (nth 1 (car (last
-<var>args</var>))) is name of backend (encoding).
+<var>args</var> $B$N;D$j$O(B lambda $B$N0z?t(B list $B;w$F$$$^$9$,!"(B(car (last
+<var>args</var>)) $B$O;XDj$5$l$?(B parameter $B$G$"$kI,MW$,$"$j$^$9!#(B(car
+(car (last <var>args</var>))) $B$OJQ?t$NL>A0$G!"(B(nth 1 (car (last
+<var>args</var>))) $B$O(B backend $B$NL>A0(B (encoding) $B$G$9!#(B
 <p>
-Example:
+$BNc(B:
 <p>
 <lisp>
 (mel-define-method-function (mime-encode-string string (nil "base64"))
@@ -834,19 +836,20 @@ Example:
 </defmacro>
 
 
-<h2> How to add encoding/decoding service
+<h2> $BId9f2=(B/$BI|9f2=(B service $B$rDI2C$9$kJ}K!(B
 <node> generic function for mel-backend
 <p>
 <defmacro name="mel-define-service">
 <args> name
 <opts> args doc-string
 <p>
-Define <var>name</var> as a service for Content-Transfer-Encodings.
+<var>name</var> $B$r(B Content-Transfer-Encoding $B$N(B service $B$H$7$FDj5A$7$^(B
+$B$9!#(B
 <p>
-If <var>args</var> is specified, <var>name</var> is defined as a
-generic function for the service.
+<var>args</var> $B$,;XDj$5$l$F$$$k$H!"(B<var>name</var> $B$O(B service $B$N(B
+generic function $B$H$7$FDj5A$5$l$^$9!#(B
 <p>
-Example:
+$BNc(B:
 <p>
 <lisp>
 (mel-define-service encoded-text-encode-string (string encoding)
@@ -903,20 +906,19 @@ Header $B$r(B network $BI=8=$KId9f2=$9$k!#(B
 
 <defvar name="eword-field-encoding-method-alist">
 <p>
-Association list to specify field encoding method.  Each element looks
-like (FIELD . METHOD).
+Field $B$rId9f2=$9$kJ}K!$r;XDj$9$kO"A[(B list$B!#3F(B element $B$O(B (FIELD
+. METHOD) $B$NMM$K$J$C$F$$$k!#(B
 <p>
-If METHOD is <code>mime</code>, the FIELD will be encoded into MIME
-format (encoded-word).
+METHOD $B$,(B <code>mime</code> $B$G$"$l$P!"(BFIELD $B$O(B MIME format $B$KId9f2=$5(B
+$B$l$k(B (encoded-word)$B!#(B
 <p>
-If METHOD is <code>nil</code>, the FIELD will not be encoded.
+METHOD $B$,(B <code>nil</code> $B$G$"$l$P!"(BFIELD $B$OId9f2=$5$l$J$$!#(B
 <p>
-If METHOD is a MIME charset, the FIELD will be encoded as the charset
-when it must be convert into network-code.
+METHOD $B$,(B MIME charset $B$G$"$l$P!"(BFIELD $B$O%M%C%H%o!<%/%3!<%I$KJQ49$7$J(B
+$B$1$l$P$J$i$J$$$H$-$K(B charset $B$KId9f2=$5$l$k!#(B
 <p>
-Otherwise the FIELD will be encoded as variable
-<code>default-mime-charset</code> when it must be convert into
-network-code.
+$B$=$&$G$J$1$l$P!"(BFIELD $B$O%M%C%H%o!<%/%3!<%I$KJQ49$7$J$1$l$P$J$i$J$$$H$-(B
+$B$K(B $BJQ?t(B <code>default-mime-charset</code> $B$GId9f2=$5$l$k(B
 </defvar>
 
 

@@ -16,9 +16,7 @@
       (add-to-list 'load-path (expand-file-name "apel" LISPDIR))
       ))
 
-(defvar VERSION_SPECIFIC_LISPDIR nil)
-
-(if VERSION_SPECIFIC_LISPDIR
+(if (boundp 'VERSION_SPECIFIC_LISPDIR)
     (add-to-list 'load-path VERSION_SPECIFIC_LISPDIR))
 
 (require 'install)
@@ -54,6 +52,10 @@
 (defvar LISPDIR (install-detect-elisp-directory PREFIX))
 ;; (setq install-default-elisp-directory "~/lib/emacs/lisp")
 
+(defvar VERSION_SPECIFIC_LISPDIR
+  (install-detect-elisp-directory PREFIX nil 'version-specific))
+
+;; (setq FLIM_DIR (expand-file-name FLIM_PREFIX VERSION_SPECIFIC_LISPDIR))
 (setq FLIM_DIR (expand-file-name FLIM_PREFIX LISPDIR))
 
 (defvar PACKAGEDIR

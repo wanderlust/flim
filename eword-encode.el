@@ -24,10 +24,9 @@
 
 ;;; Code:
 
-(require 'emu)
+(require 'mime-def)
 (require 'mel)
 (require 'std11)
-(require 'mime-def)
 (require 'eword-decode)
 
 
@@ -83,6 +82,7 @@ If method is nil, this field will not be encoded."
     (cn-gb		. "B")
     (cn-gb-2312		. "B")
     (euc-kr		. "B")
+    (tis-620		. "B")
     (iso-2022-jp-2	. "B")
     (iso-2022-int-1	. "B")
     (utf-8		. "B")
@@ -183,30 +183,31 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 (defmacro ew-rword-type (rword)
   (` (car (cdr (cdr (cdr (, rword)))))))
 
-(defun tm-eword::find-charset-rule (charsets)
+(defun ew-find-charset-rule (charsets)
   (if charsets
-      (let* ((charset (charsets-to-mime-charset charsets))
-	     (encoding (cdr (assq charset eword-charset-encoding-alist)))
-	     )
+      (let* ((charset (find-mime-charset-by-charsets charsets))
+	     (encoding (cdr (or (assq charset eword-charset-encoding-alist)
+				'(nil . "Q")))))
 	(list charset encoding)
 	)))
 
 (defun tm-eword::words-to-ruled-words (wl &optional mode)
   (mapcar (function
 	   (lambda (word)
-	     (let ((ret (tm-eword::find-charset-rule (car word))))
+	     (let ((ret (ew-find-charset-rule (car word))))
 	       (make-ew-rword (cdr word) (car ret)(nth 1 ret) mode)
 	       )))
 	  wl))
 
-(defun tm-eword::space-process (seq)
+(defun ew-space-process (seq)
   (let (prev a ac b c cc)
     (while seq
       (setq b (car seq))
       (setq seq (cdr seq))
       (setq c (car seq))
       (setq cc (ew-rword-charset c))
-      (if (null (ew-rword-charset b))
+      (if (and (null (ew-rword-charset b))
+	       (not (eq (ew-rword-type b) 'special)))
 	  (progn
 	    (setq a (car prev))
 	    (setq ac (ew-rword-charset a))
@@ -235,7 +236,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     ))
 
 (defun eword-encode-split-string (str &optional mode)
-  (tm-eword::space-process
+  (ew-space-process
    (tm-eword::words-to-ruled-words
     (eword-encode-charset-words-to-words
      (eword-encode-divide-into-charset-words str))
@@ -267,71 +268,82 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ encode-string
 ;;;
 
-(defun tm-eword::encode-string-1 (column rwl)
-  (let* ((rword (car rwl))
-	 (ret (tm-eword::encoded-word-length rword))
-	 string len)
-    (if (null ret)
-	(cond ((and (setq string (car rword))
-		    (or (<= (setq len (+ (length string) column)) 76)
-			(<= column 1))
+(defun ew-encode-rword-1 (column rwl &optional must-output)
+  (catch 'can-not-output
+    (let* ((rword (car rwl))
+	   (ret (tm-eword::encoded-word-length rword))
+	   string len)
+      (if (null ret)
+	  (cond ((and (setq string (car rword))
+		      (or (<= (setq len (+ (length string) column)) 76)
+			  (<= column 1))
+		      )
+		 (setq rwl (cdr rwl))
+		 )
+		((memq (aref string 0) '(?  ?\t))
+		 (setq string (concat "\n" string)
+		       len (length string)
+		       rwl (cdr rwl))
+		 )
+		(must-output
+		 (setq string "\n "
+		       len 1)
+		 )
+		(t
+		 (throw 'can-not-output nil)
+		 ))
+	(cond ((and (setq len (car ret))
+		    (<= (+ column len) 76)
 		    )
+	       (setq string
+		     (eword-encode-text
+		      (ew-rword-charset rword)
+		      (ew-rword-encoding rword)
+		      (cdr ret)
+		      (ew-rword-type rword)
+		      ))
+	       (setq len (+ (length string) column))
 	       (setq rwl (cdr rwl))
 	       )
 	      (t
-	       (setq string "\n ")
-	       (setq len 1)
-	       ))
-      (cond ((and (setq len (car ret))
-		  (<= (+ column len) 76)
-		  )
-	     (setq string
-		   (eword-encode-text
-		    (ew-rword-charset rword)
-		    (ew-rword-encoding rword)
-		    (cdr ret)
-		    (ew-rword-type rword)
-		    ))
-	     (setq len (+ (length string) column))
-	     (setq rwl (cdr rwl))
-	     )
-	    (t
-	     (setq string (car rword))
-	     (let* ((p 0) np
-		    (str "") nstr)
-	       (while (and (< p len)
-			   (progn
-			     (setq np (char-next-index (sref string p) p))
-			     (setq nstr (substring string 0 np))
-			     (setq ret (tm-eword::encoded-word-length
-					(cons nstr (cdr rword))
-					))
-			     (setq nstr (cdr ret))
-			     (setq len (+ (car ret) column))
-			     (<= len 76)
-			     ))
-		 (setq str nstr
-		       p np))
-	       (if (string-equal str "")
-		   (setq string "\n "
-			 len 1)
-		 (setq rwl (cons (cons (substring string p) (cdr rword))
-				 (cdr rwl)))
-		 (setq string
-		       (eword-encode-text
-			(ew-rword-charset rword)
-			(ew-rword-encoding rword)
-			str
-			(ew-rword-type rword)))
-		 (setq len (+ (length string) column))
-		 )
-	       )))
-      )
-    (list string len rwl)
-    ))
+	       (setq string (car rword))
+	       (let* ((p 0) np
+		      (str "") nstr)
+		 (while (and (< p len)
+			     (progn
+			       (setq np (char-next-index (sref string p) p))
+			       (setq nstr (substring string 0 np))
+			       (setq ret (tm-eword::encoded-word-length
+					  (cons nstr (cdr rword))
+					  ))
+			       (setq nstr (cdr ret))
+			       (setq len (+ (car ret) column))
+			       (<= len 76)
+			       ))
+		   (setq str nstr
+			 p np))
+		 (if (string-equal str "")
+		     (if must-output
+			 (setq string "\n "
+			       len 1)
+		       (throw 'can-not-output nil))
+		   (setq rwl (cons (cons (substring string p) (cdr rword))
+				   (cdr rwl)))
+		   (setq string
+			 (eword-encode-text
+			  (ew-rword-charset rword)
+			  (ew-rword-encoding rword)
+			  str
+			  (ew-rword-type rword)))
+		   (setq len (+ (length string) column))
+		   )
+		 )))
+	)
+      (list string len rwl)
+      )))
 
 (defun eword-encode-rword-list (column rwl)
-  (let (ret dest ps special str ew-f pew-f)
+  (let (ret dest str ew-f pew-f folded-points)
     (while rwl
       (setq ew-f (nth 2 (car rwl)))
       (if (and pew-f ew-f)
@@ -339,40 +351,34 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		pew-f nil)
 	(setq pew-f ew-f)
 	)
-      (setq ret (tm-eword::encode-string-1 column rwl))
+      (if (null (setq ret (ew-encode-rword-1 column rwl)))
+	  (let ((i (1- (length dest)))
+		c s r-dest r-column)
+	    (catch 'success
+	      (while (catch 'found
+		       (while (>= i 0)
+			 (cond ((memq (setq c (aref dest i)) '(?  ?\t))
+				(if (memq i folded-points)
+				    (throw 'found nil)
+				  (setq folded-points (cons i folded-points))
+				  (throw 'found i))
+				)
+			       ((eq c ?\n)
+				(throw 'found nil)
+				))
+			 (setq i (1- i))))
+		(setq s (substring dest i)
+		      r-column (length s)
+		      r-dest (concat (substring dest 0 i) "\n" s))
+		(when (setq ret (ew-encode-rword-1 r-column rwl))
+		  (setq dest r-dest
+			column r-column)
+		  (throw 'success t)
+		  ))
+	      (setq ret (ew-encode-rword-1 column rwl 'must-output))
+	      )))
       (setq str (car ret))
-      (if (eq (elt str 0) ?\n)
-	  (if (eq special ?\()
-	      (progn
-		(setq dest (concat dest "\n ("))
-		(setq ret (tm-eword::encode-string-1 2 rwl))
-		(setq str (car ret))
-		))
-	(cond ((eq special ? )
-	       (if (string= str "(")
-		   (setq ps t)
-		 (setq dest (concat dest " "))
-		 (setq ps nil)
-		 ))
-	      ((eq special ?\()
-	       (if ps
-		   (progn
-		     (setq dest (concat dest " ("))
-		     (setq ps nil)
-		     )
-		 (setq dest (concat dest "("))
-		 )
-	       )))
-      (cond ((string= str " ")
-	     (setq special ? )
-	     )
-	    ((string= str "(")
-	     (setq special ?\()
-	     )
-	    (t
-	     (setq special nil)
-	     (setq dest (concat dest str))
-	     ))
+      (setq dest (concat dest str))
       (setq column (nth 1 ret)
 	    rwl (nth 2 ret))
       )
@@ -393,7 +399,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	     (setq dest
 		   (append dest
 			   (list
-			    (let ((ret (tm-eword::find-charset-rule
+			    (let ((ret (ew-find-charset-rule
 					(find-non-ascii-charset-string str))))
 			      (make-ew-rword
 			       str (car ret)(nth 1 ret) 'phrase)
@@ -403,13 +409,13 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	    ((eq type 'comment)
 	     (setq dest
 		   (append dest
-			   '(("(" nil nil))
+			   '(("(" nil nil special))
 			   (tm-eword::words-to-ruled-words
 			    (eword-encode-charset-words-to-words
 			     (eword-encode-divide-into-charset-words
 			      (cdr token)))
 			    'comment)
-			   '((")" nil nil))
+			   '((")" nil nil special))
 			   ))
 	     )
 	    (t
@@ -423,7 +429,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	     ))
       (setq phrase (cdr phrase))
       )
-    (tm-eword::space-process dest)
+    (ew-space-process dest)
     ))
 
 (defun eword-encode-addr-seq-to-rword-list (seq)
@@ -524,10 +530,12 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     dest))
 
 (defsubst eword-encode-msg-id-to-rword-list (msg-id)
-  (cons '(" " nil nil)
-	(cons '("<" nil nil)
-	      (nconc (eword-encode-addr-seq-to-rword-list (cdr msg-id))
-		     '((">" nil nil))))))
+  (list
+   (list
+    (concat "<"
+	    (caar (eword-encode-addr-seq-to-rword-list (cdr msg-id)))
+	    ">")
+    nil nil)))
 
 (defsubst eword-encode-in-reply-to-to-rword-list (in-reply-to)
   (let (dest)

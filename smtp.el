@@ -3,8 +3,9 @@
 ;; Copyright (C) 1995, 1996, 1998 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
-;;         Simon Leinen <simon@switch.ch> (ESMTP support)
-;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
+;;	Simon Leinen <simon@switch.ch> (ESMTP support)
+;;	MORIOKA Tomohiko <tomo@m17n.org> (separate smtp.el from smtpmail.el)
+;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: SMTP, mail
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -20,13 +21,18 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; along with this program; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Code:
 
-(require 'mail-utils) ; pick up mail-strip-quoted-names
+(require 'poe)
+(require 'poem)
+(require 'pcustom)
+(require 'mail-utils)			; mail-strip-quoted-names
+
+(eval-when-compile (require 'cl))	; push
 
 (defgroup smtp nil
   "SMTP protocol for sending mail."
@@ -38,8 +44,10 @@
   :group 'smtp)
 
 (defcustom smtp-server (or (getenv "SMTPSERVER") smtp-default-server)
-  "*The name of the host running SMTP server."
-  :type '(choice (const nil) string)
+  "*The name of the host running SMTP server.  It can also be a function
+called from `smtp-via-smtp' with arguments SENDER and RECIPIENTS."
+  :type '(choice (string :tag "Name")
+		 (function :tag "Function"))
   :group 'smtp)
 
 (defcustom smtp-service "smtp"
@@ -60,7 +68,11 @@ don't define this value."
   :type '(choice (const nil) string)
   :group 'smtp)
 
-(defvar smtp-debug-info nil)
+(defcustom smtp-debug-info nil
+  "*smtp debug info printout. messages and process buffer."
+  :type 'boolean
+  :group 'smtp)
+
 (defvar smtp-read-point nil)
 
 (defun smtp-make-fqdn ()
@@ -75,11 +87,14 @@ don't define this value."
       (error "Cannot generate valid FQDN. Set `smtp-local-domain' correctly.")))))
 
 (defun smtp-via-smtp (sender recipients smtp-text-buffer)
-  (let (process response extensions)
+  (let ((server (if (functionp smtp-server)
+		    (funcall smtp-server sender recipients)
+		  smtp-server))
+	process response extensions)
     (save-excursion
       (set-buffer
        (get-buffer-create
-	(format "*trace of SMTP session to %s*" smtp-server)))
+	(format "*trace of SMTP session to %s*" server)))
       (erase-buffer)
       (make-local-variable 'smtp-read-point)
       (setq smtp-read-point (point-min))
@@ -87,7 +102,7 @@ don't define this value."
       (unwind-protect
 	  (catch 'done
 	    (setq process (open-network-stream-as-binary
-			   "SMTP" (current-buffer) smtp-server smtp-service))
+			   "SMTP" (current-buffer) server smtp-service))
 	    (or process (throw 'done nil))
 
 	    (set-process-filter process 'smtp-process-filter)
@@ -121,7 +136,7 @@ don't define this value."
 			extensions)
 		  (setq extension-lines (cdr extension-lines)))))
 
-            ;; ONEX --- One message transaction only (sendmail extension?)
+	    ;; ONEX --- One message transaction only (sendmail extension?)
 	    (if (or (memq 'onex extensions)
 		    (memq 'xone extensions))
 		(progn
@@ -132,7 +147,7 @@ don't define this value."
 			  (>= (car response) 400))
 		      (throw 'done (car (cdr response))))))
 
-            ;; VERB --- Verbose (sendmail extension?)
+	    ;; VERB --- Verbose (sendmail extension?)
 	    (if (and smtp-debug-info
 		     (or (memq 'verb extensions)
 			 (memq 'xvrb extensions)))
@@ -144,7 +159,7 @@ don't define this value."
 			  (>= (car response) 400))
 		      (throw 'done (car (cdr response))))))
 
-            ;; XUSR --- Initial (user) submission (sendmail extension?)
+	    ;; XUSR --- Initial (user) submission (sendmail extension?)
 	    (if (memq 'xusr extensions)
 		(progn
 		  (smtp-send-command process "XUSR")
@@ -159,7 +174,7 @@ don't define this value."
 	     process
 	     (format "MAIL FROM:<%s>%s%s"
 		     sender
-                     ;; SIZE --- Message Size Declaration (RFC1870)
+		     ;; SIZE --- Message Size Declaration (RFC1870)
 		     (if (memq 'size extensions)
 			 (format " SIZE=%d"
 				 (save-excursion
@@ -174,7 +189,7 @@ don't define this value."
 				      ;; those two bytes anyway:
 				      2)))
 		       "")
-                     ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
+		     ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
 		     (if (and (memq '8bitmime extensions)
 			      smtp-use-8bitmime)
 			 " BODY=8BITMIME"
@@ -184,7 +199,7 @@ don't define this value."
 		    (not (integerp (car response)))
 		    (>= (car response) 400))
 		(throw 'done (car (cdr response))))
-	
+
 	    ;; RCPT TO:<recipient>
 	    (while recipients
 	      (smtp-send-command process
@@ -195,7 +210,7 @@ don't define this value."
 		      (not (integerp (car response)))
 		      (>= (car response) 400))
 		  (throw 'done (car (cdr response)))))
-	
+
 	    ;; DATA
 	    (smtp-send-command process "DATA")
 	    (setq response (smtp-read-response process))

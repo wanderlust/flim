@@ -24,10 +24,8 @@
 
 ;;; Code:
 
-(require 'std11)
 (require 'mime-def)
-
-(eval-when-compile (require 'cl))
+(require 'std11)
 
 
 ;;; @ lexical analyzer
