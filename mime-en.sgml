@@ -200,10 +200,14 @@ Return file name of <var>entity</var>.
 </defun>
 
 <defun name="mime-entity-encoding">
-	    <args> entity
+	    <args> entity <opts> default-encoding
 <p>
 Return content-transfer-encoding of <var>entity</var>.
 <cf node="Content-Transfer-Encoding">
+<p>
+If the <var>entity</var> does not have Content-Transfer-Encoding
+field, this function returns <var>default-encoding</var>.  If it is
+nil, <code>"7bit"</code> is used as default value.
 </defun>
 
 <defun name="mime-entity-cooked-p">

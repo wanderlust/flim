@@ -204,10 +204,14 @@ node="mime-content-disposition">
 </defun>
 
 <defun name="mime-entity-encoding">
-	    <args> entity
+	    <args> entity <opts> default-encoding
 <p>
 <var>entity</var> の content-transfer-encoding を返す。<cf
 node="Content-Transfer-Encoding">
+<p>
+もし、<var>entity</var> に Content-Transfer-Encoding 欄が存在しない場
+合は、<var>default-encoding</var> を返す。これが指定されない場合は、
+<code>"7bit"</code> を用いる。
 </defun>
 
 <defun name="mime-entity-cooked-p">
