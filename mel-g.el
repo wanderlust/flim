@@ -39,20 +39,12 @@
 ;;; @ variables
 ;;;
 
-(defvar gzip64-external-encoder
-  (let ((file (exec-installed-p "mmencode")))
-    (and file
-	 (` ("sh" "-c" (, (concat "gzip -c | " file))))))
+(defvar gzip64-external-encoder '("sh" "-c" "gzip -c | mmencode")
   "*list of gzip64 encoder program name and its arguments.")
 
-(defvar gzip64-external-decoder
-  (let ((file (exec-installed-p "mmencode")))
-    (and file
-	 (` ("sh" "-c" (, (concat file " -u | gzip -dc"))))))
+(defvar gzip64-external-decoder '("sh" "-c" "mmencode -u | gzip -dc")
   "*list of gzip64 decoder program name and its arguments.")
 
-(unless (and gzip64-external-encoder gzip64-external-decoder)
-  (error "Please install mmencode command."))
 
 ;;; @ encoder/decoder for region
 ;;;
