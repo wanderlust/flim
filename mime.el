@@ -392,6 +392,17 @@ ENTITY is used."
 					  (mime-entity-body-end entity))
 			(mime-entity-encoding entity))))
 
+(defun mime-write-entity (entity filename)
+  "Write ENTITY into FILENAME."
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (if (mime-entity-cooked-p entity)
+	(write-region (mime-entity-point-min entity)
+		      (mime-entity-point-max entity) filename)
+      (write-region-as-binary (mime-entity-point-min entity)
+			      (mime-entity-point-max entity) filename)
+      )))
+
 
 ;;; @ end
 ;;;
