@@ -1,20 +1,18 @@
-2000-08-24  Yuuichi Teranishi  <teranisi@gohome.org>
+2000-08-28  Yuuichi Teranishi  <teranisi@gohome.org>
 
-	* eword-encode.el (eword-encode-address-to-rword-list): Define as
-	function.
-	(eword-encode-addresses-to-rword-list): Ditto.
+	* eword-encode.el (eword-encode-mailboxes-to-rword-list):
+	New inline function.
+	(eword-encode-address-to-rword-list): Ditto.
+	(eword-encode-addresses-to-rword-list):
+	Use `eword-encode-address-to-rword-list' instead of
+	`eword-encode-mailbox-to-rword-list'.
+
+	* std11.el (std11-address-string): Fix for group list.
 
 2000-08-23  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-fqdn): New variable.
 	(smtp-make-fqdn): Use `smtp-fqdn' if non-nil.
-
-2000-08-23  Yuuichi Teranishi <teranisi@gohome.org>
-
-	* eword-encode.el (eword-encode-address-to-rword-list): New function.
-	(eword-encode-addresses-to-rword-list):
-	Use eword-encode-address-to-rword-list.
-	* std11.el (std11-address-string): Fix.
 
 2000-08-23  Kenichi OKADA <okada@opaopa.org>
 
