@@ -153,7 +153,14 @@ ENTITY is used."
 		 entity disposition)
 		disposition))))))
 
-(defalias 'mime-entity-encoding 'mime-entity-encoding-internal)
+(defun mime-entity-encoding (entity)
+  (or (mime-entity-encoding-internal entity)
+      (let ((ret (mime-fetch-field 'Content-Transfer-Encoding entity)))
+	(if ret
+	    (let ((encoding (mime-parse-Content-Transfer-Encoding ret)))
+	      (when encoding
+		(mime-entity-set-encoding-internal entity encoding)
+		encoding))))))
 
 (defun mime-read-field (field-name &optional entity)
   (or (symbolp field-name)
