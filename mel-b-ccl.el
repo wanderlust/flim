@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 1998,1999 Tanaka Akira
 
-;; Author: Tanaka Akira <akr@jaist.ac.jp>
+;; Author: Tanaka Akira <akr@m17n.org>
 ;; Created: 1998/9/17
 ;; Keywords: MIME, Base64
 

@@ -29,7 +29,7 @@
 
 ;; To send mail using QMTP instead of SMTP, do
 
-;; (fset 'smtp-via-smtp 'qmtp-via-qmtp)
+;; (fset 'smtp-send-buffer 'qmtp-send-buffer)
 
 ;;; Code:
 

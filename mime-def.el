@@ -5,8 +5,7 @@
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: definition, MIME, multimedia, mail, news
 
-;; This file is part of DEISUI (Deisui is an Entity Implementation for
-;; SEMI based User Interfaces).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -38,8 +37,7 @@
 
 (eval-and-compile
   (defconst mime-library-product ["CLIME" (1 14 0) "五間堂"]
-    "Product name, version number and code name of MIME-library package.")
-  )
+    "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)
   (` (aref (, product) 0)))
@@ -131,7 +129,7 @@
 	  base64-token-regexp
 	  base64-token-padding-regexp
 	  base64-token-padding-regexp
-          "\\)"))
+	  "\\)"))
 
 ;; (defconst eword-B-encoding-and-encoded-text-regexp
 ;;   (concat "\\(B\\)\\?" eword-B-encoded-text-regexp))
@@ -247,9 +245,8 @@ service."
 		     (,@ rest)
 		     (funcall (mel-find-function '(, name)
 						 (, (car (last args))))
-			      (,@ (luna-arglist-to-arguments (butlast args))))
-		     )))))
-       )))
+			      (,@ (luna-arglist-to-arguments
+				   (butlast args))))))))))))
 
 (put 'mel-define-service 'lisp-indent-function 'defun)
 
@@ -263,10 +260,8 @@ service."
 	  (while (and rest
 		      (progn
 			(require (car rest))
-			(null (setq f (intern-soft encoding ob-array)))
-			))
-	    (setq rest (cdr rest))
-	    )
+			(null (setq f (intern-soft encoding ob-array)))))
+	    (setq rest (cdr rest)))
 	  f))))
 
 (defsubst mel-copy-method (service src-backend dst-backend)
@@ -276,9 +271,8 @@ service."
     (when f
       (setq sym (intern dst-backend oa))
       (or (fboundp sym)
-	  (fset sym (symbol-function f))
-	  ))))
-       
+	  (fset sym (symbol-function f))))))
+
 (defsubst mel-copy-backend (src-backend dst-backend)
   (let ((services mel-service-list))
     (while services
@@ -292,8 +286,7 @@ Each parent must be backend name (string)."
   (cons 'progn
 	(mapcar (function
 		 (lambda (parent)
-		   (` (mel-copy-backend (, parent) (, type)))
-		   ))
+		   (` (mel-copy-backend (, parent) (, type)))))
 		parents)))
 
 (defmacro mel-define-method (name args &rest body)
@@ -335,8 +328,7 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
 	 (class (nth 1 specializer)))
     (` (progn
 	 (define-function (, function)
-	   (intern (, class) (, (intern (format "%s-obarray" name)))))
-	 ))))
+	   (intern (, class) (, (intern (format "%s-obarray" name)))))))))
 
 (defvar base64-dl-module
   (if (and (fboundp 'base64-encode-string)
@@ -345,8 +337,7 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
     (if (fboundp 'dynamic-link)
 	(let ((path (expand-file-name "base64.so" exec-directory)))
 	  (and (file-exists-p path)
-	       path)
-	  ))))
+	       path)))))
 
 
 ;;; @ end
