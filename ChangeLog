@@ -1,3 +1,10 @@
+1999-08-03  Yuuichi Teranishi <teranisi@gohome.org>
+	
+	* smtp.el (smtp-notify-success): New option.
+	* (smtp-via-smtp): Request return receipt (defined in RFC1891) to
+	SMTP server if `smtp-notify-success' is non-nil.
+	[cf. <tm-ja:4872,4877>]
+
 1999-08-02  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mime.el (mime-entity-header-start-point): New generic function.
