@@ -26,6 +26,7 @@
 
 (require 'hmac-md5)
 
+;;; CRAM-MD5
 (defun sasl-cram-md5 (username passphrase challenge)
   (let ((secure-word (copy-sequence passphrase)))
     (setq secure-word (unwind-protect
@@ -37,10 +38,52 @@
 	  secure-word (unwind-protect
 			  (concat username " " secure-word)
 			(fillarray secure-word 0)))))
-		
+
+;;; PLAIN
 (defun sasl-plain (authorid authenid passphrase)
   (concat authorid "\0" authenid "\0" passphrase))
 
+;;; SCRAM-MD5
+(defvar sasl-scram-md5-client-security-info
+  (scram-make-security-info nil t 0))
+
+(defun sasl-scram-md5-client-msg-1 (authenticate-id &optional authorize-id)
+  (scram-md5-make-client-msg-1 authenticate-id authorize-id))
+
+(defun sasl-scram-md5-client-msg-2 (server-msg-1 client-msg-1 passphrase)
+  (let (client-key)
+    (scram-md5-make-client-msg-2
+     sasl-scram-md5-client-security-info
+     (scram-md5-make-client-proof
+      (setq client-key
+	    (scram-md5-make-client-key
+	     (scram-md5-make-salted-pass
+	      passphrase
+	      (car ; salt
+	       (scram-md5-parse-server-msg-1 server-msg-1)))))
+      (scram-md5-make-shared-key
+       server-msg-1
+       client-msg-1
+       sasl-scram-md5-client-security-info
+       (scram-md5-make-client-verifier client-key))))))
+
+(defun sasl-scram-md5-authenticate-server (server-msg-1
+					   server-msg-2
+					   client-msg-1
+					   passphrase)
+  (scram-md5-authenticate-server
+   server-msg-1
+   server-msg-2
+   client-msg-1
+   sasl-scram-md5-client-security-info
+   (car ; salt
+    (scram-md5-parse-server-msg-1 server-msg-1))
+   (scram-md5-make-salted-pass
+    passphrase
+    (car ; salt
+     (scram-md5-parse-server-msg-1 server-msg-1)))))
+
+;;; unique-ID
 (defun sasl-number-base36 (num len)
   (if (if (< len 0)
 	  (<= num 0)
