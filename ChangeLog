@@ -1,3 +1,11 @@
+1999-08-02  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime.el (mime-entity-header-start-point): New generic function.
+	(mime-entity-header-end-point): New generic function.
+
+	* mmbuffer.el (mime-entity-header-start-point): New method.
+	(mime-entity-header-end-point): New method.
+
 1999-08-09  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM-ELS (flim-modules): Add `mmdbuffer'.
