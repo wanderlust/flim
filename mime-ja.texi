@@ -293,7 +293,7 @@ code-converted.
 @end defun
 
 
-@defun mime-insert-decoded-header entity  &optional  invisible-fields visible-fields
+@defun mime-insert-header entity  &optional  invisible-fields visible-fields
 
 現在位置に @var{entity} の復号した header を挿入する。@refill
 
