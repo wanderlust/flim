@@ -1,6 +1,6 @@
 ;;; mime-def.el --- definition module about MIME -*- coding: iso-2022-jp; -*-
 
-;; Copyright (C) 1995,96,97,98,99,2000,2001 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,2001,2002 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
@@ -34,7 +34,7 @@
 (eval-when-compile (require 'luna))	; luna-arglist-to-arguments
 
 (eval-and-compile
-  (defconst mime-library-product ["CLIME" (1 14 3) "寺井西口"]
+  (defconst mime-library-product ["CLIME" (1 14 4) "自動車連絡"]
     "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)

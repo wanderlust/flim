@@ -4,7 +4,7 @@
 
 ;;-------------------------------------------------------------------------
 ;;	Kinki Nippon Railway	$(B6a5&F|K\E4F;(B	http://www.kintetsu.co.jp/
-;;	Ky-Dòto-A Line		$(B5~ET@~(B
+;;	Ky-Dòto Line-A		$(B5~ET@~(B
 ;;-------------------------------------------------------------------------
 1.0.1	Ky-Dòto-A			$(B5~ET(B		; <=> JR, $(B5~ET;T8rDL6I(B
 1.1.0	T-Dòji-A			$(BEl;{(B
@@ -34,7 +34,7 @@
 1.11.3	Saidaiji		$(B@>Bg;{(B		; = $(B6aE4(B $(BF`NI@~(B
 ;;-------------------------------------------------------------------------
 ;;	Kinki Nippon Railway	$(B6a5&F|K\E4F;(B	http://www.kintetsu.co.jp/
-;;	Ky-Dòto-A Line		$(B3`86@~(B
+;;	Ky-Dòto Line-A		$(B3`86@~(B
 ;;-------------------------------------------------------------------------
 	(Saidaiji)		($(B@>Bg;{(B)
 1.12.0	Amagatsuji		$(BFt%vDT(B
@@ -52,7 +52,7 @@
 1.14.1	Yagi			$(BH,LZ(B		; = $(B6aE4(B $(BBg:e@~(B
 1.14.2	Yagi-Nishiguchi		$(BH,LZ@>8}(B
 1.14.3	Unebigory-Dòmae-A		$(B@&K58fNMA0(B
-------	Kashiharajing-Dþ-mae-A	$(B3`86?@5\A0(B	; = $(B6aE4(B $(BFnBg:e@~!"5HLn@~(B
+1.14.4	Kashiharajing-Dþ-mae-A	$(B3`86?@5\A0(B	; = $(B6aE4(B $(BFnBg:e@~!"5HLn@~(B
 
 
 [Chao Version names]
@@ -116,7 +116,7 @@
 1.13.6	Nakanosh-Dò-A		$BCf%N>1(B		; $B$N$A$KCf$N>1$K2~>N(B
 1.14.0	Gokend-Dò-A			$B8^4VF2(B
 1.14.3	Terai-Nishikuchi	$B;{0f@>8}(B
-------	Jid-Dò-Asha-Renraku		$B<+F0<VO"Mm(B
+1.14.4	Jid-Dò-Asha-Renraku		$B<+F0<VO"Mm(B
 ------	Hon-Terai		$BK\;{0f(B
 ------	Suenobu-Ushijima	$BKv?.5mEg(B
 ------	Kaga-Sano		$B2C2l:4Ln(B
