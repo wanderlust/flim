@@ -1,3 +1,9 @@
+1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmbuffer.el, mmgeneric.el (insert-entity): New method.
+
+	* mime.el (mime-insert-entity): New generic function.
+
 1999-01-22  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* std11.el (TopLevel): Require `custom'.
