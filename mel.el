@@ -85,6 +85,7 @@ STRING is content-transfer-encoding.
 FUNCTION is region decoder.")
 
 
+;;;###autoload
 (defun mime-encode-region (start end encoding)
   "Encode region START to END of current buffer using ENCODING."
   (interactive
@@ -98,6 +99,7 @@ FUNCTION is region decoder.")
 	(funcall f start end)
       )))
 
+;;;###autoload
 (defun mime-decode-region (start end encoding)
   "Decode region START to END of current buffer using ENCODING."
   (interactive
@@ -138,6 +140,7 @@ Each element looks like (STRING . FUNCTION).
 STRING is content-transfer-encoding.
 FUNCTION is function to insert encoded file.")
 
+;;;###autoload
 (defun mime-insert-encoded-file (filename encoding)
   "Insert file FILENAME encoded by ENCODING format."
   (interactive

@@ -29,82 +29,133 @@
 (require 'emu)
 
 
-;;; @ constants
+;;; @ Quoted-Printable encoder
 ;;;
 
 (defconst quoted-printable-hex-chars "0123456789ABCDEF")
-(defconst quoted-printable-octet-regexp
-  (concat "=[" quoted-printable-hex-chars
-	  "][" quoted-printable-hex-chars "]"))
 
+(defsubst quoted-printable-quote-char (character)
+  (concat
+   "="
+   (char-to-string (aref quoted-printable-hex-chars (ash character -4)))
+   (char-to-string (aref quoted-printable-hex-chars (logand character 15)))
+   ))
 
-;;; @ variables
-;;;
+(defun quoted-printable-internal-encode-region (start end)
+  (save-excursion
+    (save-restriction
+      (narrow-to-region start end)
+      (goto-char start)
+      (let ((col 0)
+	    enable-multibyte-characters)
+	(while (< (point)(point-max))
+	  (cond ((>= col 75)
+		 (insert "=\n")
+		 (setq col 0)
+		 )
+		((looking-at "^From ")
+		 (replace-match "=46rom ")
+		 (backward-char 1)
+		 (setq col (+ col 6))
+		 )
+		((looking-at "[ \t]\n")
+		 (forward-char 1)
+		 (insert "=\n")
+		 (forward-char 1)
+		 (setq col 0)
+		 )
+		(t
+		 (let ((chr (char-after (point))))
+		   (cond ((= chr ?\n)
+			  (forward-char 1)
+			  (setq col 0)
+			  )
+			 ((or (= chr ?\t)
+			      (and (<= 32 chr)(/= chr ?=)(< chr 127))
+			      )
+			  (forward-char 1)
+			  (setq col (1+ col))
+			  )
+			 ((>= col 73)
+			  (insert "=\n")
+			  (setq col 0)
+			  )
+			 (t
+			  (delete-char 1)
+			  (insert (quoted-printable-quote-char chr))
+			  (setq col (+ col 3))
+			  ))
+		   )))
+	  )))))
 
 (defvar quoted-printable-external-encoder '("mmencode" "-q")
   "*list of quoted-printable encoder program name and its arguments.")
 
-(defvar quoted-printable-external-decoder '("mmencode" "-q" "-u")
-  "*list of quoted-printable decoder program name and its arguments.")
+(defun quoted-printable-external-encode-region (start end)
+  (save-excursion
+    (save-restriction
+      (narrow-to-region start end)
+      (as-binary-process
+       (apply (function call-process-region)
+	      start end (car quoted-printable-external-encoder)
+	      t t nil (cdr quoted-printable-external-encoder))
+       )
+      ;; for OS/2
+      ;;   regularize line break code
+      (goto-char (point-min))
+      (while (re-search-forward "\r$" nil t)
+	(replace-match "")
+	)
+      )))
 
-(defvar quoted-printable-internal-encoding-limit 10000
+(defvar quoted-printable-internal-encoding-limit
+  (if (and (featurep 'xemacs)(featurep 'mule))
+      0
+    (require 'file-detect)
+    (if (exec-installed-p "mmencode")
+	1000
+      (message "Don't found external encoder for Quoted-Printable!")
+      nil))
   "*limit size to use internal quoted-printable encoder.
 If size of input to encode is larger than this limit,
 external encoder is called.")
 
-(defvar quoted-printable-internal-decoding-limit nil
-  "*limit size to use internal quoted-printable decoder.
-If size of input to decode is larger than this limit,
-external decoder is called.")
-
-
-;;; @ Quoted-Printable (Q-encode) encoder/decoder
-;;;
-
-(defun byte-to-hex-string (num)
-  (concat (char-to-string (elt quoted-printable-hex-chars (ash num -4)))
-	  (char-to-string (elt quoted-printable-hex-chars (logand num 15)))
-	  ))
-
-(defun quoted-printable-quote-char (chr)
-  (concat "="
-	  (char-to-string (elt quoted-printable-hex-chars (ash chr -4)))
-	  (char-to-string (elt quoted-printable-hex-chars (logand chr 15)))
-	  ))
-
-
-;;; @@ Quoted-Printable encoder/decoder for string
-;;;
+(defun quoted-printable-encode-region (start end)
+  "Encode current region by quoted-printable.
+START and END are buffer positions.
+This function calls internal quoted-printable encoder if size of
+region is smaller than `quoted-printable-internal-encoding-limit',
+otherwise it calls external quoted-printable encoder specified by
+`quoted-printable-external-encoder'.  In this case, you must install
+the program (maybe mmencode included in metamail or XEmacs package)."
+  (interactive "r")
+  (if (and quoted-printable-internal-encoding-limit
+	   (> (- end start) quoted-printable-internal-encoding-limit))
+      (quoted-printable-external-encode-region start end)
+    (quoted-printable-internal-encode-region start end)
+    ))
 
 (defun quoted-printable-encode-string (string)
   "Encode STRING to quoted-printable, and return the result."
-  (let ((i 0))
-    (mapconcat (function
-		(lambda (chr)
-		  (cond ((eq chr ?\n)
-			 (setq i 0)
-			 "\n")
-			((or (< chr 32) (< 126 chr) (eq chr ?=))
-			 (if (>= i 73)
-			     (progn
-			       (setq i 3)
-			       (concat "=\n" (quoted-printable-quote-char chr))
-			       )
-			   (progn
-			     (setq i (+ i 3))
-			     (quoted-printable-quote-char chr)
-			     )))
-			(t (if (>= i 75)
-			       (progn
-				 (setq i 1)
-				 (concat "=\n" (char-to-string chr))
-				 )
-			     (progn
-			       (setq i (1+ i))
-			       (char-to-string chr)
-			       )))
-			)))
-	       string "")))
+  (with-temp-buffer
+    (insert string)
+    (quoted-printable-encode-region (point-min)(point-max))
+    (buffer-string)
+    ))
+
+(defun quoted-printable-insert-encoded-file (filename)
+  "Encode contents of file FILENAME to quoted-printable, and insert the result.
+It calls external quoted-printable encoder specified by
+`quoted-printable-external-encoder'.  So you must install the program
+\(maybe mmencode included in metamail or XEmacs package)."
+  (interactive (list (read-file-name "Insert encoded file: ")))
+  (apply (function call-process) (car quoted-printable-external-encoder)
+	 filename t nil (cdr quoted-printable-external-encoder))
+  )
+
+
+;;; @ Quoted-Printable decoder
+;;;
 
 (defun quoted-printable-decode-string (string)
   "Decode STRING which is encoded in quoted-printable, and return the result."
@@ -134,27 +185,14 @@ external decoder is called.")
 			)))
 	       string "")))
 
+(defconst quoted-printable-octet-regexp
+  (concat "=[" quoted-printable-hex-chars
+	  "][" quoted-printable-hex-chars "]"))
 
-;;; @@ Quoted-Printable encoder/decoder for region
-;;;
-
-(defun quoted-printable-internal-encode-region (beg end)
+(defun quoted-printable-internal-decode-region (start end)
   (save-excursion
     (save-restriction
-      (narrow-to-region beg end)
-      (let ((str (buffer-substring beg end)))
-	(delete-region beg end)
-	(insert (quoted-printable-encode-string str))
-	)
-      (or (bolp)
-	  (insert "=\n")
-	  )
-      )))
-
-(defun quoted-printable-internal-decode-region (beg end)
-  (save-excursion
-    (save-restriction
-      (narrow-to-region beg end)
+      (narrow-to-region start end)
       (goto-char (point-min))
       (while (re-search-forward "=\n" nil t)
 	(replace-match "")
@@ -170,47 +208,23 @@ external decoder is called.")
 	  ))
       )))
 
-(defun quoted-printable-external-encode-region (beg end)
-  (save-excursion
-    (save-restriction
-      (narrow-to-region beg end)
-      (as-binary-process
-       (apply (function call-process-region)
-	      beg end (car quoted-printable-external-encoder)
-	      t t nil (cdr quoted-printable-external-encoder))
-       )
-      ;; for OS/2
-      ;;   regularize line break code
-      (goto-char (point-min))
-      (while (re-search-forward "\r$" nil t)
-	(replace-match "")
-	)
-      )))
+(defvar quoted-printable-external-decoder '("mmencode" "-q" "-u")
+  "*list of quoted-printable decoder program name and its arguments.")
 
-(defun quoted-printable-external-decode-region (beg end)
+(defun quoted-printable-external-decode-region (start end)
   (save-excursion
     (as-binary-process
      (apply (function call-process-region)
-	    beg end (car quoted-printable-external-decoder)
+	    start end (car quoted-printable-external-decoder)
 	    t t nil (cdr quoted-printable-external-decoder))
      )))
 
-(defun quoted-printable-encode-region (beg end)
-  "Encode current region by quoted-printable.
-START and END are buffer positions.
-This function calls internal quoted-printable encoder if size of
-region is smaller than `quoted-printable-internal-encoding-limit',
-otherwise it calls external quoted-printable encoder specified by
-`quoted-printable-external-encoder'.  In this case, you must install
-the program (maybe mmencode included in metamail or XEmacs package)."
-  (interactive "r")
-  (if (and quoted-printable-internal-encoding-limit
-	   (> (- end beg) quoted-printable-internal-encoding-limit))
-      (quoted-printable-external-encode-region beg end)
-    (quoted-printable-internal-encode-region beg end)
-    ))
+(defvar quoted-printable-internal-decoding-limit nil
+  "*limit size to use internal quoted-printable decoder.
+If size of input to decode is larger than this limit,
+external decoder is called.")
 
-(defun quoted-printable-decode-region (beg end)
+(defun quoted-printable-decode-region (start end)
   "Decode current region by quoted-printable.
 START and END are buffer positions.
 This function calls internal quoted-printable decoder if size of
@@ -220,24 +234,10 @@ otherwise it calls external quoted-printable decoder specified by
 the program (maybe mmencode included in metamail or XEmacs package)."
   (interactive "r")
   (if (and quoted-printable-internal-decoding-limit
-	   (> (- end beg) quoted-printable-internal-decoding-limit))
-      (quoted-printable-external-decode-region beg end)
-    (quoted-printable-internal-decode-region beg end)
+	   (> (- end start) quoted-printable-internal-decoding-limit))
+      (quoted-printable-external-decode-region start end)
+    (quoted-printable-internal-decode-region start end)
     ))
-
-
-;;; @@ Quoted-Printable encoder/decoder for file
-;;;
-
-(defun quoted-printable-insert-encoded-file (filename)
-  "Encode contents of file FILENAME to quoted-printable, and insert the result.
-It calls external quoted-printable encoder specified by
-`quoted-printable-external-encoder'.  So you must install the program
-(maybe mmencode included in metamail or XEmacs package)."
-  (interactive (list (read-file-name "Insert encoded file: ")))
-  (apply (function call-process) (car quoted-printable-external-encoder)
-	 filename t nil (cdr quoted-printable-external-encoder))
-  )
 
 
 ;;; @ Q-encoding encode/decode string
@@ -259,7 +259,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 			   ))))
     (mapconcat (function
 		(lambda (chr)
-		  (cond ((eq chr 32) "_")
+		  (cond ((eq chr ? ) "_")
 			((or (< chr 32) (< 126 chr)
 			     (memq chr specials)
 			     )
