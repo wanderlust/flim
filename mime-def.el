@@ -30,7 +30,10 @@
 (require 'mcharset)
 (require 'alist)
 
-(eval-when-compile (require 'cl))	; list*
+(eval-when-compile
+  (require 'cl)   ; list*
+  (require 'luna) ; luna-arglist-to-arguments
+  )
 
 (eval-and-compile
   (defconst mime-library-product ["Chao" (1 14 1) "Rokujizò"]
@@ -202,100 +205,6 @@
 (defsubst mime-content-disposition-filename (content-disposition)
   "Return filename of CONTENT-DISPOSITION."
   (mime-content-disposition-parameter content-disposition "filename"))
-
-
-;;; @ MIME entity
-;;;
-
-(require 'luna)
-
-(autoload 'mime-entity-content-type "mime")
-(autoload 'mime-parse-multipart "mime-parse")
-(autoload 'mime-parse-encapsulated "mime-parse")
-(autoload 'mime-parse-external "mime-parse")
-(autoload 'mime-entity-content "mime")
-
-(luna-define-class mime-entity ()
-		   (location
-		    content-type children parent
-		    node-id
-		    content-disposition encoding
-		    ;; for other fields
-		    original-header parsed-header))
-
-(defalias 'mime-entity-representation-type-internal 'luna-class-name)
-(defalias 'mime-entity-set-representation-type-internal 'luna-set-class-name)
-
-(luna-define-internal-accessors 'mime-entity)
-
-(luna-define-method mime-entity-fetch-field ((entity mime-entity)
-					     field-name)
-  (or (symbolp field-name)
-      (setq field-name (intern (capitalize (capitalize field-name)))))
-  (cdr (assq field-name
-	     (mime-entity-original-header-internal entity))))
-
-(luna-define-method mime-entity-children ((entity mime-entity))
-  (let* ((content-type (mime-entity-content-type entity))
-	 (primary-type (mime-content-type-primary-type content-type))
-	 sub-type)
-    (cond ((eq primary-type 'multipart)
-	   (mime-parse-multipart entity))
-	  ((eq primary-type 'message)
-	   (setq sub-type (mime-content-type-subtype content-type))
-	   (cond ((eq sub-type 'external-body)
-		  (mime-parse-external entity))
-		 ((memq sub-type '(rfc822 news))
-		  (mime-parse-encapsulated entity)
-		  ;; [tomo] Should we make a variable to specify
-		  ;; encapsulated media-types?
-		  ))))))
-
-(luna-define-method mime-insert-text-content ((entity mime-entity))
-  (insert
-   (decode-mime-charset-string (mime-entity-content entity)
-			       (or (mime-content-type-parameter
-				    (mime-entity-content-type entity)
-				    "charset")
-				   default-mime-charset)
-			       'CRLF)
-   ))
-
-
-;;; @ for mm-backend
-;;;
-
-(defmacro mm-expand-class-name (type)
-  `(intern (format "mime-%s-entity" ,type)))
-
-(defmacro mm-define-backend (type &optional parents)
-  `(luna-define-class ,(mm-expand-class-name type)
-		      ,(nconc (mapcar (lambda (parent)
-					(mm-expand-class-name parent)
-					)
-				      parents)
-			      '(mime-entity))))
-
-(defmacro mm-define-method (name args &rest body)
-  (or (eq name 'initialize-instance)
-      (setq name (intern (format "mime-%s" name))))
-  (let ((spec (car args)))
-    (setq args
-	  (cons (list (car spec)
-		      (mm-expand-class-name (nth 1 spec)))
-		(cdr args)))
-    `(luna-define-method ,name ,args ,@body)
-    ))
-
-(put 'mm-define-method 'lisp-indent-function 'defun)
-
-(def-edebug-spec mm-define-method
-  (&define name ((arg symbolp)
-		 [&rest arg]
-		 [&optional ["&optional" arg &rest arg]]
-		 &optional ["&rest" arg]
-		 )
-	   def-body))
 
 
 ;;; @ message structure
