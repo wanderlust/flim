@@ -75,13 +75,13 @@ variable `uuencode-external-decoder'."
 			    (if (looking-at ".+$")
 				(buffer-substring (match-beginning 0)
 						  (match-end 0))
-			      ))))))
+			      )))))
+	  (default-directory (or (getenv "TMP")(getenv "TEMP") "/tmp")))
       (if filename
 	  (as-binary-process
 	   (apply (function call-process-region)
 		  start end (car uuencode-external-decoder)
 		  t nil nil (cdr uuencode-external-decoder))
-	   (setq filename (expand-file-name filename mime-temp-directory))
 	   (as-binary-input-file (insert-file-contents filename))
 	   ;; The previous line causes the buffer to be made read-only, I
 	   ;; do not pretend to understand the control flow leading to this
