@@ -32,7 +32,7 @@
 (eval-when-compile (require 'luna))	; luna-arglist-to-arguments
 
 (eval-and-compile
-  (defconst mime-library-product ["FLIM" (1 14 4) "Kashiharajingþ-mae"]
+  (defconst mime-library-product ["FLIM" (1 14 5) "Demachiyanagi"]
     "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)

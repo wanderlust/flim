@@ -2,12 +2,12 @@
 
   It is available from
 
-    http://www.kanji.zinbun.kyoto-u.ac.jp/~tomo/comp/emacsen/lisp/flim/flim-API/
+    http://www.kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/flim/flim-API/
 
 --[[message/external-body; access-type=URL;
 	URL*0="http://";
 	URL*1="www.kanji.zinbun.kyoto-u.ac.jp/~tomo/";
-	URL*2="comp/emacsen/lisp/";
+	URL*2="lemi/dist/";
 	URL*3="flim/flim-API/";
 	URL*4="PACKAGE-VERSION.tar.gz"]]
 Content-Type: application/octet-stream

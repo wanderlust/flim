@@ -1,12 +1,73 @@
+2002-12-27  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.5 (Demachiyanagi) released.
+
+2002-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* smtp.el (smtp-send-buffer): Error if `smtp-server' is nil.
+
+2002-11-15  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* FLIM-ELS (flim-version-specific-modules): Don't install mailcap.el.
+	* FLIM-MK (install-flim): Avoid creating empty directory.
+
+2002-11-06  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* mime-parse.el (mime-parse-buffer): Require mmbuffer.
+
+2002-09-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* luna.el (luna-define-method): Clear method cache of child
+	classes.
+
+2002-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mime-ja.texi (CVS): Escape @.
+
+	* luna.el (luna-define-method): Fix the bug that method cache is
+	not cleard.
+
+2002-09-14  KOSEKI Yoshinori  <kose@meadowy.org>
+
+	* mime-en.texi (CVS): Fix Typo. (@ to @@).
+	mime-ja.texi (CVS): Ditto.
+
+2002-08-26  MORIOKA Tomohiko  <tomo@mousai.as.wakwak.ne.jp>
+
+	* std11.el: Update Copyright header.
+
+2002-07-30  MORIOKA Tomohiko  <tomo@mousai.as.wakwak.ne.jp>
+
+	* std11.el (std11-non-atom-regexp): New constant.
+	(std11-analyze-atom): New implementation to avoid error in current
+	XEmacs UTF-2000 [may be caused by a bug about regexp].
+
+2002-07-26  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtp.el (smtp-open-connection-function): Add doc.
+	(smtp-end-of-line): Doc fix.
+
+2002-07-24  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtp.el (smtp-end-of-line): New variable.
+	(smtp-read-response): Use it.
+	(smtp-send-command): Use it.
+	(smtp-send-data): Use it.
+
+
 2002-06-03  KAWABATA, Taichi  <batta@beige.ocn.ne.jp>
 
 	* FLIM-rfc2231-encoder: merged with FLIM Version 1.14.4.
+
+2002-06-03  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.4 (Kashiharajing.DŽþ-mae) released.
 
 2002-06-02  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* eword-encode.el (mime-header-encode-method-alist):
 	Added encoder for Content-Type.
-	
+
 	* mime-def.el (mime-attribute-char-regexp): Arranged.
 
 	* mime-parse.el (mime-decode-parameter-value): Comment fix.
@@ -36,11 +97,11 @@
 2002-05-20  KAWABATA, Taichi  <batta@beige.ocn.ne.jp>
 
 	MIME Parameter Value encoder support.
-	
+
 	* eword-encode.el: Require 'mime-parse.
 	(eword-encode-Content-Disposition-field-body): New function.
 	(mime-header-encode-method-alist): Use it.
-	
+
 	* mime-def.el (mime-non-attribute-char-regexp): New variable.
 
 	* mime-parse.el (mime-divide-extended-parameter): New function.
@@ -49,10 +110,6 @@
 	(mime-encode-parameters): Likewise.
 
 
-2002-06-03  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
-
-	* FLIM: Version 1.14.4 (Kashiharajing-Dþ-mae) released.-A
-
 2002-01-16  Hiroya Murata     <lapis-lazuli@pop06.odn.ne.jp>
 
 	* luna.el (luna-class-find-member): Don't search parents'
@@ -64,9 +121,31 @@
 	(mime-encode-field-body): Use `mime-header-encode-method-alist'.
 	(mime-encode-header-in-buffer): Error if cannot encode.
 
+2001-11-19  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el (smtp-find-server): Fix.
+
+2001-11-18  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el (smtp-send-by-myself): Fix.
+
+2001-11-18  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el (smtp-send-by-myself): New variable.
+	(smtp-use-starttls-ignore-error): New variable.
+	(smtp-find-mx): New function.
+	(smtp-dig): New function.
+	(smtp-find-server): New function.
+	(smtp-send-buffer-by-myself): New funcion.
+	(smtp-send-buffer): Change for `smtp-send-buffer-by-myself'.
+
 2001-11-03  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* hmac-md5.el: Removed kludge for Emacs 21 prerelease versions.
+
+2001-09-21  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el(smtp-submit-package): Check extensions for starttls.
 
 2001-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -80,7 +159,7 @@
 
 2001-06-01  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-	* FLIM: Version 1.14.3 (Unebigory-Dòmae) released.-A
+	* FLIM: Version 1.14.3 (UnebigoryŽòmae) released.
 
 2001-06-01  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -344,7 +423,7 @@
 2001-02-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	MIME Parameter Value decoder support.
-	
+
 	* mime-def.el (std11-quoted-pair-regexp, std11-non-qtext-char-list,
 	std11-qtext-regexp, std11-quoted-string-regexp): Removed.
 	(mime-media-type/subtype-regexp): Ditto.
@@ -368,7 +447,7 @@
 	mime-parse-Content-Transfer-Encoding): New implementation.
 	(mime-read-Content-Type, mime-read-Content-Disposition,
 	mime-read-Content-Transfer-Encoding): Ditto.
-	
+
 2001-02-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* hmac-md5.el, hmac-sha1.el: Modify comments.
@@ -526,7 +605,7 @@
 	* qmtp.el (qmtp-open-connection-function): Revert initial value to
 	`open-network-stream'.
 	(qmtp-send-buffer): Use `binary-funcall'.
-	
+
 2000-12-23  OKAZAKI Tetsurou  <okazaki@be.to>
 
 	* FLIM-ELS (flim-modules): Delete `mmdbuffer'.
@@ -770,7 +849,7 @@
 	* mmbuffer.el (mime-write-entity-body): Use `binary-write-region'
 	instead of `write-region-as-binary'.
 	(mime-write-entity): Don't use `write-region-as-raw-text-CRLF'.
-	
+
 	* mime-def.el: Don't require `poem'.
 	(binary-insert-file-contents): New function.
 	(binary-write-region): New function.
@@ -913,9 +992,9 @@
 
 2000-12-04   Daiki Ueno  <ueno@unixuser.org>
 
-        * smtpmail.el (smtpmail-send-it): Use `smtp-send-buffer' instead of
-        `smtp-via-smtp'.
-        (smtpmail-send-queued-mail): Ditto.
+	* smtpmail.el (smtpmail-send-it): Use `smtp-send-buffer' instead of
+	`smtp-via-smtp'.
+	(smtpmail-send-queued-mail): Ditto.
 
 2000-11-24  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -1142,7 +1221,7 @@
 
 2000-07-12  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-	* FLIM-Chao: Version 1.14.1 (Rokujiz-Dò) released.-A
+	* FLIM-Chao: Version 1.14.1 (RokujizŽò) released.
 
 2000-07-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -1229,8 +1308,8 @@
 
 2000-05-25  Tanaka Akira      <akr@m17n.org>
 
-        * mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
-	
+	* mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
+
 2000-05-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtp.el (smtp-deduce-address-list): Set `case-fold-search' to `t'
@@ -1760,7 +1839,7 @@
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.7 (Y-Dþzaki) released.-A
+	* FLIM: Version 1.12.7 (YŽþzaki) released.
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -1935,7 +2014,7 @@
 
 1999-05-11  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.6 (Family-K-Dòenmae) released.-A
+	* FLIM: Version 1.12.6 (Family-KŽòenmae) released.
 
 1999-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
@@ -2052,7 +2131,7 @@
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama) released.-A
+	* FLIM: Version 1.12.3 (Kintetsu-KŽòriyama) released.
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2095,7 +2174,7 @@
 
 1999-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.2 (Kuj-Dò) released.-A
+	* FLIM: Version 1.12.2 (KujŽò) released.
 
 1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2281,7 +2360,7 @@
 
 1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.1 (Nishinoky-Dò) released.-A
+	* FLIM: Version 1.12.1 (NishinokyŽò) released.
 
 1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2499,7 +2578,7 @@
 
 1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.11.2 (Heij-Dò) was released.-A
+	* FLIM: Version 1.11.2 (HeijŽò) was released.
 
 	* NEWS (Abolish variable `mime-temp-directory'): New subsection.
 
@@ -2779,7 +2858,7 @@
 
 1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.4 (Shin-H-Dòsono) was released.-A
+	* FLIM: Version 1.10.4 (Shin-HŽòsono) was released.
 
 1998-10-12  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -2964,7 +3043,7 @@
 
 1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.0 (K-Dòdo) was released.-A
+	* FLIM: Version 1.10.0 (KŽòdo) was released.
 
 	* README.en (What's FLIM): Add mel-ccl.el.
 
@@ -3251,7 +3330,7 @@
 
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.9.1 (Tonosh-Dò) was released.-A
+	* FLIM: Version 1.9.1 (TonoshŽò) was released.
 
 	* mime-en.sgml (mm-backend): Translate a little.
 
@@ -3394,7 +3473,7 @@
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.8.0 (Shij-Dò) was released.-A
+	* FLIM-Chao: Version 1.8.0 (ShijŽò) was released.
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3506,7 +3585,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-DÒkubo) was released.-A
+	* FLIM: Version 1.8.0 (ŽÒkubo) was released.
 
 	* README.en: Delete `How to use'.
 
@@ -3631,7 +3710,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (Goj-Dò) was released.-A
+	* FLIM-Chao: Version 1.7.0 (GojŽò) was released.
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3890,7 +3969,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae) was released.-A
+	* FLIM: Version 1.4.1 (Momoyama-GoryŽòmae) was released.
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -4010,7 +4089,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J-Dþjò) was released.-A
+	* FLIM: Version 1.2.0 (JŽþjŽò) was released.
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -4061,7 +4140,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Dòji) was released.-A
+	* FLIM: Version 1.1.0 (TŽòji) was released.
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -4097,7 +4176,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòto) was released.-A
+	* FLIM: Version 1.0.1 (KyŽòto) was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.

@@ -33,8 +33,9 @@ LISPDIR=%s\n" PREFIX LISPDIR))))
 
 (defun install-flim ()
   (config-flim)
-  (install-elisp-modules flim-version-specific-modules "./"
-			 FLIM_VERSION_SPECIFIC_DIR)
+  (if flim-version-specific-modules
+      (install-elisp-modules flim-version-specific-modules "./"
+			     FLIM_VERSION_SPECIFIC_DIR))
   (install-elisp-modules flim-modules "./" FLIM_DIR))
 
 (defun check-flim ()

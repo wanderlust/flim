@@ -1,6 +1,6 @@
 ;;; mime-parse.el --- MIME message parser
 
-;; Copyright (C) 1994,95,96,97,98,99,2001,2002 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95,96,97,98,99,2001 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
@@ -687,7 +687,8 @@ If Content-Transfer-Encoding field is not found, return nil."
 ;;;###autoload
 (defun mime-parse-buffer (&optional buffer representation-type)
   "Parse BUFFER as a MIME message.
-If buffer is omitted, it parses current buffer."
+If buffer is omitted, it parses current-buffer."
+  (require 'mmbuffer)
   (save-excursion
     (if buffer (set-buffer buffer))
     (mime-parse-message (or representation-type

@@ -1,6 +1,6 @@
 <!doctype sinfo system>
 <head>
-<title>FLIM 1.12 MIME 機能説明書
+<title>FLIM 1.14 MIME 機能説明書
 <author>守岡 知彦 <mail>morioka@jaist.ac.jp</mail>
 <date>1999-01-27
 
@@ -900,11 +900,11 @@ header separator として用いられる。
 <p>
 Header を network 表現に符号化する。
 <p>
-各 field は <code>eword-field-encoding-method-alist</code> で指定され
+各 field は <code>mime-field-encoding-method-alist</code> で指定され
 た方式で符号化される。
 </defun>
 
-<defvar name="eword-field-encoding-method-alist">
+<defvar name="mime-field-encoding-method-alist">
 <p>
 Field を符号化する方法を指定する連想 list。各 element は (FIELD
 . METHOD) の様になっている。
@@ -931,16 +931,6 @@ MIME 関連機能に関する group.
 <p>
 <code>mail</code> と <code>news</code> に属する。
 </define>
-
-<defvar name="mime-temp-directory">
-<p>
-MIME 機能に関する実装が一時的に使用する file を作成する directory.
-<p>
-環境変数 <code>MIME_TMP_DIR</code>, <code>TM_TMP_DIR</code>,
-<code>TMPDIR</code>, <code>TMP</code> もしくは <code>TEMP</code> が設定
-されていた場合、それを初期値として用いる。何も設定されていない場合、
-<code>"/tmp/"</code> を用いる。
-</defvar>
 
 
 <h1> 付録
