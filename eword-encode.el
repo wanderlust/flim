@@ -97,13 +97,7 @@ CHARSET is a symbol to indicate MIME charset of the encoded-word.
 ENCODING allows \"B\" or \"Q\".
 MODE is allows `text', `comment', `phrase' or nil.  Default value is
 `phrase'."
-  (let ((text
-	 (cond ((string= encoding "B")
-		(base64-encode-string string))
-	       ((string= encoding "Q")
-		(q-encoding-encode-string string mode))
-	       )
-	 ))
+  (let ((text (encoded-text-encode-string string encoding)))
     (if text
 	(concat "=?" (upcase (symbol-name charset)) "?"
 		encoding "?" text "?=")
@@ -262,8 +256,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		 )
 		((string-equal encoding "Q")
 		 (setq string (encode-mime-charset-string string charset))
-		 (q-encoding-encoded-length string
-					    (ew-rword-type rword))
+		 (Q-encoded-text-length string (ew-rword-type rword))
 		 )))
     (if ret
 	(cons (+ 7 (length (symbol-name charset)) ret) string)
