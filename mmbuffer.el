@@ -56,7 +56,7 @@
 		       (mime-entity-body-end-internal entity))
      (mime-entity-encoding entity))))
 
-(mm-define-method write-entity-content ((entity buffer) filename)
+(mm-define-method write-content ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (mime-write-decoded-region (mime-entity-body-start-internal entity)

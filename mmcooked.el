@@ -33,7 +33,7 @@
 
 (mm-define-method cooked-p ((entity cooked)) t)
 
-(mm-define-method write-entity-content ((entity cooked) filename)
+(mm-define-method write-content ((entity cooked) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (let ((encoding (or (mime-entity-encoding entity) "7bit")))
