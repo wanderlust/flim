@@ -105,8 +105,9 @@ Return value is
 or nil.  PRIMARY-TYPE and SUBTYPE are symbol and NAME_n and VALUE_n
 are string."
   (setq string (std11-unfold-string string))
-  (if (string-match `,(concat "^\\(" mime-token-regexp
-			      "\\)/\\(" mime-token-regexp "\\)") string)
+  (if (string-match (eval-when-compile
+		      (concat "^\\(" mime-token-regexp
+			      "\\)/\\(" mime-token-regexp "\\)")) string)
       (let* ((type (downcase
 		    (substring string (match-beginning 1) (match-end 1))))
 	     (subtype (downcase

@@ -69,7 +69,8 @@ current-buffer, and return it.")
 ;;;
 
 (defmacro mime-entity-send (entity message &rest args)
-  `(luna-send ,entity ',(intern (format "mime-%s" (eval message))) ,@args))
+  (` (luna-send (, entity)
+		'(, (intern (format "mime-%s" (eval message)))) (,@ args))))
 
 (defun mime-open-entity (type location)
   "Open an entity and return it.

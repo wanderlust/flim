@@ -1,4 +1,4 @@
-;;; mime-def.el --- definition module about MIME -*- coding: iso-8859-4; -*-
+;;; mime-def.el --- definition module about MIME -*- coding: iso-2022-jp; -*-
 
 ;; Copyright (C) 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 
@@ -37,30 +37,29 @@
   )
 
 (eval-and-compile
-  (defconst mime-library-product ["FLIM" (1 14 0) "Ninokuchi"]
-    "Product name, version number and code name of MIME-library package."))
+  (defconst mime-library-product ["CLIME" (1 14 0) "五間堂"]
+    "Product name, version number and code name of MIME-library package.")
+  )
 
 (defmacro mime-product-name (product)
-  `(aref ,product 0))
+  (` (aref (, product) 0)))
 
 (defmacro mime-product-version (product)
-  `(aref ,product 1))
+  (` (aref (, product) 1)))
 
 (defmacro mime-product-code-name (product)
-  `(aref ,product 2))
+  (` (aref (, product) 2)))
 
 (defconst mime-library-version
   (eval-when-compile
     (concat (mime-product-name mime-library-product) " "
-	    (mapconcat #'number-to-string
+	    (mapconcat (function int-to-string)
 		       (mime-product-version mime-library-product) ".")
 	    " - \"" (mime-product-code-name mime-library-product) "\"")))
 
 
 ;;; @ variables
 ;;;
-
-(require 'custom)
 
 (defgroup mime '((default-mime-charset custom-variable))
   "Emacs MIME Interfaces"
@@ -158,10 +157,9 @@
 ;;;
 
 (defsubst make-mime-content-type (type subtype &optional parameters)
-  (list* (cons 'type type)
-	 (cons 'subtype subtype)
-	 (nreverse parameters))
-  )
+  (cons (cons 'type type)
+	(cons (cons 'subtype subtype)
+	      (nreverse parameters))))
 
 (defsubst mime-content-type-primary-type (content-type)
   "Return primary-type of CONTENT-TYPE."
@@ -241,16 +239,17 @@ message/rfc822, `mime-entity' structures of them are included in
   "Define NAME as a service for Content-Transfer-Encodings.
 If ARGS is specified, NAME is defined as a generic function for the
 service."
-  `(progn
-     (add-to-list 'mel-service-list ',name)
-     (defvar ,(intern (format "%s-obarray" name)) (make-vector 7 0))
-     ,@(if args
-	   `((defun ,name ,args
-	       ,@rest
-	       (funcall (mel-find-function ',name ,(car (last args)))
-			,@(luna-arglist-to-arguments (butlast args)))
-	       )))
-     ))
+  (` (progn
+       (add-to-list 'mel-service-list '(, name))
+       (defvar (, (intern (format "%s-obarray" name))) (make-vector 7 0))
+       (,@ (if args
+	       (` ((defun (, name) (, args)
+		     (,@ rest)
+		     (funcall (mel-find-function '(, name)
+						 (, (car (last args))))
+			      (,@ (luna-arglist-to-arguments (butlast args))))
+		     )))))
+       )))
 
 (put 'mel-define-service 'lisp-indent-function 'defun)
 
@@ -291,9 +290,10 @@ service."
 If PARENTS is specified, TYPE inherits PARENTS.
 Each parent must be backend name (string)."
   (cons 'progn
-	(mapcar (lambda (parent)
-		  `(mel-copy-backend ,parent ,type)
-		  )
+	(mapcar (function
+		 (lambda (parent)
+		   (` (mel-copy-backend (, parent) (, type)))
+		   ))
 		parents)))
 
 (defmacro mel-define-method (name args &rest body)
@@ -303,11 +303,12 @@ specialized parameter.  (car (car (last ARGS))) is name of variable
 and (nth 1 (car (last ARGS))) is name of backend (encoding)."
   (let* ((specializer (car (last args)))
 	 (class (nth 1 specializer)))
-    `(progn
-       (mel-define-service ,name)
-       (fset (intern ,class ,(intern (format "%s-obarray" name)))
-	     (lambda ,(butlast args)
-	       ,@body)))))
+    (` (progn
+	 (mel-define-service (, name))
+	 (fset (intern (, class) (, (intern (format "%s-obarray" name))))
+	       (function
+		(lambda (, (butlast args))
+		  (,@ body))))))))
 
 (put 'mel-define-method 'lisp-indent-function 'defun)
 
@@ -321,21 +322,21 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
 	 (args (cdr spec))
 	 (specializer (car (last args)))
 	 (class (nth 1 specializer)))
-    `(let (sym)
-       (mel-define-service ,name)
-       (setq sym (intern ,class ,(intern (format "%s-obarray" name))))
-       (or (fboundp sym)
-	   (fset sym (symbol-function ,function))))))
+    (` (let (sym)
+	 (mel-define-service (, name))
+	 (setq sym (intern (, class) (, (intern (format "%s-obarray" name)))))
+	 (or (fboundp sym)
+	     (fset sym (symbol-function (, function))))))))
 
 (defmacro mel-define-function (function spec)
   (let* ((name (car spec))
 	 (args (cdr spec))
 	 (specializer (car (last args)))
 	 (class (nth 1 specializer)))
-    `(progn
-       (define-function ,function
-	 (intern ,class ,(intern (format "%s-obarray" name))))
-       )))
+    (` (progn
+	 (define-function (, function)
+	   (intern (, class) (, (intern (format "%s-obarray" name)))))
+	 ))))
 
 (defvar base64-dl-module
   (if (and (fboundp 'base64-encode-string)

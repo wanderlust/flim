@@ -2,7 +2,7 @@
 # Makefile for FLIM.
 #
 
-PACKAGE = flim
+PACKAGE = clime
 API	= 1.14
 RELEASE = 0
 

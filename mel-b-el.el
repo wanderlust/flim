@@ -100,7 +100,7 @@ external decoder is called."
   )
 
 (defmacro base64-num-to-char (n)
-  `(aref base64-characters ,n))
+  (` (aref base64-characters (, n))))
 
 (defun base64-encode-1 (pack)
   (let ((buf (make-string 4 ?=)))
@@ -170,7 +170,7 @@ into shorter lines."
       vec)))
 
 (defmacro base64-char-to-num (c)
-  `(aref base64-numbers ,c))
+  (` (aref base64-numbers (, c))))
 
 (defsubst base64-internal-decode (string buffer)
   (let* ((len (length string))
