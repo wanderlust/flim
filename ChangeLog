@@ -1,3 +1,30 @@
+1999-05-23  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmcooked.el (mime-insert-header): Use
+	`luna-class-find-functions'.
+
+	* mime.el (mime-entity-buffer): Define as obsolete function.
+	(mime-entity-body-end-point): New generic function; define
+	`mime-entity-body-end' as obsolete function.
+	(mime-goto-body-start-point): New generic function.
+	(mime-entity-uu-filename): Use `mime-goto-body-start-point' and
+	`mime-entity-body-end-point'.
+
+	* mmbuffer.el (initialize-instance): Define as after method;
+	return initialized instance.
+
+	* luna.el (luna-define-class): Add `standard-object' as a parent.
+	(luna-define-method): Allow `:after' qualifier.
+	(luna-class-find-parents-functions): New function.
+	(luna-class-find-functions): New function [abolish
+	`luna-class-find-function'].
+	(luna-find-functions): New function [abolish
+	`luna-find-function'].
+	(luna-send): Modify for new method dispatch mechanism.
+	(luna-make-entity): New implementation.
+	(standard-object): New class.
+	(initialize-instance): New method.
+
 1999-05-22  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* Delete mmgeneric.el.
