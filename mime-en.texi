@@ -978,6 +978,24 @@ Each field is encoded as corresponding method specified by variable
 @end defun
 
 
+@defvar eword-field-encoding-method-alist
+
+Association list to specify field encoding method.  Each element looks
+like (FIELD . METHOD).@refill
+
+If METHOD is @code{mime}, the FIELD will be encoded into MIME format
+(encoded-word).@refill
+
+If METHOD is @code{nil}, the FIELD will not be encoded.@refill
+
+If METHOD is a MIME charset, the FIELD will be encoded as the charset
+when it must be convert into network-code.@refill
+
+Otherwise the FIELD will be encoded as variable
+@code{default-mime-charset} when it must be convert into network-code.
+@end defvar
+
+
 
 @node custom, Appendix, encoded-word, Top
 @chapter Various Customization
