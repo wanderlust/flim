@@ -1,3 +1,54 @@
+2003-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.6 (Marutamachi) released.
+
+2003-12-14  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-def.el (mime-header-accept-quoted-encoded-words): Change
+	default value to nil.
+
+2003-03-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-decode.el (eword-analyze-quoted-string): Decode
+	quoted-encoded-words when
+	`mime-header-accept-quoted-encoded-words' is not nil.
+
+	* mime.el (mime-entity-filename): Decode quoted-encoded-words when
+	`mime-header-accept-quoted-encoded-words' is not nil.
+
+	* mime-def.el (mime-header-accept-quoted-encoded-words): New user
+	option.
+
+2003-12-14  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
+
+	* eword-encode.el (mime-header-charset-encoding-alist): Add
+	entry for iso-8859-1[45].
+
+2003-11-13  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* FLIM-ELS (flim-modules): Install mel-b-el also for
+	mel-b-builtin case. (from Tatsuya Kinoshita)
+
+2003-09-18  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* FLIM-ELS (flim-modules): Don't install smtpmail.
+
+2003-04-30  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* std11.el (std11-field-end): Return end of field correctly
+	even in case of existence of invisible header.
+
+2003-02-05  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* eword-encode.el (mime-encode-header-in-buffer):
+	Do not eliminate white spaces.
+
+2002-11-05  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el (tm-eword::words-to-ruled-words): New
+	implementation for UTF-2000 implementations.
+
+
 2002-12-27  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.5 (Demachiyanagi) released.

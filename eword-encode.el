@@ -46,6 +46,8 @@
     (iso-8859-7		. "Q")
     (iso-8859-8		. "Q")
     (iso-8859-9		. "Q")
+    (iso-8859-14	. "Q")
+    (iso-8859-15	. "Q")
     (iso-2022-jp	. "B")
     (iso-2022-jp-3	. "B")
     (iso-2022-kr	. "B")
@@ -180,6 +182,26 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		       (cons charset mime-header-default-charset-encoding)))))
 	(list charset encoding))))
 
+;; [tomo:2002-11-05] The following code is a quick-fix for emacsen
+;; which is not depended on the Mule model.  We should redesign
+;; `eword-encode-split-string' to avoid to depend on the Mule model.
+(if (featurep 'utf-2000)
+;; for CHISE Architecture
+(defun tm-eword::words-to-ruled-words (wl &optional mode)
+  (let (mcs)
+    (mapcar (function
+	     (lambda (word)
+	       (setq mcs (detect-mime-charset-string (cdr word)))
+	       (make-ew-rword
+		(cdr word)
+		mcs
+		(cdr (or (assq mcs mime-header-charset-encoding-alist)
+			 (cons mcs mime-header-default-charset-encoding)))
+		mode)
+	       ))
+	    wl)))
+
+;; for legacy Mule
 (defun tm-eword::words-to-ruled-words (wl &optional mode)
   (mapcar (function
 	   (lambda (word)
@@ -187,6 +209,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	       (make-ew-rword (cdr word) (car ret)(nth 1 ret) mode)
 	       )))
 	  wl))
+)
 
 (defun ew-space-process (seq)
   (let (prev a ac b c cc)
@@ -737,16 +760,18 @@ It refer variable `mime-field-encoding-method-alist'."
       (goto-char (point-min))
       (let ((default-cs (mime-charset-to-coding-system default-mime-charset))
 	    bbeg end field-name)
-	(while (re-search-forward std11-field-head-regexp nil t)
+	(while (re-search-forward
+		(concat "\\(" std11-field-head-regexp "\\)" " ?")
+		nil t)
 	  (setq bbeg (match-end 0)
-		field-name (buffer-substring (match-beginning 0) (1- bbeg))
+		field-name (buffer-substring (match-beginning 0) (1- (match-end 1)))
 		end (std11-field-end))
 	  (and (delq 'ascii (find-charset-region bbeg end))
 	       (let ((method (eword-find-field-encoding-method
 			      (downcase field-name))))
 		 (cond ((eq method 'mime)
 			(let* ((field-body
-			       (buffer-substring-no-properties bbeg end))
+				(buffer-substring-no-properties bbeg end))
 			       (encoded-body
 				(mime-encode-field-body
 				 field-body field-name)))
