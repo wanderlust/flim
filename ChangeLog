@@ -1,3 +1,7 @@
+1998-05-14  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-analyze-comment): Call `std11-unfold-string'.
+
 1998-05-13  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* mime-def.el: Fix typo.

@@ -597,7 +597,7 @@ be the result."
 	  (setq p (or p len))
 	  (cons (cons 'comment
 		      (eword-decode-comment
-		        (substring string 0 p)
+		        (std11-unfold-string (substring string 0 p))
 			default-mime-charset))
 		(substring string p)))
       nil)))
