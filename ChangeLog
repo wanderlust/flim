@@ -1,3 +1,9 @@
+2004-07-27  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* mel-g.el (gzip64-external-encoder): Change default value to
+	cause more recognizable error.
+	(gzip64-external-decoder): Ditto.
+
 2004-06-09  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* std11.el (std11-parse-word-or-comment-or-period): Renamed from
