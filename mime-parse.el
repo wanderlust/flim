@@ -302,14 +302,6 @@ If buffer is omitted, it parses current-buffer."
     ))
 
 
-;;; @ utilities
-;;;
-
-(defsubst mime-root-entity-p (entity)
-  "Return t if ENTITY is root-entity (message)."
-  (null (mime-entity-node-id entity)))
-
-
 ;;; @ end
 ;;;
 

@@ -58,6 +58,9 @@ current-buffer, and return it.")
   "Parse BUFFER as a MIME message.")
 
 
+;;; @ MIME entity
+;;;
+
 (defun mime-entity-fetch-field (entity field-name)
   (or (symbolp field-name)
       (setq field-name (intern (capitalize (capitalize field-name)))))
@@ -120,6 +123,10 @@ current-buffer, and return it.")
 		   (mime-entity-set-parsed-header
 		    entity (put-alist field-name field header))
 		   field)))))))
+
+(defsubst mime-root-entity-p (entity)
+  "Return t if ENTITY is root-entity (message)."
+  (null (mime-entity-node-id entity)))
 
 
 ;;; @ end
