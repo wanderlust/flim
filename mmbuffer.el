@@ -31,10 +31,10 @@
 (mm-define-method open ((nil buffer) location)
   (mime-parse-buffer location))
 
-(mm-define-method point-min ((entity buffer))
+(mm-define-method entity-point-min ((entity buffer))
   (mime-entity-header-start-internal entity))
 
-(mm-define-method point-max ((entity buffer))
+(mm-define-method entity-point-max ((entity buffer))
   (mime-entity-body-end-internal entity))
 
 (mm-define-method fetch-field ((entity buffer) field-name)
@@ -46,9 +46,9 @@
       (std11-fetch-field field-name)
       )))
 
-(mm-define-method cooked-p ((entity buffer)) nil)
+(mm-define-method entity-cooked-p ((entity buffer)) nil)
 
-(mm-define-method get-content ((entity buffer))
+(mm-define-method entity-content ((entity buffer))
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (mime-decode-string
@@ -56,7 +56,7 @@
 		       (mime-entity-body-end-internal entity))
      (mime-entity-encoding entity))))
 
-(mm-define-method write-content ((entity buffer) filename)
+(mm-define-method write-entity-content ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (mime-write-decoded-region (mime-entity-body-start-internal entity)
@@ -65,7 +65,7 @@
 			       (or (mime-entity-encoding entity) "7bit"))
     ))
 
-(mm-define-method write-with-header ((entity buffer) filename)
+(mm-define-method write-entity ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (write-region-as-binary (mime-entity-header-start-internal entity)
@@ -73,7 +73,7 @@
 			    filename)
     ))
 
-(mm-define-method write-body ((entity buffer) filename)
+(mm-define-method write-entity-body ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (write-region-as-binary (mime-entity-body-start-internal entity)
