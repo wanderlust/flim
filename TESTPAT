@@ -423,6 +423,15 @@
 "From: akr@jaist.ac.jp (\\=?ISO-2022-JP?B?GyRCJCIbKEI=?=)"
 "From: akr@jaist.ac.jp (\\=?ISO-2022-JP?B?GyRCJCIbKEI=?=)")
 
+(decode
+"=?ISO-2022-JP?B?GyRCJCIbKEI=?=: test"
+"=?ISO-2022-JP?B?GyRCJCIbKEI=?=: test")
+
+(decode
+"=?ISO-2022-JP?B?GyRCJCIbKEI=?=: test"
+"=?ISO-2022-JP?B?GyRCJCIbKEI=?=: test"
+'permit-sticked-special)
+
 ;; Section 3: Decoding melancholy inputs.
 
 (decode
