@@ -1,6 +1,6 @@
 ;;; eword-decode.el --- RFC 2047 based encoded-word decoder for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,01,03 Free Software Foundation, Inc.
 
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
 ;;         MORIOKA Tomohiko <tomo@m17n.org>
@@ -621,16 +621,17 @@ returns nil, next function is used.  Otherwise the return value will
 be the result.")
 
 (defun eword-analyze-quoted-string (string start &optional must-unfold)
-  (let ((p (std11-check-enclosure string ?\" ?\" nil start)))
-    (if p
-	(cons (cons 'quoted-string
-		    (decode-mime-charset-string
-		     (std11-strip-quoted-pair
-		      (substring string (1+ start) (1- p)))
-		     default-mime-charset))
-	      ;;(substring string p))
-	      p)
-      )))
+  (let ((p (std11-check-enclosure string ?\" ?\" nil start))
+	ret)
+    (when p
+      (setq ret (decode-mime-charset-string
+		 (std11-strip-quoted-pair
+		  (substring string (1+ start) (1- p)))
+		 default-mime-charset))
+      (if mime-header-accept-quoted-encoded-words
+	  (setq ret (eword-decode-string ret)))
+      (cons (cons 'quoted-string ret)
+	    p))))
 
 (defun eword-analyze-domain-literal (string start &optional must-unfold)
   (std11-analyze-domain-literal string start))
