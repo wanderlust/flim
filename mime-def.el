@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "FLIM 1.1.1 - \"J-Dþjò\"")-A
+  "FLIM 1.1.1 - \"J-Dþjò\" ")-A
 
 (require 'custom)
 
@@ -36,6 +36,15 @@
 
 (custom-handle-keyword 'default-mime-charset :group 'mime
 		       'custom-variable)
+
+(defvar mime-temp-directory (or (getenv "MIME_TMP_DIR")
+				(getenv "TM_TMP_DIR")
+				(getenv "TMPDIR")
+				(getenv "TMP")
+				(getenv "TEMP")
+				"/tmp/")
+  "*Directory for temporary files.")
+
 
 (unless (fboundp 'butlast)
   (defun butlast (x &optional n)
