@@ -1,8 +1,5 @@
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* mmcooked.el, mmbuffer.el (entity-cooked-p): Renamed from
-	`cooked-p'.
-
 	* mime.el (mm-arglist-to-arguments): New function.
 	(mm-define-generic): New macro.
 	(mime-entity-cooked-p): Use `mm-define-generic'.
@@ -36,10 +33,6 @@
 	* mime.el: Move `mime-entity-implementation-alist' to mime-def.el.
 	(mime-find-function): New implementation.
 	(mime-entity-cooked-p): Use `mime-entity-send'.
-	(mime-entity-header-start): Change message to `header-start'.
-	(mime-entity-header-end): Change message to `header-end'.
-	(mime-entity-body-start): Change message to `body-start'.
-	(mime-entity-body-end): Change message to `body-end'.
 
 	* mime-def.el (mime-entity-implementation-alist): Moved from
 	mime.el.
