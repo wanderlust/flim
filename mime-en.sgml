@@ -424,14 +424,14 @@ Content-Type field.
 <h2> Format of Content-Type field
 <node> Content-Type field
 <p>
-Content-Type 欄の形式は以下のように定義されています：
+Format of Content-Type field is defined as follows:
 
 <quote>
 ``Content-Type'' ``:'' <concept>type</concept> ``/''
 <concept>subtype</concept> *( ``;'' <concept>parameter</concept> )
 </quote>
 <p>
-例えば、
+For example:
 
 <quote>
 <verb>
@@ -439,25 +439,20 @@ Content-Type: image/jpeg
 </verb>
 </quote>
 
-<noindent>
-や
-
 <quote>
 <verb>
 Content-Type: text/plain; charset=iso-2022-jp
 </verb>
 </quote>
-
-<noindent>
-などのように用いられます。
 <p>
-ここで、`type' と `subtype' は entity の形式を示すもので、両者を総称し
-て、`media-type' と呼ぶことにします。上記の例における `image/jpeg' や
-`text/plain' は media-type の１つです。
+`type' and `subtype' indicate format of an entity.  In this document,
+pair of them is called `media-type'.  `image/jpeg' or `text/plain' is
+a media-type.
 
 <memo>
 <p>
-Content-Type 欄のない entity は
+If an entity does not have Content-Type field, it is regarded as
+following:
 
 <quote>
 <verb>
@@ -466,7 +461,7 @@ Content-Type: text/plain; charset=us-ascii
 </quote>
 
 <noindent>
-として解釈される。<cf node="us-ascii">
+<cf node="us-ascii">
 </memo>
 
 
@@ -475,19 +470,20 @@ Content-Type: text/plain; charset=us-ascii
 <p>
 <define type="Structure" name="mime-content-type">
 <p>
-Content-Type 欄の情報を格納するための構造体。
+Structure to store information of a Content-Type field.
 <p>
-この構造体を参照するには <code>mime-content-type-要素名</code> という名
-前の参照関数を用いる。
+Applications should use reference functions
+<code>mime-content-type-SLOT</code> to refer information of the
+structure.
 <p>
-この構造体の要素は以下の通りである：
+Slots of the structure are following:
 
 <vl>
-<dt>primary-type<dd>media-type の主型 (symbol).
+<dt>primary-type<dd>primary type of media-type (symbol).
 </dd>
-<dt>subtype<dd>media-type の副型 (symbol).
+<dt>subtype<dd>subtype of media-type (symbol).
 </dd>
-<dt>parameters<dd>Content-Type 欄の parameter (連想 list).
+<dt>parameters<dd>parameters of Content-Type field (association-list).
 </dd>
 </vl>
 </define>
@@ -495,13 +491,13 @@ Content-Type 欄の情報を格納するための構造体。
 <defun name="make-mime-content-type">
 	  <args> type subtype
 	  <opts> parameters
-<p>content-type の生成子。
+<p>Constructor of content-type.
 </defun>
 
 <defun name="mime-content-type-parameter">
 <args> content-type parameter
 <p>
-<var>content-type</var> の <var>parameter</var> の値を返す。
+Return value of <var>parameter</var> of <var>content-type</var>.
 </defun>
 
 
@@ -511,14 +507,15 @@ Content-Type 欄の情報を格納するための構造体。
 <defun name="mime-parse-Content-Type">
 	  <args> string
 <p>
-<var>string</var> を content-type として解析した結果を返す。
+Parse <var>string</var> as field-body of Content-Type field.
 </defun>
 
 <defun name="mime-read-Content-Type">
 <p>
-現在の buffer の Content-Type 欄を読み取り、解析した結果を返す。
+Read field-body of Content-Type field from current-buffer,
+and return parsed it.
 <p>
-Content-Type 欄が存在しない場合は nil を返す。
+Return <code>nil</code> if Content-Type field is not found.
 </defun>
 
 
@@ -536,8 +533,9 @@ Return type/subtype string from <var>type</var> and
 <h1> Information of Content-Disposition field
 <node> Content-Disposition
 <p>
-<concept>Content-Disposition 欄</concept> は entity の表示や file 名など
-の属性になどに関する情報を記述するためのものです。
+<concept>Content-Disposition field</concept> is an optional field to
+specify presentation of an entity or attributes of an entity, such as
+file name.
 
 <rfc number="2183" type="Standards Track"
 	      author="S. Dorner, K. Moore and R. Troost"
@@ -545,9 +543,9 @@ Return type/subtype string from <var>type</var> and
 	      Internet Messages: The Content-Disposition Header"
 	      date="August 1997">
 <p>
-FLIM は Content-Disposition 欄を構文解析する関数と Content-Disposition 
-欄の解析結果を格納する構造体 
-<concept>mime-content-disposition</concept> を提供します。
+FLIM provides parser for Content-Disposition field and structure
+<concept>mime-content-disposition</concept> to store information of
+Content-Disposition field.
 
 
 <h2> mime-content-disposition structure
@@ -555,17 +553,19 @@ FLIM は Content-Disposition 欄を構文解析する関数と Content-Dispositi
 <p>
 <define type="Structure" name="mime-content-disposition">
 <p>
-Content-Disposition 欄の解析結果を収めるための構造体。
+Structure to store information of a Content-Disposition field.
 <p>
-この構造体を参照するには <code>mime-content-disposition-要素名</code> と
-いう名前の参照関数を用いる。
+Applications should use reference functions
+<code>mime-content-disposition-SLOT</code> to refer information of the
+structure.
 <p>
-この構造体の要素は以下の通りである：
+Slots of the structure are following:
 
 <vl>
 <dt>disposition-type<dd>disposition-type (symbol).
 </dd>
-<dt>parameters<dd>Content-Disposition 欄の parameter (連想 list).
+<dt>parameters<dd>parameters of Content-Disposition field
+(association-list).
 </dd>
 </vl>
 </define>
@@ -573,13 +573,14 @@ Content-Disposition 欄の解析結果を収めるための構造体。
 <defun name="mime-content-disposition-parameter">
 <args> content-disposition parameter
 <p>
-<var>content-disposition</var> の <var>parameter</var> の値を返す。
+Return value of <var>parameter</var> of
+<var>content-disposition</var>.
 </defun>
 
 <defun name="mime-content-disposition-filename">
 <args> content-disposition
 <p>
-<var>content-disposition</var> の filename の値を返す。
+Return filename of <var>content-disposition</var>.
 </defun>
 
 
@@ -589,14 +590,15 @@ Content-Disposition 欄の解析結果を収めるための構造体。
 <defun name="mime-parse-Content-Disposition">
 	    <args> string
 <p>
-<var>string</var> を content-disposition として解析した結果を返す。
+Parse <var>string</var> as field-body of Content-Disposition field,
+and return the result.
 </defun>
 
 <defun name="mime-read-Content-Disposition">
 <p>
-現在の buffer の Content-Disposition 欄を読み取り、解析した結果を返す。
+Read field-body of Content-Disposition field from current-buffer,
 <p>
-Content-Disposition 欄が存在しない場合は nil を返す。
+Return nil if Content-Disposition field is not found.
 </defun>
 
 
