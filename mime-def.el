@@ -52,6 +52,11 @@
   :group 'mime
   :type 'directory)
 
+(defcustom mime-uuencode-encoding-name-list '("x-uue" "x-uuencode")
+  "*List of encoding names for uuencode format."
+  :group 'mime
+  :type '(repeat string))
+
 
 ;;; @ required functions
 ;;;
