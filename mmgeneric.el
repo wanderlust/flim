@@ -144,9 +144,8 @@
 	  )
 	t)))
 
-(mm-define-method insert-decoded-header ((entity generic)
-					 &optional invisible-fields
-					 visible-fields)
+(mm-define-method insert-header ((entity generic)
+				 &optional invisible-fields visible-fields)
   (save-restriction
     (narrow-to-region (point)(point))
     (let ((the-buf (current-buffer))

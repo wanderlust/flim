@@ -58,9 +58,8 @@
 		  filename)
     ))
 
-(mm-define-method insert-decoded-header ((entity cooked)
-					 &optional invisible-fields
-					 visible-fields)
+(mm-define-method insert-header ((entity cooked)
+				 &optional invisible-fields visible-fields)
   (let (default-mime-charset)
     (funcall (mime-find-function 'insert-decoded-header 'buffer)
 	     entity invisible-fields visible-fields)
