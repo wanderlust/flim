@@ -1,6 +1,7 @@
 1999-04-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
-	* smtp.el (smtp-server): Funcall `smtp-server' if it is a function.
+	* smtp.el (smtp-via-smtp): Funcall `smtp-server' if it is a
+	function.
 	(smtp-server): Make it can also be a function called from
 	`smtp-via-smtp' with arguments SENDER and RECIPIENTS.
 
