@@ -1,3 +1,11 @@
+1998-09-10  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* FLIM-ELS (flim-modules): Delete `ew-ccl'.
+
+	* ew-bq.el: Always use mel.
+
+	* ew-ccl.el: Abolished.
+
 1998-09-09  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ew-dec.el (ew-decode-field): Call `ew-decode-field-no-cache'
