@@ -3,7 +3,7 @@
 ;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
 
 ;; Author: Kenichi OKADA <okada@opaopa.org>
-;; Keywords: SMTP, 
+;; Keywords: SMTP, SASL
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
 

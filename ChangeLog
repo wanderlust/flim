@@ -1,5 +1,10 @@
 1999-10-19  Kenichi OKADA <okada@opaopa.org>
 
+	* SLIM-VERSION: New file.
+	* sasl.el: Add keyword.
+
+1999-10-19  Kenichi OKADA <okada@opaopa.org>
+
 	* sasl.el: New file.
 	* smtp.el: (smtp-via-smtp): Use sasl.el for SASL.
 	* FLIM-ELS (flim-modules): Add `sasl'.
