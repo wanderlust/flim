@@ -1,3 +1,9 @@
+2001-05-01  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-parse-parameters): Don't use `equal' for
+	strings.
+	(mime-parse-Content-Type): Ditto.
+
 2001-04-30  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* mime-parse.el (mime-decode-parameter-value): Use one temporary
