@@ -1,3 +1,9 @@
+1998-12-08  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* smtp.el (smtp-coding-system): Abolished.
+	(smtp-via-smtp): Use `open-network-stream-as-binary' instead of
+	`open-network-stream'.
+
 1998-12-04  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* mel-b-ccl.el (base64-ccl-insert-encoded-file): Use
