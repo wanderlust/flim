@@ -1,3 +1,9 @@
+1998-05-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS (flim-modules): Add mailcap.
+
+	* mailcap.el: New file (copied from SEMI).
+
 1998-04-23  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-ignored-field-list): Add
@@ -9,7 +15,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky.DNrto) was released.
+	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
