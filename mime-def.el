@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(defconst mime-library-version-string "FLIM 1.5.0 - \"Mukaijima\"")
+(defconst mime-library-version-string "FLIM 1.6.0 - \"Ogura\"")
 
 
 ;;; @ variables
