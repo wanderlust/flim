@@ -71,11 +71,11 @@
 	   (funcall #',right trans)
 	 next))))
 
-(defun net-transaction-compose-fold-left (function accu sequence)
+(defun net-transaction-fold-left (function accu sequence)
   "Apply FUNCTION to ACCU while folding SEQUENCE left to right."
   (if (null sequence)
       accu
-    (net-transaction-compose-fold-left
+    (net-transaction-fold-left
      function (funcall function accu (car sequence))
      (cdr sequence))))
 
@@ -90,7 +90,7 @@
     (if (null combinator)
 	(error "Unknown operator")
       (setq accu
-	    (net-transaction-compose-fold-left
+	    (net-transaction-fold-left
 	     `(lambda (accu c)
 		(funcall
 		 #',(nth 1 combinator) accu
