@@ -765,7 +765,7 @@ represents addr-spec of RFC 822."
   "Return string of address part from parsed ADDRESS of RFC 822."
   (cond ((eq (car address) 'group)
 	 (mapconcat (function std11-address-string)
-		    (car (cdr address))
+		    (nth 2 address)
 		    ", ")
 	 )
 	((eq (car address) 'mailbox)

@@ -1,14 +1,31 @@
-2000-08-12	Kenichi OKADA   <okada@opaopa.org>
+2000-08-23  Kenichi OKADA <okada@opaopa.org>
+
+	* smtp.el (smtp-system-name): New variable.
+	(smtp-make-fqdn): Use `smtp-system-name' if non-nil.
+
+2000-08-23  Yuuichi Teranishi <teranisi@gohome.org>
+
+	* eword-encode.el (eword-encode-address-to-rword-list): New function.
+	(eword-encode-addresses-to-rword-list):
+	Use eword-encode-address-to-rword-list.
+	* std11.el (std11-address-string): Fix.
+
+2000-08-23  Kenichi OKADA <okada@opaopa.org>
+
+	* mime-def.el (mime-library-product): Up.
+
+
+2000-08-12  Kenichi OKADA   <okada@opaopa.org>
 
 	* SLIM: Version 1.14.1 released.
 	SLIM-TIPS: Update.
 
-2000-08-12	Kenichi OKADA   <okada@opaopa.org>
+2000-08-12  Kenichi OKADA   <okada@opaopa.org>
 
 	* starttls.el (starttls-open-stream): Put `starttls-extra-args' on
 	the last arg.
 
-2000-08-11	Kenichi OKADA   <okada@opaopa.org>
+2000-08-11  Kenichi OKADA   <okada@opaopa.org>
 
 	* starttls.el (starttls-open-ssl-stream): New function.
 	(starttls-open-stream): Move `starttls-extra-args'.
