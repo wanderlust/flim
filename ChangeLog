@@ -1,5 +1,26 @@
 1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel-u.el: Use `mel-define-backend' to define "x-uue".
+	Define "x-uuencode" as a clone of "x-uue".
+
+	* Move variable `mel-encoding-module-alist' from mel.el to
+	mime-def.el.
+	
+	* mel.el (mel-find-function): Use function
+	`mel-find-function-from-obarray'.
+	Use `mel-define-backend' to define "7bit", "8bit" and "binary";
+	don't define methods of "8bit" and "binary"; inherit methods from
+	"7bit".
+
+	* mime-def.el (mel-service-list): New variable.
+	(mel-define-service): New implementation.
+	(mel-find-function-from-obarray): New inline function.
+	(mel-copy-method): New inline function.
+	(mel-copy-backend): New inline function.
+	(mel-define-backend): New macro.
+
+1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel-u.el: Define method functions of mel.
 	(mime-encode-region): Use `mel-define-method-function'; abolish
 	`uuencode-encode-region'.
