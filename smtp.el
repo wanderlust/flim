@@ -37,7 +37,7 @@
 (require 'net-trans)
 
 (eval-and-compile
-  (luna-define-class smtp-transaction (transaction)
+  (luna-define-class smtp-transaction (net-transaction)
 		     (process
 		      extensions
 		      sender
@@ -126,7 +126,7 @@ don't define this value."
 	 (smtp-read-response
 	  (smtp-transaction-process-internal trans))))
     (or (smtp-check-response response)
-	(transaction-error trans 'greeting))
+	(net-transaction-error trans 'greeting))
     trans))
   
 (luna-define-method smtp-ehlo ((trans smtp-transaction))
@@ -137,7 +137,7 @@ don't define this value."
 	 (smtp-read-response 
 	  (smtp-transaction-process-internal trans))))
     (or (smtp-check-response response)
-	(transaction-error trans 'ehlo))
+	(net-transaction-error trans 'ehlo))
     (smtp-transaction-set-extensions-internal trans (cdr response))
     trans))
 
@@ -149,7 +149,7 @@ don't define this value."
 	 (smtp-read-response
 	  (smtp-transaction-process-internal trans))))
     (or (smtp-check-response response)
-	(transaction-error trans 'helo))
+	(net-transaction-error trans 'helo))
     trans))
 
 (luna-define-method smtp-mailfrom ((trans smtp-transaction))
@@ -184,7 +184,7 @@ don't define this value."
 	 (smtp-read-response
 	  (smtp-transaction-process-internal trans))))
     (or (smtp-check-response response)
-	(transaction-error trans 'mailfrom))
+	(net-transaction-error trans 'mailfrom))
     trans))
 
 (luna-define-method smtp-rcptto ((trans smtp-transaction))
@@ -203,7 +203,7 @@ don't define this value."
 	    (smtp-read-response
 	     (smtp-transaction-process-internal trans)))
       (or (smtp-check-response response)
-	  (transaction-error trans 'rcptto))
+	  (net-transaction-error trans 'rcptto))
       (setq recipients (cdr recipients)))
     trans))
 
@@ -215,7 +215,7 @@ don't define this value."
 	 (smtp-read-response
 	  (smtp-transaction-process-internal trans))))
     (or (smtp-check-response response)
-	(transaction-error trans 'data))
+	(net-transaction-error trans 'data))
 
     ;; Mail contents
     (smtp-send-data 
@@ -230,15 +230,14 @@ don't define this value."
 	  (smtp-read-response
 	   (smtp-transaction-process-internal trans)))
     (or (smtp-check-response response)
-	(transaction-error trans 'data))
+	(net-transaction-error trans 'data))
     trans))
 
 (defun smtp-via-smtp (sender recipients smtp-text-buffer)
   (let ((server (if (functionp smtp-server)
 		    (funcall smtp-server sender recipients)
 		  smtp-server))
-	process response extensions
-	transaction error)
+	process response extensions trans error)
     (save-excursion
       (set-buffer
        (get-buffer-create
@@ -249,7 +248,7 @@ don't define this value."
       (setq smtp-read-point (point-min))
       (make-local-variable 'smtp-transaction-function)
       (or smtp-transaction-function
-	  (let ((function (transaction-compose-commands smtp-commands)))
+	  (let ((function (net-transaction-compose-commands smtp-commands)))
 	    (or (functionp function)
 		(error "Unable to compose SMTP commands"))
 	    (setq smtp-transaction-function function)))
@@ -261,15 +260,15 @@ don't define this value."
 			    "SMTP" (current-buffer) server smtp-service)))
 	    (when process
 	      (set-process-filter process 'smtp-process-filter)
-	      (setq transaction
+	      (setq trans
 		    (luna-make-entity 'smtp-transaction
 				      :process process
 				      :sender sender
 				      :recipients recipients
 				      :buffer smtp-text-buffer)
 		    error
-		    (catch (transaction-error-name transaction)
-		      (funcall smtp-transaction-function transaction)
+		    (catch (net-transaction-error-name trans)
+		      (funcall smtp-transaction-function trans)
 		      nil))
 	      (not error)))
 	(when (and process
