@@ -114,7 +114,23 @@ don't define this value."
 (defvar sasl-mechanisms)
 
 ;;;###autoload
-(defvar smtp-open-connection-function #'open-network-stream)
+(defvar smtp-open-connection-function #'open-network-stream
+  "*Function used for connecting to a SMTP server.
+The function will be called with the same four arguments as
+`open-network-stream' and should return a process object.
+Here is an example:
+
+\(setq smtp-open-connection-function
+      #'(lambda (name buffer host service)
+	  (let ((process-connection-type nil))
+	    (start-process name buffer \"ssh\" \"-C\" host
+			   \"nc\" host service))))
+
+It connects to a SMTP server using \"ssh\" before actually connecting
+to the SMTP port.  Where the command \"nc\" is the netcat executable;
+see http://www.atstake.com/research/tools/index.html#network_utilities
+for details.  In addition, you will have to modify the value for
+`smtp-end-of-line' to \"\\n\" if you use \"telnet\" instead of \"nc\".")
 
 (defvar smtp-read-point nil)
 
@@ -123,15 +139,9 @@ don't define this value."
 (defvar smtp-submit-package-function #'smtp-submit-package)
 
 (defvar smtp-end-of-line "\r\n"
-  "*String to use on the end of lines when talking to the SMTP server.
-This is \"\\r\\n\" by default, but should be \"\\n\" when using and
-indirect connection method, e.g. bind `smtp-open-connection-function'
-to a custom function as shown below:
-
-\(setq smtp-open-connection-function
-      (lambda (name buffer host service)
-	(start-process name buffer \"ssh\" \"-C\" host
-		       \"telnet\" \"-8\" host service)))")
+  "*String to use as end-of-line marker when talking to a SMTP server.
+This is \"\\r\\n\" by default, but it may have to be \"\\n\" when using a non
+native connection function.  See also `smtp-open-connection-function'.")
 
 ;;; @ SMTP package
 ;;; A package contains a mail message, an envelope sender address,
