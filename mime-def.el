@@ -185,6 +185,10 @@
   (aref (cdr parm) 1)
   )
 
+(defsubst mime-parameter-set-raw-values (parm raw-values)
+  (aset (cdr parm) 2 raw-values)
+  )
+
 (defsubst mime-parameter-raw-values (parm)
   (aref (cdr parm) 2)
   )
@@ -198,9 +202,12 @@
   (when parm
     (or (aref (cdr parm) 3)
 	(let* ((mcs (mime-parameter-charset parm))
-	       (sorted-raw (sort (mime-parameter-raw-values parm)
-				 (function (lambda (a b)
-					     (< (car a) (car b))))))
+	       (sorted-raw 
+		(mime-parameter-set-raw-values
+		 parm
+		 (sort (mime-parameter-raw-values parm)
+		       (function (lambda (a b)
+				   (< (car a) (car b)))))))
 	       (val
 		(if mcs
 		    (with-temp-buffer
