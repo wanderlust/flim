@@ -190,17 +190,34 @@ If MESSAGE is specified, it is regarded as root entity."
       (setq field-name (intern (capitalize (capitalize field-name)))))
   (or entity
       (setq entity mime-message-structure))
-  (let* ((header (mime-entity-original-header-internal entity))
-	 (field-body (cdr (assq field-name header))))
-    (or field-body
-	(progn
-	  (if (setq field-body
-		    (mime-entity-send entity 'fetch-field
-				      (symbol-name field-name)))
-	      (mime-entity-set-original-header-internal
-	       entity (put-alist field-name field-body header))
-	    )
-	  field-body))))
+  (cond ((eq field-name 'Date)
+	 (or (mime-entity-date-internal entity)
+	     (mime-entity-set-date-internal
+	      entity (mime-entity-send entity 'fetch-field "Date"))
+	     ))
+	((eq field-name 'Message-Id)
+	 (or (mime-entity-message-id-internal entity)
+	     (mime-entity-set-message-id-internal
+	      entity (mime-entity-send entity 'fetch-field "Message-Id"))
+	     ))
+	((eq field-name 'References)
+	 (or (mime-entity-references-internal entity)
+	     (mime-entity-set-references-internal
+	      entity (mime-entity-send entity 'fetch-field "References"))
+	     ))
+	(t
+	 (let* ((header (mime-entity-original-header-internal entity))
+		(field-body (cdr (assq field-name header))))
+	   (or field-body
+	       (progn
+		 (if (setq field-body
+			   (mime-entity-send entity 'fetch-field
+					     (symbol-name field-name)))
+		     (mime-entity-set-original-header-internal
+		      entity (put-alist field-name field-body header))
+		   )
+		 field-body))
+	   ))))
 
 (defalias 'mime-entity-content-type 'mime-entity-content-type-internal)
 
