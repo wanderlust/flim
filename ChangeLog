@@ -1,5 +1,13 @@
 1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
 
+	* (TESTPAT): add test result by FLIM-FLAM.
+
+	* eword-decode.el (eword-lexical-analyze-internal): restrict
+	calling `eword-analyze-encoded-word' after calling
+	`eword-analyze-spaces'.
+
+1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
+
 	* (TESTPAT): add test.
 
 	* eword-decode.el (eword-analyze-quoted-string): quote string as
