@@ -1,5 +1,8 @@
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* eword-encode.el: Rename `tm-eword::phrase-to-rwl' ->
+	`eword-encode-phrase-to-rword-list'.
+
 	* eword-encode.el: Rename `eword-addr-spec-to-rwl' ->
 	`eword-encode-addr-spec-to-rword-list'.
 
@@ -13,7 +16,7 @@
 	`eword-encode-split-string'.
 
 	* eword-encode.el: Rename `tm-eword::addresses-to-rwl' ->
-	`eword-encode-addresses-to-rwl'.
+	`eword-encode-addresses-to-rword-list'.
 
 	* eword-encode.el: Rename `tm-eword::encode-rwl' ->
 	`eword-encode-rword-list'.
