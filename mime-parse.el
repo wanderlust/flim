@@ -1,6 +1,6 @@
 ;;; mime-parse.el --- MIME message parser
 
-;; Copyright (C) 1994,1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1994,1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: parse, MIME, multimedia, mail, news
@@ -96,7 +96,9 @@ and return parsed it.  Format of return value is as same as
 ;;; @ Content-Disposition
 ;;;
 
-(defconst mime-disposition-type-regexp mime-token-regexp)
+(eval-and-compile
+  (defconst mime-disposition-type-regexp mime-token-regexp)
+  )
 
 ;;;###autoload
 (defun mime-parse-Content-Disposition (string)
