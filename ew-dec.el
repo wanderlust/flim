@@ -1,0 +1,414 @@
+(require 'emu)
+(require 'ew-unit)
+(require 'ew-scan-s)
+(require 'ew-scan-m)
+(require 'ew-scan-u)
+(require 'ew-parse)
+(provide 'ew-dec)
+
+;;; user customizable variable.
+
+(defvar ew-decode-quoted-encoded-word nil)
+(defvar ew-ignore-75bytes-limit nil)
+(defvar ew-ignore-76bytes-limit nil)
+(defvar ew-permit-sticked-comment nil)
+(defvar ew-permit-sticked-special nil)
+
+;; anonymous function to decode ground string.
+;; NOTE: STR is CRLF-form and it should return as CRLF-form.
+(defvar ew-decode-us-ascii (lambda (str) (decode-coding-string str 'iso-latin-1-unix)))
+
+;;;
+(defvar ew-decode-field-syntax-alist
+'(("from"               ew-scan-unibyte-std11 . ew:tag-mailbox+-tok)
+  ("sender"             ew-scan-unibyte-std11 . ew:tag-mailbox-tok)
+  ("to"                 ew-scan-unibyte-std11 . ew:tag-address+-tok)
+  ("resent-to"          ew-scan-unibyte-std11 . ew:tag-address+-tok)
+  ("cc"                 ew-scan-unibyte-std11 . ew:tag-address+-tok)
+  ("resent-cc"          ew-scan-unibyte-std11 . ew:tag-address+-tok)
+  ("bcc"                ew-scan-unibyte-std11 . ew:tag-address*-tok)
+  ("resent-bcc"         ew-scan-unibyte-std11 . ew:tag-address*-tok)
+  ("message-id"         ew-scan-unibyte-std11)
+  ("resent-message-id"  ew-scan-unibyte-std11)
+  ("in-reply-to"        ew-scan-unibyte-std11 . ew:tag-phrase-msg-id*-tok)
+  ("references"         ew-scan-unibyte-std11 . ew:tag-phrase-msg-id*-tok)
+  ("keywords"           ew-scan-unibyte-std11 . ew:tag-phrase*-tok)
+  ("subject"            ew-scan-unibyte-unstructured)
+  ("comments"           ew-scan-unibyte-unstructured)
+  ("encrypted"          ew-scan-unibyte-std11)
+  ("date"               ew-scan-unibyte-std11)
+  ("reply-to"           ew-scan-unibyte-std11 . ew:tag-address+-tok)
+  ("received"           ew-scan-unibyte-std11)
+  ("resent-reply-to"    ew-scan-unibyte-std11 . ew:tag-address+-tok)
+  ("resent-from"        ew-scan-unibyte-std11 . ew:tag-mailbox+-tok)
+  ("resent-sender"      ew-scan-unibyte-std11 . ew:tag-mailbox-tok)
+  ("resent-date"        ew-scan-unibyte-std11)
+  ("return-path"        ew-scan-unibyte-std11)
+  ("mime-version"       ew-scan-unibyte-std11)
+  ("content-type"       ew-scan-unibyte-mime)
+  ("content-transfer-encoding"  ew-scan-unibyte-mime)
+  ("content-id"         ew-scan-unibyte-mime)
+  ("content-description"        ew-scan-unibyte-unstructured)
+))
+(defvar ew-decode-field-default-syntax '(ew-scan-unibyte-unstructured))
+
+(defun ew-decode-field (field-name field-body &optional eword-filter)
+  "Decode MIME RFC2047 encoded-words in a field.
+FIELD-NAME is a name of the field such as \"To\", \"Subject\" etc. and
+used to selecting syntax of body of the field and deciding first
+column of body of the field.
+FIELD-BODY is a body of the field.
+
+If FIELD-BODY has multiple lines, each line is separated by CRLF as
+pure network representation. Also if the result has multiple lines,
+each line is separated by CRLF.
+
+If EWORD-FILTER is non-nil, it should be closure. it is called for
+each successful decoded encoded-word with decoded string as a
+argument. The return value of EWORD-FILTER is used as decoding result
+instead of its argument."
+  (let ((tmp (assoc (downcase field-name) ew-decode-field-syntax-alist))
+	frag-anchor frag1 frag2 decode)
+    (if tmp
+	(setq tmp (cdr tmp))
+      (setq tmp ew-decode-field-default-syntax))
+    (setq frag-anchor (funcall (car tmp) (1+ (length field-name)) field-body))
+    ;;(setq zzz frag-anchor)
+    (when (cdr tmp)
+      (ew-mark (cdr tmp) frag-anchor))
+    (setq frag1 (get frag-anchor 'next-frag))
+    (while (not (eq frag1 frag-anchor))
+      (setq decode (get frag1 'decode))
+      (setq frag2 (get frag1 'next-frag))
+      (while (and (not (eq frag2 frag-anchor))
+		  (eq decode (get frag2 'decode)))
+	(setq frag2 (get frag2 'next-frag)))
+      (funcall decode frag-anchor frag1 frag2 eword-filter)
+      (setq frag1 frag2))
+    (mapconcat (lambda (frag) (or (get frag 'result) (symbol-name frag)))
+	       (ew-frag-list frag-anchor) "")))
+
+(defun ew-mark (tag anchor)
+  (let ((tlist (cons (list (symbol-value tag)) (ew-pair-list anchor))))
+    ;;(insert (format "%s" tlist))
+    (ew-parse
+     (lambda () (if (null tlist) '(0)
+		  (prog1 (car tlist) (setq tlist (cdr tlist)))))
+     (lambda (msg tok) (setq zzz-anchor anchor) (message "parse error: %s%s : %s" msg tok anchor)))))
+
+(defun ew-decode-none (anchor frag end eword-filter)
+  (while (not (eq frag end))
+    (put frag 'result (funcall ew-decode-us-ascii (symbol-name frag)))
+    (setq frag (get frag 'next-frag))))
+
+(defun ew-decode-generic (anchor start end
+			  decode-ewords
+			  decode-others
+			  eword gap all
+			  eword-filter)
+  (let ((frag start) result buff type f)
+    (while (not (eq frag end))
+      (setq type (get frag 'type))
+      (cond
+       ((and (memq type eword)
+	     (ew-proper-eword-p frag))
+	(when buff
+	  (setq result (ew-rappend result
+				   (funcall decode-others
+					    (nreverse buff)))
+		buff ()))
+	(let ((first frag) (ewords (list frag)))
+	  (while (progn
+		   (setq f (get frag 'next-frag))
+		   (while (and (not (eq f end))
+			       (memq (get f 'type) gap))
+		     (setq f (get f 'next-frag)))
+		   (and (not (eq f end))
+			(ew-proper-eword-p f)))
+	    (setq ewords (ew-rcons* ewords f)
+		  frag f))
+	  (while (not (eq first frag))
+	    (put first 'result "")
+	    (setq first (get first 'next-frag)))
+	  (put frag 'result "")
+	  (setq result (ew-rappend result
+				   (funcall decode-ewords
+					    (nreverse ewords)
+					    eword-filter)))))
+       ((memq type all)
+	(setq buff (cons frag buff))
+	(put frag 'result ""))
+       (t
+	(error "unexpected token: %s (%s)" frag type)))
+      (setq frag (get frag 'next-frag)))
+    (when buff
+      (setq result (ew-rappend result (funcall decode-others (nreverse buff)))))
+    (put start 'result
+	 (apply 'ew-quote-concat (nreverse result)))
+    ))
+
+(defun ew-decode-generic-others (frags puncts quotes targets)
+  (let (result buff frag type tmp)
+    (while frags
+      (setq frag (car frags)
+	    type (get frag 'type)
+	    frags (cdr frags))
+      (cond
+       ((memq type puncts)
+	(when buff
+	  (setq buff (nreverse buff)
+		tmp (funcall ew-decode-us-ascii
+			     (mapconcat 'car buff "")))
+	  (if (ew-contain-non-ascii-p tmp)
+	      (setq result (ew-rcons* result tmp))
+	    (setq result (ew-rcons*
+			  result
+			  (funcall ew-decode-us-ascii
+				   (mapconcat 'cdr buff "")))))
+	  (setq buff ()))
+	(setq result (ew-rcons*
+		      result
+		      (symbol-name frag))))
+       ((memq type quotes)
+	(setq buff (ew-rcons*
+		    buff
+		    (cons (substring (symbol-name frag) 1)
+			  (symbol-name frag)))))
+       ((memq type targets)
+	(setq buff (ew-rcons*
+		    buff
+		    (cons (symbol-name frag)
+			  (symbol-name frag)))))
+       (t
+	(error "something wrong: unexpected token: %s (%s)" frag type))))
+    (when buff
+      (setq buff (nreverse buff)
+	    tmp (funcall ew-decode-us-ascii
+			 (mapconcat 'car buff "")))
+      (if (ew-contain-non-ascii-p tmp)
+	  (setq result (ew-rcons* result tmp))
+	(setq result (ew-rcons*
+		      result
+		      (funcall ew-decode-us-ascii
+			       (mapconcat 'cdr buff "")))))
+      (setq buff ()))
+    (nreverse result)))
+
+(defun ew-decode-unstructured-ewords (ewords eword-filter)
+  (let (result)
+    (while ewords
+      (setq result (ew-rcons*
+		    result
+		    (list (ew-decode-eword (symbol-name (car ewords))
+					   eword-filter
+					   'ew-encode-crlf)))
+	    ewords (cdr ewords)))
+    (nreverse result)))
+
+(defun ew-decode-unstructured-others (frags)
+  (let (result)
+    (while frags
+      (setq result (ew-rcons*
+		    result
+		    (symbol-name (car frags)))
+	    frags (cdr frags)))
+    (list (funcall ew-decode-us-ascii
+		   (apply 'concat (nreverse result))))))
+
+(defun ew-decode-unstructured (anchor start end eword-filter)
+  (ew-decode-generic
+   anchor start end
+   'ew-decode-unstructured-ewords
+   'ew-decode-unstructured-others
+   '(ew:raw-us-texts-tok)
+   '(ew:raw-us-wsp-tok
+     ew:raw-us-fold-tok)
+   '(ew:raw-us-texts-tok
+     ew:raw-us-wsp-tok
+     ew:raw-us-fold-tok)
+   eword-filter))
+
+(defun ew-decode-phrase-ewords (ewords eword-filter)
+  (let ((qs (eq (get (car ewords) 'type) 'ew:raw-qs-texts-tok))
+	require-quoting
+	result)
+    (while ewords
+      (setq result (ew-rcons*
+		    result
+		    (list (ew-decode-eword (symbol-name (car ewords))
+					   eword-filter
+					   'ew-encode-crlf)))
+	    require-quoting (or require-quoting
+				(string-match "[][()<>@,;:\\\".\000-\037]"
+                                              (caar result)))
+	    ewords (cdr ewords)))
+    (if require-quoting
+	(list
+	 (funcall (if qs 'ew-embed-in-quoted-string 'ew-embed-in-phrase)
+		  (apply 'ew-quote-concat
+			 (nreverse result))))
+      (nreverse result))))
+
+(defun ew-decode-phrase-others (frags)
+  (ew-decode-generic-others
+   frags
+   '(ew:raw-qs-begin-tok
+     ew:raw-qs-end-tok)
+   '(ew:raw-qs-qfold-tok
+     ew:raw-qs-qpair-tok)
+   '(ew:raw-atom-tok
+     ew:raw-wsp-tok
+     ew:raw-fold-tok
+     ew:raw-qs-texts-tok
+     ew:raw-qs-wsp-tok
+     ew:raw-qs-fold-tok)))
+
+(defun ew-decode-phrase (anchor start end eword-filter)
+  (ew-decode-generic
+   anchor start end
+   'ew-decode-phrase-ewords
+   'ew-decode-phrase-others
+   (if ew-decode-quoted-encoded-word
+       '(ew:raw-atom-tok ew:raw-qs-texts-tok)
+     '(ew:raw-atom-tok))
+   '(ew:raw-wsp-tok
+     ew:raw-fold-tok)
+   '(ew:raw-atom-tok
+     ew:raw-wsp-tok
+     ew:raw-fold-tok
+     ew:raw-qs-begin-tok
+     ew:raw-qs-end-tok
+     ew:raw-qs-texts-tok
+     ew:raw-qs-wsp-tok
+     ew:raw-qs-fold-tok
+     ew:raw-qs-qfold-tok
+     ew:raw-qs-qpair-tok)
+   eword-filter))
+
+(defun ew-decode-comment-ewords (ewords eword-filter)
+  (let (require-quoting
+	result)
+    (while ewords
+      (setq result (ew-rcons*
+		    result
+		    (list (ew-decode-eword (symbol-name (car ewords))
+					   eword-filter
+					   'ew-encode-crlf)))
+	    require-quoting (or require-quoting
+				(string-match "[()\\\\]" (caar result)))
+	    ewords (cdr ewords)))
+    (if require-quoting
+	(list
+	 (ew-embed-in-comment
+	  (apply 'ew-quote-concat
+		 (nreverse result))))
+      (nreverse result))))
+
+(defun ew-decode-comment-others (frags)
+  (ew-decode-generic-others
+   frags
+   '()
+   '(ew:raw-cm-qfold-tok
+     ew:raw-cm-qpair-tok)
+   '(ew:raw-cm-texts-tok
+     ew:raw-cm-wsp-tok
+     ew:raw-cm-fold-tok)))
+
+(defun ew-decode-comment (anchor start end eword-filter)
+  (ew-decode-generic
+   anchor start end
+   'ew-decode-comment-ewords
+   'ew-decode-comment-others
+   '(ew:raw-cm-texts-tok)
+   '(ew:raw-cm-wsp-tok
+     ew:raw-cm-fold-tok)
+   '(ew:raw-cm-texts-tok
+     ew:raw-cm-wsp-tok
+     ew:raw-cm-fold-tok
+     ew:raw-cm-qfold-tok
+     ew:raw-cm-qpair-tok)
+   eword-filter))
+
+;;;
+
+(defun ew-embed-in-phrase (str)
+  (concat "\"" (ew-embed-in-quoted-string str) "\""))
+
+(defun ew-embed-in-quoted-string (str)
+  (ew-quote-as-quoted-pair str '(?\\ ?\")))
+
+(defun ew-embed-in-comment (str)
+  (ew-quote-as-quoted-pair str '(?\\ ?\( ?\))))
+
+(defun ew-quote-as-quoted-pair (str specials)
+  (let ((i 0) (j 0) (l (length str)) result)
+    (while (< j l)
+      (when (member (aref str j) specials)
+	(setq result (ew-rcons*
+		      result
+		      (substring str i j)
+		      "\\")
+	      i j))
+      (setq j (1+ j)))
+    (when (< i l)
+      (setq result (ew-rcons*
+		    result
+		    (substring str i))))
+    (apply 'concat (nreverse result))))
+
+;;;
+
+(defun ew-proper-eword-p (frag)
+  (and
+   (or ew-ignore-75bytes-limit
+       (<= (length (symbol-name frag)) 75))
+   (or ew-ignore-76bytes-limit
+       (<= (get frag 'line-length) 76))
+   (cond
+    ((eq (get frag 'type) 'ew:raw-cm-texts-tok)
+     (ew-eword-p (symbol-name frag)))
+    ((eq (get frag 'type) 'ew:raw-qs-texts-tok)
+     (ew-eword-p (symbol-name frag)))
+    ((eq (get frag 'type) 'ew:raw-atom-tok)
+     (and
+      (or ew-permit-sticked-comment
+	  (and
+	   (not (ew-comment-frag-p (get frag 'prev-frag)))
+	   (not (ew-comment-frag-p (get frag 'next-frag)))))
+      (or ew-permit-sticked-special
+	  (and
+	   (or (ew-comment-frag-p (get frag 'prev-frag))
+	       (not (ew-special-frag-p (get frag 'prev-frag))))
+	   (or (ew-comment-frag-p (get frag 'next-frag))
+	       (not (ew-special-frag-p (get frag 'next-frag))))))
+      (ew-eword-p (symbol-name frag))))
+    ((eq (get frag 'type) 'ew:raw-us-texts-tok)
+     (and
+      (or ew-permit-sticked-special
+	  (not (ew-special-frag-p (get frag 'prev-frag))))
+      (ew-eword-p (symbol-name frag))))
+    (t
+     nil))))
+
+(defun ew-contain-non-ascii-p (str)
+  (not (eq (charsets-to-mime-charset (find-charset-string str)) 'us-ascii)))
+
+'(
+
+(ew-decode-field "To" " =?US-ASCII?Q?phrase?= <akr@jaist.ac.jp>")
+(ew-decode-field "To" " =?US-ASCII?Q?phrase?= < =?US-ASCII?Q?akr?= @jaist.ac.jp>")
+(ew-decode-field "To" " =?US-ASCII?Q?akr?= @jaist.ac.jp")
+(ew-decode-field "Subject" " =?ISO-2022-JP?B?GyRCJCIbKEI=?=")
+(ew-decode-field "Content-Type" " text/vnd.latex-z(=?US-ASCII?Q?What=3F?=);charset=ISO-2022-JP")
+
+(ew-decode-field "To" " =?US-ASCII?Q?A=22B=5CC?= <akr@jaist.ac.jp>")
+(let ((ew-decode-quoted-encoded-word t))
+  (ew-decode-field "To" " \"=?US-ASCII?Q?A=22B=5CC?=\" <akr@jaist.ac.jp>"))
+
+(ew-decode-field "To" " akr@jaist.ac.jp (=?US-ASCII?Q?=28A=29B=5C?=)")
+
+(ew-decode-field "To" "\"A\\BC\e$B\\\"\\\\\e(B\" <foo@bar>")
+(ew-decode-field "To" "\"A\\BC\" <foo@bar>")
+(ew-decode-field "To" "\"\e\\$\\B\\$\\\"\e\\(\\B\" <foo@bar>")
+
+)

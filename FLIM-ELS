@@ -10,7 +10,23 @@
 		     eword-decode eword-encode
 		     mime mime-parse mmbuffer mmcooked
 		     ;; mime-lib
-		     mailcap))
+		     mailcap
+                     closure
+                     natset
+                     digraph
+                     automata rx lex
+                     lr-driver
+                     ew-util
+                     ew-line
+                     ew-quote
+                     ew-unit
+                     ew-data
+                     ew-parse
+                     ew-scan-s
+                     ew-scan-m
+                     ew-scan-u
+                     ew-dec
+                     ))
 
 (if (fboundp 'dynamic-link)
     (setq flim-modules (cons 'mel-dl flim-modules))
