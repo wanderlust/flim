@@ -87,7 +87,7 @@
   (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
   (defconst std11-qtext-regexp
     (eval-when-compile
-      (concat "[^" (apply #'string std11-non-qtext-char-list) "]"))))
+      (concat "[^" std11-non-qtext-char-list "]"))))
 (defconst std11-quoted-string-regexp
   (eval-when-compile
     (concat "\""
@@ -99,8 +99,9 @@
 ;;; @ about MIME
 ;;;
 
-(defconst mime-tspecial-char-list
-  '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=))
+(eval-and-compile
+  (defconst mime-tspecial-char-list
+    '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=)))
 (defconst mime-token-regexp
   (eval-when-compile
     (concat "[^" mime-tspecial-char-list "\000-\040]+")))
