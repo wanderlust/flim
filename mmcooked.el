@@ -32,36 +32,39 @@
 
 (mm-define-method write-entity-content ((entity cooked) filename)
   (save-excursion
-    (set-buffer (mime-entity-buffer-internal entity))
+    (set-buffer (mime-buffer-entity-buffer-internal entity))
     (let ((encoding (or (mime-entity-encoding entity) "7bit")))
       (if (member encoding '("7bit" "8bit" "binary"))
-	  (write-region (mime-entity-body-start-internal entity)
-			(mime-entity-body-end-internal entity) filename)
-	(mime-write-decoded-region (mime-entity-body-start-internal entity)
-				   (mime-entity-body-end-internal entity)
-				   filename encoding)
+	  (write-region (mime-buffer-entity-body-start-internal entity)
+			(mime-buffer-entity-body-end-internal entity) filename)
+	(mime-write-decoded-region
+	 (mime-buffer-entity-body-start-internal entity)
+	 (mime-buffer-entity-body-end-internal entity)
+	 filename encoding)
 	))))
 
 (mm-define-method write-entity ((entity cooked) filename)
   (save-excursion
-    (set-buffer (mime-entity-buffer-internal entity))
-    (write-region (mime-entity-header-start-internal entity)
-		  (mime-entity-body-end-internal entity)
+    (set-buffer (mime-buffer-entity-buffer-internal entity))
+    (write-region (mime-buffer-entity-header-start-internal entity)
+		  (mime-buffer-entity-body-end-internal entity)
 		  filename)
     ))
 
 (mm-define-method write-entity-body ((entity cooked) filename)
   (save-excursion
-    (set-buffer (mime-entity-buffer-internal entity))
-    (write-region (mime-entity-body-start-internal entity)
-		  (mime-entity-body-end-internal entity)
+    (set-buffer (mime-buffer-entity-buffer-internal entity))
+    (write-region (mime-buffer-entity-body-start-internal entity)
+		  (mime-buffer-entity-body-end-internal entity)
 		  filename)
     ))
 
-(mm-define-method insert-header ((entity cooked)
-				 &optional invisible-fields visible-fields)
+(luna-define-method mime-insert-header ((entity cooked)
+					&optional invisible-fields
+					visible-fields)
   (let (default-mime-charset)
-    (funcall (mime-find-function 'insert-decoded-header 'buffer)
+    (funcall (luna-class-find-function (luna-find-class 'mime-buffer-entity)
+				       'mime-insert-header)
 	     entity invisible-fields visible-fields)
     ))
 
