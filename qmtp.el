@@ -87,7 +87,7 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
      "\n,"
      (qmtp-encode-netstring-string sender)
      (qmtp-encode-netstring-string
-      (mapconcat #'qmtp-encode-netstring-string
+      (mapconcat (function qmtp-encode-netstring-string)
 		 recipients "")))
     (process-send-region process (point-min)(point-max)))
   (goto-char qmtp-read-point)

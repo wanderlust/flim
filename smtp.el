@@ -27,7 +27,7 @@
 
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
@@ -111,14 +111,14 @@ don't define this value."
   :group 'smtp-extensions)
 
 (defvar sasl-mechanisms)
-  
-(defvar smtp-open-connection-function #'open-network-stream)
+
+(defvar smtp-open-connection-function (function open-network-stream))
 
 (defvar smtp-read-point nil)
 
 (defvar smtp-connection-alist nil)
 
-(defvar smtp-submit-package-function #'smtp-submit-package)
+(defvar smtp-submit-package-function (function smtp-submit-package))
 
 ;;; @ SMTP package structure
 ;;; A package contains a mail message, an envelope sender address,
@@ -128,15 +128,15 @@ don't define this value."
 
 (defmacro smtp-package-sender (package)
   "Return the sender of PACKAGE, a string."
-  `(aref ,package 0))
+  (` (aref (, package) 0)))
 
 (defmacro smtp-package-recipients (package)
   "Return the recipients of PACKAGE, a list of strings."
-  `(aref ,package 1))
+  (` (aref (, package) 1)))
 
 (defmacro smtp-package-buffer (package)
   "Return the data of PACKAGE, a buffer."
-  `(aref ,package 2))
+  (` (aref (, package) 2)))
 
 (defmacro smtp-make-package (sender recipients buffer)
   "Create a new package structure.
@@ -144,7 +144,7 @@ A package is a unit of SMTP message
 SENDER specifies the package sender, a string.
 RECIPIENTS is a list of recipients.
 BUFFER may be a buffer or a buffer name which contains mail message."
-  `(vector ,sender ,recipients ,buffer))
+  (` (vector (, sender) (, recipients) (, buffer))))
 
 (defun smtp-package-buffer-size (package)
   "Return the size of PACKAGE, an integer."
@@ -173,31 +173,31 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 
 (defmacro smtp-connection-process (connection)
   "Return the subprocess-object of CONNECTION."
-  `(aref ,connection 0))
+  (` (aref (, connection) 0)))
 
 (defmacro smtp-connection-server (connection)
   "Return the server of CONNECTION, a string."
-  `(aref ,connection 1))
+  (` (aref (, connection) 1)))
 
 (defmacro smtp-connection-service (connection)
   "Return the service of CONNECTION, a string or an integer."
-  `(aref ,connection 2))
+  (` (aref (, connection) 2)))
 
 (defmacro smtp-connection-extensions (connection)
   "Return the SMTP extensions of CONNECTION, a list of strings."
-  `(aref ,connection 3))
+  (` (aref (, connection) 3)))
 
 (defmacro smtp-connection-set-extensions (connection extensions)
   "Set the SMTP extensions of CONNECTION.
 EXTENSIONS is a list of cons cells of the form \(EXTENSION . PARAMETERS).
 Where EXTENSION is a symbol and PARAMETERS is a list of strings."
-  `(aset ,connection 3 ,extensions))
+  (` (aset (, connection) 3 (, extensions))))
 
 (defmacro smtp-make-connection (process server service)
   "Create a new connection structure.
 PROCESS is an internal subprocess-object.  SERVER is name of the host
 to connect to.  SERVICE is name of the service desired."
-  `(vector ,process ,server ,service nil))
+  (` (vector (, process) (, server) (, service) nil)))
 
 (defun smtp-connection-opened (connection)
   "Say whether the CONNECTION to server has been opened."
@@ -277,7 +277,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	 (smtp-make-package sender recipients buffer))
 	(smtp-open-connection-function
 	 (if smtp-use-starttls
-	     #'starttls-open-stream
+	     (function starttls-open-stream)
 	   smtp-open-connection-function)))
     (save-excursion
       (set-buffer
@@ -335,13 +335,14 @@ of the host to connect to.  SERVICE is name of the service desired."
 	(smtp-response-error response))
     (smtp-connection-set-extensions
      connection (mapcar
-		 (lambda (extension)
-		   (let ((extensions
-			  (split-string extension)))
-		     (setcar extensions
-			     (car (read-from-string
-				   (downcase (car extensions)))))
-		     extensions))
+		 (function
+		  (lambda (extension)
+		    (let ((extensions
+			   (split-string extension)))
+		      (setcar extensions
+			      (car (read-from-string
+				    (downcase (car extensions)))))
+		      extensions)))
 		 (cdr response)))))
 
 (defun smtp-primitive-helo (package)

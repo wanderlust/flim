@@ -46,7 +46,7 @@
     ("LOGIN" sasl-login)
     ("ANONYMOUS" sasl-anonymous)))
 
-(defvar sasl-unique-id-function #'sasl-unique-id-function)
+(defvar sasl-unique-id-function (function sasl-unique-id-function))
 
 (put 'sasl-error 'error-message "SASL error")
 (put 'sasl-error 'error-conditions '(sasl-error error))
