@@ -124,7 +124,7 @@ external decoder is called."
     buf))
 
 (defun-maybe base64-encode-string (string &optional no-line-break)
-  "Encode STRING to base64, and return the result.
+  "Base64-encode STRING and return the result.
 Optional second argument NO-LINE-BREAK means do not break long lines
 into shorter lines."
   (let* ((len (length string))
@@ -146,16 +146,14 @@ into shorter lines."
 	     (pack-sequence (substring string b) 3)
 	     ""))))
 
-(defun base64-internal-encode-region (beg end)
+(defun base64-internal-encode-region (beg end &optional no-line-break)
   (save-excursion
     (save-restriction
       (narrow-to-region beg end)
       (insert
        (prog1
-	   (base64-encode-string
-	    (buffer-substring beg end))
-	 (delete-region beg end)))
-      (or (bolp) (insert ?\n)))))
+	   (base64-encode-string (buffer-substring beg end) no-line-break)
+	 (delete-region beg end))))))
 
 
 ;;; @ internal base64 decoder
@@ -233,7 +231,7 @@ into shorter lines."
 ;;; @ external encoder/decoder
 ;;;
 
-(defun base64-external-encode-region (beg end)
+(defun base64-external-encode-region (beg end &optional no-line-break)
   (save-excursion
     (save-restriction
       (narrow-to-region beg end)
@@ -246,7 +244,12 @@ into shorter lines."
       ;;   regularize line break code
       (goto-char (point-min))
       (while (re-search-forward "\r$" nil t)
-	(replace-match "")))))
+	(replace-match ""))
+      (if no-line-break
+	  (progn
+	    (goto-char (point-min))
+	    (while (search-forward "\n" nil t)
+	      (replace-match "")))))))
 
 (defun base64-external-decode-region (beg end)
   (save-excursion
@@ -270,9 +273,11 @@ into shorter lines."
 ;;; @ application interfaces
 ;;;
 
-(defun-maybe base64-encode-region (start end)
-  "Encode current region by base64.
-START and END are buffer positions.
+(defun-maybe base64-encode-region (start end &optional no-line-break)
+  "Base64-encode the region between START and END.
+Return the length of the encoded text.
+Optional third argument NO-LINE-BREAK means do not break long lines
+into shorter lines.
 This function calls internal base64 encoder if size of region is
 smaller than `base64-internal-encoding-limit', otherwise it calls
 external base64 encoder specified by `base64-external-encoder'.  In
@@ -281,8 +286,8 @@ metamail or XEmacs package)."
   (interactive "*r")
   (if (and base64-internal-encoding-limit
 	   (> (- end start) base64-internal-encoding-limit))
-      (base64-external-encode-region start end)
-    (base64-internal-encode-region start end)))
+      (base64-external-encode-region start end no-line-break)
+    (base64-internal-encode-region start end no-line-break)))
 
 (defun-maybe base64-decode-region (start end)
   "Decode current region by base64.
@@ -376,7 +381,7 @@ START and END are buffer positions."
  (mime-write-decoded-region start end filename (nil "base64"))
  'base64-write-decoded-region)
 
-       
+
 ;;; @ end
 ;;;
 
