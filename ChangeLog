@@ -1,3 +1,11 @@
+1998-06-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml: Modify for FLIM 1.6.
+
+	* mime.el (mime-fetch-field): New function; abolish
+	`mime-entity-fetch-field'.
+	(mime-read-field): New function; abolish `mime-entity-read-field'.
+
 1998-06-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-ja.sgml, mime-ja.texi: New files.

@@ -1,13 +1,13 @@
 \input texinfo.tex
 @setfilename mime-ja.info
-@settitle{FLIM 1.5 MIME $B5!G=@bL@=q(B}
+@settitle{FLIM 1.6 MIME $B5!G=@bL@=q(B}
 @titlepage
-@title FLIM 1.5 MIME $B5!G=@bL@=q(B
+@title FLIM 1.6 MIME $B5!G=@bL@=q(B
 @author $B<i2,(B $BCNI'(B <morioka@@jaist.ac.jp>
 @subtitle 1998/06/23
 @end titlepage
 @node Top, Introduction, (dir), (dir)
-@top FLIM 1.5 MIME $B5!G=@bL@=q(B
+@top FLIM 1.6 MIME $B5!G=@bL@=q(B
 
 @ifinfo
 
@@ -26,6 +26,7 @@ FLIM $B$N(B MIME $B5!G=$K4X$7$F@bL@$7$^$9!#(B
 * Content-Disposition::         Content-Disposition $BMs$N>pJs(B
 * Content-Transfer-Encoding::   $BId9f2=K!(B
 * encoded-word::                Header $B$N(B network $BI=8=(B
+* custom::                      $B0lHL@_Dj(B
 * Appendix::                    $BIUO?(B
 * Concept Index::               $B35G0:w0z(B
 * Function Index::              $B4X?t:w0z(B
@@ -265,17 +266,22 @@ local $BJQ?t!#(B
 @node Entity-header, Entity-content, Entity as node in message, Entity
 @section Entity header $B$N>pJs(B
 
-@defun mime-entity-fetch-field entity field-name
+@defun mime-fetch-field field-name
+	     &optional  entity
 
 @var{entity} $B$N(B header $BCf$N(B @var{field-name} $BMs$N(B body $B$rJV$9!#(B@refill
 
 $B7k2L$NJ8;zNs$O(B network $BI=8=$N$^$^$G$"$k!#(B@refill
 
+@var{entity} $B$,>JN,$5$l$?>l9g$O!"(B@code{mime-message-structure} $B$NCM$rMQ(B
+$B$$$k!#(B@refill
+
 @var{field-name} $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
 @end defun
 
 
-@defun mime-entity-read-field entity field-name
+@defun mime-read-field field-name
+	     &optional  entity
 
 @var{entity} $B$N(B header $BCf$N(B @var{field-name} $BMs$r9=J82r@O$7$?7k2L$rJV$9!#(B
 @refill
@@ -284,6 +290,9 @@ local $BJQ?t!#(B
 $B$O$=$N7A<0$K=>$C$?(B list $B$rJV$9!#(B@refill
 
 $B7k2LCf$NJ8;zNs$O(B Emacs $B$NFbItI=8=$KJQ49$5$l$k!#(B@refill
+
+@var{entity} $B$,>JN,$5$l$?>l9g$O!"(B@code{mime-message-structure} $B$NCM$rMQ(B
+$B$$$k!#(B@refill
 
 @var{field-name} $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
 @end defun
@@ -568,13 +577,15 @@ FLIM $B$G$O(B Content-Transfer-Encoding $BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$
 
 @menu
 * Content-Transfer-Encoding parser::  Content-Transfer-Encoding $BMs$N2r@O4o(B
-* encoder/decoder::             Content-Transfer-Encoding $B$NId9f2=!&I|9f2=(B
+* Region encoder/decoder::      $BNN0h$NId9f2=!&I|9f2=(B
+* String encoder/decoder::      $BJ8;zNs$NId9f2=!&I|9f2=(B
+* File encoder/decoder::        File $B$NId9f2=!&I|9f2=(B
 @end menu
 
-@node Content-Transfer-Encoding parser, encoder/decoder, Content-Transfer-Encoding, Content-Transfer-Encoding
+@node Content-Transfer-Encoding parser, Region encoder/decoder, Content-Transfer-Encoding, Content-Transfer-Encoding
 @section Content-Transfer-Encoding $BMs$N2r@O4o(B
 
-@defun mime-parse-Content-Transfer-Encodingstring
+@defun mime-parse-Content-Transfer-Encoding string
 
 @var{string} $B$r(B content-transfer-encoding $B$H$7$F2r@O$7$?7k2L$rJV$9!#(B
 @end defun
@@ -591,18 +602,8 @@ Content-Transfer-Encoding $BMs$,B8:_$7$J$$>l9g$O(B@var{default-encoding} $B$r
 
 
 
-@node encoder/decoder,  , Content-Transfer-Encoding parser, Content-Transfer-Encoding
-@section Content-Transfer-Encoding $B$NId9f2=!&I|9f2=(B
-
-
-@menu
-* Region encoder/decoder::      $BNN0h$NId9f2=!&I|9f2=(B
-* String encoder/decoder::      $BJ8;zNs$NId9f2=!&I|9f2=(B
-* File encoder/decoder::        File $B$NId9f2=!&I|9f2=(B
-@end menu
-
-@node Region encoder/decoder, String encoder/decoder, encoder/decoder, encoder/decoder
-@subsection $BNN0h$NId9f2=!&I|9f2=(B
+@node Region encoder/decoder, String encoder/decoder, Content-Transfer-Encoding parser, Content-Transfer-Encoding
+@section $BNN0h$NId9f2=!&I|9f2=(B
 
 @defun mime-encode-region start end encoding
 
@@ -639,8 +640,8 @@ region decoder and @code{nil} means not to decode.
 
 
 
-@node String encoder/decoder, File encoder/decoder, Region encoder/decoder, encoder/decoder
-@subsection $BJ8;zNs$NId9f2=!&I|9f2=(B
+@node String encoder/decoder, File encoder/decoder, Region encoder/decoder, Content-Transfer-Encoding
+@section $BJ8;zNs$NId9f2=!&I|9f2=(B
 
 @defun mime-decode-string string encoding
 
@@ -658,8 +659,8 @@ content-transfer-encoding.  FUNCTION is string decoder.
 
 
 
-@node File encoder/decoder,  , String encoder/decoder, encoder/decoder
-@subsection File $B$NId9f2=!&I|9f2=(B
+@node File encoder/decoder,  , String encoder/decoder, Content-Transfer-Encoding
+@section File $B$NId9f2=!&I|9f2=(B
 
 @defun mime-insert-encoded-file filename encoding
 
@@ -698,7 +699,7 @@ to file.
 
 
 
-@node encoded-word, Appendix, Content-Transfer-Encoding, Top
+@node encoded-word, custom, Content-Transfer-Encoding, Top
 @chapter Header $B$N(B network $BI=8=(B
 @cindex RFC 2047
 @cindex Standards Track
@@ -752,8 +753,39 @@ It refer variable @code{eword-field-encoding-method-alist}.
 
 
 
+@node custom, Appendix, encoded-word, Top
+@chapter $B0lHL@_Dj(B
 
-@node Appendix, Concept Index, encoded-word, Top
+@deffn{group} mime
+
+MIME $B4XO"5!G=$K4X$9$k(B group.@refill
+
+@code{mail} $B$H(B @code{news} $B$KB0$9$k!#(B
+@end deffn
+
+
+@defvar default-mime-charset
+
+$BE,@Z$J(B MIME charset (@ref{MIME charset}) $B$,8+$D$+$i$J$+$C$?>l9g$KMQ$$$i(B
+$B$l$k(BMIME charset.@refill
+
+$BK\Mh$O(B APEL $B$NJQ?t$G$"$k!#(B
+@end defvar
+
+
+@defvar mime-temp-directory
+
+MIME $B5!G=$K4X$9$k<BAu$,0l;~E*$K;HMQ$9$k(B file $B$r:n@.$9$k(B 
+directory.@refill
+
+$B4D6-JQ?t(B @code{MIME_TMP_DIR}, @code{TM_TMP_DIR}, @code{TMPDIR},
+@code{TMP} $B$b$7$/$O(B @code{TEMP} $B$,@_Dj$5$l$F$$$?>l9g!"$=$l$r=i4|CM$H$7$F(B
+$BMQ$$$k!#2?$b@_Dj$5$l$F$$$J$$>l9g!"(B@code{"/tmp/"} $B$rMQ$$$k!#(B
+@end defvar
+
+
+
+@node Appendix, Concept Index, custom, Top
 @chapter $BIUO?(B
 
 
