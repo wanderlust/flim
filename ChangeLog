@@ -1,5 +1,9 @@
 1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
+	* FLIM-ELS (flim-modules): Add `digest-md5'.
+
+1999-12-13  Kenichi OKADA <okada@opaopa.org>
+
 	* digest-md5.el: New file.
 	(digest-md5-digest-uri): New function.
 	(digest-md5-digest-response): New function.

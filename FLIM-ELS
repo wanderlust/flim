@@ -14,7 +14,7 @@
 		     md5 md5-el md5-dl
 		     sha1 sha1-el sha1-dl
 		     hmac-def hmac-md5 hmac-sha1 hex-util
-		     scram-md5
+		     scram-md5 digest-md5
 		     starttls))
 
 (unless (and (fboundp 'base64-encode-string)
