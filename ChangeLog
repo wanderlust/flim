@@ -1,5 +1,11 @@
 2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
+	* mime-parse.el: Fixed comments.
+
+	* test/test-rfc2231.el (test-rfc2231-9): New testcase.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
 	* test/test-rfc2231.el (test-rfc2231-7, test-rfc2231-8):
 	New testcases.
 
