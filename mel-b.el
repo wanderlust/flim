@@ -72,8 +72,10 @@ external decoder is called."
 ;;; @ internal base64 encoder
 ;;;	based on base64 decoder by Enami Tsugutomo
 
-(defconst base64-characters
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
+(eval-and-compile
+  (defconst base64-characters
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
+  )
 
 (defmacro base64-num-to-char (n)
   `(aref base64-characters ,n))
