@@ -1,5 +1,59 @@
 2000-12-14  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
+	* mmexternal.el (mime-write-entity): Don't use
+	`write-region-as-raw-text-CRLF'.
+	(mmexternal-require-buffer): Use `binary-insert-file-contents'
+	instead of `insert-file-contents-as-binary'.
+	(mime-write-entity-body): Use `binary-write-region' instead of
+	`write-region-as-binary'.
+
+	* smtpmail.el (smtpmail-send-it): Use `binary-write-region'
+	instead of `write-region-as-binary'.
+
+	* smtp.el (smtp-open-connection): Don't use `as-binary-process'.
+
+	* mel.el (mime-insert-encoded-file of "base64"): Use
+	`binary-insert-file-contents' instead of
+	`insert-file-contents-as-binary'.
+	(mime-insert-encoded-file of "7bit"): Use
+	`binary-insert-file-contents' instead of
+	`insert-file-contents-as-binary'.
+	(mime-write-decoded-region of "7bit"): Use `binary-write-region'
+	instead of `write-region-as-binary'.
+
+	* mmbuffer.el (mime-write-entity-body): Use `binary-write-region'
+	instead of `write-region-as-binary'.
+	(mime-write-entity): Don't use `write-region-as-raw-text-CRLF'.
+	
+	* mime-def.el: Don't require `poem'.
+	(binary-insert-file-contents): New function.
+	(binary-write-region): New function.
+
+	* mel-u.el (uuencode-external-encode-region): Don't use
+	`as-binary-process'.
+	(uuencode-external-decode-region): Don't use `as-binary-process'
+	and `as-binary-input-file'.
+	(mime-write-decoded-region): Don't use `as-binary-process'.
+
+	* mel-q-ccl.el (quoted-printable-ccl-insert-encoded-file): Don't
+	use `insert-file-contents-as-coding-system'.
+	(quoted-printable-ccl-write-decoded-region): Don't use
+	`write-region-as-coding-system'.
+
+	* mel-b-ccl.el (base64-ccl-insert-encoded-file): Don't use
+	`insert-file-contents-as-coding-system'.
+	(base64-ccl-write-decoded-region): Don't use
+	`write-region-as-coding-system'.
+
+	* std11.el: Don't require `poem'.
+	(std11-parse-ascii-token): Don't use
+	`find-non-ascii-charset-string'.
+
+	* qmtp.el: Don't require `poem'.
+	(qmtp-send-buffer): Don't use `as-binary-process'.
+
+2000-12-14  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
 	* mime-def.el, qmtp.el, smtp.el, smtpmail.el, std11.el: Require
 	`custom' instead of `pcustom'.
 
