@@ -1,10 +1,14 @@
 (require 'emu)
+(require 'ew-var)
 (require 'ew-unit)
 (require 'ew-scan-s)
 (require 'ew-scan-m)
 (require 'ew-scan-u)
 (require 'ew-parse)
 (provide 'ew-dec)
+
+(defvar ew-decode-field-cache-buf '())
+(defvar ew-decode-field-cache-num 300)
 
 (defun ew-decode-field (field-name field-body &optional eword-filter)
   "Decode MIME RFC2047 encoded-words in a field.
@@ -21,6 +25,30 @@ If EWORD-FILTER is non-nil, it should be closure. it is called for
 each successful decoded encoded-word with decoded string as a
 argument. The return value of EWORD-FILTER is used as decoding result
 instead of its argument."
+  (let* ((key (ew-cons* field-name field-body eword-filter
+			(ew-dynamic-options)))
+	 (tmp (assoc key ew-decode-field-cache-buf)))
+    (if tmp
+	(cdr tmp)
+      (progn
+	(setq tmp (nthcdr ew-decode-field-cache-num
+			  ew-decode-field-cache-buf))
+	(if (cdr tmp)
+	    (progn
+	      (setcdr (cdr tmp) ew-decode-field-cache-buf)
+	      (setq ew-decode-field-cache-buf (cdr tmp))
+	      (setcdr tmp nil))
+	  (setq ew-decode-field-cache-buf
+		(cons (cons nil nil)
+		      ew-decode-field-cache-buf)))
+	(setcar (car ew-decode-field-cache-buf) key)
+	(setcdr (car ew-decode-field-cache-buf)
+		(ew-decode-field-no-cache
+		 field-name field-body eword-filter))
+	(cdar ew-decode-field-cache-buf)))))
+
+(defun ew-decode-field-no-cache (field-name field-body &optional eword-filter)
+  "No caching version of ew-decode-field."
   (let ((tmp (assoc (downcase field-name) ew-decode-field-syntax-alist))
 	frag-anchor frag1 frag2 decode)
     (if tmp
@@ -44,8 +72,12 @@ instead of its argument."
 	(setq frag2 (get frag2 'next-frag)))
       (funcall decode frag-anchor frag1 frag2 eword-filter)
       (setq frag1 frag2))
-    (mapconcat (lambda (frag) (or (get frag 'result) (symbol-name frag)))
-	       (ew-frag-list frag-anchor) "")))
+    (setq frag1 (get frag-anchor 'prev-frag)
+	  tmp ())
+    (while (not (eq frag1 frag-anchor))
+      (setq tmp (cons (or (get frag1 'result) (symbol-name frag1)) tmp)
+	    frag1 (get frag1 'prev-frag)))
+    (apply 'concat tmp)))
 
 (defun ew-mark (tag anchor)
   (let ((tlist (cons (list (symbol-value tag)) (ew-pair-list anchor))))
