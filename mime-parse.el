@@ -150,7 +150,17 @@ be the result."
 
 (defun mime-decode-parameter-value (text charset language)
   (let ((start 0))
-    (while (string-match "%[0-9A-F][0-9A-F]" text start)
+    ;; RFC 2231 is ambiguous about case-sensitivity.
+    ;;
+    ;; ext-octet := "%" 2(DIGIT / "A" / "B" / "C" / "D" / "E" / "F")
+    ;;
+    ;; If RFC 2234 is employed, this rule will match "%ab" as well as
+    ;; "%AB" because ABNF strings are case-insensitive.
+    ;; But it is not clear whether RFC 2231 employs RFC 2234 or not:-<
+    ;;
+    ;; Anyway, we choose to recognize lowercase letters here.
+    ;; (while (string-match "%[0-9A-F][0-9A-F]" text start)
+    (while (string-match "%[0-9A-Fa-f][0-9A-Fa-f]" text start)
       (setq text (replace-match
 		  (char-to-string
 		   (string-to-int (substring text
@@ -225,7 +235,9 @@ property of the decoded-value."
 					 "\\)?'\\)"
 					 "\\("
 					 mime-attribute-char-regexp
-					 "\\|%[0-9A-F][0-9A-F]\\)+$"))
+					 ;; allow lowercase letters.
+					 ;; "\\|%[0-9A-F][0-9A-F]\\)+$"
+					 "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+$"))
 				      (car params))
 			(aset (cdr eparam)
 			      0		; section == 0.
@@ -249,7 +261,9 @@ property of the decoded-value."
 				      (concat
 				       "^\\("
 				       mime-attribute-char-regexp
-				       "\\|%[0-9A-F][0-9A-F]\\)+$"))
+				       ;; allow lowercase letters.
+				       ;; "\\|%[0-9A-F][0-9A-F]\\)+$"
+				       "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+$"))
 				    (car params))
 		      (aset (cdr eparam) section
 			    (list (car params) t))
