@@ -1,3 +1,8 @@
+1998-10-09  Tanaka Akira <akr@jaist.ac.jp>
+
+	* mel-ccl.el: Check `ccl-execute-eof-block-on-decoding-some'
+	facility instead of `ccl-execute-eof-block-on-encoding-some'.
+
 1998-10-09  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel-b.el (base64-characters): Enclose with `eval-and-compile'.

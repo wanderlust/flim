@@ -1173,7 +1173,7 @@ abcdefghijklmnopqrstuvwxyz\
 ;;; @ B
 ;;;
 
-(unless-broken ccl-execute-eof-block-on-encoding-some
+(unless-broken ccl-execute-eof-block-on-decoding-some
 
   (defun base64-ccl-encode-string (string)
     "Encode STRING with base64 encoding."
@@ -1237,7 +1237,7 @@ abcdefghijklmnopqrstuvwxyz\
 ;;; @ quoted-printable
 ;;;
 
-(unless-broken ccl-execute-eof-block-on-encoding-some
+(unless-broken ccl-execute-eof-block-on-decoding-some
 
   (defun quoted-printable-ccl-encode-string (string)
     "Encode STRING with quoted-printable encoding."
