@@ -5,7 +5,7 @@
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: definition, MIME, multimedia, mail, news
 
-;; This file is part of FLIM (Faithful Library about Internet Message).
+;; This file is part of FLAM (Faithful Library About MIME).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "FLIM 1.0.2 - \"T-Dòji\" ")-A
+  "FLIM-FLAM 1.0.0 - \"$BAIK'(B\" 2.5R3.0/3.0")
 
 (require 'custom)
 
