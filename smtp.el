@@ -234,11 +234,12 @@ to connect to.  SERVICE is name of the service desired."
 Return a newly allocated connection-object.
 BUFFER is the buffer to associate with the connection.  SERVER is name
 of the host to connect to.  SERVICE is name of the service desired."
-  (let ((process
-	 (as-binary-process
+  (let* ((coding-system-for-read  'binary)
+	 (coding-system-for-write 'binary)
+	 (process
 	  (funcall smtp-open-connection-function
-		   "SMTP" buffer  server service)))
-	connection)
+		   "SMTP" buffer  server service))
+	 connection)
     (when process
       (setq connection (smtp-make-connection process server service))
       (set-process-filter process 'smtp-process-filter)
