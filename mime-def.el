@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "FLIM 1.1.1 - \"Kamitoba-guchi\"")
+  "FLIM 1.1.1 - \"J-Dþjò\"")-A
 
 (require 'custom)
 
