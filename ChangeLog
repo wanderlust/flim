@@ -1,5 +1,16 @@
 1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
 
+	* FLIM-ELS: (flim-modules): Install mel-b-ccl.el for
+	mule-2.3@19.34.
+
+	* mel-b-ccl.el (mel-ccl-decode-b): Check `ccl-cascading-read' to
+	select implementation.
+	(mel-ccl-encode-b): Use `define-long-ccl-program' to define.
+	(mel-ccl-encode-base64-crlf-crlf): Ditto.
+	(mel-ccl-encode-base64-crlf-lf): Ditto.
+
+1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
+
 	* FLIM-ELS: (flim-modules): Do not install mel-b-ccl.el for
 	mule-2.3@19.34.
 
