@@ -380,15 +380,17 @@ be the result."
       )))
 
 ;;;###autoload
-(defun std11-lexical-analyze (string &optional start)
+(defun std11-lexical-analyze (string &optional analyzers start)
   "Analyze STRING as lexical tokens of STD 11."
+  (or analyzers
+      (setq analyzers std11-lexical-analyzers))
   (or start
       (setq start 0))
   (let ((len (length string))
 	dest ret)
     (while (< start len)
       (setq ret
-	    (let ((rest std11-lexical-analyzers)
+	    (let ((rest analyzers)
 		  func r)
 	      (while (and (setq func (car rest))
 			  (null (setq r (funcall func string start))))
