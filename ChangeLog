@@ -1,5 +1,13 @@
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mmcooked.el, mmbuffer.el (write-content): Renamed from
+	`write-entity-content'.
+
+	* mime.el (mime-write-entity-content): Change message to
+	`write-content'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmbuffer.el (get-content): Renamed from `entity-content'.
 
 	* mime.el (mime-entity-content): Change message to `get-content'.
