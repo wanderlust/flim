@@ -1,6 +1,6 @@
 ;;; luna.el --- tiny OOP system kernel
 
-;; Copyright (C) 1999,2000 Free Software Foundation, Inc.
+;; Copyright (C) 1999,2000,2002 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: OOP
@@ -97,15 +97,7 @@ The optional 2nd arg SLOTS is a list of slots CLASS will have."
 (defun luna-class-find-member (class member-name)
   (or (stringp member-name)
       (setq member-name (symbol-name member-name)))
-  (or (intern-soft member-name (luna-class-obarray class))
-      (let ((parents (luna-class-parents class))
-	    ret)
-	(while (and parents
-		    (null
-		     (setq ret (luna-class-find-member
-				(luna-find-class (pop parents))
-				member-name)))))
-	ret)))
+  (intern-soft member-name (luna-class-obarray class)))
 
 
 ;; Return a member (slot or method) of CLASS that has name
@@ -172,8 +164,13 @@ The optional 5th BODY is the body of the method."
 	   (sym (luna-class-find-or-make-member
 		 (luna-find-class ',class) ',name))
 	   (cache (get ',name 'luna-method-cache)))
-       (if cache
-	   (unintern ',class cache))
+       (and cache
+	    (fboundp sym)
+	    (mapatoms
+	     (lambda (s)
+	       (if (memq (symbol-function sym) (symbol-value s))
+		   (unintern s cache)))
+	     cache))
        (fset sym func)
        (put sym 'luna-method-qualifier ,method-qualifier))))
 

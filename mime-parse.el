@@ -1,11 +1,12 @@
 ;;; mime-parse.el --- MIME message parser
 
-;; Copyright (C) 1994,1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95,96,97,98,99,2001 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: parse, MIME, multimedia, mail, news
 
-;; This file is part of SEMI (Spadework for Emacs MIME Interfaces).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -57,59 +58,245 @@ be the result."
 (defun mime-analyze-tspecial (string start)
   (if (and (> (length string) start)
 	   (memq (aref string start) mime-tspecial-char-list))
-      (cons (cons 'tpecials (substring string start (1+ start)))
-	    (1+ start))
-    ))
+      (cons (cons 'tspecials (substring string start (1+ start)))
+	    (1+ start))))
 
 (defun mime-analyze-token (string start)
   (if (and (string-match mime-token-regexp string start)
 	   (= (match-beginning 0) start))
       (let ((end (match-end 0)))
 	(cons (cons 'mime-token (substring string start end))
-	      ;;(substring string end)
-	      end)
-	)))
+	      end))))
+
+(defun mime-lexical-analyze (string)
+  "Analyze STRING as lexical tokens of MIME."
+  (let ((ret (std11-lexical-analyze string mime-lexical-analyzer))
+        prev tail)
+    ;; skip leading linear-white-space.
+    (while (memq (car (car ret)) '(spaces comment))
+      (setq ret (cdr ret)))
+    (setq prev ret
+          tail (cdr ret))
+    ;; remove linear-white-space.
+    (while tail
+      (if (memq (car (car tail)) '(spaces comment))
+          (progn
+            (setcdr prev (cdr tail))
+            (setq tail (cdr tail)))
+        (setq prev (cdr prev)
+              tail (cdr tail))))
+    ret))
 
 
 ;;; @ field parser
 ;;;
 
-(defconst mime/content-parameter-value-regexp
-  (concat "\\("
-	  std11-quoted-string-regexp
-	  "\\|[^; \t\n]*\\)"))
+(defun mime-decode-parameter-value (text charset language)
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert text)
+    (goto-char (point-min))
+    (while (re-search-forward "%[0-9A-Fa-f][0-9A-Fa-f]" nil t)
+      (insert (prog1 (string-to-int
+		      (buffer-substring (point)(- (point) 2))
+		      16)
+                (delete-region (point)(- (point) 3)))))
+    (setq text (buffer-string))
+    (when charset
+      ;; I believe that `decode-mime-charset-string' of mcs-e20.el should
+      ;; be independent of the value of `enable-multibyte-characters'.
+      (erase-buffer)
+      (set-buffer-multibyte t)
+      (setq text (decode-mime-charset-string text charset)))
+    (when language
+      (put-text-property 0 (length text) 'mime-language language text))
+    text))
 
-(defconst mime::parameter-regexp
-  (concat "^[ \t]*\;[ \t]*\\(" mime-token-regexp "\\)"
-	  "[ \t]*=[ \t]*\\(" mime/content-parameter-value-regexp "\\)"))
+(defun mime-decode-parameter-encode-segment (segment)
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert segment)
+    (goto-char (point-min))
+    (while (progn
+             (when (looking-at (eval-when-compile
+                                 (concat mime-attribute-char-regexp "+")))
+               (goto-char (match-end 0)))
+             (not (eobp)))
+      (insert (prog1 (format "%%%02X" (char-int (char-after)))
+                (delete-region (point)(1+ (point))))))
+    (buffer-string)))
+
+(defun mime-decode-parameters (params)
+  "Decode PARAMS as a property list of MIME parameter values.
+Return value is an association list of MIME parameter values.
+If parameter continuation is used, segments of values are concatenated.
+If parameters contain charset information, values are decoded.
+If parameters contain language information, it is set to `mime-language'
+property of the decoded-value."
+  ;; (unless (zerop (% (length params) 2)) ...)
+  (let ((len (/ (length params) 2))
+        dest eparams)
+    (while params
+      (if (and (string-match (eval-when-compile
+			       (concat "^\\(" mime-attribute-char-regexp "+\\)"
+				       "\\(\\*[0-9]+\\)?" ; continuation
+				       "\\(\\*\\)?$")) ; charset/language
+			     (car params))
+	       (> (match-end 0) (match-end 1)))
+	  ;; parameter value extensions are used.
+          (let* ((attribute (downcase
+			     (substring (car params) 0 (match-end 1))))
+                 (section (if (match-beginning 2)
+			      (string-to-int
+			       (substring (car params)
+					  (1+ (match-beginning 2))
+					  (match-end 2)))
+			    0))
+		 ;; EPARAM := (ATTRIBUTE VALUES CHARSET LANGUAGE)
+		 ;; VALUES := [1*VALUE] ; vector of LEN elements.
+                 (eparam (assoc attribute eparams))
+		 (value (progn
+			  (setq params (cdr params))
+			  (car params))))
+            (if eparam
+		(setq eparam (cdr eparam))
+              (setq eparam (list (make-vector len nil) nil nil)
+                    eparams (cons (cons attribute eparam) eparams)))
+	    ;; if parameter-name ends with "*", it is an extended-parameter.
+            (if (match-beginning 3)
+                (if (zerop section)
+		    ;; extended-initial-parameter.
+		    (if (string-match (eval-when-compile
+					(concat
+					 "^\\(" mime-charset-regexp "\\)?"
+					 "'\\(" mime-language-regexp "\\)?"
+					 "'\\(\\(" mime-attribute-char-regexp
+					 "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+\\)$"))
+				      value)
+			(progn
+			  ;; text
+			  (aset (car eparam) 0
+				(substring value (match-beginning 3)))
+			  (setq eparam (cdr eparam))
+			  ;; charset
+			  (when (match-beginning 1)
+			    (setcar eparam
+				    (downcase
+				     (substring value 0 (match-end 1)))))
+			  (setq eparam (cdr eparam))
+			  ;; language
+			  (when (match-beginning 2)
+			    (setcar eparam
+				    (intern
+				     (downcase
+				      (substring value
+						 (match-beginning 2)
+						 (match-end 2)))))))
+		      ;; invalid parameter-value.
+		      (aset (car eparam) 0
+			    (mime-decode-parameter-encode-segment value)))
+		  ;; extended-other-parameter.
+		  (if (string-match (eval-when-compile
+				      (concat
+				       "^\\(\\(" mime-attribute-char-regexp
+				       "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+\\)$"))
+				    value)
+		      (aset (car eparam) section value)
+		    ;; invalid parameter-value.
+		    (aset (car eparam) section
+			  (mime-decode-parameter-encode-segment value))))
+	      ;; regular-parameter. parameter continuation only.
+              (aset (car eparam) section
+		    (mime-decode-parameter-encode-segment value))))
+	;; parameter value extensions are not used,
+	;; or invalid attribute-name (in RFC2231, although valid in RFC2045).
+        (setq dest (cons (cons (downcase (car params))
+;;;			       ;; decode (invalid!) encoded-words.
+;;; 			       (eword-decode-string
+;;; 				(decode-mime-charset-string
+;;; 				 (car (cdr params))
+;;; 				 default-mime-charset)
+;;; 				'must-unfold)
+			       (car (cdr params)))
+			 dest)
+	      params (cdr params)))
+      (setq params (cdr params)))
+    ;; concat and decode parameters.
+    (while eparams
+      (setq dest (cons (cons (car (car eparams)) ; attribute
+			     (mime-decode-parameter-value
+			      (mapconcat (function identity)
+					 (nth 1 (car eparams)) ; values
+					 "")
+			      (nth 2 (car eparams)) ; charset
+			      (nth 3 (car eparams)) ; language
+			      ))
+		       dest)
+	    eparams (cdr eparams)))
+    dest))
+
+;;; for compatibility with flim-1_13-rfc2231 API.
+(defalias 'mime-parse-parameters-from-list 'mime-decode-parameters)
+(make-obsolete 'mime-parse-parameters-from-list 'mime-decode-parameters)
+
+(defun mime-parse-parameters (tokens)
+  "Parse TOKENS as MIME parameter values.
+Return a property list, which is a list of the form
+\(PARAMETER-NAME1 VALUE1 PARAMETER-NAME2 VALUE2...)."
+  (let (params attribute)
+    (while (and tokens
+		(eq (car (car tokens)) 'tspecials)
+		(string= (cdr (car tokens)) ";")
+		(setq tokens (cdr tokens))
+		(eq (car (car tokens)) 'mime-token)
+		(progn
+		  (setq attribute (cdr (car tokens)))
+		  (setq tokens (cdr tokens)))
+		(eq (car (car tokens)) 'tspecials)
+		(string= (cdr (car tokens)) "=")
+		(setq tokens (cdr tokens))
+		(memq (car (car tokens)) '(mime-token quoted-string)))
+      (setq params (cons (if (eq (car (car tokens)) 'quoted-string)
+			     (std11-strip-quoted-pair (cdr (car tokens)))
+			   (cdr (car tokens)))
+			 (cons attribute params))
+	    tokens (cdr tokens)))
+    (nreverse params)))
 
 ;; unlimited patch by simm-emacs@fan.gr.jp
 ;;   Mon, 10 Jan 2000 12:59:46 +0900
 (defun mime-parse-parameter (string)
   (let ((str string))
     (and mime-decode-unlimited
-         (string-match "\033" str)
-         (setq str (decode-coding-string string 'iso-2022-7bit-ss2)))
-    (if (string-match mime::parameter-regexp str)
-        (let ((e (match-end 2)))
-          (if mime-decode-unlimited
-              (cons
-               (cons (downcase
-                      (encode-coding-string
-                       (substring str (match-beginning 1) (match-end 1))
-                       'iso-2022-7bit-ss2))
-                     (encode-coding-string
-                      (std11-strip-quoted-string
-                       (substring str (match-beginning 2) e))
-                      'iso-2022-jp))
-               (encode-coding-string (substring str e) 'iso-2022-7bit-ss2))
-            (cons
-             (cons (downcase (substring str (match-beginning 1) (match-end 1)))
-                   (std11-strip-quoted-string (substring sutr (match-beginning 2) e)))
-             (substring str e)))))))
+	 (string-match "\033" str)
+	 (setq str (decode-coding-string string 'iso-2022-7bit-ss2)))
+    (if (string-match
+	 `,(concat "^[ \t]*\;[ \t]*\\(" mime-token-regexp "\\)"
+		   "[ \t]*=[ \t]*\\("
+		   "\\(\"\\([^\"\\\r\n]\\|\\\\.\\)*\"\\|[^; \t\n]*\\)"
+		   "\\)")
+	 str)
+	(let ((e (match-end 2)))
+	  (if mime-decode-unlimited
+	      (cons
+	       (cons (downcase
+		      (encode-coding-string
+		       (substring str (match-beginning 1) (match-end 1))
+		       'iso-2022-7bit-ss2))
+		     (encode-coding-string
+		      (std11-strip-quoted-string
+		       (substring str (match-beginning 2) e))
+		      'iso-2022-jp))
+	       (encode-coding-string (substring str e) 'iso-2022-7bit-ss2))
+	    (cons
+	     (cons
+	      (downcase (substring str (match-beginning 1) (match-end 1)))
+	      (std11-strip-quoted-string (substring sutr
+						    (match-beginning 2) e)))
+	     (substring str e)))))))
 
 
-;;; @ Content-Type
+;;; @@ Content-Type
 ;;;
 
 ;;;###autoload
@@ -138,28 +325,23 @@ are string."
 
 ;;;###autoload
 (defun mime-read-Content-Type ()
-  "Read field-body of Content-Type field from current-buffer,
-and return parsed it.  Format of return value is as same as
-`mime-parse-Content-Type'."
-  (let ((str (std11-field-body "Content-Type")))
-    (if str
-	(mime-parse-Content-Type str)
+  "Parse field-body of Content-Type field of current-buffer.
+Return value is a mime-content-type object.
+If Content-Type field is not found, return nil."
+  (let ((field-body (std11-field-body "Content-Type")))
+    (if field-body
+	(mime-parse-Content-Type field-body)
       )))
 
 
-;;; @ Content-Disposition
+;;; @@ Content-Disposition
 ;;;
-
-(eval-and-compile
-  (defconst mime-disposition-type-regexp mime-token-regexp)
-  )
 
 ;;;###autoload
 (defun mime-parse-Content-Disposition (string)
   "Parse STRING as field-body of Content-Disposition field."
   (setq string (std11-unfold-string string))
-  (if (string-match (eval-when-compile
-		      (concat "^" mime-disposition-type-regexp)) string)
+  (if (string-match `,(concat "^" mime-token-regexp) string)
       (let* ((e (match-end 0))
 	     (type (downcase (substring string 0 e)))
 	     ret dest)
@@ -174,15 +356,16 @@ and return parsed it.  Format of return value is as same as
 
 ;;;###autoload
 (defun mime-read-Content-Disposition ()
-  "Read field-body of Content-Disposition field from current-buffer,
-and return parsed it."
-  (let ((str (std11-field-body "Content-Disposition")))
-    (if str
-	(mime-parse-Content-Disposition str)
+  "Parse field-body of Content-Disposition field of current-buffer.
+Return value is a mime-content-disposition object.
+If Content-Disposition field is not found, return nil."
+  (let ((field-body (std11-field-body "Content-Disposition")))
+    (if field-body
+	(mime-parse-Content-Disposition field-body)
       )))
 
 
-;;; @ Content-Transfer-Encoding
+;;; @@ Content-Transfer-Encoding
 ;;;
 
 ;;;###autoload
@@ -200,32 +383,31 @@ and return parsed it."
 	  ))))
 
 ;;;###autoload
-(defun mime-read-Content-Transfer-Encoding (&optional default-encoding)
-  "Read field-body of Content-Transfer-Encoding field from
-current-buffer, and return it.
-If is is not found, return DEFAULT-ENCODING."
-  (let ((str (std11-field-body "Content-Transfer-Encoding")))
-    (if str
-	(mime-parse-Content-Transfer-Encoding str)
-      default-encoding)))
+(defun mime-read-Content-Transfer-Encoding ()
+  "Parse field-body of Content-Transfer-Encoding field of current-buffer.
+Return value is a string.
+If Content-Transfer-Encoding field is not found, return nil."
+  (let ((field-body (std11-field-body "Content-Transfer-Encoding")))
+    (if field-body
+	(mime-parse-Content-Transfer-Encoding field-body)
+      )))
 
 
-;;; @ Content-Id / Message-Id
+;;; @@ Content-ID / Message-ID
 ;;;
 
 ;;;###autoload
 (defun mime-parse-msg-id (tokens)
-  "Parse TOKENS as msg-id of Content-Id or Message-Id field."
+  "Parse TOKENS as msg-id of Content-ID or Message-ID field."
   (car (std11-parse-msg-id tokens)))
 
 ;;;###autoload
 (defun mime-uri-parse-cid (string)
   "Parse STRING as cid URI."
-  (inline
-    (mime-parse-msg-id (cons '(specials . "<")
-			     (nconc
-			      (cdr (cdr (std11-lexical-analyze string)))
-			      '((specials . ">")))))))
+  (mime-parse-msg-id (cons '(specials . "<")
+			   (nconc
+			    (cdr (cdr (std11-lexical-analyze string)))
+			    '((specials . ">"))))))
 
 
 ;;; @ message parser
@@ -358,6 +540,7 @@ If is is not found, return DEFAULT-ENCODING."
 (defun mime-parse-buffer (&optional buffer representation-type)
   "Parse BUFFER as a MIME message.
 If buffer is omitted, it parses current-buffer."
+  (require 'mmbuffer)
   (save-excursion
     (if buffer (set-buffer buffer))
     (mime-parse-message (or representation-type

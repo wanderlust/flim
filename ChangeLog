@@ -1,23 +1,161 @@
-2002-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+2002-11-06  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* mime-parse.el (mime-parse-buffer): Require mmbuffer.
+
+2002-09-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* luna.el (luna-define-method): Clear method cache of child
+	classes.
+
+2002-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mime-ja.texi (CVS): Escape @.
+
+	* luna.el (luna-define-method): Fix the bug that method cache is
+	not cleard.
+
+2002-09-14  KOSEKI Yoshinori  <kose@meadowy.org>
+
+	* mime-en.texi (CVS): Fix Typo. (@ to @@).
+	mime-ja.texi (CVS): Ditto.
+
+2002-08-26  MORIOKA Tomohiko  <tomo@mousai.as.wakwak.ne.jp>
+
+	* std11.el: Update Copyright header.
+
+2002-07-30  MORIOKA Tomohiko  <tomo@mousai.as.wakwak.ne.jp>
+
+	* std11.el (std11-non-atom-regexp): New constant.
+	(std11-analyze-atom): New implementation to avoid error in current
+	XEmacs UTF-2000 [may be caused by a bug about regexp].
+
+2002-07-26  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtp.el (smtp-open-connection-function): Add doc.
 	(smtp-end-of-line): Doc fix.
 
-2002-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+2002-07-24  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtp.el (smtp-end-of-line): New variable.
 	(smtp-read-response): Use it.
 	(smtp-send-command): Use it.
 	(smtp-send-data): Use it.
 
-2001-07-30  AMAKAWA Shuhei  <sa264@cam.ac.uk>
+2002-01-16  Hiroya Murata     <lapis-lazuli@pop06.odn.ne.jp>
+
+	* luna.el (luna-class-find-member): Don't search parents'
+	method-spaces.
+
+2002-02-01  Kenichi OKADA     <okada@opaopa.org>
+
+	* eword-encode.el (mime-header-encode-method-alist): New variable.
+	(mime-encode-field-body): Use `mime-header-encode-method-alist'.
+	(mime-encode-header-in-buffer): Error if cannot encode.
+
+2001-11-19  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el (smtp-find-server): Fix.
+
+2001-11-18  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el (smtp-send-by-myself): Fix.
+
+2001-11-18  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el (smtp-send-by-myself): New variable.
+	(smtp-use-starttls-ignore-error): New variable.
+	(smtp-find-mx): New function.
+	(smtp-dig): New function.
+	(smtp-find-server): New function.
+	(smtp-send-buffer-by-myself): New funcion.
+	(smtp-send-buffer): Change for `smtp-send-buffer-by-myself'.
+
+2001-11-03  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hmac-md5.el: Removed kludge for Emacs 21 prerelease versions.
+
+2001-09-21  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el(smtp-submit-package): Check extensions for starttls.
+
+2001-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Work even if the first line of
+	the subject field has no content (synch with Emacs 20.3).
+
+2001-07-30  AMAKAWA Shuhei    <sa264@cam.ac.uk>
 
 	* smtp.el (smtp-submit-package): Send EHLO after starttls.
+
+2001-06-01  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mel-b-el.el: Require `pces' for the macro `as-binary-process'
+	when compiling.
+
+	* mel-q.el: Add a comment that the feature `poem' is also required
+	for the macro `as-binary-process'.
+
+2001-05-31  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	Merged MIME Parameter Value decoder.
+
+	* mime-parse.el (mime-decode-parameters): Renamed from
+	`mime-decode-parameter-plist'.
+	(mime-decode-parameter-alist): Removed.
+	(mime-decode-alist-to-plist): Ditto.
+
+	* FLIM-API.en (mime-entity-encoding): Abolish optional argument
+	`default-encoding'.
+	(mime-parse-Content-Tranfer-Encoding): Ditto.
 
 2001-05-21  SHIMADA Mitsunobu <simm@pure.fan.gr.jp>
 
 	* LIMIT: CVS commit
 	(apply unlimited patch to flim-1_14 branch)
+
+2001-05-02  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* eword-decode.el (eword-decode-encoded-word): Don't use `let'.
+
+	* mime-parse.el (mime-decode-parameter-plist): Modified
+	description of return value.
+X	(mime-parse-Content-Type): Ditto.
+	(mime-read-Content-Type): Ditto.
+X	(mime-parse-Content-Disposition): Ditto.
+	(mime-read-Content-Disposition): Ditto.
+X	(mime-parse-Content-Transfer-Encoding): Ditto.
+	(mime-read-Content-Transfer-Encoding): Ditto.
+
+2001-05-01  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+X	* mime-parse.el (mime-parse-parameters): Don't use `equal' for
+X	strings.
+X	(mime-parse-Content-Type): Ditto.
+
+2001-04-30  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Use one temporary
+	buffer.
+	(mime-decode-parameter-plist): Changed internal data structure.
+
+2001-04-28  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* eword-decode.el (eword-encoded-word-regexp): Match for language.
+	(eword-decode-region): Refer the 7th parens, not 6th.
+	(eword-decode-encoded-word): Extract language information.
+	(eword-decode-encoded-text): New optional argument `language'.
+
+	* mime-def.el (mime-charset-regexp): Updated for RFC2231.
+
+	* mime-parse.el (mime-decode-parameter-plist): Fix regexp.
+	Use symbol for language information.
+
+	* tests/test-rfc2231.el: Renamed all testcases.
+
+2001-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Don't use
+	`int-char'.
 
 2001-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
@@ -29,15 +167,92 @@
 
 	* mmgeneric.el (mime-entity-fetch-field): Ditto.
 
+2001-04-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-plist): Modified
+	description of return value.
+X	(mime-parse-Content-Type): Ditto.
+	(mime-read-Content-Type): Ditto.
+X	(mime-parse-Content-Disposition): Ditto.
+	(mime-read-Content-Disposition): Ditto.
+	(mime-read-Content-Transfer-Encoding): Ditto.
+
+2001-04-25  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-lexical-analyze): Removed comments.
+
 2001-04-22  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* LIMIT: Version 1.14.7 (Fujiidera) released.
 	(apply unlimited patch to FLIM Version 1.14.2)
 
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): New
+	implementation; use temporary buffer for conversion.
+	(mime-decode-parameter-encode-segment): Ditto.
+	(mime-decode-parameter-plist): Would put empty language info.
+
+	* test/test-rfc2231.el (test-rfc2231-10, test-rfc2231-11,
+	test-rfc2231-12): New testcases for language info.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el: Fixed comments.
+
+	* test/test-rfc2231.el (test-rfc2231-9): New testcase.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* test/test-rfc2231.el (test-rfc2231-7, test-rfc2231-8):
+	New testcases.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-def.el (mime-content-type-parameter): Expand
+	`mime-content-type-parameters'.
+
+X	* mime-parse.el (mime-parse-Content-Disposition): Add
+X	description of return value to the docstring.
+X	(mime-parse-Content-Transfer-Encoding): Ditto.
+
+	* test/test-rfc2231.el: Made independent of internal
+	representation of Content-Type.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* FLIM-MK (check-flim): Limit filename of test files.
+
+	* test/test-rfc2231.el: New file.
+
+2001-04-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-plist): Shortcut for
+	parameters without extensions.
+
+2001-04-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-def.el (make-mime-content-type): Don't reverse parameters.
+	(make-mime-content-disposition): New function.
+
+	* mime-parse.el (mime-decode-parameter-value): Removed comments.
+	(mime-decode-parameter-encode-segment): New function.
+	(mime-decode-parameter-plist): New implementation.
+	Switched from decode-then-concat to concat-then-decode model.
+X	(mime-parse-parameters): Strip quoted-pair in quoted-string.
+X	(mime-parse-Content-Type): Use `make-mime-content-type'.
+X	(mime-parse-Content-Disposition): Use
+X	`make-mime-content-disposition'.
+
 2001-04-15  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* eword-decode.el (eword-lexical-analyze-internal):
 	Fix typo. [cf. <emacs-mime-ja:00425>]
+
+2001-04-11  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Allow lowercase.
+	(mime-decode-parameter-plist): Ditto.
 
 2001-04-10  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
@@ -117,6 +332,161 @@
 	md5-dl.el, md5.el, sha1-dl.el, sha1-el.el, sha1.el:
 	Update Copyright header.
 
+2001-02-28  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-plist,
+	mime-decode-parameter-alist, mime-decode-parameters):
+	Add doc string.
+
+2001-02-28  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Decode MIME charset
+	in multibyte buffer. [cf. <emacs-mime-ja:00817>]
+	(mime-decode-parameter-plist): Downcase attributes.
+	[cf. <emacs-mime-ja:00816>]
+	(mime-decode-parameters): Alias for `mime-decode-parameter-plist'
+	instead of `mime-decode-parameter-alist'.
+	Add autoload cookie.
+	(mime-parse-parameters-from-list): Make obsolete.
+	(mime-parse-parameters): Return results as a plist.
+X	(mime-parse-Content-Type, mime-read-Content-Type): Moved type check
+	to the caller side.
+X	(mime-parse-Content-Disposition, mime-read-Content-Disposition):
+	Ditto.
+X	(mime-parse-Content-Transfer-Encoding,
+	mime-read-Content-Transfer-Encoding): Ditto.
+
+2001-02-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	MIME Parameter Value decoder support.
+
+	* mime-def.el (std11-quoted-pair-regexp, std11-non-qtext-char-list,
+	std11-qtext-regexp, std11-quoted-string-regexp): Removed.
+	(mime-media-type/subtype-regexp): Ditto.
+	(mime-attribute-char-regexp, mime-language-regexp,
+	mime-encoding-regexp): New constants.
+
+	* mime-parse.el (mime-lexical-analyze): New function.
+	(mime/content-parameter-value-regexp, mime::parameter-regexp):
+	Removed.
+X	(mime-parse-parameter): Ditto.
+	(mime-decode-parameter-value, mime-decode-parameter-plist,
+	mime-parse-alist-to-plist, mime-decode-parameter-alist):
+	New functions.
+	(mime-parse-parameters-from-list): New alias for
+	`mime-decode-parameter-plist'.
+	(mime-decode-parameters): New alias for
+	`mime-decode-parameter-alist'.
+	(mime-parse-parameters): New function.
+	(mime-disposition-type-regexp): Removed.
+X	(mime-parse-Content-Type, mime-parse-Content-Disposition,
+X	mime-parse-Content-Transfer-Encoding): New implementation.
+	(mime-read-Content-Type, mime-read-Content-Disposition,
+	mime-read-Content-Transfer-Encoding): Ditto.
+
+2001-02-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hmac-md5.el, hmac-sha1.el: Modify comments.
+
+2001-02-25  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hex-util.el, hmac-def.el, hmac-md5.el, hmac-sha1.el,
+	md5-dl.el, md5.el, sha1-dl.el, sha1-el.el, sha1.el:
+	Update Copyright header.
+
+2001-02-20  Kenichi OKADA <okada@opaopa.org>
+
+	* tests/test-sasl.el(test-sasl-ntlm-imap): Fix
+	`sasl-read-passphrase'
+
+2001-02-20  Kenichi OKADA <okada@opaopa.org>
+
+	* tests/test-sasl.el(test-sasl-ntlm-imap): Change name.
+	Delete wrong lines.
+
+2001-02-20  Taro Kawagishi <taro.kawagishi@nokia.com>
+
+	* tests/test-sasl.el(test-sasl-digest-ntlm-imap): New test.
+
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl-ntlm.el(sasl-ntlm-response): self-Hash.
+
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
+	* ntlm.el(smb-passwd-hash): Fix `upcase' for XEmacs.
+
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
+	* ntlm.el(TopLevel): Require `poem'
+	(ntlm-build-auth-request): Omit `request-bufIndex'
+	(ntlm-build-auth-response): Omit `response', `ident' and `msgType'
+	Use `string-as-unibyte' of `poem'.
+
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl-scram.el(sasl-scram-md5-parse-server-msg-1): Error
+	if server's response cannot be parsed.
+
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl-scram.el(sasl-scram-md5-server-salt): New function.
+	(sasl-scram-md5-response-2): Use `sasl-scram-md5-server-salt'
+
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl-scram.el(sasl-scram-md5-make-unique-nonce): Rewrite.
+
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl-scram.el: Add comment.
+	(sasl-scram-md5-steps): New variable.
+	(sasl-scram-md5-make-client-msg-1): Add optional nonce.
+	(sasl-scram-md5-make-client-msg-2): New function.
+	(sasl-scram-md5-make-server-msg-2): Rewrite.
+	(sasl-scram-md5-response-1): New function.
+	(sasl-scram-md5-response-2): New function.
+	(sasl-scram-md5-authenticate-server): New function.
+	* test/test-sasl.el(test-sasl-scram-md5-imap): New function.
+
+2001-02-16  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl-scram.el: rename from scram-md5.el
+	(TopLevel): Provide `sasl-scram'.
+	Fix prefix.
+	Fix comments.
+	require `sasl'.
+	(sasl-scram-make-unique-nonce): use `sasl-unique-id'.
+	(sasl-scram-md5-unique-id-function): New variable.
+	* sasl.el(sasl-mechanisms): Add SCRAM-MD5.
+	(sasl-mechanism-alist): Ditto.
+
+2001-02-16  Kenichi OKADA <okada@opaopa.org>
+
+	* md4.el(md4-pack-int16): Taken form ntlm.el
+	(md4-pack-int32): Ditto.
+	(md4-unpack-int16): Ditto.
+	(md4-unpack-int32): Ditto.
+	* ntlm.el (pack-int16): Delete.
+	(pack-int32): Delete.
+	(unpack-int16): Delete.
+	(unpack-int32): Delete.
+
+2001-02-16  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl.el(sasl-mechanisms): Add NTLM.
+	(sasl-mechanism-alist): Add NTLM.
+
+2001-02-16  Kenichi OKADA <okada@opaopa.org>
+
+	* test/test-sasl.el: New file.
+
+2001-02-16  Taro Kawagishi <taro.kawagishi@nokia.com>
+
+	* md4.el: New file.
+	* ntlm.el: New file.
+	* sasl-ntlm.el: New file.
+
 2000-12-27  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mime-conf.el (mime-mailcap-file): Turn to non user option.
@@ -171,7 +541,7 @@
 	* qmtp.el (qmtp-open-connection-function): Revert initial value to
 	`open-network-stream'.
 	(qmtp-send-buffer): Use `binary-funcall'.
-	
+
 2000-12-23  OKAZAKI Tetsurou  <okazaki@be.to>
 
 	* FLIM-ELS (flim-modules): Delete `mmdbuffer'.
@@ -415,7 +785,7 @@
 	* mmbuffer.el (mime-write-entity-body): Use `binary-write-region'
 	instead of `write-region-as-binary'.
 	(mime-write-entity): Don't use `write-region-as-raw-text-CRLF'.
-	
+
 	* mime-def.el: Don't require `poem'.
 	(binary-insert-file-contents): New function.
 	(binary-write-region): New function.
@@ -558,9 +928,9 @@
 
 2000-12-04   Daiki Ueno  <ueno@unixuser.org>
 
-        * smtpmail.el (smtpmail-send-it): Use `smtp-send-buffer' instead of
-        `smtp-via-smtp'.
-        (smtpmail-send-queued-mail): Ditto.
+	* smtpmail.el (smtpmail-send-it): Use `smtp-send-buffer' instead of
+	`smtp-via-smtp'.
+	(smtpmail-send-queued-mail): Ditto.
 
 2000-11-24  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -874,8 +1244,8 @@
 
 2000-05-25  Tanaka Akira      <akr@m17n.org>
 
-        * mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
-	
+	* mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
+
 2000-05-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtp.el (smtp-deduce-address-list): Set `case-fold-search' to `t'
@@ -1636,7 +2006,7 @@
 1999-03-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel.el (mime-decode-string): Return STRING if return value of
- 	`(mel-find-function 'mime-decode-string encoding)' is nil.
+	`(mel-find-function 'mime-decode-string encoding)' is nil.
 
 1999-02-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2957,12 +3327,12 @@
 1998-08-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-encode.el (eword-encode-field): Use `capitalize' instead
- 	of `downcase' for `field-name'.
+	of `downcase' for `field-name'.
 
 	* eword-encode.el (eword-encode-structured-field-body): New
- 	function.
+	function.
 	(eword-encode-field): Use `eword-encode-structured-field-body' for
- 	"MIME-Version" and "User-Agent" field.
+	"MIME-Version" and "User-Agent" field.
 
 1998-08-26  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
@@ -2972,15 +3342,15 @@
 
 	* eword-encode.el (eword-encode-address-list): New function.
 	(eword-encode-field): Use `eword-encode-address-list' instead of
- 	`tm-eword::encode-address-list'; abolish
- 	`tm-eword::encode-address-list'.
+	`tm-eword::encode-address-list'; abolish
+	`tm-eword::encode-address-list'.
 
 	* eword-encode.el (eword-encode-field): Use `eword-encode-string'
- 	instead of `tm-eword::encode-string'; abolish
- 	`tm-eword::encode-string'.
+	instead of `tm-eword::encode-string'; abolish
+	`tm-eword::encode-string'.
 
 	* eword-encode.el: Rename `tm-eword::make-rword' ->
- 	`make-ew-rword'; rename `tm-eword::rword-' -> `ew-rword-'.
+	`make-ew-rword'; rename `tm-eword::rword-' -> `ew-rword-'.
 
 1998-08-26  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
@@ -3658,7 +4028,7 @@
 	* FLIM: Version 1.2.0 (J-Dþjò)-A was released.
 
 	* README.en (What's FLIM): Delete description about
- 	std11-parse.el; add description about mailcap.el.
+	std11-parse.el; add description about mailcap.el.
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3745,7 +4115,7 @@
 	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
- 	constant.
+	constant.
 
 	* eword-encode.el: Abolish constant 'eword-encode-version.
 
@@ -3782,6 +4152,6 @@
 	* Makefile: New file.
 
 	* mime-def.el, std11-parse.el, std11.el, eword-decode.el,
- 	eword-encode.el: Copied from MEL, SEMI (mime-def.el
- 	eword-decode.el eword-encode.el) and APEL (std11-parse.el
- 	std11.el).
+	eword-encode.el: Copied from MEL, SEMI (mime-def.el
+	eword-decode.el eword-encode.el) and APEL (std11-parse.el
+	std11.el).

@@ -1,6 +1,6 @@
 ;;; std11.el --- STD 11 functions for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,01,02 Free Software Foundation, Inc.
 
 ;; Author:   MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: mail, news, RFC 822, STD 11
@@ -303,6 +303,11 @@ be the result."
   )
 ;; (defconst std11-spaces-regexp
 ;;   (eval-when-compile (concat "[" std11-space-char-list "]+")))
+
+(defconst std11-non-atom-regexp
+  (eval-when-compile
+    (concat "[" std11-special-char-list std11-space-char-list "]")))
+
 (defconst std11-atom-regexp
   (eval-when-compile
     (concat "[^" std11-special-char-list std11-space-char-list "]+")))
@@ -327,13 +332,21 @@ be the result."
     ))
 
 (defun std11-analyze-atom (string start)
-  (if (and (string-match std11-atom-regexp string start)
-	   (= (match-beginning 0) start))
-      (let ((end (match-end 0)))
-	(cons (cons 'atom (substring string start end))
-	      ;;(substring string end)
-	      end)
-	)))
+  (if (string-match std11-non-atom-regexp string start)
+      (if (> (match-beginning 0) start)
+	  (cons (cons 'atom (substring string start (match-beginning 0)))
+		(match-beginning 0))
+	nil)
+    (cons (cons 'atom (substring string start))
+	  (length string)))
+  ;; (if (and (string-match std11-atom-regexp string start)
+  ;;          (= (match-beginning 0) start))
+  ;;     (let ((end (match-end 0)))
+  ;;       (cons (cons 'atom (substring string start end))
+  ;;             ;;(substring string end)
+  ;;             end)
+  ;;       ))
+  )
 
 (defun std11-check-enclosure (string open close &optional recursive from)
   (let ((len (length string))
@@ -776,7 +789,7 @@ represents addr-spec of RFC 822."
   "Return string of address part from parsed ADDRESS of RFC 822."
   (cond ((eq (car address) 'group)
 	 (mapconcat (function std11-address-string)
-		    (car (cdr address))
+		    (nth 2 address)
 		    ", ")
 	 )
 	((eq (car address) 'mailbox)

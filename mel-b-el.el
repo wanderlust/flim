@@ -1,6 +1,6 @@
 ;;; mel-b-el.el --- Base64 encoder/decoder.
 
-;; Copyright (C) 1992,1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1992,95,96,97,98,99,2001 Free Software Foundation, Inc.
 
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
 ;;         MORIOKA Tomohiko <tomo@m17n.org>
@@ -27,6 +27,9 @@
 ;;; Code:
 
 (require 'mime-def)
+(eval-when-compile
+  ;; XXX: the macro `as-binary-process' should be provided when compiling.
+  (require 'pces))
 
 
 ;;; @ variables
