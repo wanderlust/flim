@@ -317,8 +317,8 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	   (smtp-primitive-helo package)))
 	(if smtp-use-starttls
 	    (progn
-	    (smtp-primitive-starttls package)
-	    (smtp-primitive-ehlo package)))
+	      (smtp-primitive-starttls package)
+	      (smtp-primitive-ehlo package)))
 	(if smtp-use-sasl
 	    (smtp-primitive-auth package))
 	(smtp-primitive-mailfrom package)
