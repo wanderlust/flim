@@ -1,0 +1,20 @@
+(require 'emu)
+(require 'mel-b-el)
+
+(unless (and (boundp 'ccl-encoder-eof-block-is-broken)
+	     ccl-encoder-eof-block-is-broken)
+  (require 'mel-ccl)
+  (defalias 'base64-encode-string 'base64-ccl-encode-string)
+  (defalias 'base64-encode-region 'base64-ccl-encode-region)
+  (defalias 'base64-insert-encoded-file 'base64-ccl-insert-encoded-file)
+  )
+
+(unless (and (boundp 'ccl-decoder-eof-block-is-broken)
+	     ccl-decoder-eof-block-is-broken)
+  (require 'mel-ccl)
+  (defalias 'base64-decode-string 'base64-ccl-decode-string)
+  (defalias 'base64-decode-region 'base64-ccl-decode-region)
+  (defalias 'base64-write-decoded-region 'base64-ccl-write-decoded-region)
+  )
+
+(provide 'mel-b-ccl)
