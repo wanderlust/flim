@@ -229,6 +229,34 @@
 "From: あ <akr@jaist.ac.jp>")
 
 (decode
+"From: =?ISO-2022-JP?b?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+"From: あ <akr@jaist.ac.jp>")
+
+(decode
+"From: =?iso-2022-jp?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+"From: あ <akr@jaist.ac.jp>")
+
+(decode
+"From: =?iSo-2022-jP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+"From: あ <akr@jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?Q?=1B=24B=24=22=1B=28B?= <akr@jaist.ac.jp>"
+"From: あ <akr@jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?q?=1B=24B=24=22=1B=28B?= <akr@jaist.ac.jp>"
+"From: あ <akr@jaist.ac.jp>")
+
+(decode
+"From: =?iso-2022-jp?Q?=1B=24B=24=22=1B=28B?= <akr@jaist.ac.jp>"
+"From: あ <akr@jaist.ac.jp>")
+
+(decode
+"From: =?iSo-2022-jP?Q?=1B=24B=24=22=1B=28B?= <akr@jaist.ac.jp>"
+"From: あ <akr@jaist.ac.jp>")
+
+(decode
 "From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= =?ISO-2022-JP?B?GyRCJCQbKEI=?=\r
  <akr@jaist.ac.jp>"
 "From: あい <akr@jaist.ac.jp>")
@@ -248,6 +276,10 @@
 (decode
 "From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= \"ja \\\"a\\\"\" <akr@jaist.ac.jp>"
 "From: あ \"ja \\\"a\\\"\" <akr@jaist.ac.jp>")
+
+(decode
+"From: =?US-ASCII?Q?=2C?= <akr@jaist.ac.jp>"
+"From: \",\" <akr@jaist.ac.jp>")
 
 (decode
 "From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= =?US-ASCII?Q?=2E?= <akr@jaist.ac.jp>"
@@ -286,10 +318,6 @@
 (decode
 "From: < =?ISO-2022-JP?B?GyRCJCIbKEI=?= @jaist.ac.jp>"
 "From: < =?ISO-2022-JP?B?GyRCJCIbKEI=?= @jaist.ac.jp>")
-
-(decode
-"From: =?ISO-2022-JP?Q?=1B=24BAA=1B=28B?= <akr@jaist.ac.jp>"
-"From: 疏 <akr@jaist.ac.jp>")
 
 (decode
 "From: =?ISO-2022-JP?Q?=1B$BAA=1B(B?= ) <akr@jaist.ac.jp>"
@@ -1421,8 +1449,18 @@
 'embedded-encoded-word)
 
 (decode
-"From: =?Unknown-Charset?B?gqA=?= =?US-ASCII?Q?=2E?= <akr@jaist.ac.jp>"
-"From: \"=?+Unknown-Charset?B?gqA=?=.\" <akr@jaist.ac.jp>"
+"From: =?+C?Q?abcdef?= <akr@jaist.ac.jp>"
+"From: =?++++C?Q?abcdef?= <akr@jaist.ac.jp>"
+'embedded-encoded-word)
+
+(decode
+"From: \"=?+C?Q?abcdef?=\" <akr@jaist.ac.jp>"
+"From: \"=?+++C?Q?abcdef?=\" <akr@jaist.ac.jp>"
+'embedded-encoded-word)
+
+(decode
+"From: =?C?Q?abc?= =?US-ASCII?Q?=2E?= <akr@jaist.ac.jp>"
+"From: \"=?+C?Q?abc?=.\" <akr@jaist.ac.jp>"
 'embedded-encoded-word)
 
 ;;; Section 8: CR and LF.
