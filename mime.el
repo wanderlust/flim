@@ -151,7 +151,7 @@ ENTITY is used."
 			  (setq field (std11-parse-addresses
 				       (eword-lexical-analyze field-body)))
 			  )
-			 ((eq field-name '(Sender Resent-Sender))
+			 ((memq field-name '(Sender Resent-Sender))
 			  (setq field (std11-parse-address
 				       (eword-lexical-analyze field-body)))
 			  )
