@@ -244,6 +244,22 @@ If MESSAGE is specified, it is regarded as root entity."
 	     default-encoding "7bit"))
 	)))
 
+(defvar mime-field-parser-alist
+  '((From		. std11-parse-addresses-string)
+    (Resent-From	. std11-parse-addresses-string)
+    (To			. std11-parse-addresses-string)
+    (Resent-To		. std11-parse-addresses-string)
+    (Cc			. std11-parse-addresses-string)
+    (Resent-Cc		. std11-parse-addresses-string)
+    (Bcc		. std11-parse-addresses-string)
+    (Resent-Bcc		. std11-parse-addresses-string)
+    (Reply-To 		. std11-parse-addresses-string)
+    (Resent-Reply-To	. std11-parse-addresses-string)
+
+    (Sender		. std11-parse-address-string)
+    (Resent-Sender	. std11-parse-address-string)
+    ))
+
 (defun mime-read-field (field-name &optional entity)
   (or (symbolp field-name)
       (setq field-name (capitalize (capitalize field-name))))
@@ -262,24 +278,17 @@ If MESSAGE is specified, it is regarded as root entity."
 	 (let* ((header (mime-entity-parsed-header-internal entity))
 		(field (cdr (assq field-name header))))
 	   (or field
-	       (let ((field-body (mime-fetch-field field-name entity)))
+	       (let ((field-body (mime-fetch-field field-name entity))
+		     parser)
 		 (when field-body
-		   (cond ((memq field-name '(From Resent-From
-					     To Resent-To
-					     Cc Resent-Cc
-					     Bcc Resent-Bcc
-					     Reply-To Resent-Reply-To))
-			  (setq field (std11-parse-addresses
-				       (eword-lexical-analyze field-body)))
-			  )
-			 ((memq field-name '(Sender Resent-Sender))
-			  (setq field (std11-parse-address
-				       (eword-lexical-analyze field-body)))
-			  )
-			 (t
-			  (setq field (mime-decode-field-body
-				       field-body field-name 'native))
-			  ))
+		   (setq parser
+			 (cdr (assq field-name mime-field-parser-alist)))
+		   (setq field
+			 (if parser
+			     (funcall parser field-body)
+			   (mime-decode-field-body
+			    field-body field-name 'native)
+			   ))
 		   (mime-entity-set-parsed-header-internal
 		    entity (put-alist field-name field header))
 		   field)))))))
