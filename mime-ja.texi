@@ -311,7 +311,17 @@ code-converted.
 @refill
 
 encoded-word (@ref{encoded-word}) は復号される。『生の非 us-ascii 文字』
-は @var{default-mime-charset} として解釈される。
+は @code{default-mime-charset} として解釈される。
+@end defun
+
+
+@defun mime-insert-text-content entity
+
+Insert before point a contents of @var{entity} as text entity.@refill
+
+Contents of the @var{entity} are decoded as MIME charset (@ref{MIME charset}).  If the @var{entity} does not have charset parameter of
+Content-Type field, @code{default-mime-charset} is used as default
+value.
 @end defun
 
 
