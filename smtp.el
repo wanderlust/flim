@@ -795,10 +795,7 @@ nil, the symbols `b', `k' and `l'."
 						       (point-max))))))
 			  nil nil format))
 	  (setq index (1+ (match-end 0))
-		format (replace-match (concat "%%"
-					      (or (match-string 1 format)
-						  (match-string 2 format)))
-				      nil nil format))))
+		format (replace-match "%\\&" nil nil format))))
       (cons format type))))
 
 (defun smtp-show-progress-message (def prev)

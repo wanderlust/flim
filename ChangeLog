@@ -1,5 +1,9 @@
 2004-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* smtp.el (smtp-parse-progress-message-format): Fix regexp usage.
+
+2004-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* smtp.el (smtp-progress-message-format): New user option.
 	(smtp-primitive-data): Show progress message.
 	(smtp-parse-progress-message-format): New function.
