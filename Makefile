@@ -3,7 +3,8 @@
 #
 
 PACKAGE = flim
-VERSION = 1.12.0
+API	= 1.12
+RELEASE = 1
 
 TAR	= tar
 RM	= /bin/rm -f
@@ -23,6 +24,9 @@ GOMI	= *.elc \
 	  *.pg *.pgs *.tp *.tps *.toc *.aux *.log
 FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
+VERSION	= $(API).$(RELEASE)
+ARC_DIR = /pub/GNU/elisp/flim/$(PACKAGE)-$(API)
+SEMI_ARC_DIR = /pub/GNU/elisp/semi/semi-1.12-for-flim-$(API)
 
 elc:
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
@@ -45,20 +49,19 @@ clean:
 
 tar:
 	cvs commit
-	sh -c 'cvs tag -RF $(PACKAGE)-`echo $(VERSION) \
-				| sed s/\\\\./_/ | sed s/\\\\./_/`; \
+	sh -c 'cvs tag -RF $(PACKAGE)-`echo $(VERSION) | tr . _`; \
 	cd /tmp; \
 	cvs -d :pserver:anonymous@chamonix.jaist.ac.jp:/hare/cvs/root \
 		export -d $(PACKAGE)-$(VERSION) \
-		-r $(PACKAGE)-`echo $(VERSION) | sed s/\\\\./_/ | sed s/\\\\./_/` \
+		-r $(PACKAGE)-`echo $(VERSION) | tr . _` \
 		flim'
 	cd /tmp; $(RM) $(PACKAGE)-$(VERSION)/ftp.in ; \
 		$(TAR) cvzf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
 	cd /tmp; $(RM) -r $(PACKAGE)-$(VERSION)
-	sed "s/VERSION/$(VERSION)/" < ftp.in > ftp
+	sed "s/VERSION/$(VERSION)/" < ftp.in | sed "s/API/$(API)/" > ftp
 
 release:
-	-$(RM) /pub/GNU/elisp/flim/$(PACKAGE)-$(VERSION).tar.gz
-	mv /tmp/$(PACKAGE)-$(VERSION).tar.gz /pub/GNU/elisp/flim/
-	cd /pub/GNU/elisp/semi/ ; \
-		ln -s ../flim/$(PACKAGE)-$(VERSION).tar.gz .
+	-$(RM) $(ARC_DIR)/$(PACKAGE)-$(VERSION).tar.gz
+	mv /tmp/$(PACKAGE)-$(VERSION).tar.gz $(ARC_DIR)
+	cd $(SEMI_ARC_DIR) ; \
+		ln -s ../../flim/flim-$(API)/$(PACKAGE)-$(VERSION).tar.gz .
