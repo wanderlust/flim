@@ -26,3 +26,6 @@ field name information.
        (eword-decode-unstructured-field-body (std11-unfold-string string) 'must-unfold))))
 
 * Ignore warnings about args-eword-* when byte-compiling.
+
+* If you have a problem with ew-ccl-b or other CCL based coding-system, set ew-bq-use-mel to t.
+

@@ -1,5 +1,14 @@
 1998-08-24  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* DOODLE-TIPS: Add a notice about ew-ccl-b.
+
+	* ew-bq.el (ew-bq-use-mel): New variable.
+	(ew-decode-q): Use `q-encoding-decode-string' if `ew-bq-use-mel' is non-nil.
+	(ew-encode-b): Use `base64-encode-string' if `ew-bq-use-mel' is non-nil.
+	(ew-decode-b): Use `base64-decode-string' if `ew-bq-use-mel' is non-nil.
+
+1998-08-24  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-bq.el (ew-ccl-qp-table): New constant.
 	(ew-ccl-encode-quoted-printable): New CCL program.
 

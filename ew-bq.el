@@ -668,6 +668,8 @@
 )
 
 ;;;
+(require 'mel)
+(defvar ew-bq-use-mel nil)
 
 (defun ew-encode-uq (str)
   (encode-coding-string (string-as-unibyte str) 'ew-ccl-uq))
@@ -678,16 +680,17 @@
 (defun ew-encode-pq (str)
   (encode-coding-string (string-as-unibyte str) 'ew-ccl-pq))
 
-(defun ew-decode-q (str)
-  (string-as-unibyte (decode-coding-string str 'ew-ccl-uq)))
+(if ew-bq-use-mel
+    (defalias 'ew-decode-q 'q-encoding-decode-string)
+  (defun ew-decode-q (str)
+    (string-as-unibyte (decode-coding-string str 'ew-ccl-uq))))
 
-(require 'mel)
-(if (or base64-dl-module ew-ccl-encode-b-is-broken)
+(if (or ew-bq-use-mel base64-dl-module ew-ccl-encode-b-is-broken)
     (defalias 'ew-encode-b 'base64-encode-string)
   (defun ew-encode-b (str)
     (encode-coding-string (string-as-unibyte str) 'ew-ccl-b)))
 
-(if base64-dl-module
+(if (or ew-bq-use-mel base64-dl-module)
     (defalias 'ew-decode-b 'base64-decode-string)
   (defun ew-decode-b (str)
     (string-as-unibyte (decode-coding-string str 'ew-ccl-b))))
