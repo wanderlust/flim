@@ -1,11 +1,11 @@
-;;; mime-def.el --- definition module for SEMI
+;;; mime-def.el --- definition module about MIME
 
 ;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: definition, MIME, multimedia, mail, news
 
-;; This file is part of SEMI (Spadework for Emacs MIME Interfaces).
+;; This file is part of FLAM (Faithful Library About MIME).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "FLIM-FLAM 1.0.0 - \"蘇芳\" 2.5R3.0/3.0")
+  "FLIM-FLAM 1.0.1 - \"紅梅\" 2.5R7.0/8.0")
 
 (require 'custom)
 

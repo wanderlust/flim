@@ -1,3 +1,18 @@
+1998-04-23  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-encoded-word-prefix-regexp): New constant.
+	(eword-encoded-word-suffix-regexp): New constant.
+	(eword-encoded-text-in-unstructured-regexp): New constant.
+	(eword-encoded-word-in-unstructured-regexp): New constant.
+	(eword-after-encoded-word-in-unstructured-regexp): New constant.
+	(eword-decode-entire-string): New function.
+	(eword-decode-unstructured): Use `eword-decode-entire-string'.
+	(eword-decode-comment): Use `eword-decode-entire-string'.
+	(eword-decode-quoted-string): Use `eword-decode-entire-string'.
+	(eword-decode-string): Add optional argument `default-mime-charset'.
+	(eword-decode-region): Add optional argument `default-mime-charset'.
+	(eword-decode-header): Refine `code-conversion' treatment.
+
 1998-04-21  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-header): code-conversion is now

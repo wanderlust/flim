@@ -41,68 +41,66 @@
   :group 'mime)
 
 
+;;; @ variables
+;;;
+
+(defcustom eword-decode-sticked-encoded-word nil
+  "*If non-nil, decode encoded-words sticked on atoms,
+other encoded-words, etc.
+however this behaviour violates RFC2047."
+  :group 'eword-decode
+  :type 'boolean)
+
+(defcustom eword-decode-quoted-encoded-word nil
+  "*If non-nil, decode encoded-words in quoted-string
+however this behaviour violates RFC2047."
+  :group 'eword-decode
+  :type 'boolean)
+
+
 ;;; @ MIME encoded-word definition
 ;;;
 
-(defconst eword-encoded-text-regexp "[!->@-~]+")
-(defconst eword-encoded-word-regexp
+(defconst eword-encoded-word-prefix-regexp
   (concat (regexp-quote "=?")
-	  "\\("
-	  mime-charset-regexp
-	  "\\)"
+	  "\\(" mime-charset-regexp "\\)"
 	  (regexp-quote "?")
 	  "\\(B\\|Q\\)"
-	  (regexp-quote "?")
-	  "\\("
-	  eword-encoded-text-regexp
-	  "\\)"
-	  (regexp-quote "?=")))
-(defconst eword-after-encoded-word-regexp "\\([ \t]\\|$\\)")
+	  (regexp-quote "?")))
+(defconst eword-encoded-word-suffix-regexp
+  (regexp-quote "?="))
+
+(defconst eword-encoded-text-in-unstructured-regexp "[!->@-~]+")
+(defconst eword-encoded-word-in-unstructured-regexp
+  (concat eword-encoded-word-prefix-regexp
+	  "\\(" eword-encoded-text-in-unstructured-regexp "\\)"
+	  eword-encoded-word-suffix-regexp))
+(defconst eword-after-encoded-word-in-unstructured-regexp "\\([ \t]\\|$\\)")
 
 (defconst eword-encoded-text-in-phrase-regexp "[-A-Za-z0-9!*+/=_]+")
 (defconst eword-encoded-word-in-phrase-regexp
-  (concat (regexp-quote "=?")
-	  "\\("
-	  mime-charset-regexp
-	  "\\)"
-	  (regexp-quote "?")
-	  "\\(B\\|Q\\)"
-	  (regexp-quote "?")
-	  "\\("
-	  eword-encoded-text-in-phrase-regexp
-	  "\\)"
-	  (regexp-quote "?=")))
+  (concat eword-encoded-word-prefix-regexp
+	  "\\(" eword-encoded-text-in-phrase-regexp "\\)"
+	  eword-encoded-word-suffix-regexp))
 (defconst eword-after-encoded-word-in-phrase-regexp "\\([ \t(]\\|$\\)")
 
 (defconst eword-encoded-text-in-comment-regexp "[]!-'*->@-[^-~]+")
 (defconst eword-encoded-word-in-comment-regexp
-  (concat (regexp-quote "=?")
-	  "\\("
-	  mime-charset-regexp
-	  "\\)"
-	  (regexp-quote "?")
-	  "\\(B\\|Q\\)"
-	  (regexp-quote "?")
-	  "\\("
-	  eword-encoded-text-in-comment-regexp
-	  "\\)"
-	  (regexp-quote "?=")))
+  (concat eword-encoded-word-prefix-regexp
+	  "\\(" eword-encoded-text-in-comment-regexp "\\)"
+	  eword-encoded-word-suffix-regexp))
 (defconst eword-after-encoded-word-in-comment-regexp "\\([ \t()\\\\]\\|$\\)")
 
 (defconst eword-encoded-text-in-quoted-string-regexp "[]!#->@-[^-~]+")
 (defconst eword-encoded-word-in-quoted-string-regexp
-  (concat (regexp-quote "=?")
-	  "\\("
-	  mime-charset-regexp
-	  "\\)"
-	  (regexp-quote "?")
-	  "\\(B\\|Q\\)"
-	  (regexp-quote "?")
-	  "\\("
-	  eword-encoded-text-in-quoted-string-regexp
-	  "\\)"
-	  (regexp-quote "?=")))
+  (concat eword-encoded-word-prefix-regexp
+	  "\\(" eword-encoded-text-in-quoted-string-regexp "\\)"
+	  eword-encoded-word-suffix-regexp))
 (defconst eword-after-encoded-word-in-quoted-string-regexp "\\([ \t\"\\\\]\\|$\\)")
+
+; obsolete
+(defconst eword-encoded-text-regexp eword-encoded-text-in-unstructured-regexp)
+(defconst eword-encoded-word-regexp eword-encoded-word-in-unstructured-regexp)
 
 
 ;;; @@ Base64
@@ -142,21 +140,8 @@
 ;;   (concat "\\(Q\\)\\?" eword-Q-encoded-text-regexp))
 
 
-;;; @ for string
+;;; @ internal utilities
 ;;;
-
-(defcustom eword-decode-sticked-encoded-word nil
-  "*If non-nil, decode encoded-words sticked on atoms,
-other encoded-words, etc.
-however this behaviour violates RFC2047."
-  :group 'eword-decode
-  :type 'boolean)
-
-(defcustom eword-decode-quoted-encoded-word nil
-  "*If non-nil, decode encoded-words in quoted-string
-however this behaviour violates RFC2047."
-  :group 'eword-decode
-  :type 'boolean)
 
 (defun eword-decode-first-encoded-words (string
 					 eword-regexp
@@ -165,13 +150,15 @@ however this behaviour violates RFC2047."
   "Decode MIME encoded-words in beginning of STRING.
 
 EWORD-REGEXP is the regexp that matches a encoded-word.
-Usual value is eword-encoded-word-regexp, 
+Usual value is
+eword-encoded-word-in-unstructured-regexp, 
 eword-encoded-text-in-phrase-regexp,
 eword-encoded-word-in-comment-regexp or
 eword-encoded-word-in-quoted-string-regexp.
 
 AFTER-REGEXP is the regexp that matches a after encoded-word.
-Usual value is eword-after-encoded-word-regexp, 
+Usual value is
+eword-after-encoded-word-in-unstructured-regexp, 
 eword-after-encoded-text-in-phrase-regexp,
 eword-after-encoded-word-in-comment-regexp or
 eword-after-encoded-word-in-quoted-string-regexp.
@@ -230,150 +217,101 @@ such as a version of Net$cape)."
 	(cons dst src))
       nil)))
 
-(defun eword-decode-comment-string (string &optional must-unfold)
-  (let ((src string)
+(defun eword-decode-entire-string (string
+				   eword-regexp
+				   after-regexp
+				   safe-regexp
+				   escape ; ?\\ or nil.
+				   delimiters ; list of chars.
+				   default-charset
+				   must-unfold)
+  (let ((dst "")
 	(buf "")
-  	(dst "")
-	(flag-ew t))
+  	(src string)
+	(ew-enable t))
     (while (< 0 (length src))
       (let ((ch (aref src 0))
       	    (decoded (and
-	    		flag-ew
+	    		ew-enable
 			(eword-decode-first-encoded-words src
-			  eword-encoded-word-in-comment-regexp
-			  eword-after-encoded-word-in-comment-regexp
-			  must-unfold))))
+			  eword-regexp after-regexp must-unfold))))
 	(if (and (not (string= buf ""))
-		 (or decoded (eq ch ?\() (eq ch ?\))))
+		 (or decoded (memq ch delimiters)))
 	  (setq dst (concat dst
 	  	      (std11-wrap-as-quoted-pairs
-		        (decode-mime-charset-string buf
-			  default-mime-charset)
-			'(?\( ?\))))
+		        (decode-mime-charset-string buf default-charset)
+			delimiters))
 		buf ""))
 	(cond
 	  (decoded
 	    (setq dst (concat dst
 	    		(std11-wrap-as-quoted-pairs
 			  (car decoded)
-			  '(?( ?))))
+			  delimiters))
 		  src (cdr decoded)))
-	  ((or (eq ch ?\() (eq ch ?\)))
+	  ((memq ch delimiters)
 	    (setq dst (concat dst (list ch))
 		  src (substring src 1)
-		  flag-ew t))
-	  ((eq ch ?\\)
+		  ew-enable t))
+	  ((eq ch escape)
 	    (setq buf (concat buf (list (aref src 1)))
 		  src (substring src 2)
-		  flag-ew t))
-	  ((or (eq ch ?\ ) (eq ch ?\t) (eq ch ?\n))
-	    (setq buf (concat buf (list ch))
-		  src (substring src 1)
-		  flag-ew t))
-	  ((string-match "\\`=?[^ \t\n()\\\\=]*" src)
+		  ew-enable t))
+	  ((string-match "\\`[ \t\n]+" src)
 	    (setq buf (concat buf (substring src 0 (match-end 0)))
 		  src (substring src (match-end 0))
-		  flag-ew eword-decode-sticked-encoded-word))
+		  ew-enable t))
+	  ((and (string-match (concat "\\`=?" safe-regexp) src)
+	  	(< 0 (match-end 0)))
+	    (setq buf (concat buf (substring src 0 (match-end 0)))
+		  src (substring src (match-end 0))
+		  ew-enable eword-decode-sticked-encoded-word))
 	  (t (error "something wrong")))))
     (if (not (string= buf ""))
       (setq dst (concat dst
       		  (std11-wrap-as-quoted-pairs
-		    (decode-mime-charset-string buf
-		      default-mime-charset)
-		    '(?\( ?\))))))
+		    (decode-mime-charset-string buf default-charset)
+		    delimiters))))
     dst))
+
+
+;;; @ for string
+;;;
+
+(defun eword-decode-unstructured (string &optional must-unfold)
+  (eword-decode-entire-string
+    string
+    eword-encoded-word-in-unstructured-regexp
+    eword-after-encoded-word-in-unstructured-regexp
+    "[^ \t\n=]*"
+    nil
+    nil
+    default-mime-charset
+    must-unfold))
+
+(defun eword-decode-comment (string &optional must-unfold)
+  (eword-decode-entire-string
+    string
+    eword-encoded-word-in-comment-regexp
+    eword-after-encoded-word-in-comment-regexp
+    "[^ \t\n()\\\\=]*"
+    ?\\
+    '(?\( ?\))
+    default-mime-charset
+    must-unfold))
 
 (defun eword-decode-quoted-string (string &optional must-unfold)
-  (let ((src string)
-	(buf "")
-  	(dst "")
-	(flag-ew t))
-    (while (< 0 (length src))
-      (let ((ch (aref src 0))
-      	    (decoded (and
-	    		eword-decode-quoted-encoded-word
-	    		flag-ew
-			(eword-decode-first-encoded-words src
-			  eword-encoded-word-in-quoted-string-regexp
-			  eword-after-encoded-word-in-quoted-string-regexp
-			  must-unfold))))
-	(if (and (not (string= buf ""))
-		 (or decoded (eq ch ?\")))
-	  (setq dst (concat dst
-		      (std11-wrap-as-quoted-pairs
-		        (decode-mime-charset-string buf
-			default-mime-charset)
-			'(?\")))
-		buf ""))
-	(cond
-	  (decoded
-	    (setq dst (concat dst
-	    		(std11-wrap-as-quoted-pairs
-			  (car decoded)
-			  '(?\")))
-		  src (cdr decoded)))
-	  ((or (eq ch ?\"))
-	    (setq dst (concat dst (list ch))
-		  src (substring src 1)
-		  flag-ew t))
-	  ((eq ch ?\\)
-	    (setq buf (concat buf (list (aref src 1)))
-		  src (substring src 2)
-		  flag-ew t))
-	  ((or (eq ch ?\ ) (eq ch ?\t) (eq ch ?\n))
-	    (setq buf (concat buf (list ch))
-		  src (substring src 1)
-		  flag-ew t))
-	  ((string-match "\\`=?[^ \t\n\"\\\\=]*" src)
-	    (setq buf (concat buf (substring src 0 (match-end 0)))
-		  src (substring src (match-end 0))
-		  flag-ew eword-decode-sticked-encoded-word))
-	  (t (error "something wrong")))))
-    (if (not (string= buf ""))
-      (setq dst (concat dst
-      		  (std11-wrap-as-quoted-pairs
-		    (decode-mime-charset-string buf
-		      default-mime-charset)
-		    '(?\")))))
-    dst))
+  (eword-decode-entire-string
+    string
+    eword-encoded-word-in-quoted-string-regexp
+    eword-after-encoded-word-in-quoted-string-regexp
+    "[^ \t\n\"\\\\=]*"
+    ?\\
+    '(?\")
+    default-mime-charset
+    must-unfold))
 
-(defun eword-decode-unstructured-string (string &optional must-unfold)
-  (let ((src string)
-	(buf "")
-  	(dst "")
-	(flag-ew t))
-    (while (< 0 (length src))
-      (let ((ch (aref src 0))
-      	    (decoded (and flag-ew (eword-decode-first-encoded-words src
-				    eword-encoded-word-regexp
-	    			    eword-after-encoded-word-regexp
-				    must-unfold))))
-	(if (and (not (string= buf ""))
-		 decoded)
-	  (setq dst (concat dst
-		      (decode-mime-charset-string buf
-		        default-mime-charset))
-		buf ""))
-	(cond
-	  (decoded
-	    (setq dst (concat dst (car decoded))
-		  src (cdr decoded)))
-	  ((or (eq ch ?\ ) (eq ch ?\t) (eq ch ?\n))
-	    (setq buf (concat buf (list ch))
-		  src (substring src 1)
-		  flag-ew t))
-	  ((string-match "\\`=?[^ \t\n=]*" src)
-	    (setq buf (concat buf (substring src 0 (match-end 0)))
-		  src (substring src (match-end 0))
-		  flag-ew eword-decode-sticked-encoded-word))
-	  (t (error "something wrong")))))
-    (if (not (string= buf ""))
-      (setq dst (concat dst
-      		  (decode-mime-charset-string buf
-		    default-mime-charset))))
-    dst))
-
-(defun eword-decode-string (string &optional must-unfold)
+(defun eword-decode-string (string &optional must-unfold default-mime-charset)
   "Decode MIME encoded-words in STRING.
 
 STRING is unfolded before decoding.
@@ -384,7 +322,7 @@ decode the charset included in it, it is not decoded.
 If MUST-UNFOLD is non-nil, it unfolds and eliminates line-breaks even
 if there are in decoded encoded-words (generated by bad manner MUA
 such as a version of Net$cape)."
-  (eword-decode-unstructured-string
+  (eword-decode-unstructured
     (std11-unfold-string string)
     must-unfold))
 
@@ -392,7 +330,8 @@ such as a version of Net$cape)."
 ;;; @ for region
 ;;;
 
-(defun eword-decode-region (start end &optional unfolding must-unfold)
+(defun eword-decode-region (start end &optional unfolding must-unfold
+						default-mime-charset)
   "Decode MIME encoded-words in region between START and END.
 
 If UNFOLDING is not nil, it unfolds before decoding.
@@ -407,8 +346,8 @@ such as a version of Net$cape)."
       (if unfolding
 	  (eword-decode-unfold)
 	)
-      (let ((str (eword-decode-unstructured-string
-      		   (buffer-substring (point-min) (point-max))
+      (let ((str (eword-decode-unstructured
+		   (buffer-substring (point-min) (point-max))
 		   must-unfold)))
 	(delete-region (point-min) (point-max))
 	(insert str)))))
@@ -442,44 +381,43 @@ Otherwise it decodes non-ASCII bit patterns as the
 default-mime-charset.
 If SEPARATOR is not nil, it is used as header separator."
   (interactive "*")
+  (if (and code-conversion
+	   (not (mime-charset-to-coding-system code-conversion)))
+      (setq code-conversion default-mime-charset))
   (save-excursion
     (save-restriction
       (std11-narrow-to-header separator)
-      (let ((default-mime-charset
-	      (if code-conversion
-		  (if (mime-charset-to-coding-system code-conversion)
-		      code-conversion
-		    default-mime-charset))))
-	(if default-mime-charset
-	    (let (beg p end field-name len)
-	      (goto-char (point-min))
-	      (while (re-search-forward std11-field-head-regexp nil t)
-		(setq beg (match-beginning 0)
-		      p (match-end 0)
-		      field-name (buffer-substring beg (1- p))
-		      len (string-width field-name)
-		      field-name (intern (downcase field-name))
-		      end (std11-field-end))
-		(cond ((memq field-name eword-decode-ignored-field-list)
-		       ;; Don't decode
-		       )
-		      ((memq field-name eword-decode-structured-field-list)
-		       ;; Decode as structured field
-		       (let ((body (buffer-substring p end)))
-			 (delete-region p end)
-			 (insert (eword-decode-and-fold-structured-field
-				  body (1+ len)))
-			 ))
-		      (t
-		       ;; Decode as unstructured field
-		       (save-restriction
-			 (narrow-to-region beg (1+ end))
-			 (goto-char p)
-			 (eword-decode-region beg (point-max) 'unfold)
-			 (goto-char (point-max))
-			 )))))
-	  (eword-decode-region (point-min) (point-max) t)
-	  )))))
+      (if code-conversion
+	  (let (beg p end field-name len)
+	    (goto-char (point-min))
+	    (while (re-search-forward std11-field-head-regexp nil t)
+	      (setq beg (match-beginning 0)
+		    p (match-end 0)
+		    field-name (buffer-substring beg (1- p))
+		    len (string-width field-name)
+		    field-name (intern (downcase field-name))
+		    end (std11-field-end))
+	      (cond ((memq field-name eword-decode-ignored-field-list)
+		     ;; Don't decode
+		     )
+		    ((memq field-name eword-decode-structured-field-list)
+		     ;; Decode as structured field
+		     (let ((body (buffer-substring p end)))
+		       (delete-region p end)
+		       (insert (eword-decode-and-fold-structured-field
+				body (1+ len)))
+		       ))
+		    (t
+		     ;; Decode as unstructured field
+		     (save-restriction
+		       (narrow-to-region beg (1+ end))
+		       (goto-char p)
+		       (eword-decode-region beg (point-max) 'unfold nil
+			 code-conversion)
+		       (goto-char (point-max))
+		       )))))
+	(eword-decode-region (point-min) (point-max) t nil code-conversion)
+	))))
 
 (defun eword-decode-unfold ()
   (goto-char (point-min))
@@ -637,7 +575,7 @@ be the result."
 	    (setq p (std11-check-enclosure string ?\( ?\) t p)))
 	  (setq p (or p len))
 	  (cons (cons 'comment
-		      (eword-decode-comment-string (substring string 0 p)))
+		      (eword-decode-comment (substring string 0 p)))
 		(substring string p)))
       nil)))
 
@@ -815,7 +753,7 @@ decode the charset included in it, it is not decoded.
 If MUST-UNFOLD is non-nil, it unfolds and eliminates line-breaks even
 if there are in decoded encoded-words (generated by bad manner MUA
 such as a version of Net$cape)."
-  (eword-decode-string string must-unfold))
+  (eword-decode-string string must-unfold default-mime-charset))
 
 (defun eword-extract-address-components (string)
   "Extract full name and canonical address from STRING.
