@@ -1,21 +1,29 @@
+1999-10-23  Kenichi OKADA <okada@opaopa.org>
+
+	* hex-util.el: New file.
+	* hmac-util.el: Remove.
+	* hmac-md5.el: Update.
+	* FLIM-ELS (flim-modeules): Rename `hex-util' from `hmac-util'.
+
 1999-10-22  Kenichi OKADA <okada@opaopa.org>
 
-        * smtp.el (smtp-via-smtp): Fix to use `smtp-authentication-type',
+	* smtp.el (smtp-via-smtp): Fix to use `smtp-authentication-type',
 	`smtp-authentication-user', `smtp-authentication-passphrase' and
 	`smtp-connection-type'.
 
 1999-10-22  Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
 
-        * smtp.el (smtp-authentication-type): New variable.
-        (smtp-authentication-user): New variable.
-        (smtp-authentication-passphrase): New variable.
-        (smtp-connection-type): New variable.
+	* smtp.el (smtp-authentication-type): New variable.
+	(smtp-authentication-user): New variable.
+	(smtp-authentication-passphrase): New variable.
+	(smtp-connection-type): New variable.
 
-1999-10-20  Kenichi OKADA <okada@opaopa.org>
+
+1999-10-21  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.13.1 released.
 
-1999-10-20  Kenichi OKADA <okada@opaopa.org>
+1999-10-21  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM-TIPS: Add comment.
 
@@ -51,6 +59,7 @@
 	* hmac-def.el (define-hmac-function): Update to delete
 	insecure sequences.
 
+
 1999-10-20  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.13.0 released.
@@ -95,6 +104,7 @@
 	* smtp.el (smtp-via-smtp): Use sasl.el for SASL.
 	* FLIM-ELS (flim-modules): Add `sasl'.
 
+
 1999-08-17  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM: Version 1.13.2 (Kasanui) released.

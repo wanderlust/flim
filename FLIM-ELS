@@ -13,7 +13,7 @@
 		     smtp smtpmail sasl
 		     md5 md5-el md5-dl
 		     sha1 sha1-el sha1-dl
-		     hmac-def hmac-util hmac-md5 hmac-sha1
+		     hmac-def hmac-md5 hmac-sha1 hex-util
 		     starttls))
 
 (unless (and (fboundp 'base64-encode-string)
