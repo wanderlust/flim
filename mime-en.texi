@@ -1498,13 +1498,13 @@ interpreted as us-ascii.
 @cindex good bug report
 
 If you write bug-reports and/or suggestions for improvement, please
-send them to the tm Mailing List:
+send them to the EMACS-MIME Mailing List:
 
 @itemize @bullet
 @item
- Japanese <bug-tm-ja@@chamonix.jaist.ac.jp>
+ English <emacs-mime-en@@m17n.org>
 @item
- English <bug-tm-en@@chamonix.jaist.ac.jp>
+ Japanese <emacs-mime-ja@@m17n.org>
 @end itemize
 
 
@@ -1521,17 +1521,17 @@ is very important. (cf. @ref{(emacs)Bugs}) @refill
 Bug may not appear only your environment, but also in a lot of
 environment (otherwise it might not bug).  Therefor if you send mail
 to author directly, we must write a lot of mails.  So please send mail
-to address for tm bugs instead of author.
+to address for EMACS-MIME Mailing List instead of author.
 
-Via the tm ML, you can report FLIM bugs, obtain the latest release of
-FLIM, and discuss future enhancements to FLIM.  To join the tm ML,
-send empty e-mail to:
+Via the EMACS-MIME ML, you can report FLIM bugs, obtain the latest
+release of FLIM, and discuss future enhancements to FLIM.  To join the
+EMACS-MIME ML, send an empty e-mail to:
 
 @itemize @bullet
 @item
- Japanese <tm-ja-help@@chamonix.jaist.ac.jp>
+ English  <emacs-mime-en-ctl@@m17n.org>
 @item
- English  <tm-en-help@@chamonix.jaist.ac.jp>
+ Japanese <emacs-mime-ja-ctl@@m17n.org>
 @end itemize
 
 
