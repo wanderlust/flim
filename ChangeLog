@@ -1,3 +1,17 @@
+2001-04-28  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* eword-decode.el (eword-encoded-word-regexp): Match for language.
+	(eword-decode-region): Refer the 7th parens, not 6th.
+	(eword-decode-encoded-word): Extract language information.
+	(eword-decode-encoded-text): New optional argument `language'.
+
+	* mime-def.el (mime-charset-regexp): Updated for RFC2231.
+
+	* mime-parse.el (mime-decode-parameter-plist): Fix regexp.
+	Use symbol for language information.
+
+	* tests/test-rfc2231.el: Renamed all testcases.
+
 2001-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* mime-parse.el (mime-decode-parameter-value): Don't use
