@@ -420,7 +420,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (tm-eword::space-process dest)
     ))
 
-(defun eword-addr-seq-to-rwl (seq)
+(defun eword-encode-addr-seq-to-rwl (seq)
   (let (dest pname)
     (while seq
       (let* ((token (car seq))
@@ -476,7 +476,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	  )
 	(append
 	 dest
-	 (eword-addr-seq-to-rwl
+	 (eword-encode-addr-seq-to-rwl
 	  (append '((specials . "<"))
 		  route
 		  '((specials . ">"))))
@@ -484,7 +484,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 
 (defun eword-addr-spec-to-rwl (addr-spec)
   (if (eq (car addr-spec) 'addr-spec)
-      (eword-addr-seq-to-rwl (cdr addr-spec))
+      (eword-encode-addr-seq-to-rwl (cdr addr-spec))
     ))
 
 (defun tm-eword::mailbox-to-rwl (mbox)
@@ -541,7 +541,7 @@ Optional argument COLUMN is start-position of the field."
 Optional argument COLUMN is start-position of the field."
   (car (eword-encode-rword-list
 	(or column 0)
-	(eword-addr-seq-to-rwl (std11-lexical-analyze string))
+	(eword-encode-addr-seq-to-rwl (std11-lexical-analyze string))
 	)))
 
 (defun eword-encode-unstructured-field-body (string &optional column)
