@@ -1,5 +1,16 @@
 1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* smtpmail.el (smtpmail-default-smtp-server): Define obsolete
+	variable alias for XEmacs.
+	(smtpmail-smtp-server): Likewise.
+	(smtpmail-smtp-service): Likewise.
+	(smtpmail-local-domain): Likewise.
+	(smtpmail-debug-info): Likewise.
+	(smtpmail-send-it): Check function `expand-mail-aliases' is
+	defined.
+
+1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* smtp.el (smtp-debug-info): Now a user option.
 
 1999-05-25  Yoshiki Hayashi  <g740685@komaba.ecc.u-tokyo.ac.jp>
