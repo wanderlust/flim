@@ -1,4 +1,4 @@
-2000-11-27  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+2000-11-24  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM-MK (compile-flim): Compile `flim-version-specific-modules'.
 	(install-flim): Install `flim-version-specific-modules' to
