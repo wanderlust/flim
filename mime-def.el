@@ -199,6 +199,20 @@
 (defsubst mime-entity-number (entity)
   (reverse (mime-entity-node-id entity)))
 
+(defalias 'mime-entity-point-min 'mime-entity-header-start)
+(defalias 'mime-entity-point-max 'mime-entity-body-end)
+
+(defsubst mime-entity-media-type (entity)
+  (mime-content-type-primary-type (mime-entity-content-type entity)))
+(defsubst mime-entity-media-subtype (entity)
+  (mime-content-type-subtype (mime-entity-content-type entity)))
+(defsubst mime-entity-parameters (entity)
+  (mime-content-type-parameters (mime-entity-content-type entity)))
+
+(defsubst mime-entity-type/subtype (entity-info)
+  (mime-type/subtype-string (mime-entity-media-type entity-info)
+			    (mime-entity-media-subtype entity-info)))
+
 
 ;;; @ utility
 ;;;
