@@ -1,5 +1,9 @@
 2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
+	* eword-encode.el (eword-encode): Switch to variable.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
 	* raw-io.el (start-process): New function.
 	(binary-start-process-shell-command): New function.
 
