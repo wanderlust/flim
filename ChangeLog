@@ -1,5 +1,10 @@
 1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-def.el, mel.el, mel-b-dl.el: Move variable
+	`base64-dl-module' from mel-b-dl.el and mel.el to mime-def.el.
+
+1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel.el (mel-ccl-module): New variable; use it to check mel-ccl
 	is available.
 
