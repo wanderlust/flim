@@ -2,7 +2,7 @@
 
   It is available from
 
-    ftp://ftp.jaist.ac.jp/pub/GNU/elisp/mime/libs/	(Japan)
+    ftp://ftp.jaist.ac.jp/pub/GNU/elisp/mel/		(Japan)
 
 or its mirrors
 
@@ -14,7 +14,7 @@ or its mirrors
 --[[message/external-body;
 	access-type=anon-ftp;
 	site="ftp.jaist.ac.jp";
-	directory="/pub/GNU/elisp/mime/libs";
+	directory="/pub/GNU/elisp/mel";
 	name="mel-VERSION.tar.gz";
 	mode=image]]
 Content-Type: application/octet-stream;
