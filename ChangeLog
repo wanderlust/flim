@@ -1,5 +1,10 @@
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime.el (mime-field-parser-alist): New variable.
+	(mime-read-field): Refer `mime-field-parser-alist'.
+
+1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmbuffer.el, mmgeneric.el (insert-entity): New method.
 
 	* mime.el (mime-insert-entity): New generic function.
