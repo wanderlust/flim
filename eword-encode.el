@@ -373,10 +373,6 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (list dest column)
     ))
 
-;; (defun tm-eword::encode-string (column str &optional mode)
-;;   (tm-eword::encode-rwl column (tm-eword::split-string str mode))
-;;   )
-
 
 ;;; @ converter
 ;;;
@@ -520,11 +516,11 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	  ))
     dest))
 
-(defun ew-encode-address-list (column str)
-  (tm-eword::encode-rwl
-   column
-   (tm-eword::addresses-to-rwl (std11-parse-addresses-string str))
-   ))
+(defun eword-encode-address-list (string &optional column)
+  (car (tm-eword::encode-rwl
+	(or column 0)
+	(tm-eword::addresses-to-rwl (std11-parse-addresses-string string))
+	)))
 
 
 ;;; @ application interfaces
@@ -556,21 +552,17 @@ encoded-word.  ASCII token is not encoded."
 				       bcc resent-bcc dcc
 				       mime-version)
 				     )
-			       (car (ew-encode-address-list
-				     (+ (length field-name) 2) field-body))
+                               (eword-encode-address-list
+				field-body (+ (length field-name) 2))
 			       )
 			      (t
-                               ;; (car (tm-eword::encode-string
-                               ;;       (1+ (length field-name))
-                               ;;       field-body 'text))
-			       (eword-encode-string field-body
+                               (eword-encode-string field-body
 						    (1+ (length field-name))
 						    'text)
 			       ))
 			)
 		  (concat field-name ": " ret)
 		)))
-	;; (car (tm-eword::encode-string 0 string))
 	(eword-encode-string string 0)
 	)))
 
