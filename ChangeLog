@@ -1,3 +1,7 @@
+1998-10-19  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-field): New function.
+
 1998-10-18  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up to flim-1_11_0 from flim-1_10_5.

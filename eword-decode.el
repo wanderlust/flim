@@ -476,6 +476,39 @@ Each field name must be symbol."
   :group 'eword-decode
   :type '(repeat symbol))
 
+(defun eword-decode-field (field-name field-body &optional unfolded max-column)
+  "If FIELD-NAME is in `eword-decode-ignored-field-list',
+return FIELD-BODY itself.
+
+If FIELD-NAME is in `eword-decode-structured-field-list',
+FIELD-BODY is interpreted as structured field,
+decode MIME encoded-words and return it.
+
+Otherwise, FIELD-BODY is interpreted as unstructured field,
+decode MIME encoded-words and return it.
+
+Anyway, non-encoded-word part is decoded with `default-mime-charset'.
+
+If FIELD-BODY is already unfolded, UNFOLDED should be non-nil.
+
+If MAX-COLUMN is nil, FIELD-BODY is unfolded.
+Otherwise, FIELD-BODY is folded with with MAX-COLUMN
+(or `fill-column' if MAX-COLUMN is not integer.)"
+  (let ((decoded
+          (if unfolded
+            (let ((ew-ignore-76bytes-limit t))
+              (ew-decode-field (symbol-name field-name)
+                               (ew-lf-crlf-to-crlf field-body)))
+            (ew-decode-field (symbol-name field-name)
+                             (ew-lf-crlf-to-crlf field-body)))))
+    (if max-column
+        (setq decoded (ew-crlf-refold
+                       decoded
+                       (1+ (string-width field-name))
+                       (if (integerp max-column) max-column fill-column)))
+      (setq decoded (ew-crlf-unfold decoded)))
+    (ew-crlf-to-lf decoded)))
+
 (defun eword-decode-header (&optional code-conversion separator)
   "Decode MIME encoded-words in header fields.
 If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
