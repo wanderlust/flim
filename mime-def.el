@@ -211,6 +211,8 @@
 				     date message-id references
 				     chars lines
 				     xref
+				     ;; for other fields
+				     original-header parsed-header
 				     ;; for buffer representation
 				     buffer
 				     header-start header-end
@@ -223,7 +225,7 @@
 	   ,chars ,lines
 	   ,xref
 	   ;; for other fields
-	   nil nil
+	   ,original-header ,parsed-header
 	   ;; for buffer representation
 	   ,buffer ,header-start ,header-end ,body-start ,body-end))
 
