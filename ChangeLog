@@ -1,5 +1,13 @@
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* eword-decode.el (eword-decode-encoded-word-error-handler): New
+	variable.
+	(eword-decode-encoded-word-default-error-handler): New function.
+	(eword-decode-encoded-word): Use
+	'eword-decode-encoded-word-error-handler.
+
+1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mailcap.el: Require 'mime-def.
 
 	* mime-def.el (mime-type/subtype-string): New function (moved from
