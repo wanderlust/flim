@@ -54,6 +54,8 @@
 
 (require 'luna)
 
+(eval-when-compile (require 'cl))
+
 (eval-and-compile
   (luna-define-class lunit-test ()
 		     (name))
@@ -74,7 +76,9 @@
 
   (luna-define-internal-accessors 'lunit-test-result)
 
-  (luna-define-class lunit-test-listener ()))
+  (luna-define-class lunit-test-listener ())
+
+  (luna-define-class lunit-test-printer (lunit-test-listener)))
 
 (luna-define-generic lunit-test-number-of-tests (test)
   "Count the number of test cases that will be run by the test.")
@@ -131,13 +135,13 @@ The passed in exception caused the failure.")
     `(unless ,condition
        (signal 'lunit-failure (list ',condition-expr)))))
 
-(defvar lunit-test-results-buffer "*Lunit Test Results*")
+(defvar lunit-test-results-buffer "*Lunit Results*")
 
 (defun lunit (test)
-  (let* ((listener
-	  (luna-make-entity 'lunit-test-listener))
+  (let* ((printer
+	  (luna-make-entity 'lunit-test-printer))
 	 (result
-	  (lunit-make-test-result listener))
+	  (lunit-make-test-result printer))
 	 failures
 	 errors)
     (with-output-to-temp-buffer lunit-test-results-buffer
@@ -150,26 +154,24 @@ The passed in exception caused the failure.")
 		     (length errors))))
     nil))
 
-;;; @ test listener
+;;; @ test printer
 ;;;
 
-(luna-define-method lunit-test-listener-error ((listener lunit-test-listener)
+(luna-define-method lunit-test-listener-error ((printer lunit-test-printer)
 					       case error)
   (princ (format "error: %S\n" error)))
 
-(luna-define-method lunit-test-listener-failure ((listener lunit-test-listener)
+(luna-define-method lunit-test-listener-failure ((printer lunit-test-printer)
 						 case failure)
   (princ (format "failure: %S\n" failure)))
 
-(luna-define-method lunit-test-listener-start ((listener lunit-test-listener)
-					       case)
+(luna-define-method lunit-test-listener-start ((printer lunit-test-printer) case)
   (princ (format "\
 ______________________________________________________________________
 Starting test %S
 " (lunit-test-name-internal case))))
 
-(luna-define-method lunit-test-listener-end ((listener lunit-test-listener)
-					     case)
+(luna-define-method lunit-test-listener-end ((printer lunit-test-printer) case)
   (princ "\
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 "))
