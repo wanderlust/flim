@@ -199,7 +199,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	       )))
 	  wl))
 
-(defun tm-eword::space-process (seq)
+(defun ew-space-process (seq)
   (let (prev a ac b c cc)
     (while seq
       (setq b (car seq))
@@ -236,7 +236,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     ))
 
 (defun eword-encode-split-string (str &optional mode)
-  (tm-eword::space-process
+  (ew-space-process
    (tm-eword::words-to-ruled-words
     (eword-encode-charset-words-to-words
      (eword-encode-divide-into-charset-words str))
@@ -429,7 +429,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	     ))
       (setq phrase (cdr phrase))
       )
-    (tm-eword::space-process dest)
+    (ew-space-process dest)
     ))
 
 (defun eword-encode-addr-seq-to-rword-list (seq)
