@@ -34,7 +34,6 @@
 
 (defconst sasl-ntlm-steps
   '(ignore				;nothing to do before making
-					;authentication request
     sasl-ntlm-request			;authentication request
     sasl-ntlm-response)			;response to challenge
   "A list of functions to be called in sequnece for the NTLM

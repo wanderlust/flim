@@ -226,8 +226,7 @@ little-endian utf16."
     utf))
 
 (defun ntlm-unicode2ascii (str len)
-  "Extract 7 bits ASCII part of a little endian utf16 string STR of length
-LEN."
+  "Extract 7 bits ASCII part of a little endian utf16 string STR of length LEN."
   (let ((buf (make-string len 0)) (i 0) (j 0))
     (while (< i len)
       (aset buf i (logand (aref str j) 127)) ;(string-to-number "7f" 16)
