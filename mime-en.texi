@@ -1,14 +1,14 @@
 \input texinfo.tex
 @c Generated automatically from mime-en.sgml by sinfo 3.7.
 @setfilename mime-en.info
-@settitle{FLIM 1.13 Reference Manual about MIME Features}
+@settitle{FLIM 1.12 Reference Manual about MIME Features}
 @titlepage
-@title FLIM 1.13 Reference Manual about MIME Features
+@title FLIM 1.12 Reference Manual about MIME Features
 @author MORIOKA Tomohiko <morioka@@jaist.ac.jp>
 @subtitle 1999-01-27
 @end titlepage
 @node Top, Introduction, (dir), (dir)
-@top FLIM 1.13 Reference Manual about MIME Features
+@top FLIM 1.12 Reference Manual about MIME Features
 
 @ifinfo
 
