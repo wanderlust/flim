@@ -200,7 +200,7 @@ node="mime-content-disposition">
 <defun name="mime-entity-filename">
 	    <args> entity
 <p>
-Entity の file 名を返す。
+<var>entity</var> の file 名を返す。
 </defun>
 
 <defun name="mime-entity-encoding">
