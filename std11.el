@@ -28,7 +28,7 @@
     (require 'poe))
 
 
-;;; @ field
+;;; @ fetch
 ;;;
 
 (defconst std11-field-name-regexp "[!-9;-~]+")
@@ -123,29 +123,6 @@ header separator."
 	  )
 	dest))))
 
-
-;;; @ unfolding
-;;;
-
-(defun std11-unfold-string (string)
-  "Unfold STRING as message header field."
-  (let ((dest "")
-	(p 0))
-    (while (string-match "\n\\([ \t]\\)" string p)
-      (setq dest (concat dest
-                         (substring string p (match-beginning 0))
-                         (substring string
-				    (match-beginning 1)
-				    (setq p (match-end 0)))
-                         ))
-      )
-    (concat dest (substring string p))
-    ))
-
-
-;;; @ header
-;;;
-
 (defun std11-header-string (regexp &optional boundary)
   "Return string of message header fields matched by REGEXP.
 If BOUNDARY is not nil, it is used as message header separator.
@@ -201,6 +178,25 @@ If BOUNDARY is not nil, it is used as message header separator.
 	      )
 	  )
 	dest))))
+
+
+;;; @ unfolding
+;;;
+
+(defun std11-unfold-string (string)
+  "Unfold STRING as message header field."
+  (let ((dest "")
+	(p 0))
+    (while (string-match "\n\\([ \t]\\)" string p)
+      (setq dest (concat dest
+                         (substring string p (match-beginning 0))
+                         (substring string
+				    (match-beginning 1)
+				    (setq p (match-end 0)))
+                         ))
+      )
+    (concat dest (substring string p))
+    ))
 
 
 ;;; @ quoted-string
