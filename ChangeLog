@@ -1,5 +1,7 @@
 2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
+	* FLIM: Version 1.14.0 (Ninokuchi) released.
+
 	* mime.el (mime-entity-media-type): Add DOC.
 	(mime-entity-media-subtype): Add DOC.
 	(mime-entity-parameters): Add DOC.
