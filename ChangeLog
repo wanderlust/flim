@@ -1,5 +1,9 @@
 1998-11-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* NEWS (Changes in FLIM 1.12): New section.
+
+1998-11-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* std11.el (std11-comment-value-to-string): New function.
 	(std11-full-name-string): Use `std11-comment-value-to-string'.
 
