@@ -1,3 +1,9 @@
+1999-03-09  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* digraph.el: Refined.
+
+	* automata.el (automata): Adopted to above.
+
 1999-03-04  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mel.el (mime-decode-string): Return `string' itself if

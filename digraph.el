@@ -1,12 +1,224 @@
 ;;; directed graph package.
-(provide 'digraph)
 
-;; A directed graph is represented as vector of lists of integers.
-;; The number of nodes in the graph is length of the vector.
-;;
-;; i'th list of the vector contains j <=> there is the edge from i to j.
+(defun digraph-make (&optional size)
+  "Return newly allocated graph.
+If SIZE is nil, it is assumed to 0."
+  (unless size (setq size 0))
+  (cons size (make-vector (max 1 size) nil)))
 
-(defalias 'digraph-descents 'aref)
+(defalias 'digraph-size 'car)
+
+(defun digraph-new-node (g)
+  "Allocate new node in G and return it."
+  (unless (< (digraph-size g) (length (cdr g)))
+    (setcdr g (vconcat (cdr g) (make-vector (length (cdr g)) nil))))
+  (prog1
+      (digraph-size g)
+    (setcar g (1+ (digraph-size g)))))
+
+(defun digraph-add-edge (g n1 n2)
+  "Make edge from N1 to N2 in G."
+  (unless (memq n2 (aref (cdr g) n1))
+    (aset (cdr g) n1 (cons n2 (aref (cdr g) n1)))))
+
+(defun digraph-descents (g n1)
+  "Return nodes that has edge from N1 in G."
+  (aref (cdr g) n1))
+
+(put 'digraph-forall-node 'lisp-indent-function 2)
+(defmacro digraph-forall-node (g-exp n-var &rest body)
+  (let ((g (make-symbol "g"))
+	(size (make-symbol "size")))
+    `(let* ((,g ,g-exp)
+	    (,n-var 0)
+	    (,size (digraph-size ,g)))
+       (while (< ,n-var ,size)
+	 (progn
+	   ,@body)
+	 (setq ,n-var (1+ ,n-var))))))
+
+(put 'digraph-forall-edge 'lisp-indent-function 3)
+(defmacro digraph-forall-edge (g-exp i-var j-var &rest body)
+  (let ((g (make-symbol "g"))
+	(tmp (make-symbol "tmp"))
+	(size (make-symbol "size")))
+    `(let* ((,g ,g-exp)
+	    (,size (digraph-size ,g))
+	    (,i-var 0)
+	    ,j-var ,tmp)
+       (while (< ,i-var ,size)
+	 (setq ,tmp (aref (cdr ,g) ,i-var))
+	 (while ,tmp
+	   (setq ,j-var (car ,tmp))
+	   (progn
+	     ,@body)
+	   (setq ,tmp (cdr ,tmp)))
+	 (setq ,i-var (1+ ,i-var))))))
+
+(defun digraph-reverse (g)
+  "Return newly allocated graph with reversed edge."
+  (let* ((len (digraph-size g))
+	 (a (cdr g))
+         (rev (make-vector len nil))
+         (i 0))
+    (while (< i len)
+      (let ((links (aref a i)))
+        (while links
+          (if (not (member i (aref rev (car links))))
+              (aset rev (car links) (cons i (aref rev (car links)))))
+          (setq links (cdr links))))
+      (setq i (1+ i)))
+    (cons len rev)))
+
+(defun digraph-leaves (g)
+  "Return list of leaves of G."
+  (let* ((i (digraph-size g))
+	 (a (cdr g))
+	 (res ()))
+    (while (< 0 i)
+      (setq i (1- i))
+      (if (null (aref a i))
+          (setq res (cons i res))))
+    res))
+
+(defun digraph-roots (g)
+  "Return list of roots of G."
+  (digraph-leaves (digraph-reverse g)))
+
+;;; topological sort
+
+(defun digraph-tsort (g)
+  "Sort nodes in a graph toporogicaly.
+
+G is a graph and
+result of digraph-tsort is list of lists of nodes.
+
+If (nth n result) contains an node i, it represents the fact as
+follows.
+
+1. For all j in (nth n result) and j != i, node i depends to node j
+and vice versa.
+
+2. For all m < n and j in (nth m result), node i does not depend
+to node j."
+  (let* ((len (digraph-size g))
+         (ord (make-vector len nil))
+         (i 0)
+         (res ()))
+    (while (< i len)
+      (if (not (aref ord i))
+          (setq res (nth 3 (digraph-tsort-dfs (cdr g) len ord i 0 () res))))
+      (setq i (1+ i)))
+    res))
+
+(defun digraph-tsort-dfs (dep len ord i id stk res)
+  (aset ord i id)
+  (let ((js (aref dep i))
+        (m id)
+        (nid (1+ id))
+        (stk (cons i stk))
+        (res res))
+    (while js
+      (let* ((j (car js)) (jo (aref ord j)))
+        (if jo
+            (setq m (if (< m jo) m jo))
+          (let* ((tmp (digraph-tsort-dfs dep len ord j nid stk res))
+                 (m0 (nth 0 tmp)))
+            (setq m (if (< m m0) m m0)
+                  nid (nth 1 tmp)
+                  stk (nth 2 tmp)
+                  res (nth 3 tmp)))))
+      (setq js (cdr js)))
+    (if (= m id)
+        (let* ((p (member i stk))
+               (nstk (cdr p))
+               (tmp stk))
+          (setcdr p ())
+          (while tmp
+            (aset ord (car tmp) len)
+            (setq tmp (cdr tmp)))
+          (list m nid nstk (cons stk res)))
+      (list m nid stk res))))
+
+;;; merge map
+
+(defun digraph-make-merge-map (size)
+  (make-vector size nil))
+
+(defun digraph-mm-canonical-node-p (mm n)
+  (not (integerp (aref mm n))))
+
+(defun digraph-mm-canonicalize-node (mm n)
+  (while (not (digraph-mm-canonical-node-p mm n))
+    (setq n (aref mm n)))
+  n)
+
+(defun digraph-mm-push-info (mm n info)
+  "Push additional information for N in MM."
+  (setq n (digraph-mm-canonicalize-node mm n))
+  (aset mm n (cons info (aref mm n))))
+
+(defun digraph-mm-top-info (mm n)
+  "Get a top information for N in MM."
+  (setq n (digraph-mm-canonicalize-node mm n))
+  (car (aref mm n)))
+
+(defun digraph-mm-pop-info (mm n)
+  "Pop an information for N in MM."
+  (setq n (digraph-mm-canonicalize-node mm n))
+  (aset mm n (cdr (aref mm n))))
+
+(defun digraph-mm-merge-node (mm n m)
+  "Merge N and M in MM.
+The information for N is used for merged node."
+  (setq n (digraph-mm-canonicalize-node mm n))
+  (setq m (digraph-mm-canonicalize-node mm m))
+  (unless (= n m)
+    (aset mm m n)))
+
+(defun digraph-mm-make-map (mm)
+  (let ((i 0) (f-size (length mm)) (t-size 0))
+    (while (< i f-size)
+      (when (digraph-mm-canonical-node-p mm i)
+	(digraph-mm-push-info mm i t-size)
+	(setq t-size (1+ t-size)))
+      (setq i (1+ i)))
+    (let ((forward-map (make-vector f-size ()))
+	  (reverse-map (make-vector t-size ()))
+	  j)
+      (setq i (1- f-size))
+      (while (<= 0 i)
+	(setq j (digraph-mm-top-info mm i))
+	(aset forward-map i j)
+	(aset reverse-map j (cons i (aref reverse-map j)))
+	(setq i (1- i)))
+      (setq i 0)
+      (while (< i f-size)
+	(when (digraph-mm-canonical-node-p mm i)
+	  (digraph-mm-pop-info mm i))
+	(setq i (1+ i)))
+      (cons forward-map reverse-map))))
+
+(defun digraph-concat-forward-map (map &rest maps)
+  (while maps
+    (setq map (vconcat (mapcar (lambda (n) (aref (car maps) n)) map))
+	  maps (cdr maps)))
+  map)
+
+(defun digraph-concat-reverse-map (map &rest maps)
+  (while maps
+    (setq map
+	  (vconcat
+	   (mapcar
+	    (lambda (elts)
+	      (apply
+	       'append
+	       (mapcar (lambda (e) (aref (car maps) e)) elts)))
+	    map))
+	  maps (cdr maps)))
+  map)
+
+;; split
 
 (defun digraph-split-as-dag (g)
   "Returns 3 element vector of follows.
@@ -17,41 +229,23 @@ components in G as new nodes.
 1. Map from a node in g to a node in result.
 
 2. Map from a node in result to nodes in g."
-  (let* ((old-len (length g))
-	 (new-to-olds (vconcat (digraph-tsort g)))
-	 (new-len (length new-to-olds))
-	 (old-to-new (make-vector old-len ()))
-	 (i 0)
-	 js res)
-    (while (< i new-len)
-      (setq js (aref new-to-olds i))
-      (while js
-	(aset old-to-new (car js) i)
-	(setq js (cdr js)))
-      (setq i (1+ i)))
-    (setq i (1- new-len))
-    (while (<= 0 i)
-      (setq res (cons
-		 (digraph-list-uniq
-		  (apply
-		   'nconc
-		   (mapcar
-		    (lambda (old)
-		      (apply
-		       'nconc
-		       (mapcar 
-			(lambda (old)
-			  (if (= i (aref old-to-new old))
-			      ()
-			    (list (aref old-to-new old))))
-			(aref g old))))
-		    (aref new-to-olds i))))
-		 res)
-	    i (1- i)))
-    (vector 
-     (vconcat res)
-     old-to-new
-     new-to-olds)))
+  (let* ((tmp (digraph-tsort g))
+	 (mm (digraph-make-merge-map (digraph-size g))))
+    (while tmp
+      (let ((n (caar tmp))
+	    (nodes (cdar tmp)))
+	(while nodes
+	  (digraph-mm-merge-node mm n (car nodes))
+	  (setq nodes (cdr nodes))))
+      (setq tmp (cdr tmp)))
+    (let* ((maps (digraph-mm-make-map mm))
+	   (forward-map (car maps))
+	   (reverse-map (cdr maps))
+	   (new-g (digraph-make (length reverse-map))))
+      (digraph-forall-edge g i j
+	(unless (= (aref forward-map i) (aref forward-map j))
+	  (digraph-add-edge new-g (aref forward-map i) (aref forward-map j))))
+      (vector new-g forward-map reverse-map))))
 
 (defun digraph-split-as-forest (g)
   "Returns 3 element vector of follows.
@@ -62,286 +256,68 @@ components in G as new nodes.
 
 2. Map from a node in result to nodes in g."
   (let* ((tmp (digraph-split-as-dag g))
-	 (d (aref tmp 0))
-	 (g-to-d (aref tmp 1))
-	 (d-to-g (aref tmp 2))
-	 ;;(_ (error "%s" tmp))
-	 (tmp (digraph-dag-to-forest d))
-	 (f (aref tmp 0))
-	 (d-to-f (aref tmp 1))
-	 (f-to-d (aref tmp 2))
-	 old-indices
-	 new-indices
-	 i)
-    (setq i (1- (length g)))
-    (while (<= 0 i)
-      (setq old-indices (cons i old-indices)
-	    i (1- i)))
-    (setq i (1- (length f)))
-    (while (<= 0 i)
-      (setq new-indices (cons i new-indices)
-	    i (1- i)))
-    (vector
-     f
-     (vconcat
-      (mapcar
-       (lambda (gi) (aref d-to-f (aref g-to-d gi)))
-       old-indices))
-     (vconcat
-      (mapcar
-       (lambda (fi)
-	 (apply
-	  'nconc
-	  (mapcar
-	   (lambda (di) (aref d-to-g di))
-	   (aref f-to-d fi))))
-       new-indices)))))
-
-(defun digraph-tsort (dep)
-  "Sort nodes in a graph toporogicaly.
-
-DEP is a vector of lists of integers and
-digraph-tsort returns list of lists of integers.
-
-The graph has (length DEP) nodes.
-
-Dependency for i'th node is represented by i'th element of DEP.
-If (aref DEP i) is a list (j1 j2 ... jn), it represents that i'th node
-depends to j1, j2, ... and jn'th nodes of the graph.
-
-A result of digraph-tsort is a sequence of sets of indexes for each
-strongly connected nodes ordered by indepenedent to dependent as list
-of lists of integers.
-
-If (nth n result) contains an integer i, it represents the fact as
-follows.
-
-1. For all j in (nth n result) and j != i, i'th node depends to j'th
-node and vice versa.
-
-2. For all m < n and j in (nth m result), i'th nodes does not depend
-to j'th node."
-  (let* ((len (length dep))
-	 (ord (make-vector len nil))
-	 (i 0)
-	 (res ()))
-    (while (< i len)
-      (if (not (aref ord i))
-	  (setq res (nth 3 (digraph-tsort-visit dep len ord i 0 () res))))
-      (setq i (1+ i)))
-    res))
-
-(defun digraph-tsort-visit (dep len ord i id stk res)
-  (aset ord i id)
-  (let ((js (aref dep i))
-	(m id)
-	(nid (1+ id))
-	(stk (cons i stk))
-	(res res))
-    (while js
-      (let* ((j (car js)) (jo (aref ord j)))
-	(if jo
-	    (setq m (if (< m jo) m jo))
-	  (let* ((tmp (digraph-tsort-visit dep len ord j nid stk res))
-		 (m0 (nth 0 tmp)))
-	    (setq m (if (< m m0) m m0)
-		  nid (nth 1 tmp)
-		  stk (nth 2 tmp)
-		  res (nth 3 tmp)))))
-      (setq js (cdr js)))
-    (if (= m id)
-	(let* ((p (member i stk))
-	       (nstk (cdr p))
-	       (tmp stk))
-	  (setcdr p ())
-	  (while tmp
-	    (aset ord (car tmp) len)
-	    (setq tmp (cdr tmp)))
-	  (list m nid nstk (cons stk res)))
-      (list m nid stk res))))
-
-(defun digraph-reverse (g)
-  "Return graph with reversed edge."
-  (let* ((len (length g))
-	 (rev (make-vector len nil))
-	 (i 0))
-    (while (< i len)
-      (let ((links (aref g i)))
-	(while links
-	  (if (not (member i (aref rev (car links))))
-	      (aset rev (car links) (cons i (aref rev (car links)))))
-	  (setq links (cdr links))))
-      (setq i (1+ i)))
-    rev))
-
-(defun digraph-leaves (g)
-  "Return list of leaves of G."
-  (let* ((i (length g))
-	(res ()))
-    (while (< 0 i)
-      (setq i (1- i))
-      (if (null (aref g i))
-	  (setq res (cons i res))))
-    res))
-
-(defun digraph-roots (g)
-  "Return list of roots of G."
-  (digraph-leaves (digraph-reverse g)))
-
-;;; forest
-
-(defun digraph-dag-to-forest (dag)
-  "Convert a DAG(directed acyclic graph) to forest(set of trees)."
-  (let* ((len (length dag))
-	 (rev (digraph-reverse dag))
-	 (forest (digraph-forest-make len))
-	 (i 0))
-    (while (< i len)
-      (digraph-dag-forest-add-node forest i (aref rev i))
-      (setq i (1+ i)))
-    ;;(error "%s" forest)
-    (digraph-forest-to-graph forest)))
-
-(defun digraph-dag-forest-add-node (forest node links)
-  (if (null links)
-      (digraph-forest-add-tree forest node)
-    (let ((parent (car links)))
-      (setq links (cdr links))
-      (digraph-forest-add-node forest parent node)
-      (while links
-	(digraph-forest-merge-node forest parent (car links))
-	(setq links (cdr links)))))
-  forest)
-
-;; forest = [last-tree-id node-merge-map node-parent-map]
-(defun digraph-forest-make (num)
-  (vector 0 (make-vector num nil) (make-vector num nil)))
-(defsubst digraph-forest-merge-map (forest) (aref forest 1))
-(defsubst digraph-forest-parent-map (forest) (aref forest 2))
-
-(defun digraph-forest-add-tree (forest node)
-  (aset (digraph-forest-parent-map forest)
-	node
-	(aset forest 0 (1- (aref forest 0)))))
-
-(defun digraph-forest-add-node (forest parent node)
-  (aset (digraph-forest-parent-map forest) node parent))
-
-(defun digraph-forest-node-id (forest node)
-  (let ((merge-map (digraph-forest-merge-map forest)) tmp)
-    (while (setq tmp (aref merge-map node))
-      (setq node tmp))
-    node))
-
-(defun digraph-forest-tree-id (forest node)
-  (setq node (digraph-forest-node-id forest node))
-  (let ((parent-map (digraph-forest-parent-map forest))
-	tmp)
-    (while (<= 0 (setq tmp (aref parent-map node)))
-      (setq node (digraph-forest-node-id forest tmp)))
-    tmp))
-  
-(defun digraph-forest-root-p (forest node)
-  (setq node (digraph-forest-node-id forest node))
-  (< (aref (digraph-forest-parent-map forest) node) 0))
-
-(defun digraph-forest-path-to-root (forest node)
-  (setq node (digraph-forest-node-id forest node))
-  (let ((parent-map (digraph-forest-parent-map forest))
-	(path (list node)))
-    (while (not (digraph-forest-root-p forest node))
-      (setq node (digraph-forest-node-id forest (aref parent-map node))
-	    path (cons node path)))
-    path))
-
-(defun digraph-forest-merge-node (forest n1 n2)
-  (setq n1 (digraph-forest-node-id forest n1)
-	n2 (digraph-forest-node-id forest n2))
-  (let ((t1 (digraph-forest-tree-id forest n1))
-	(t2 (digraph-forest-tree-id forest n2)))
-    (if (= t1 t2)
-	(let ((merge-map (digraph-forest-merge-map forest))
-	      (p1 (digraph-forest-path-to-root forest n1))
-	      (p2 (digraph-forest-path-to-root forest n2))
-	      top)
-	  (while (and p1 p2
-		      (= (car p1) (car p2)))
-	    (setq top (car p1)
-		  p1 (cdr p1)
-		  p2 (cdr p2)))
-	  (setq p1 (nreverse p1))
-	  (setq p2 (nreverse p2))
-	  (while (and p1 p2)
-	    (aset merge-map (car p2) (car p1))
-	    (setq p1 (cdr p1)
-		  p2 (cdr p2)))
-	  (if (or p1 p2)
-	      (let ((ns (nconc p1 p2)) n)
-		(while ns
-		  (aset merge-map (car ns) top)
-		  (setq ns (cdr ns))))))
-      (let ((merge-map (digraph-forest-merge-map forest))
-	    (parent-map (digraph-forest-parent-map forest)))
-	(while (and (not (digraph-forest-root-p forest n1))
-		    (not (digraph-forest-root-p forest n2)))
-	  (aset merge-map n2 n1)
-	  (setq n1 (digraph-forest-node-id forest (aref parent-map n1))
-		n2 (digraph-forest-node-id forest (aref parent-map n2))))
-	(if (digraph-forest-root-p forest n2)
-	    (aset merge-map n2 n1)
-	  (aset merge-map n1 n2)))))
-  forest)
-
-(defun digraph-forest-to-graph (forest)
-  (let* ((merge-map (digraph-forest-merge-map forest))
-	 (parent-map (digraph-forest-parent-map forest))
-	 (old-len (length merge-map))
-	 (old-to-new (make-vector old-len nil))
-	 new-to-olds
-	 (new-len 0)
-	 (i 0)
-	 j
-	 graph
+         (d (aref tmp 0))
+         (g-to-d (aref tmp 1))
+         (d-to-g (aref tmp 2))
+	 (mm (digraph-make-merge-map (digraph-size d)))
 	 )
-    (while (< i old-len)
-      (setq j (digraph-forest-node-id forest i))
-      (if (aref old-to-new j)
-	  (aset old-to-new i (aref old-to-new j))
-	(progn
-	  (aset old-to-new j new-len)
-	  (aset old-to-new i new-len)
-	  (setq new-len (1+ new-len))))
-      (setq i (1+ i)))
-    (setq new-to-olds (make-vector new-len nil)
-	  graph (make-vector new-len nil))
-    (setq i (1- old-len))
-    (while (<= 0 i)
-      (setq j (aref old-to-new i))
-      (aset new-to-olds j
-	    (cons i (aref new-to-olds j)))
-      (setq i (1- i)))
-    (setq i 0)
-    (while (< i new-len)
-      (setq j (aref parent-map (digraph-forest-node-id forest (car (aref new-to-olds i)))))
-      (if (<= 0 j) (aset graph (aref old-to-new j)
-			 (cons i (aref graph (aref old-to-new j)))))
-      (setq i (1+ i)))
-    (vector graph old-to-new new-to-olds)))
+    (digraph-saf-dfs d mm '() (list (digraph-roots d)))
+    (let* ((maps (digraph-mm-make-map mm))
+	   (forward-map (car maps))
+	   (reverse-map (cdr maps))
+	   (f (digraph-make (length reverse-map))))
+      (digraph-forall-edge d i j
+	(unless (= (aref forward-map i) (aref forward-map j))
+	  (digraph-add-edge f (aref forward-map i) (aref forward-map j))))
+      (vector f
+	      (digraph-concat-forward-map g-to-d forward-map)
+	      (digraph-concat-reverse-map reverse-map d-to-g)))))
 
-;;; utilities
+(defun digraph-saf-dfs (original mm node-stack descents-stack)
+  (let ((status (make-vector (digraph-size original) 'unvisited)))
+    (while descents-stack
+      (if (null (car descents-stack))
+	  (progn
+	    (when node-stack
+	      (aset status (car node-stack) 'visited)
+	      (setq node-stack (cdr node-stack)))
+	    (setq descents-stack (cdr descents-stack)))
+	(let ((node (caar descents-stack))
+	      (ascent (car node-stack)))
+	  (setcar descents-stack (cdr (car descents-stack)))
+	  (cond
+	   ((eq (aref status node) 'visiting)
+	    (error "not DAG"))
+	   ((eq (aref status node) 'unvisited)
+	    (digraph-mm-push-info mm node ascent)
+	    (aset status node 'visiting)
+	    (setq node-stack (cons node node-stack)
+		  descents-stack (cons (digraph-descents original node) descents-stack)))
+	   ((eq (aref status node) 'visited)
+	    (let ((n node))
+	      (while (and n (eq (aref status (setq n (digraph-mm-canonicalize-node mm n))) 'visited))
+		(setq n (digraph-mm-top-info mm n)))
+	      (when n
+		(setq n (digraph-mm-canonicalize-node mm n)))
+	      (let ((a (digraph-mm-canonicalize-node mm ascent))
+		    (b (digraph-mm-canonicalize-node mm (digraph-mm-top-info mm node))))
+		(while (and (not (eq a n)) (not (eq b n)))
+		  (let ((a1 (digraph-mm-top-info mm a))
+			(b1 (digraph-mm-top-info mm b)))
+		    (digraph-mm-merge-node mm a b)
+		    (unless a1
+		      (digraph-mm-push-info mm a b1))
+		    (setq a (and a1 (digraph-mm-canonicalize-node mm a1))
+			  b (and b1 (digraph-mm-canonicalize-node mm b1)))))
+		(when (and n (not (and (eq a n) (eq b n))))
+		  (if (eq a n)
+		      (while (not (eq n b))
+			(let ((b1 (digraph-mm-canonicalize-node mm (digraph-mm-top-info mm b))))
+			  (digraph-mm-merge-node mm n b)
+			  (setq b b1)))
+		    (while (not (eq n a))
+		      (let ((a1 (digraph-mm-canonicalize-node mm (digraph-mm-top-info mm a))))
+			(digraph-mm-merge-node mm n a)
+			(setq a a1))))))))))))))
 
-(defun digraph-list-uniq (il)
-  (if (null il)
-      ()
-    (if (member (car il) (cdr il))
-	(digraph-list-uniq (cdr il))
-      (cons (car il) (digraph-list-uniq (cdr il))))))
-
-'(
-(digraph-split-as-forest [nil nil nil nil nil nil nil nil nil nil (10) nil nil (12) (13) (0 1 2 3 4 5 6 7 8 9 10 11 13 14)])
-[
- [(14 13 12 11 10 9 8 7 6 5 4 3 1) (2) nil nil nil nil nil nil nil nil nil nil nil nil nil]
- [14 13 12 11 10 9 8 7 6 5 4 3 2 1 0 0]
- [(15) (14) (13) (12) (11) (10) (9) (8) (7) (6) (5) (4) (3) (2) (1) (0)]]
-
-)
+(provide 'digraph)

@@ -1,4 +1,3 @@
-
 (require 'digraph)
 (require 'natset)
 (provide 'automata)
@@ -8,7 +7,7 @@
 
 (defmacro automata (in-var start-tag &rest clauses)
   (let* ((org-len (length clauses))
-	 (org-graph (make-vector org-len nil))
+	 (org-graph (digraph-make org-len))
 	 (tag-to-org-alist nil)
 	 forest org-to-forest forest-to-org
 	 i j tmp trans)
@@ -24,8 +23,7 @@
       (setq trans (cddr (cdar tmp)))
       (while trans
 	(setq j (cdr (assoc (cadr (car trans)) tag-to-org-alist)))
-	(if (not (member j (aref org-graph i)))
-	    (aset org-graph i (cons j (aref org-graph i))))
+	(digraph-add-edge org-graph i j)
 	(setq trans (cdr trans)))
       (setq i (1+ i)
 	    tmp (cdr tmp)))
