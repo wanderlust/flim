@@ -166,7 +166,7 @@ don't define this value."
 		     (smtp-send-command
 		      process
 		      (base64-encode-string
-		       (cram-md5-encode
+		       (sasl-cram-md5
 			user passphrase 
 			(base64-decode-string
 			 (substring (car (cdr response)) 4)))))
@@ -177,11 +177,11 @@ don't define this value."
 			 (throw 'done (car (cdr response)))))
 
 		    ((string= "plain" auth)
-		     (smtp-send-command
-		      process
-		      (concat "AUTH PLAIN "
-			      (base64-encode-string
-			       (plain-encode "" user passphrase))))
+                     (smtp-send-command
+                      process
+                      (concat "AUTH PLAIN "
+                              (base64-encode-string
+                               (plain-encode "" user passphrase))))
 		     (setq response (smtp-read-response process))
 		     (if (or (null (car response))
 			     (not (integerp (car response)))

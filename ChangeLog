@@ -1,5 +1,10 @@
 1999-10-20  Kenichi OKADA <okada@opaopa.org>
 
+	* smtp.el (smtp-via-smtp): Fix typo.
+	* hmac-md5.el: Add Author and Maintainer.
+
+1999-10-20  Kenichi OKADA <okada@opaopa.org>
+
 	* hmac-md5.el (hmac-md5): Specify the 4th arg to `md5'
 	as `binary' if possible.
 

@@ -3,6 +3,8 @@
 ;; Copyright (C) 1999 Shuhei KOBAYASHI
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;;	Kenichi OKADA <okada@opaopa.org>
+;; Maintainer: Kenichi OKADA <okada@opaopa.org>
 ;; Keywords: HMAC, RFC 2104, HMAC-MD5, MD5, KEYED-MD5, CRAM-MD5
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
