@@ -1,3 +1,7 @@
+2000-10-31   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el: New implementation; don't use `tram.el' and `luna.el'.
+
 2000-08-16   Daiki Ueno  <ueno@unixuser.org>
 
 	* FLIM-ELS (flim-modules): Add `closure' and `tram'.
