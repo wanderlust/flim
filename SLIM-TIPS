@@ -4,4 +4,8 @@ http://www.ueda.info.waseda.ac.jp/~ueno/tmp/starttls-0.2.tar.gz
 
 To use DL modules(md5 and sha1), get next package.
 
+Original:
 ftp://opaopa.org/pub/elisp/hmac-0.2.tar.gz
+
+GPL2 version:
+ftp://kiss.kake.info.waseda.ac.jp/pub/tmp/hmac-dl-0.1.tar.gz
