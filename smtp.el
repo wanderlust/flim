@@ -202,7 +202,7 @@ don't define this value."
 
 	    ;; AUTH --- SMTP Service Extension for Authentication (RFC2554)
 	    (when smtp-authenticate-type
-	      (let ((auth (intern smtp-authenticate-type)) method)
+	      (let ((auth (intern (downcase smtp-authenticate-type))) method)
 		(if (and 
 		     (memq auth extensions)
 		     (setq method (nth 1 (assq auth smtp-authenticate-method-alist))))
