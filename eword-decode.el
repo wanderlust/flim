@@ -1,10 +1,10 @@
 ;;; eword-decode.el --- RFC 2047 based encoded-word decoder for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
 
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
-;;         MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;;         TANAKA Akira <akr@jaist.ac.jp>
+;;         MORIOKA Tomohiko <tomo@m17n.org>
+;;         TANAKA Akira <akr@m17n.org>
 ;; Created: 1995/10/03
 ;; Original: 1992/07/20 ENAMI Tsugutomo's `mime.el'.
 ;;	Renamed: 1993/06/03 to tiny-mime.el by MORIOKA Tomohiko
@@ -38,15 +38,11 @@
 
 (eval-when-compile (require 'cl))	; list*, pop
 
-(defgroup eword-decode nil
-  "Encoded-word decoding"
-  :group 'mime)
 
-(defcustom eword-max-size-to-decode 1000
-  "*Max size to decode header field."
-  :group 'eword-decode
-  :type '(choice (integer :tag "Limit (bytes)")
-		 (const :tag "Don't limit" nil)))
+;;; @ Variables
+;;;
+
+;; User options are defined in mime-def.el.
 
 
 ;;; @ MIME encoded-word definition
@@ -152,8 +148,8 @@ decode the charset included in it, it is not decoded."
 						    start-column
 						    &optional max-column
 						    start)
-  (if (and eword-max-size-to-decode
-	   (> (length string) eword-max-size-to-decode))
+  (if (and mime-field-decoding-max-size
+	   (> (length string) mime-field-decoding-max-size))
       string
     (or max-column
 	(setq max-column fill-column))
@@ -594,7 +590,7 @@ as a version of Net$cape)."
   "*Max position of eword-lexical-analyze-cache.
 It is max size of eword-lexical-analyze-cache - 1.")
 
-(defcustom eword-lexical-analyzer
+(defvar mime-header-lexical-analyzer
   '(eword-analyze-quoted-string
     eword-analyze-domain-literal
     eword-analyze-comment
@@ -614,9 +610,7 @@ format.
 
 Previous function is preferred to next function.  If a function
 returns nil, next function is used.  Otherwise the return value will
-be the result."
-  :group 'eword-decode
-  :type '(repeat function))
+be the result.")
 
 (defun eword-analyze-quoted-string (string start &optional must-unfold)
   (let ((p (std11-check-enclosure string ?\" ?\" nil start)))
@@ -747,7 +741,7 @@ be the result."
 	dest ret)
     (while (< start len)
       (setq ret
-	    (let ((rest eword-lexical-analyzer)
+	    (let ((rest mime-header-lexical-analyzer)
 		  func r)
 	      (while (and (setq func (car rest))
 			  (null
