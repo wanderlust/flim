@@ -128,6 +128,7 @@ be the result."
 
 (defun mime-decode-parameter-plist (params)
   "Decode PARAMS as a property list of MIME parameter values.
+Return value is an association list of MIME parameter values.
 If parameter continuation is used, segments of values are concatenated.
 If parameters contain charset information, values are decoded.
 If parameters contain language information, it is set to `mime-language'
@@ -293,10 +294,10 @@ Return a property list, which is a list of the form
 
 ;;;###autoload
 (defun mime-parse-Content-Type (field-body)
-  "Parse FIELD-BODY as Content-Type field.  FIELD-BODY is a string.
+  "Parse FIELD-BODY as a Content-Type field.
+FIELD-BODY is a string.
 Return value is a mime-content-type object.
-Use `mime-content-type-primary-type', `mime-content-type-subtype',
-and `mime-content-type-parameter' to deal with it."
+If FIELD-BODY is not a valid Content-Type field, return nil."
   (let ((tokens (mime-lexical-analyze field-body)))
     (when (eq (car (car tokens)) 'mime-token)
       (let ((primary-type (cdr (car tokens))))
@@ -314,7 +315,8 @@ and `mime-content-type-parameter' to deal with it."
 ;;;###autoload
 (defun mime-read-Content-Type ()
   "Parse field-body of Content-Type field of current-buffer.
-See `mime-parse-Content-Type' for more information."
+Return value is a mime-content-type object.
+If Content-Type field is not found, return nil."
   (let ((field-body (std11-field-body "Content-Type")))
     (if field-body
 	(mime-parse-Content-Type field-body)
@@ -326,10 +328,10 @@ See `mime-parse-Content-Type' for more information."
 
 ;;;###autoload
 (defun mime-parse-Content-Disposition (field-body)
-  "Parse FIELD-BODY as Content-Disposition field.  FIELD-BODY is a string.
+  "Parse FIELD-BODY as a Content-Disposition field.
+FIELD-BODY is a string.
 Return value is a mime-content-disposition object.
-Use `mime-content-disposition-type', `mime-content-disposition-parameter',
-and `mime-content-disposition-filename' to deal with it."
+If FIELD-BODY is not a valid Content-Disposition field, return nil."
   (let ((tokens (mime-lexical-analyze field-body)))
     (when (eq (car (car tokens)) 'mime-token)
       (make-mime-content-disposition
@@ -340,7 +342,8 @@ and `mime-content-disposition-filename' to deal with it."
 ;;;###autoload
 (defun mime-read-Content-Disposition ()
   "Parse field-body of Content-Disposition field of current-buffer.
-See `mime-parse-Content-Disposition' for more information."
+Return value is a mime-content-disposition object.
+If Content-Disposition field is not found, return nil."
   (let ((field-body (std11-field-body "Content-Disposition")))
     (if field-body
 	(mime-parse-Content-Disposition field-body)
@@ -352,8 +355,10 @@ See `mime-parse-Content-Disposition' for more information."
 
 ;;;###autoload
 (defun mime-parse-Content-Transfer-Encoding (field-body)
-  "Parse FIELD-BODY as Content-Transfer-Encoding field.  FIELD-BODY is a string.
-Return value is a string."
+  "Parse FIELD-BODY as a Content-Transfer-Encoding field.
+FIELD-BODY is a string.
+Return value is a string.
+If FIELD-BODY is not a valid Content-Transfer-Encoding field, return nil."
   (let ((tokens (mime-lexical-analyze field-body)))
     (when (eq (car (car tokens)) 'mime-token)
       (downcase (cdr (car tokens))))))
@@ -361,7 +366,8 @@ Return value is a string."
 ;;;###autoload
 (defun mime-read-Content-Transfer-Encoding ()
   "Parse field-body of Content-Transfer-Encoding field of current-buffer.
-See `mime-parse-Content-Transfer-Encoding' for more information."
+Return value is a string.
+If Content-Transfer-Encoding field is not found, return nil."
   (let ((field-body (std11-field-body "Content-Transfer-Encoding")))
     (if field-body
 	(mime-parse-Content-Transfer-Encoding field-body)
