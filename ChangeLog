@@ -1,3 +1,8 @@
+2003-12-14  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-def.el (mime-header-accept-quoted-encoded-words): Change
+	default value to nil.
+
 2003-03-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* eword-decode.el (eword-analyze-quoted-string): Decode
