@@ -1,3 +1,10 @@
+2002-09-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* luna.el (luna-define-method): Clear method cache of child
+	classes.
+
+	* mime-ja.texi (CVS): Escape @.
+
 2002-09-14  KOSEKI Yoshinori  <kose@meadowy.org>
 
 	* mime-en.texi (CVS): Fix Typo. (@ to @@).
