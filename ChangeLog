@@ -1,5 +1,9 @@
 1998-08-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* FLIM-ELS (flim-modules): Don't add `mel-dl' unconditionally.
+
+1998-08-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* Delete mime-lib.el.
 
 1998-08-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
