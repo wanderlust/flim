@@ -1,3 +1,8 @@
+2004-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-en.sgml, mime-ja.sgml (CVS based development): Remove the
+	description about developers' pserver access.
+
 2004-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sha1-dl.el: Don't provide the sha1-dl feature twice.
