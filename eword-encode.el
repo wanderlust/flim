@@ -227,7 +227,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (reverse prev)
     ))
 
-(defun tm-eword::split-string (str &optional mode)
+(defun eword-encode-split-string (str &optional mode)
   (tm-eword::space-process
    (tm-eword::words-to-ruled-words
     (eword-encode-charset-words-to-words
@@ -434,7 +434,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		     (nconc
 		      dest
 		      (list (list "(" nil nil))
-		      (tm-eword::split-string (cdr token) 'comment)
+		      (eword-encode-split-string (cdr token) 'comment)
 		      (list (list ")" nil nil))
 		      ))
 	       )
@@ -499,7 +499,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	      (append dest
 		      '((" " nil nil)
 			("(" nil nil))
-		      (tm-eword::split-string comment 'comment)
+		      (eword-encode-split-string comment 'comment)
 		      '((")" nil nil))
 		      )))
     dest))
@@ -526,7 +526,7 @@ Optional argument COLUMN is start-position of the field.
 Optional argument MODE allows `text', `comment', `phrase' or nil.
 Default value is `phrase'."
   (car (eword-encode-rword-list (or column 0)
-				(tm-eword::split-string string mode))))
+				(eword-encode-split-string string mode))))
 
 (defun eword-encode-address-list (string &optional column)
   "Encode header field STRING as list of address, and return the result.
@@ -548,7 +548,7 @@ Optional argument COLUMN is start-position of the field."
   "Encode header field STRING as unstructured field, and return the result.
 Optional argument COLUMN is start-position of the field."
   (car (eword-encode-rword-list (or column 0)
-				(tm-eword::split-string string 'text))))
+				(eword-encode-split-string string 'text))))
 
 (defun eword-encode-field (string)
   "Encode header field STRING, and return the result.
