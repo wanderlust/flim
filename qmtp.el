@@ -46,9 +46,14 @@ It can also be a function
 called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
 
 (defcustom qmtp-service "qmtp"
-  "QMTP service port number.  \"qmtp\" or 25."
-  :type '(choice (integer :tag "25" 25)
+  "QMTP service port number.  \"qmtp\" or 209."
+  :type '(choice (integer :tag "209" 209)
                  (string :tag "qmtp" "qmtp"))
+  :group 'qmtp)
+
+(defcustom qmtp-timeout 30
+  "Timeout for each QMTP session."
+  :type 'integer
   :group 'qmtp)
 
 (defvar qmtp-open-connection-function (function open-network-stream))
@@ -57,8 +62,42 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
   '((?Z "Temporary failure")
     (?D "Permanent failure")))
 
+(defvar qmtp-read-point nil)
+
 (defun qmtp-encode-netstring-string (string)
   (format "%d:%s," (length string) string))
+
+(defun qmtp-send-package (process sender recipients buffer)
+  (with-temp-buffer
+    (buffer-disable-undo)
+    (erase-buffer)
+    (set-buffer-multibyte nil)
+    (insert
+     (format "%d:\n"
+	     (with-current-buffer buffer
+	       (1+ (point-max));; for the "\n"
+	       )))
+    (insert-buffer-substring buffer)
+    (insert
+     "\n,"
+     (qmtp-encode-netstring-string sender)
+     (qmtp-encode-netstring-string
+      (mapconcat #'qmtp-encode-netstring-string
+		 recipients "")))
+    (process-send-region process (point-min)(point-max)))
+  (goto-char qmtp-read-point)
+  (while recipients
+    (while (and (memq (process-status process) '(open run))
+		(not (re-search-forward "^[0-9]+:" nil 'noerror)))
+      (or (accept-process-output process qmtp-timeout)
+	  (error "timeout expired: %d" qmtp-timeout))
+      (goto-char qmtp-read-point))
+    (let ((response (char-after (match-end 0))))
+      (if (not (eq response ?K))
+	  (error (nth 1 (assq response qmtp-error-response-alist))))
+      (setq recipients (cdr recipients))
+      (beginning-of-line 2)
+      (setq qmtp-read-point (point)))))
 
 (defun qmtp-via-qmtp (sender recipients buffer)
   (save-excursion
@@ -67,52 +106,26 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
       (format "*trace of QMTP session to %s*" qmtp-server)))
     (buffer-disable-undo)
     (erase-buffer)
-    (let (process point response)
+    (make-local-variable 'qmtp-read-point)
+    (setq qmtp-read-point (point-min))
+    (let (process)
       (unwind-protect
 	  (progn
 	    (as-binary-process
 	     (setq process
 		   (funcall qmtp-open-connection-function
 			    "QMTP" (current-buffer) qmtp-server qmtp-service)))
-	    (with-temp-buffer
-	      (buffer-disable-undo)
-	      (erase-buffer)
-	      (set-buffer-multibyte nil)
-	      (insert
-	       (format "%d:\n"
-		       (with-current-buffer buffer
-			 (1+ (point-max));; for the "\n"
-			 )))
-	      (insert-buffer-substring buffer)
-	      (insert
-	       "\n,"
-	       (qmtp-encode-netstring-string sender)
-	       (qmtp-encode-netstring-string
-		(mapconcat #'qmtp-encode-netstring-string
-			   recipients "")))
-	      (process-send-region process (point-min)(point-max)))
-	    (goto-char (point-min))
-	    (while recipients
-	      (setq point (point))
-	      (while (and
-		      (memq (process-status process) '(open run))
-		      (not (re-search-forward "^[0-9]+:" nil 'noerror)))
-		(accept-process-output process)
-		(goto-char point))
-	      (setq response (char-after (match-end 0)))
-	      (if (eq response ?K)
-		  (progn
-		    (setq recipients (cdr recipients))
-		    (beginning-of-line 2))
-		(error
-		 (nth 1 (assq response qmtp-error-response-alist)))))
-	    t)
+	    (condition-case nil
+		(progn
+		  (qmtp-send-package process sender recipients buffer)
+		  t)
+	      (error)))
 	(when (and process
 		   (memq (process-status process) '(open run)))
 	  ;; QUIT
 	  (process-send-eof process)
 	  (delete-process process))))))
-	 
+
 (provide 'qmtp)
 
 ;;; qmtp.el ends here
