@@ -1548,7 +1548,8 @@ CVS を用いた開発に参加したい方は
 @end itemize
 
 @noindent
-まで、account 名と ssh の公開鍵を沿えて御連絡ください。
+まで、アカウント名と ssh の公開鍵を送ってください。ssh 経由では、
+cvsroot は :ext:cvs@@cvs.m17n.org:/cvs/root となります。
 
 
 @node History,  , CVS, Appendix

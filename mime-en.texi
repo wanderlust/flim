@@ -1553,6 +1553,7 @@ If you would like to join CVS based development, please send mail to
 
 @noindent
 with your account name and your public key for ssh.
+cvsroot is :ext:cvs@@cvs.m17n.org:/cvs/root.
 
 
 @node History,  , CVS, Appendix
