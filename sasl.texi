@@ -14,16 +14,14 @@
 @top Emacs SASL
 This manual describes the Emacs SASL library.
 
-This library provides a common interface to share several authentication
-mechanisms between applications using different protocols.
-
+A common interface to share several authentication mechanisms between
+applications using different protocols.
 
 @menu
-* Overview::                    
-* Mechanisms::                  
-* Clients::                     
-* Steps::                       
-* Backend Drivers::             
+* Overview::                    What Emacs SASL library is.
+* How to use::                  Adding authentication support to your applications.
+* Data types::                  
+* Backend drivers::             Writing your own drivers.
 * Index::                       
 * Function Index::              
 * Variable Index::              
@@ -38,14 +36,42 @@ adding authentication support to various application protocols.
 
 The toplevel interface of this library is inspired by Java @sc{sasl}
 Application Program Interface.  It defines an abstraction over a series
-of authentication mechanism drivers.
+of authentication mechanism drivers (@ref{Backend drivers}).
+
+Backend drivers are designed to be close as possible to the
+authentication mechanism.  You can access the additional configuration
+information anywhere from the implementation.
+
+@node How to use
+@chapter How to use
+
+(Not yet written).
+
+To use Emacs SASL library, please evaluate following expression at the
+beginning of your application program.
+
+@lisp
+(require 'sasl)
+@end lisp
+
+If you want to check existence of sasl.el at runtime, instead you
+can list autoload settings for functions you want.
+
+@node Data types
+@chapter Data types
 
 There are three data types to be used for carrying a negotiated
 security layer---a mechanism, a client parameter and an authentication
 step.
 
+@menu
+* Mechanisms::                  
+* Clients::                     
+* Steps::                       
+@end menu
+
 @node Mechanisms
-@chapter Mechanisms
+@section Mechanisms
 
 A mechanism (@code{sasl-mechanism} object) is a schema of the @sc{sasl}
 authentication mechanism driver.
@@ -72,7 +98,7 @@ Return name of mechanism, a string.
 @end defun
 
 If you want to write an authentication mechanism driver (@ref{Backend
-Drivers}), use @code{sasl-make-mechanism} and modify
+drivers}), use @code{sasl-make-mechanism} and modify
 @code{sasl-mechanisms} and @code{sasl-mechanism-alist} correctly.
 
 @defun sasl-make-mechanism name steps
@@ -92,7 +118,7 @@ of authentication functions.
 @end defun
 
 @node Clients
-@chapter Clients
+@section Clients
 
 A client (@code{sasl-client} object) initialized with four
 parameters---a mechanism, a user name, name of the service and name of
@@ -139,7 +165,7 @@ Return the whole property list of client configuration.
 @end defun
 
 @node Steps
-@chapter Steps
+@section Steps
 
 A step (@code{sasl-step} object) is an abstraction of authentication
 "step" which holds the response value and the next entry point for the
@@ -179,8 +205,8 @@ Perform the authentication step.
 At the first time STEP should be set to nil.
 @end defun
 
-@node Backend Drivers
-@chapter Backend Drivers
+@node Backend drivers
+@chapter Backend drivers
 
 (Not yet written).
 
