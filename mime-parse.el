@@ -152,15 +152,33 @@ be the result."
 				  16))
 		  t t text)
 	    start (1+ (match-beginning 0))))
-    ;; convert byte-string to character-string.
-    ;; (setq text (decode-mime-charset-string text (or charset 'us-ascii)))
+    ;; I believe that `decode-mime-charset-string' of mcs-e20.el should
+    ;; be independent of the value of `enable-multibyte-characters'.
+    ;; (when charset
+    ;;   (setq text (decode-mime-charset-string text charset)))
     (when charset
-      (setq text (decode-mime-charset-string text charset)))
+      (with-temp-buffer
+	(set-buffer-multibyte t)
+	(setq text (decode-mime-charset-string text charset))))
     (when language
       (put-text-property 0 (length text) 'mime-language language text))
     text))
 
 (defun mime-decode-parameter-plist (params)
+  "Decode PARAMS as a property list of MIME parameter values.
+
+PARAMS is a property list, which is a list of the form
+\(PARAMETER-NAME1 VALUE1 PARAMETER-NAME2 VALUE2...).
+
+This function returns an alist of the form
+\((ATTRIBUTE1 . DECODED-VALUE1) (ATTRIBUTE2 . DECODED-VALUE2)...).
+
+If parameter continuation is used, segments of values are concatenated.
+If parameters contain charset information, values are decoded.
+If parameters contain language information, it is set to `mime-language'
+property of the decoded-value."
+  ;; should signal an error?
+  ;; (unless (zerop (% (length params) 2)) ...)
   (let ((len (/ (length params) 2))
         dest eparams)
     (while params
@@ -168,7 +186,7 @@ be the result."
                           (concat "^\\(" mime-attribute-char-regexp "+\\)"
 				  "\\(\\*\\([0-9]+\\)\\)?\\(\\*\\)?$"))
                         (car params))
-          (let* ((attribute (substring (car params) 0 (match-end 1)))
+          (let* ((attribute (downcase (substring (car params) 0 (match-end 1))))
                  (section (if (match-beginning 3)
 			      (string-to-int
 			       (substring (car params)
@@ -180,6 +198,8 @@ be the result."
 		 ;;         | (VALUE t) ; extended-other-values
 		 ;;         | (VALUE)   ; regular-parameter-values
                  (eparam (assoc attribute eparams)))
+	    ;; should signal an error?
+	    ;; (when (> section len) ...)
             (unless eparam
               (setq eparam (cons attribute (make-vector len nil))
                     eparams (cons eparam eparams)))
@@ -235,7 +255,7 @@ be the result."
 		    (list (std11-strip-quoted-string
 			   (car params))))))
         ;; no parameter value extensions used, or invalid attribute-name.
-        (setq dest (cons (cons (car params)
+        (setq dest (cons (cons (downcase (car params))
 			       (std11-strip-quoted-string
 				(car (cdr params))))
 			 dest)
@@ -261,9 +281,6 @@ be the result."
               eparams (cdr eparams))))
     dest))
 
-;;; for compatibility with flim-1_13-rfc2231 API.
-(defalias 'mime-parse-parameters-from-list 'mime-decode-parameter-plist)
-
 (defun mime-parse-alist-to-plist (alist)
   (let ((plist alist)
         head tail key value)
@@ -280,42 +297,38 @@ be the result."
     plist))
 
 (defun mime-decode-parameter-alist (params)
+  "Decode PARAMS as an alist list of MIME parameter values.
+See `mime-decode-parameter-plist' for more information."
   (mime-decode-parameter-plist
    (mime-parse-alist-to-plist params)))
 
-(defalias 'mime-decode-parameters 'mime-decode-parameter-alist)
+;;;###autoload
+;; (defalias 'mime-decode-parameters 'mime-decode-parameter-alist)
+(defalias 'mime-decode-parameters 'mime-decode-parameter-plist)
 
-;;; (defun mime-parse-parameters (tokens)
-;;;   (let (params attribute)
-;;;     (while (setq tokens (cdr (member '(tspecials . ";") tokens)))
-;;;       (when (and (eq (car (car tokens)) 'mime-token)
-;;; 		 (progn
-;;; 		   (setq attribute (downcase (cdr (car tokens))))
-;;; 		   (setq tokens (cdr tokens)))
-;;; 		 (equal (car tokens) '(tspecials . "="))
-;;; 		 (setq tokens (cdr tokens))
-;;; 		 (memq (car (car tokens)) '(mime-token quoted-string)))
-;;; 	(setq params (cons (cons attribute (cdr (car tokens)))
-;;; 			   params))))
-;;;     ;; mime-decode-parameters will reverse this list to the right order.
-;;;     ;; (nreverse params)
-;;;     params))
+;;; for compatibility with flim-1_13-rfc2231 API.
+(defalias 'mime-parse-parameters-from-list 'mime-decode-parameters)
+(make-obsolete 'mime-parse-parameters-from-list 'mime-decode-parameters)
+
 (defun mime-parse-parameters (tokens)
+  "Parse TOKENS as MIME parameter values.
+Return a property list, which is a list of the form
+\(PARAMETER-NAME1 VALUE1 PARAMETER-NAME2 VALUE2...)."
   (let (params attribute)
     (while (and tokens
 		(equal (car tokens) '(tspecials . ";"))
 		(setq tokens (cdr tokens))
 		(eq (car (car tokens)) 'mime-token)
 		(progn
-		  (setq attribute (downcase (cdr (car tokens))))
+		  (setq attribute (cdr (car tokens)))
 		  (setq tokens (cdr tokens)))
 		(equal (car tokens) '(tspecials . "="))
 		(setq tokens (cdr tokens))
 		(memq (car (car tokens)) '(mime-token quoted-string)))
-      (setq params (cons (cons attribute (cdr (car tokens)))
-			 params)
+      (setq params (cons (cdr (car tokens))
+			 (cons attribute params))
 	    tokens (cdr tokens)))
-    params))
+    (nreverse params)))
 
 
 ;;; @@ Content-Type
@@ -334,26 +347,27 @@ Return value is
 or nil.
 
 PRIMARY-TYPE and SUBTYPE are symbols, and other elements are strings."
-  (when (stringp field-body)
-    (let ((tokens (mime-lexical-analyze field-body)))
-      (when (eq (car (car tokens)) 'mime-token)
-	(let ((primary-type (cdr (car tokens))))
-	  (setq tokens (cdr tokens))
-	  (when (and (equal (car tokens) '(tspecials . "/"))
-		     (setq tokens (cdr tokens))
-		     (eq (car (car tokens)) 'mime-token))
-	    (cons (cons 'type (intern (downcase primary-type)))
-		  (cons (cons 'subtype
-			      (intern (downcase (cdr (car tokens)))))
-			(mime-decode-parameters
-			 (mime-parse-parameters (cdr tokens)))))))))))
+  (let ((tokens (mime-lexical-analyze field-body)))
+    (when (eq (car (car tokens)) 'mime-token)
+      (let ((primary-type (cdr (car tokens))))
+	(setq tokens (cdr tokens))
+	(when (and (equal (car tokens) '(tspecials . "/"))
+		   (setq tokens (cdr tokens))
+		   (eq (car (car tokens)) 'mime-token))
+	  (cons (cons 'type (intern (downcase primary-type)))
+		(cons (cons 'subtype
+			    (intern (downcase (cdr (car tokens)))))
+		      (mime-decode-parameters
+		       (mime-parse-parameters (cdr tokens))))))))))
 
 ;;;###autoload
 (defun mime-read-Content-Type ()
   "Parse field-body of Content-Type field of current-buffer.
 Format of return value is same as that of `mime-parse-Content-Type'."
-  (mime-parse-Content-Type
-   (std11-field-body "Content-Type")))
+  (let ((field-body (std11-field-body "Content-Type")))
+    (if field-body
+	(mime-parse-Content-Type field-body)
+      )))
 
 
 ;;; @@ Content-Disposition
@@ -362,18 +376,19 @@ Format of return value is same as that of `mime-parse-Content-Type'."
 ;;;###autoload
 (defun mime-parse-Content-Disposition (field-body)
   "Parse FIELD-BODY as Content-Disposition field.  FIELD-BODY is a string."
-  (when (stringp field-body)
-    (let ((tokens (mime-lexical-analyze field-body)))
-      (when (eq (car (car tokens)) 'mime-token)
-	(cons (cons 'type (intern (downcase (cdr (car tokens)))))
-	      (mime-decode-parameters
-	       (mime-parse-parameters (cdr tokens))))))))
+  (let ((tokens (mime-lexical-analyze field-body)))
+    (when (eq (car (car tokens)) 'mime-token)
+      (cons (cons 'type (intern (downcase (cdr (car tokens)))))
+	    (mime-decode-parameters
+	     (mime-parse-parameters (cdr tokens)))))))
 
 ;;;###autoload
 (defun mime-read-Content-Disposition ()
   "Parse field-body of Content-Disposition field of current-buffer."
-  (mime-parse-Content-Disposition
-   (std11-field-body "Content-Disposition")))
+  (let ((field-body (std11-field-body "Content-Disposition")))
+    (if field-body
+	(mime-parse-Content-Disposition field-body)
+      )))
 
 
 ;;; @@ Content-Transfer-Encoding
@@ -382,16 +397,17 @@ Format of return value is same as that of `mime-parse-Content-Type'."
 ;;;###autoload
 (defun mime-parse-Content-Transfer-Encoding (field-body)
   "Parse FIELD-BODY as Content-Transfer-Encoding field.  FIELD-BODY is a string."
-  (when (stringp field-body)
-    (let ((tokens (mime-lexical-analyze field-body)))
-      (when (eq (car (car tokens)) 'mime-token)
-	(downcase (cdr (car tokens)))))))
+  (let ((tokens (mime-lexical-analyze field-body)))
+    (when (eq (car (car tokens)) 'mime-token)
+      (downcase (cdr (car tokens))))))
 
 ;;;###autoload
 (defun mime-read-Content-Transfer-Encoding ()
   "Parse field-body of Content-Transfer-Encoding field of current-buffer."
-  (mime-parse-Content-Transfer-Encoding
-   (std11-field-body "Content-Transfer-Encoding")))
+  (let ((field-body (std11-field-body "Content-Transfer-Encoding")))
+    (if field-body
+	(mime-parse-Content-Transfer-Encoding field-body)
+      )))
 
 
 ;;; @@ Content-ID / Message-ID
