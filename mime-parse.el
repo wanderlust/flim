@@ -152,7 +152,7 @@ If is is not found, return DEFAULT-ENCODING."
 
 (defun mime-parse-multipart (entity)
   (goto-char (point-min))
-  (let* ((content-type (mime-entity-content-type entity))
+  (let* ((content-type (mime-entity-content-type-internal entity))
 	 (dash-boundary
 	  (concat "--" (mime-content-type-parameter content-type "boundary")))
 	 (delimiter       (concat "\n" (regexp-quote dash-boundary)))
@@ -163,9 +163,9 @@ If is is not found, return DEFAULT-ENCODING."
 	      (make-mime-content-type 'message 'rfc822)
 	    (make-mime-content-type 'text 'plain)
 	    ))
-	 (header-end (mime-entity-header-end entity))
-	 (body-end (mime-entity-body-end entity))
-	 (node-id (mime-entity-node-id entity))
+	 (header-end (mime-entity-header-end-internal entity))
+	 (body-end (mime-entity-body-end-internal entity))
+	 (node-id (mime-entity-node-id-internal entity))
 	 cb ce ret ncb children (i 0))
     (save-restriction
       (goto-char body-end)
@@ -194,17 +194,17 @@ If is is not found, return DEFAULT-ENCODING."
 	)
       (setq children (cons ret children))
       )
-    (mime-entity-set-children entity (nreverse children))
+    (mime-entity-set-children-internal entity (nreverse children))
     entity))
 
 (defun mime-parse-encapsulated (entity)
-  (mime-entity-set-children
+  (mime-entity-set-children-internal
    entity
    (save-restriction
-     (narrow-to-region (mime-entity-body-start entity)
-		       (mime-entity-body-end entity))
+     (narrow-to-region (mime-entity-body-start-internal entity)
+		       (mime-entity-body-end-internal entity))
      (list (mime-parse-message
-	    nil nil (cons 0 (mime-entity-node-id entity))))
+	    nil nil (cons 0 (mime-entity-node-id-internal entity))))
      ))
   entity)
 
@@ -249,10 +249,9 @@ mime-{parse|read}-Content-Type."
 	    primary-type (mime-content-type-primary-type content-type))
       )
     (setq entity
-	  (make-mime-entity (current-buffer)
-			    header-start header-end body-start body-end
-			    node-id
-			    content-type content-disposition encoding nil))
+	  (make-mime-entity-internal
+	   (current-buffer) header-start header-end body-start body-end
+	   node-id content-type content-disposition encoding nil))
     (cond ((eq primary-type 'multipart)
 	   (mime-parse-multipart entity)
 	   )
