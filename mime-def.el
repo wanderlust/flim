@@ -63,16 +63,6 @@
 (custom-handle-keyword 'default-mime-charset :group 'mime
 		       'custom-variable)
 
-(defcustom mime-temp-directory (or (getenv "MIME_TMP_DIR")
-				   (getenv "TM_TMP_DIR")
-				   (getenv "TMPDIR")
-				   (getenv "TMP")
-				   (getenv "TEMP")
-				   "/tmp/")
-  "*Directory for temporary files."
-  :group 'mime
-  :type 'directory)
-
 (defcustom mime-uuencode-encoding-name-list '("x-uue" "x-uuencode")
   "*List of encoding names for uuencode format."
   :group 'mime
@@ -537,7 +527,8 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
        )))
 
 (defvar base64-dl-module
-  (if (subrp 'base64-encode-string)
+  (if (and (fboundp 'base64-encode-string)
+	   (subrp (symbol-function 'base64-encode-string)))
       nil
     (if (fboundp 'dynamic-link)
 	(let ((path (expand-file-name "base64.so" exec-directory)))
