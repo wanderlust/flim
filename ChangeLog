@@ -1,3 +1,8 @@
+1998-09-17  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel.el: Reindented.
+	(mel-defgeneric): Add `stems' argument.
+
 1998-09-16  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* FLIM-ELS (flim-modules): Fix `mel-dl' duplication.

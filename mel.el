@@ -40,35 +40,43 @@
         actual-args)
     (while formal-args
       (cond
-        ((eq (car formal-args) '&optional) nil)
-        ((eq (car formal-args) '&rest) (setq caller 'apply))
-        (t (setq actual-args (cons (car formal-args) actual-args))))
+       ((eq (car formal-args) '&optional) nil)
+       ((eq (car formal-args) '&rest) (setq caller 'apply))
+       (t (setq actual-args (cons (car formal-args) actual-args))))
       (setq formal-args (cdr formal-args)))
     `(,caller ',fun ,@(nreverse actual-args))))
 
-(defmacro mel-defgeneric (prefix suffix formal-args &rest docstring-interactive)
+(put 'mel-defgeneric 'lisp-indent-function 4)
+(defmacro mel-defgeneric (prefix suffix formal-args
+				 &optional stems
+				 &rest docstring-interactive)
   "Define a generic function named PREFIX-SUFFIX for mel.
 Arguments for the function is specified as FORMAL-ARGS as usual.
 Rest of arguments DOCSTRING-INTERACTIVE should be DOCSTRING and/or
-interactive specification placed at front of a function body."
+interactive specification placed at front of a function body.
+
+Before a generic function is called, at least one methods must be
+defined by `mel-defmethod'.  If more than one methods is defined,
+preferest one is choosed by `STEMS' and called.
+If STEMS is nil, `mel-stems' is used."
   (let ((name (intern (format "%s-%s" prefix suffix)))
-        (stems (make-symbol "stems")))
+        (tmp (make-symbol "tmp")))
     (put name 'prefix prefix)
     (put name 'suffix suffix)
     `(progn
-      (put ',name 'stems mel-stems)
-      (put ',name 'prefix ',prefix)
-      (put ',name 'suffix ',suffix)
-      (defun ,name ,formal-args
-        ,@docstring-interactive
-        (catch 'return
-          (let ((,stems (get ',name 'stems)) method)
-            (while ,stems
-              (when (setq method (get ',name (car ,stems)))
-                (fset ',name method)
-                (throw 'return (mel-call-next ,name ,formal-args)))
-              (setq ,stems (cdr ,stems))))
-          (error ,(format "%s: no method" name)))))))
+       (put ',name 'stems ,(if stems `',stems 'mel-stems))
+       (put ',name 'prefix ',prefix)
+       (put ',name 'suffix ',suffix)
+       (defun ,name ,formal-args
+	 ,@docstring-interactive
+	 (catch 'return
+	   (let ((,tmp (get ',name 'stems)) method)
+	     (while ,tmp
+	       (when (setq method (get ',name (car ,tmp)))
+		 (fset ',name method)
+		 (throw 'return (mel-call-next ,name ,formal-args)))
+	       (setq ,tmp (cdr ,tmp))))
+	   (error ,(format "%s: no method" name)))))))
 
 (defmacro mel-defmodule (prefix stem &optional file)
   "Declare that FILE defines functions PREFIX-STEM-*.
@@ -89,86 +97,87 @@ If FILE is nil, module declared with `mel-defmoeudle' is used."
     (unless file
       (error "No file defines %s." qualified))
     `(progn
-      (autoload ',qualified ,file)
-      (put ',name ',stem ',qualified))))
+       (autoload ',qualified ,file)
+       (put ',name ',stem ',qualified))))
 
 
 ;;; @ generic
 ;;;
 
-(mel-defgeneric base64 encode-string (string)
+(mel-defgeneric base64 encode-string (string) nil
   "Encode STRING with base64.")
-(mel-defgeneric base64 decode-string (string)
+(mel-defgeneric base64 decode-string (string) nil
   "Decode STRING with base64.")
-(mel-defgeneric base64 encode-region (start end)
+(mel-defgeneric base64 encode-region (start end) nil
   "Encode current region with base64."
   (interactive "r"))
-(mel-defgeneric base64 decode-region (start end)
+(mel-defgeneric base64 decode-region (start end) nil
   "Decode current region with base64."
   (interactive "r"))
-(mel-defgeneric base64 insert-encoded-file (filename)
+(mel-defgeneric base64 insert-encoded-file (filename) nil
   "Insert a file named FILENAME as base64 encoded form."
   (interactive (list (read-file-name "Insert encoded file: "))))
-(mel-defgeneric base64 write-decoded-region (start end filename)
+(mel-defgeneric base64 write-decoded-region (start end filename) nil
   "Decode and write base64 encoded current region to a file named FILENAME."
   (interactive
-    (list (region-beginning) (region-end)
-          (read-file-name "Write decoded region to file: "))))
-(mel-defgeneric base64 encoded-length (string))
+   (list (region-beginning) (region-end)
+	 (read-file-name "Write decoded region to file: "))))
+(mel-defgeneric base64 encoded-length (string) nil)
 
-(mel-defgeneric quoted-printable encode-string (string)
+(mel-defgeneric quoted-printable encode-string (string) nil
   "Encode STRING with quoted-printable.")
-(mel-defgeneric quoted-printable decode-string (string)
+(mel-defgeneric quoted-printable decode-string (string) nil
   "Decode STRING with quoted-printable.")
-(mel-defgeneric quoted-printable encode-region (start end)
+(mel-defgeneric quoted-printable encode-region (start end) nil
   "Encode current region with quoted-printable."
   (interactive "r"))
-(mel-defgeneric quoted-printable decode-region (start end)
+(mel-defgeneric quoted-printable decode-region (start end) nil
   "Decode current region with quoted-printable."
   (interactive "r"))
-(mel-defgeneric quoted-printable insert-encoded-file (filename)
+(mel-defgeneric quoted-printable insert-encoded-file (filename) nil
   "Insert a file named FILENAME as quoted-printable encoded form."
   (interactive (list (read-file-name "Insert encoded file: "))))
-(mel-defgeneric quoted-printable write-decoded-region (start end filename)
-  "Decode and write quoted-printable encoded current region to a file named FILENAME."
+(mel-defgeneric quoted-printable write-decoded-region (start end filename) nil
+  "Decode and write quoted-printable encoded current region to a file
+named FILENAME."
   (interactive
-    (list (region-beginning) (region-end)
-          (read-file-name "Write decoded region to file: "))))
+   (list (region-beginning) (region-end)
+	 (read-file-name "Write decoded region to file: "))))
 
-(mel-defgeneric q-encoding encode-string (string &optional mode)
+(mel-defgeneric q-encoding encode-string (string &optional mode) nil
   "Encode STRING with Q-encoding.
 If MODE is `text', `comment' or `phrase', the result is appropriate for
 unstructured field, comment or phrase in structured field.
 If MODE is nil, the result is appropriate for phrase.")
-(mel-defgeneric q-encoding decode-string (string)
+(mel-defgeneric q-encoding decode-string (string) nil
   "Decode STRING with Q-encoding.")
-(mel-defgeneric q-encoding encoded-length (string mode))
+(mel-defgeneric q-encoding encoded-length (string mode) nil)
 
-(mel-defgeneric uuencode encode-region (start end)
+(mel-defgeneric uuencode encode-region (start end) nil
   "Encode current region by unofficial uuencode format."
   (interactive "*r"))
-(mel-defgeneric uuencode decode-region (start end)
+(mel-defgeneric uuencode decode-region (start end) nil
   "Decode current region by unofficial uuencode format."
   (interactive "*r"))
-(mel-defgeneric uuencode insert-encoded-file (filename)
+(mel-defgeneric uuencode insert-encoded-file (filename) nil
   "Insert file encoded by unofficial uuencode format."
   (interactive (list (read-file-name "Insert encoded file: "))))
-(mel-defgeneric uuencode write-decoded-region (start end filename)
+(mel-defgeneric uuencode write-decoded-region (start end filename) nil
   "Decode and write current region encoded by uuencode into FILENAME."
   (interactive
    (list (region-beginning) (region-end)
          (read-file-name "Write decoded region to file: "))))
 
-(mel-defgeneric gzip64 encode-region (start end)
+(mel-defgeneric gzip64 encode-region (start end) nil
   "Encode current region by unofficial gzip64 format."
   (interactive "*r"))
-(mel-defgeneric gzip64 decode-region (start end)
+(mel-defgeneric gzip64 decode-region (start end) nil
   "Decode current region by unofficial gzip64 format."
   (interactive "*r"))
-(mel-defgeneric gzip64 insert-encoded-file (filename)
+(mel-defgeneric gzip64 insert-encoded-file (filename) nil
   "Insert file encoded by unofficial gzip64 format."
   (interactive (list (read-file-name "Insert encoded file: "))))
-(mel-defgeneric gzip64 write-decoded-region (start end filename)
+(mel-defgeneric gzip64 write-decoded-region (start end filename) nil
   "Decode and write current region encoded by gzip64 into FILENAME."
   (interactive
    (list (region-beginning) (region-end)
@@ -332,13 +341,17 @@ FUNCTION is region encoder and nil means not to encode.")
     ,@(when (fboundp 'base64-int-ext-decode-region)
         '(("base64-int-ext" . base64-int-ext-decode-region)))
     ,@(when (fboundp 'quoted-printable-internal-decode-region)
-        '(("quoted-printable-internal" . quoted-printable-internal-decode-region)))
+        '(("quoted-printable-internal"
+	   . quoted-printable-internal-decode-region)))
     ,@(when (fboundp 'quoted-printable-ccl-decode-region)
-        '(("quoted-printable-ccl" . quoted-printable-ccl-decode-region)))
+        '(("quoted-printable-ccl"
+	   . quoted-printable-ccl-decode-region)))
     ,@(when (fboundp 'quoted-printable-external-decode-region)
-        '(("quoted-printable-external" . quoted-printable-external-decode-region)))
+        '(("quoted-printable-external"
+	   . quoted-printable-external-decode-region)))
     ,@(when (fboundp 'quoted-printable-int-ext-decode-region)
-        '(("quoted-printable-int-ext" . quoted-printable-int-ext-decode-region)))
+        '(("quoted-printable-int-ext"
+	   . quoted-printable-int-ext-decode-region)))
     )
   "Alist of encoding vs. corresponding method to decode region.
 Each element looks like (STRING . FUNCTION).
@@ -449,9 +462,11 @@ FUNCTION is function to insert encoded file.")
     ,@(when (fboundp 'base64-ccl-write-decoded-region)
         '(("base64-ccl" . base64-ccl-write-decoded-region)))
     ,@(when (fboundp 'quoted-printable-external-write-decoded-region)
-        '(("quoted-printable-external" . quoted-printable-external-write-decoded-region)))
+        '(("quoted-printable-external"
+	   . quoted-printable-external-write-decoded-region)))
     ,@(when (fboundp 'quoted-printable-ccl-write-decoded-region)
-        '(("quoted-printable-ccl" . quoted-printable-ccl-write-decoded-region)))
+        '(("quoted-printable-ccl"
+	   . quoted-printable-ccl-write-decoded-region)))
     )
   "Alist of encoding vs. corresponding method to write decoded region to file.
 Each element looks like (STRING . FUNCTION).
