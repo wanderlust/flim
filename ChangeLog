@@ -1,3 +1,9 @@
+1999-10-17  Yoshiki Hayashi  <t90553@mail.ecc.u-tokyo.ac.jp>
+
+	* FLIM-MK (install-flim-package): Delete auto-autoloads.el
+	and custom-load.el
+
+
 1999-10-18  MORIOKA Tomohiko  <tomo@etl.go.jp>
 
 	* CLIME: Version 1.13.5 (Kaga-Fukuoka) released.
