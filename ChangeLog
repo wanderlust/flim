@@ -1,3 +1,8 @@
+1998-06-22  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* mime-parse.el (mime-parse-message): Would error if empty body.
+
+
 1998-06-22  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.5.0 (Mukaijima) was released.
