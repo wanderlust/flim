@@ -224,7 +224,7 @@ by PASSWORD-HASHES.  PASSWORD-HASHES should be a return value of
 little-endian utf16."
   (let ((utf (make-string (* 2 len) 0)) (i 0) val)
     (while (and (< i len)
-		(not (zerop (setq val (aref str i)))))
+		(not (eq (setq val (aref str i)) ?\0)))
       (aset utf (* 2 i) val)
       (aset utf (1+ (* 2 i)) 0)
       (setq i (1+ i)))
@@ -289,7 +289,7 @@ a string KEY of length 8.  FORW is t or nil."
     (setq outb (ntlm-smb-dohash inb keyb forw))
     (setq i 0)
     (while (< i 64)
-      (unless (zerop (aref outb i))
+      (unless (eq (aref outb i) ?\0)
 	(setq aa (aref out (/ i 8)))
 	(aset out (/ i 8)
 	      (logior aa (lsh 1 (- 7 (% i 8))))))
