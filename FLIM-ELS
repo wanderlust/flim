@@ -9,7 +9,8 @@
 		     mel mel-q mel-u mel-g
 		     eword-decode eword-encode
 		     mime mime-parse mmgeneric mmbuffer mmcooked
-		     mailcap))
+		     mailcap
+		     smtp smtpmail))
 
 (unless (and (fboundp 'base64-encode-string)
 	     (subrp (symbol-function 'base64-encode-string)))
