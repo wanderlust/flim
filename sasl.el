@@ -3,7 +3,7 @@
 ;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
 
 ;; Author: Kenichi OKADA <okada@opaopa.org>
-;; Keywords: SMTP, SASL
+;; Keywords: SMTP, SASL, RFC2222
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
 

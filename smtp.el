@@ -6,7 +6,7 @@
 ;;         Simon Leinen <simon@switch.ch> (ESMTP support)
 ;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;;         Kenichi OKADA <okada@opaopa.org> (SASL support)
-;; Keywords: SMTP, mail
+;; Keywords: SMTP, mail, SASL
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
 
@@ -32,6 +32,7 @@
 (require 'pcustom)
 (require 'mail-utils)			; mail-strip-quoted-names
 (require 'sasl)
+(require 'starttls)
 
 (eval-when-compile (require 'cl))	; push
 
@@ -94,7 +95,7 @@ don't define this value."
       (error "Cannot generate valid FQDN. Set `smtp-local-domain' correctly.")))))
 
 (defun smtp-via-smtp (sender recipients smtp-text-buffer
-			     &optional auth user passphrase)
+			     &optional auth user passphrase starttls)
   (let ((server (if (functionp smtp-server)
 		    (funcall smtp-server sender recipients)
 		  smtp-server))
@@ -109,11 +110,18 @@ don't define this value."
 
       (unwind-protect
 	  (catch 'done
-	    (setq process (open-network-stream-as-binary
-			   "SMTP" (current-buffer) server smtp-service))
+	    (setq process 
+		  (if starttls
+		      (starttls-open-stream
+		       "SMTP" (current-buffer) server smtp-service)
+		    (open-network-stream-as-binary
+		     "SMTP" (current-buffer) server smtp-service)))
 	    (or process (throw 'done nil))
 
 	    (set-process-filter process 'smtp-process-filter)
+
+	    (if (eq starttls 'force)
+		(starttls-negotiate process))
 
 	    ;; Greeting
 	    (setq response (smtp-read-response process))
@@ -149,6 +157,18 @@ don't define this value."
 			(push (intern (match-string 1 extension)) extensions))
 		    (push (intern extension) extensions))
 		  (setq extension-lines (cdr extension-lines)))))
+
+	    ;; STARTTLS --- begin a TLS negotiation (RFC 2595)
+	    (when (and starttls 
+		       (null (eq starttls 'force))
+		       (memq 'starttls extensions))
+	      (smtp-send-command process "STARTTLS")
+	      (setq response (smtp-read-response process))
+	      (if (or (null (car response))
+		      (not (integerp (car response)))
+		      (>= (car response) 400))
+		  (throw 'done (car (cdr response))))
+	      (starttls-negotiate process))
 
 	    ;; AUTH --- SMTP Service Extension for Authentication (RFC2554)
 	    (when auth
