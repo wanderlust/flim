@@ -131,10 +131,16 @@ and return parsed it."
 ;;;###autoload
 (defun mime-parse-Content-Transfer-Encoding (string)
   "Parse STRING as field-body of Content-Transfer-Encoding field."
-  (if (string-match "[ \t\n\r]+$" string)
-      (setq string (match-string 0 string))
-    )
-  (downcase string))
+  (let ((tokens (std11-lexical-analyze string))
+	token)
+    (while (and tokens
+		(setq token (car tokens))
+		(std11-ignored-token-p token))
+      (setq tokens (cdr tokens)))
+    (if token
+	(if (eq (car token) 'atom)
+	    (downcase (cdr token))
+	  ))))
 
 ;;;###autoload
 (defun mime-read-Content-Transfer-Encoding (&optional default-encoding)
