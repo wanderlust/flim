@@ -522,13 +522,18 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	(tm-eword::addresses-to-rwl (std11-parse-addresses-string string))
 	)))
 
+(defun eword-encode-structured-field-body (string &optional column)
+  (car (tm-eword::encode-rwl
+	(or column 0)
+	(eword-addr-seq-to-rwl (std11-lexical-analyze string))
+	)))
+
 
 ;;; @ application interfaces
 ;;;
 
 (defun eword-encode-string (str &optional column mode)
-  (car (tm-eword::encode-rwl (or column 0) (tm-eword::split-string str mode)))
-  )
+  (car (tm-eword::encode-rwl (or column 0) (tm-eword::split-string str mode))))
 
 (defun eword-encode-field (string)
   "Encode header field STRING, and return the result.
@@ -540,19 +545,23 @@ encoded-word.  ASCII token is not encoded."
 	    (let ((field-name (substring string 0 (1- (match-end 0))))
 		  (field-body (eliminate-top-spaces
 			       (substring string (match-end 0))))
-		  )
+		  field-name-symbol)
 	      (if (setq ret
-			(cond ((string-equal field-body "") "")
-			      ((memq (intern (downcase field-name))
+			(cond ((string= field-body "") "")
+			      ((memq (setq field-name-symbol
+					   (intern (downcase field-name)))
 				     '(reply-to
 				       from sender
 				       resent-reply-to resent-from
 				       resent-sender to resent-to
 				       cc resent-cc
-				       bcc resent-bcc dcc
-				       mime-version)
-				     )
+				       bcc resent-bcc dcc))
                                (eword-encode-address-list
+				field-body (+ (length field-name) 2))
+			       )
+			      ((memq field-name-symbol
+				     '(mime-version user-agent))
+                               (eword-encode-structured-field-body
 				field-body (+ (length field-name) 2))
 			       )
 			      (t
