@@ -1,3 +1,16 @@
+1998-07-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmbuffer.el (mmbuffer-write-entity): Use
+	`mime-entity-buffer-internal', `mmbuffer-entity-point-min' and
+	`mmbuffer-entity-point-max'.
+	(mmbuffer-write-entity-body): Use `mime-entity-buffer-internal',
+	`mime-entity-body-start-internal' and
+	`mime-entity-body-end-internal'.
+	(mmbuffer-insert-decoded-header): Use
+	`mime-entity-buffer-internal', `mime-entity-header-start-internal'
+	and `mime-entity-header-end-internal'.
+
+
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.8.0 (-DÒkubo)-A was released.
