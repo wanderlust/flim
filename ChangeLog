@@ -1,5 +1,12 @@
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-ja.sgml (Entity creation): Add reference for `mm-backend'
+	in description of `mime-open-entity'.
+
+	* mime-ja.sgml (mm-backend): New section.
+
+1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-ja.sgml (Entity-header): Modify description about
 	`mime-insert-decoded-header'.
 

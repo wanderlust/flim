@@ -125,7 +125,7 @@ local 変数 @code{mime-message-structure} に格納することにします。
 
 Open an entity and return it.@refill
 
-@var{type} is representation-type.@refill
+@var{type} is representation-type. (cf. @ref{mm-backend}) @refill
 
 @var{location} is location of entity.  Specification of it is depended
 on representation-type.
