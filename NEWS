@@ -17,6 +17,19 @@ Similarly generic function `mime-insert-decoded-header' was renamed to
 as an obsolete alias.
 
 
+** Behavior change of `mime-insert-header'
+
+Each field-name of second and third argument of function
+`mime-insert-header' can include `:'.
+
+
+** Abolish variable `mime-temp-directory'
+
+Now FLIM uses `temporary-file-directory' instead of
+`mime-temp-directory'.  So environment variable "MIME_TMP_DIR" and
+"TM_TMP_DIR" are not effective to specify temporary directory of FLIM.
+
+
 ** Add new function `eword-decode-and-unfold-unstructured-field'
 
 

@@ -796,7 +796,7 @@ Decode region @var{start} to @var{end} of current buffer using
 
 @defun mime-decode-string string encoding
 
-@var{string} を @var{encoding} として復号した結果を返します。
+@var{string} を @var{encoding} として復号した結果を返す。
 @end defun
 
 
@@ -944,26 +944,46 @@ FLIM はこれらを符号化・復号化する機能を提供します。
 @node Header encoder/decoder,  , encoded-word, encoded-word
 @section Header の符号化・復号化
 
-@defun eword-encode-header &optional  code-conversion separator
+@defun eword-decode-header &optional  code-conversion separator
 
-Decode MIME encoded-words in header fields.@refill
+Header 中の encoded-word を復号する。@refill
 
-If @var{code-conversion} is @code{nil}, it decodes only encoded-words.
-If it is mime-charset, it decodes non-ASCII bit patterns as the
-mime-charset.  Otherwise it decodes non-ASCII bit patterns as the
-default-mime-charset.@refill
+もし @var{code-conversion} が @code{nil} なら、encoded-word だけが復号さ
+れる。もし、@var{code-conversion} が MIME charset (@ref{MIME charset}) 
+なら、非 ASCII bit patterns はその MIME charset として復号される。これ以
+外の場合、非 ASCII bit patterns は@code{default-mime-charset}. として復
+号される。(cf. @ref{entity formatting}) @refill
 
-If @var{separator} is not nil, it is used as header separator.
+もし @var{separator} が @code{nil} でなければ、その値がheader separator 
+として用いられる。
 @end defun
 
 
 @defun eword-encode-header &optional  code-conversion
 
-Encode header fields to network representation, such as MIME
-encoded-word.@refill
+Header を network 表現に符号化する。@refill
 
-It refer variable @code{eword-field-encoding-method-alist}.
+各 field は @code{eword-field-encoding-method-alist} で指定された方式で
+符号化される。
 @end defun
+
+
+@defvar eword-field-encoding-method-alist
+
+Association list to specify field encoding method.  Each element looks
+like (FIELD . METHOD).@refill
+
+If METHOD is @code{mime}, the FIELD will be encoded into MIME format
+(encoded-word).@refill
+
+If METHOD is @code{nil}, the FIELD will not be encoded.@refill
+
+If METHOD is a MIME charset, the FIELD will be encoded as the charset
+when it must be convert into network-code.@refill
+
+Otherwise the FIELD will be encoded as variable
+@code{default-mime-charset} when it must be convert into network-code.
+@end defvar
 
 
 

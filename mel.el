@@ -79,39 +79,6 @@ Content-Transfer-Encoding for it."
 ;;; @ setting for modules
 ;;;
 
-(defvar mel-ccl-module (featurep 'mule))
-
-(defvar mel-b-ccl-module
-  (and mel-ccl-module
-       (progn
-	 (require 'path-util)
-	 (module-installed-p 'mel-b-ccl)
-	 )))
-
-(defvar mel-q-ccl-module
-  (and mel-ccl-module
-       (progn
-	 (require 'path-util)
-	 (module-installed-p 'mel-q-ccl)
-	 )))
-
-(mel-use-module 'mel-b '("base64" "B"))
-(mel-use-module 'mel-q '("quoted-printable" "Q"))
-(mel-use-module 'mel-g '("x-gzip64"))
-(mel-use-module 'mel-u '("x-uue" "x-uuencode"))
-
-(if mel-b-ccl-module
-    (mel-use-module 'mel-b-ccl '("base64" "B"))
-  )
-
-(if mel-q-ccl-module
-    (mel-use-module 'mel-q-ccl '("quoted-printable" "Q"))
-  )
-
-(if base64-dl-module
-    (mel-use-module 'mel-b-dl '("base64" "B"))
-  )
-
 (mel-define-backend "7bit")
 (mel-define-method-function (mime-encode-string string (nil "7bit"))
 			    'identity)
@@ -128,6 +95,72 @@ Content-Transfer-Encoding for it."
 (mel-define-backend "8bit" ("7bit"))
 
 (mel-define-backend "binary" ("8bit"))
+
+(when (and (fboundp 'base64-encode-string)
+	   (subrp (symbol-function 'base64-encode-string)))
+  (mel-define-backend "base64")
+  (mel-define-method-function (mime-encode-string string (nil "base64"))
+			      'base64-encode-string)
+  (mel-define-method-function (mime-decode-string string (nil "base64"))
+			      'base64-decode-string)
+  (mel-define-method-function (mime-encode-region start end (nil "base64"))
+			      'base64-encode-region)
+  (mel-define-method-function (mime-decode-region start end (nil "base64"))
+			      'base64-decode-region)  
+  (mel-define-method mime-insert-encoded-file (filename (nil "base64"))
+    "Encode contents of file FILENAME to base64, and insert the result.
+It calls external base64 encoder specified by
+`base64-external-encoder'.  So you must install the program (maybe
+mmencode included in metamail or XEmacs package)."
+    (interactive (list (read-file-name "Insert encoded file: ")))
+    (insert (base64-encode-string
+	     (with-temp-buffer
+	       (set-buffer-multibyte nil)
+	       (insert-file-contents-as-binary filename)
+	       (buffer-string))))
+    (or (bolp)
+	(insert "\n"))
+    )
+    
+  (mel-define-method-function (encoded-text-encode-string string (nil "B"))
+			      'base64-encode-string)
+  (mel-define-method encoded-text-decode-string (string (nil "B"))
+    (if (and (string-match B-encoded-text-regexp string)
+	     (string= string (match-string 0 string)))
+	(base64-decode-string string)
+      (error "Invalid encoded-text %s" string)))
+  )
+
+(mel-use-module 'mel-b-el '("base64" "B"))
+(mel-use-module 'mel-q '("quoted-printable" "Q"))
+(mel-use-module 'mel-g '("x-gzip64"))
+(mel-use-module 'mel-u '("x-uue" "x-uuencode"))
+
+(defvar mel-b-ccl-module
+  (and (featurep 'mule)
+       (progn
+	 (require 'path-util)
+	 (module-installed-p 'mel-b-ccl)
+	 )))
+
+(defvar mel-q-ccl-module
+  (and (featurep 'mule)
+       (progn
+	 (require 'path-util)
+	 (module-installed-p 'mel-q-ccl)
+	 )))
+
+(if mel-b-ccl-module
+    (mel-use-module 'mel-b-ccl '("base64" "B"))
+  )
+
+(if mel-q-ccl-module
+    (mel-use-module 'mel-q-ccl '("quoted-printable" "Q"))
+  )
+
+(if base64-dl-module
+    (mel-use-module 'mel-b-dl '("base64" "B"))
+  )
 
 
 ;;; @ region

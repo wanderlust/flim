@@ -78,7 +78,7 @@ variable `uuencode-external-decoder'."
 				(buffer-substring (match-beginning 0)
 						  (match-end 0))
 			      )))))
-	  (default-directory mime-temp-directory))
+	  (default-directory temporary-file-directory))
       (if filename
 	  (as-binary-process
 	   (apply (function call-process-region)
@@ -131,7 +131,7 @@ variable `uuencode-external-encoder'."
   )
 
 (mel-define-method mime-write-decoded-region (start end filename
-						    (nil "x-gzip64"))
+						    (nil "x-uue"))
   "Decode and write current region encoded by uuencode into FILENAME.
 START and END are buffer positions."
   (interactive
@@ -147,7 +147,7 @@ START and END are buffer positions."
 			    (buffer-substring (match-beginning 0)
 					      (match-end 0))
 			  )))))
-	  (default-directory mime-temp-directory))
+	  (default-directory temporary-file-directory))
       (if file
 	  (as-binary-process
 	   (apply (function call-process-region)

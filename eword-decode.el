@@ -493,18 +493,19 @@ MIME encoded-word in FIELD-BODY is recognized according to
 
 Non MIME encoded-word part in FILED-BODY is decoded with
 `default-mime-charset'."
+  (if (symbolp field-name) (setq field-name (symbol-name field-name)))
   (let ((decoded
           (if unfolded
             (let ((ew-ignore-76bytes-limit t))
-              (ew-decode-field (symbol-name field-name)
-                               (ew-lf-crlf-to-crlf field-body)))
-            (ew-decode-field (symbol-name field-name)
-                             (ew-lf-crlf-to-crlf field-body)))))
+              (ew-decode-field
+               field-name (ew-lf-crlf-to-crlf field-body)))
+            (ew-decode-field
+             field-name (ew-lf-crlf-to-crlf field-body)))))
     (if max-column
         (setq decoded (ew-crlf-refold
                        decoded
                        (1+ (string-width field-name))
-                       (if (integerp max-column) max-column fill-column)))
+                       (if (eq max-column t) fill-column max-column)))
       (setq decoded (ew-crlf-unfold decoded)))
     (ew-crlf-to-lf decoded)))
 

@@ -24,8 +24,10 @@
 
 ;;; Code:
 
+(require 'mcharset)
+
 (eval-and-compile
-  (defconst mime-library-product ["FLAM-DOODLE" (1 11 0) "小豆 2.5R3.5/5.0"]
+  (defconst mime-library-product ["FLAM-DOODLE" (1 11 1) "葡萄茶 5.0R4.0/11.0"]
     "Product name, version number and code name of MIME-library package.")
   )
 
@@ -61,16 +63,6 @@
 (custom-handle-keyword 'default-mime-charset :group 'mime
 		       'custom-variable)
 
-(defcustom mime-temp-directory (or (getenv "MIME_TMP_DIR")
-				   (getenv "TM_TMP_DIR")
-				   (getenv "TMPDIR")
-				   (getenv "TMP")
-				   (getenv "TEMP")
-				   "/tmp/")
-  "*Directory for temporary files."
-  :group 'mime
-  :type 'directory)
-
 (defcustom mime-uuencode-encoding-name-list '("x-uue" "x-uuencode")
   "*List of encoding names for uuencode format."
   :group 'mime
@@ -96,15 +88,18 @@
 ;;; @ about STD 11
 ;;;
 
-(defconst std11-quoted-pair-regexp "\\\\.")
-(defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
-(defconst std11-qtext-regexp
-  (concat "[^" (char-list-to-string std11-non-qtext-char-list) "]"))
+(eval-and-compile
+  (defconst std11-quoted-pair-regexp "\\\\.")
+  (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
+  (defconst std11-qtext-regexp
+    (eval-when-compile
+      (concat "[^" (apply #'string std11-non-qtext-char-list) "]"))))
 (defconst std11-quoted-string-regexp
-  (concat "\""
-	  (regexp-*
-	   (regexp-or std11-qtext-regexp std11-quoted-pair-regexp))
-	  "\""))
+  (eval-when-compile
+    (concat "\""
+	    (regexp-*
+	     (regexp-or std11-qtext-regexp std11-quoted-pair-regexp))
+	    "\"")))
 
 
 ;;; @ about MIME
@@ -407,8 +402,13 @@ specialized parameter.  (car (car ARGS)) is name of variable and (nth
 	 ))))
 
 (put 'mm-define-method 'lisp-indent-function 'defun)
-(put 'mm-define-method 'edebug-form-spec
-     '(&define name ((arg symbolp) &rest arg) def-body))
+(def-edebug-spec mm-define-method
+  (&define name ((arg symbolp)
+		 [&rest arg]
+		 [&optional ["&optional" arg &rest arg]]
+		 &optional ["&rest" arg]
+		 )
+	   def-body))
 
 (defsubst mm-arglist-to-arguments (arglist)
   (let (dest)
@@ -527,10 +527,14 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
        )))
 
 (defvar base64-dl-module
-  (and (fboundp 'dynamic-link)
-       (let ((path (expand-file-name "base64.so" exec-directory)))
-	 (and (file-exists-p path)
-	      path))))
+  (if (and (fboundp 'base64-encode-string)
+	   (subrp (symbol-function 'base64-encode-string)))
+      nil
+    (if (fboundp 'dynamic-link)
+	(let ((path (expand-file-name "base64.so" exec-directory)))
+	  (and (file-exists-p path)
+	       path)
+	  ))))
 
 
 ;;; @ end

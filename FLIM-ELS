@@ -6,7 +6,7 @@
 
 (setq flim-modules '(std11
                      mime-def
-		     mel mel-b mel-q mel-u mel-g
+		     mel mel-q mel-u mel-g
                      closure
                      natset
                      digraph
@@ -31,15 +31,19 @@
 		     mailcap
                      ))
 
-(if (fboundp 'dynamic-link)
-    (setq flim-modules (cons 'mel-b-dl flim-modules))
+(unless (and (fboundp 'base64-encode-string)
+	     (subrp (symbol-function 'base64-encode-string)))
+  (if (fboundp 'dynamic-link)
+      (setq flim-modules (cons 'mel-b-dl flim-modules))
+    )
+  (setq flim-modules (cons 'mel-b-el flim-modules))
   )
 
 (if (and (featurep 'mule)
 	 (not (or (and (boundp 'MULE) MULE)
 		  (and (featurep 'xemacs) (< emacs-major-version 21))
 		  )))
-    (setq flim-modules (cons 'mel-q-ccl (cons 'mel-b-ccl flim-modules)))
+    (setq flim-modules (cons 'mel-b-ccl (cons 'mel-q-ccl flim-modules)))
   )
 
 ;;; FLIM-ELS ends here

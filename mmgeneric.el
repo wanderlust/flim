@@ -144,48 +144,41 @@
 	  )
 	t)))
 
+(defun mime-insert-header-from-buffer (buffer start end
+					      &optional invisible-fields
+					      visible-fields)
+  (let ((the-buf (current-buffer))
+	f-b p f-e field-name len field field-body)
+    (save-excursion
+      (set-buffer buffer)
+      (save-restriction
+	(narrow-to-region start end)
+	(goto-char start)
+	(while (re-search-forward std11-field-head-regexp nil t)
+	  (setq f-b (match-beginning 0)
+		p (match-end 0)
+		field-name (buffer-substring f-b p)
+		len (string-width field-name)
+		f-e (std11-field-end))
+	  (when (mime-visible-field-p field-name
+				      visible-fields invisible-fields)
+	    (setq field (buffer-substring f-b (1- p))
+		  field-body (buffer-substring p f-e))
+	    (with-current-buffer the-buf
+	      (insert
+               field-name
+               (eword-decode-field-body field-body field nil t)
+	       "\n")
+	      )))))))
+
 (mm-define-method insert-header ((entity generic)
 				 &optional invisible-fields visible-fields)
-  (save-restriction
-    (narrow-to-region (point)(point))
-    (let ((the-buf (current-buffer))
-	  (src-buf (mime-entity-buffer entity))
-	  (h-end (mime-entity-header-end-internal entity))
-	  beg p end field-name len field-body decoded)
-      (save-excursion
-	(set-buffer src-buf)
-	(goto-char (mime-entity-header-start-internal entity))
-	(save-restriction
-	  (narrow-to-region (point) h-end)
-	  (while (re-search-forward std11-field-head-regexp nil t)
-	    (setq beg (match-beginning 0)
-		  p (match-end 0)
-		  field-name (buffer-substring beg (1- p))
-		  len (string-width field-name)
-		  end (std11-field-end))
-	    (when (mime-visible-field-p field-name
-					visible-fields invisible-fields)
-	      (save-excursion
-		(set-buffer the-buf)
-		(setq field-body (ew-lf-crlf-to-crlf
-				  (save-excursion
-				    (set-buffer src-buf)
-				    (buffer-substring p end))))
-		(setq decoded (ew-decode-field field-name field-body))
-		(unless (equal field-body decoded)
-		  (setq decoded (ew-crlf-refold
-				 decoded
-				 (1+ (string-width field-name))
-				 fill-column)))
-		(setq beg (point))
-		(insert field-name)
-		(insert ":")
-		(insert (ew-crlf-to-lf decoded))
-		(insert "\n")
-		(add-text-properties beg (point)
-				     (list 'original-field-name field-name
-					   'original-field-body field-body))
-		))))))))
+  (mime-insert-header-from-buffer
+   (mime-entity-buffer entity)
+   (mime-entity-header-start-internal entity)
+   (mime-entity-header-end-internal entity)
+   invisible-fields visible-fields)
+  )
 
 (mm-define-method insert-text-content ((entity generic))
   (insert
