@@ -407,12 +407,19 @@ default value."
 
 
 (defsubst mime-entity-media-type (entity)
+  "Return primary media-type of ENTITY."
   (mime-content-type-primary-type (mime-entity-content-type entity)))
+
 (defsubst mime-entity-media-subtype (entity)
+  "Return media-subtype of ENTITY."
   (mime-content-type-subtype (mime-entity-content-type entity)))
+
 (defsubst mime-entity-parameters (entity)
+  "Return parameters of Content-Type of ENTITY."
   (mime-content-type-parameters (mime-entity-content-type entity)))
+
 (defsubst mime-entity-type/subtype (entity-info)
+  "Return type/subtype of Content-Type of ENTITY."
   (mime-type/subtype-string (mime-entity-media-type entity-info)
 			    (mime-entity-media-subtype entity-info)))
 
