@@ -1,5 +1,16 @@
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-def.el (mime-temp-directory): Use 'defcustom.
+
+	* mel-u.el: Require 'mime-def instead of 'mel.
+
+	* mime-def.el (mime-temp-directory): New variable (moved from
+	mel.el).
+
+	* mel.el: Move definition of 'mime-temp-directory to mime-def.el.
+
+1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mailcap.el (mailcap-format-command): New function.
 
 	* mailcap.el (mailcap-look-at-mtext): Don't strip quoted character
