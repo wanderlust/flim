@@ -93,11 +93,14 @@ variable `uuencode-external-decoder'."
 	   ))
       )))
 
+(defalias 'uuencode-encode-region 'uuencode-external-encode-region)
+(defalias 'uuencode-decode-region 'uuencode-external-decode-region)
+
 
 ;;; @ uuencode encoder/decoder for file
 ;;;
 
-(defun uuencode-external-insert-encoded-file (filename)
+(defun uuencode-insert-encoded-file (filename)
   "Insert file encoded by unofficial uuencode format.
 This function uses external uuencode encoder which is specified by
 variable `uuencode-external-encoder'."
@@ -106,7 +109,7 @@ variable `uuencode-external-encoder'."
 		(file-name-nondirectory filename))
   )
 
-(defun uuencode-external-write-decoded-region (start end filename)
+(defun uuencode-write-decoded-region (start end filename)
   "Decode and write current region encoded by uuencode into FILENAME.
 START and END are buffer positions."
   (interactive

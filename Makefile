@@ -3,16 +3,16 @@
 #
 
 PACKAGE = flim
-VERSION = 1.9.2
+VERSION = 1.10.0
 
 TAR	= tar
 RM	= /bin/rm -f
 CP	= /bin/cp -p
 
 EMACS	= emacs
+XEMACS	= xemacs
 FLAGS   = -batch -q -no-site-file -eval "$${EVALARGS:-nil}"
 FLAGS_CURDIR   = $(FLAGS) -eval '(setq load-path (cons "." load-path))'
-XEMACS	= xemacs
 
 PREFIX = NONE
 LISPDIR = NONE

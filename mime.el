@@ -80,16 +80,6 @@ current-buffer, and return it.")
 	 entity
 	 args))
 
-(defsubst mm-arglist-to-arguments (arglist)
-  (let (dest)
-    (while arglist
-      (let ((arg (car arglist)))
-	(or (memq arg '(&optional &rest))
-	    (setq dest (cons arg dest)))
-	)
-      (setq arglist (cdr arglist)))
-    (nreverse dest)))
-
 (defmacro mm-define-generic (name args &optional doc)
   (if doc
       `(defun ,(intern (format "mime-%s" name)) ,args

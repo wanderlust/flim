@@ -1,3 +1,10 @@
+1998-09-30  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* Sync up with flim-1_10_0.
+
+	* mime-def.el (mime-library-version): Bump up to FLAM-DOODLE
+	1.10.0.
+
 1998-09-25  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ew-compat.el: New file.
@@ -1180,6 +1187,208 @@
 1998-04-13  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el: Copied from AKEMI branch of SEMI.
+
+
+1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.10.0 (K-Dòdo)-A was released.
+
+	* README.en (What's FLIM): Add mel-ccl.el.
+
+1998-09-21  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel-ccl.el:
+	  - Require 'pccl instead of 'emu.
+	  - Use `unless-broken' to check facility.
+
+1998-09-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el (mime-encoding-list): New user option (renamed from
+	`mime-content-transfer-encoding-list').
+	(mime-encoding-list): New function.
+	(mime-encoding-alist): New function.
+	(mime-encode-region): Use `mime-encoding-alist' for completion.
+	(mime-decode-region): Likewise.
+	(mime-insert-encoded-file): Likewise.
+	(mime-write-decoded-region): Likewise.
+
+1998-09-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-structured-field-list): Add
+	Mail-Followup-To field.
+
+1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-charset-encoding-alist): Add utf-8.
+
+1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el (mime-content-transfer-encoding-list): New user option.
+	(mime-encode-region): Use `mime-content-transfer-encoding-list'
+	for completion.
+	(mime-decode-region): Likewise.
+	(mime-insert-encoded-file): Likewise.
+	(mime-write-decoded-region): Likewise.
+
+	* mel.el (mime-write-decoded-region): fix typo.
+
+1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el (mel-define-method-function): Don't override.
+
+1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el, mel-ccl.el, FLIM-ELS: Add mel-ccl.el.
+
+1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-dl.el, README.en, FLIM-ELS: Rename mel-dl.el to mel-b-dl.el.
+
+	* mel.el: - Rename mel-dl.el to mel-b-dl.el.
+		  - Move `mel-define-service' to mime-def.el.
+
+	* mime-def.el (mel-define-service): New macro (moved from mel.el);
+	fixed problem in Emacs.
+	(mel-define-method): Use `mel-define-service'.
+	(mel-define-method-function): Use `mel-define-service'.
+
+1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el (mime-encode-region): Don't regard nil encoding as
+	"7bit".
+
+1998-09-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-text): Use
+	`encoded-text-encode-string'.
+	(tm-eword::encoded-word-length): `q-encoding-encoded-length' was
+	renamed to `Q-encoded-text-length'.
+
+	* eword-decode.el: Move `base64-token-regexp',
+	`base64-token-padding-regexp', `eword-B-encoded-text-regexp' and
+	`eword-Q-encoded-text-regexp' to mime-def.el.
+	(eword-decode-encoded-text): Use `encoded-text-decode-string'.
+
+	* mel-q.el: Define method functions of mel.
+	(mime-insert-encoded-file): Use `mel-define-method'; abolish
+	`quoted-printable-insert-encoded-file'.
+	(mime-write-decoded-region): Use `mel-define-method'; abolish
+	`quoted-printable-write-decoded-region'.
+	- Move `q-encoding-printable-char-p' and
+	`q-encoding-encoded-length' to mel.el.
+
+	* mel-b.el: Define method functions of mel.
+	(mime-insert-encoded-file): Use `mel-define-method'; abolish
+	`base64-insert-encoded-file'.
+	(mime-write-decoded-region): Use `mel-define-method'; abolish
+	`base64-write-decoded-region'.	
+	- Move `base64-encoded-length' to mel.el.
+
+	* mel-dl.el (base64-encode-region): Define directly (abolish
+	`base64-dl-encode-region').
+	(base64-decode-region): Define directly (abolish
+	`base64-dl-decode-region').  Define method functions of mel.
+	(mime-insert-encoded-file): Use `mel-define-method'; abolish
+	`base64-insert-encoded-file'; don't use external encoder.
+	(mime-write-decoded-region): Use `mel-define-method'; abolish
+	`base64-write-decoded-region'; don't use external decoder.
+	- Move `base64-encoded-length' to mel.el.
+
+	* mime.el: Move `mm-arglist-to-arguments' to mime-def.el.
+
+	* mime-def.el (base64-token-regexp): New constant (moved from
+	eword-decode.el).
+	(base64-token-padding-regexp): Likewise.
+	(B-encoded-text-regexp): New constant (moved from eword-decode.el,
+	and renamed from `eword-B-encoded-text-regexp').
+	(Q-encoded-text-regexp): New constant (moved from eword-decode.el,
+	and renamed from `eword-Q-encoded-text-regexp'.
+	(mm-arglist-to-arguments): New function (moved from mime.el).
+	(mel-define-method): New macro.
+	(mel-define-method-function): New macro.
+	(mel-define-function): New macro.
+
+	* mel.el (mel-encoding-module-alist): New variable.
+	(mel-use-module): New function.
+	(mel-find-function): New function.
+	(mel-define-service): New macro.
+	(mime-encode-region): Use `mel-find-function'; abolish variable
+	`mime-encoding-method-alist'.
+	(mime-decode-region): Use `mel-find-function'; abolish variable
+	`mime-decoding-method-alist'.
+	(mime-decode-string): Use `mel-find-function'; abolish variable
+	`mime-string-decoding-method-alist'.
+	(encoded-text-encode-string): New function.
+	(encoded-text-decode-string): New function.
+	(base64-encoded-length): New function (moved from mel-b.el and
+	mel-dl.el).
+	(Q-encoding-printable-char-p): New function (moved from mel-q.el,
+	and renamed from `q-encoding-printable-char-p').
+	(Q-encoded-text-length): New function (moved from mel-q.el, and
+	renamed from `q-encoding-encoded-length').
+	(mime-insert-encoded-file): Use `mel-find-function'; abolish
+	variable `mime-file-encoding-method-alist'.
+	(mime-write-decoded-region): Use `mel-find-function'; abolish
+	variable `mime-file-decoding-method-alist'.
+
+1998-09-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64-internal-encoding-limit): modify :type.
+	(base64-internal-decoding-limit): Change initial value to 70000;
+	modify :type.
+
+	* mel-b.el (base64-decode-string!): Renamed from
+	`base64-internal-decode-string!'.
+
+1998-09-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64-characters): New constant.
+	(base64-num-to-char): Use `base64-characters'.
+	(base64-numbers): Use `base64-characters'.
+	(base64-internal-decode): Modify calculation third byte.
+
+	* mel-dl.el (base64-dl-encode-string): New alias.
+	(base64-dl-decode-string): New alias.
+	(base64-dl-encode-region): Renamed from `base64-encode-region';
+	don't save-excursion and save-restriction.
+	(base64-dl-decode-region): Renamed from `base64-decode-region';
+	don't save-excursion and save-restriction; convert all at once.
+	(base64-encode-region): New alias.
+	(base64-decode-region): New alias.
+
+	* mel-b.el (base64-internal-decode): New function.
+	(base64-internal-decode-string): Use `base64-internal-decode'.
+	(base64-internal-decode-string!): New function.
+	(base64-internal-decode-region): Use
+	`base64-internal-decode-string!' instead of
+	`base64-internal-decode-string'.
+
+1998-09-15  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* mel-b.el (base64-numbers): Fix a position of 63.
+
+1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64-numbers): New constant.
+	(base64-char-to-num): New macro.
+	(base64-internal-decode-string): Don't use memq.
+
+1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64): New group.
+	(base64-external-encoder): Now a user option.
+	(base64-external-decoder): Now a user option.
+	(base64-external-decoder-option-to-specify-file): Now a user
+	option.
+	(base64-internal-encoding-limit): Now a user option.
+	(base64-internal-decoding-limit): Now a user option.
+
+	* mel-b.el (base64-internal-decode-string): New implementation;
+	abolish function `base64-decode-unit'.
+
+1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* README.en (Installation): Fix typo.
 
 
 1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>

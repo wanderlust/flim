@@ -1,4 +1,5 @@
-;;; mel-ccl.el: Base64, Quoted-Printable and Q-encoding encoder/decoder for GNU Emacs
+;;; mel-ccl.el: CCL based encoder/decoder of Base64, Quoted-Printable
+;;;             and Q-encoding
 
 ;; Copyright (C) 1998 Tanaka Akira
 
@@ -23,8 +24,11 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
+;;; Code:
+
 (require 'ccl)
 (require 'pccl)
+(require 'mime-def)
 
 
 ;;; @ constants
@@ -1186,6 +1190,16 @@ abcdefghijklmnopqrstuvwxyz\
     (let ((coding-system-for-read 'mel-ccl-base64-lf-rev))
       (insert-file-contents filename)))
 
+  (mel-define-method-function (mime-encode-string string (nil "base64"))
+			      'base64-ccl-encode-string)
+  (mel-define-method-function (mime-encode-region start end (nil "base64"))
+			      'base64-ccl-encode-region)
+  (mel-define-method-function
+   (mime-insert-encoded-file filename (nil "base64"))
+   'base64-ccl-insert-encoded-file)
+
+  (mel-define-method-function (encoded-text-encode-string string (nil "B"))
+			      'base64-ccl-encode-string)
   )
 
 (defun base64-ccl-decode-string (string)
@@ -1205,6 +1219,20 @@ abcdefghijklmnopqrstuvwxyz\
   (let ((coding-system-for-write 'mel-ccl-b-rev))
     (write-region start end filename)))
 
+(mel-define-method-function (mime-decode-string string (nil "base64"))
+			    'base64-ccl-decode-string)
+(mel-define-method-function (mime-decode-region start end (nil "base64"))
+			    'base64-ccl-decode-region)
+(mel-define-method-function
+ (mime-write-decoded-region start end filename (nil "base64"))
+ 'base64-ccl-write-decoded-region)
+
+(mel-define-method encoded-text-decode-string (string (nil "B"))
+  (if (and (string-match B-encoded-text-regexp string)
+	   (string= string (match-string 0 string)))
+      (base64-ccl-decode-string string)
+    (error "Invalid encoded-text %s" string)))
+
 
 ;;; @ quoted-printable
 ;;;
@@ -1218,8 +1246,7 @@ abcdefghijklmnopqrstuvwxyz\
      'mel-ccl-quoted-printable-lf-lf-rev))
 
   (defun quoted-printable-ccl-encode-region (start end)
-    "Encode the region from START to END with quoted-printable
-encoding."
+    "Encode the region from START to END with quoted-printable encoding."
     (interactive "r")
     (decode-coding-region start end 'mel-ccl-quoted-printable-lf-lf-rev))
 
@@ -1229,6 +1256,15 @@ encoding."
     (let ((coding-system-for-read 'mel-ccl-quoted-printable-lf-lf-rev))
       (insert-file-contents filename)))
 
+  (mel-define-method-function
+   (mime-encode-string string (nil "quoted-printable"))
+   'quoted-printable-ccl-encode-string)
+  (mel-define-method-function
+   (mime-encode-region start end (nil "quoted-printable"))
+   'quoted-printable-ccl-encode-region)
+  (mel-define-method-function
+   (mime-insert-encoded-file filename (nil "quoted-printable"))
+   'quoted-printable-ccl-insert-encoded-file)
   )
 
 (defun quoted-printable-ccl-decode-string (string)
@@ -1251,6 +1287,16 @@ encoding."
          (read-file-name "Write decoded region to file: ")))
   (let ((coding-system-for-write 'mel-ccl-quoted-printable-lf-lf-rev))
     (write-region start end filename)))
+
+(mel-define-method-function
+ (mime-decode-string string (nil "quoted-printable"))
+ 'quoted-printable-ccl-decode-string)
+(mel-define-method-function
+ (mime-decode-region start end (nil "quoted-printable"))
+ 'quoted-printable-ccl-decode-region)
+(mel-define-method-function
+ (mime-write-decoded-region start end filename (nil "quoted-printable"))
+ 'quoted-printable-ccl-write-decoded-region)
 
 
 ;;; @ Q
@@ -1287,78 +1333,19 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
       (aref status 0)))
   )
 
+(mel-define-method-function (encoded-text-encode-string string (nil "Q"))
+			    'q-encoding-ccl-encode-string)
+
+(mel-define-method encoded-text-decode-string (string (nil "Q"))
+  (if (and (string-match Q-encoded-text-regexp string)
+	   (string= string (match-string 0 string)))
+      (q-encoding-ccl-decode-string string)
+    (error "Invalid encoded-text %s" string)))
+
+
 ;;; @ end
 ;;;
 
 (provide 'mel-ccl)
 
-'(
-(let ((str0 "a\f \t\r
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\f\r
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\f\r
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\f\r
-                                                                          \r
-                                                                           \r
-                                                                            \r
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \r
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \r
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \r
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \r
-bbb \r
-bbbb\r
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\rccc\r
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\r\r\nccc\r
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\r\rccc\r
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\rccc\r
-dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\r\neee\r
-dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\reee\r
-ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddeee\r
-")
-      str1 encoded decoded)
-  (setq str1 (ew-crlf-to-lf str0)
-	encoded
-	(list
-	 (decode-coding-string
-	  str0
-	  'mel-ccl-quoted-printable-crlf-crlf-rev)
-	 (decode-coding-string
-	  str0
-	  'mel-ccl-quoted-printable-lf-crlf-rev)
-	 (decode-coding-string
-	  str1
-	  'mel-ccl-quoted-printable-crlf-lf-rev)
-	 (decode-coding-string
-	  str1
-	  'mel-ccl-quoted-printable-lf-lf-rev))
-	decoded
-	(list
-	 (encode-coding-string
-	  (nth 0 encoded)
-	  'mel-ccl-quoted-printable-crlf-crlf-rev)
-	 (encode-coding-string
-	  (nth 1 encoded)
-	  'mel-ccl-quoted-printable-lf-crlf-rev)
-	 (encode-coding-string
-	  (nth 2 encoded)
-	  'mel-ccl-quoted-printable-crlf-lf-rev)
-	 (encode-coding-string
-	  (nth 3 encoded)
-	  'mel-ccl-quoted-printable-lf-lf-rev)))
-  (list
-   (string= str0 (nth 0 decoded))
-   (string= str0 (nth 1 decoded))
-   (string= str1 (nth 2 decoded))
-   (string= str1 (nth 3 decoded))))
-
-;; for xemacs
-(defun make-ccl-coding-system (name mnemonic doc-string decoder encoder)
-  (make-coding-system
-   name 'ccl doc-string
-   (list 'mnemonic (char-to-string mnemonic)
-         'decode (symbol-value decoder)
-         'encode (symbol-value encoder))))
-
-)
+;;; mel-ccl.el ends here

@@ -119,7 +119,7 @@
 If size of input to encode is larger than this limit,
 external encoder is called.")
 
-(defun quoted-printable-int-ext-encode-region (start end)
+(defun quoted-printable-encode-region (start end)
   "Encode current region by quoted-printable.
 START and END are buffer positions.
 This function calls internal quoted-printable encoder if size of
@@ -135,23 +135,25 @@ the program (maybe mmencode included in metamail or XEmacs package)."
     ))
 
 
-(defun quoted-printable-internal-encode-string (string)
+(defun quoted-printable-encode-string (string)
   "Encode STRING to quoted-printable, and return the result."
   (with-temp-buffer
     (insert string)
-    (quoted-printable-internal-encode-region (point-min)(point-max))
+    (quoted-printable-encode-region (point-min)(point-max))
     (buffer-string)
     ))
 
-(defun quoted-printable-external-encode-string (string)
-  "Encode STRING to quoted-printable, and return the result."
-  (with-temp-buffer
-    (insert string)
-    (quoted-printable-external-encode-region (point-min)(point-max))
-    (buffer-string)
-    ))
 
-(defun quoted-printable-external-insert-encoded-file (filename)
+(mel-define-method-function
+ (mime-encode-string string (nil "quoted-printable"))
+ 'quoted-printable-encode-string)
+
+(mel-define-method-function
+ (mime-encode-region start end (nil "quoted-printable"))
+ 'quoted-printable-encode-region)
+
+(mel-define-method mime-insert-encoded-file (filename
+					     (nil "quoted-printable"))
   "Encode contents of file FILENAME to quoted-printable, and insert the result.
 It calls external quoted-printable encoder specified by
 `quoted-printable-external-encoder'.  So you must install the program
@@ -214,7 +216,7 @@ It calls external quoted-printable encoder specified by
 If size of input to decode is larger than this limit,
 external decoder is called.")
 
-(defun quoted-printable-int-ext-decode-region (start end)
+(defun quoted-printable-decode-region (start end)
   "Decode current region by quoted-printable.
 START and END are buffer positions.
 This function calls internal quoted-printable decoder if size of
@@ -229,24 +231,28 @@ the program (maybe mmencode included in metamail or XEmacs package)."
     (quoted-printable-internal-decode-region start end)
     ))
 
-(defun quoted-printable-internal-decode-string (string)
+(defun quoted-printable-decode-string (string)
   "Decode STRING which is encoded in quoted-printable, and return the result."
   (with-temp-buffer
     (insert string)
-    (quoted-printable-internal-decode-region (point-min)(point-max))
+    (quoted-printable-decode-region (point-min)(point-max))
     (buffer-string)))
 
-(defun quoted-printable-external-decode-string (string)
-  "Decode STRING which is encoded in quoted-printable, and return the result."
-  (with-temp-buffer
-    (insert string)
-    (quoted-printable-external-decode-region (point-min)(point-max))
-    (buffer-string)))
+
+(mel-define-method-function
+ (mime-decode-string string (nil "quoted-printable"))
+ 'quoted-printable-decode-string)
+
+(mel-define-method-function
+ (mime-decode-region start end (nil "quoted-printable"))
+ 'quoted-printable-decode-region)
+
 
 (defvar quoted-printable-external-decoder-option-to-specify-file '("-o")
   "*list of options of quoted-printable decoder program to specify file.")
 
-(defun quoted-printable-external-write-decoded-region (start end filename)
+(mel-define-method mime-write-decoded-region (start end filename
+						    (nil "quoted-printable"))
   "Decode and write current region encoded by quoted-printable into FILENAME.
 START and END are buffer positions."
   (interactive
@@ -272,7 +278,7 @@ START and END are buffer positions."
 		?: ?\; ?< ?> ?@ ?\[ ?\] ?^ ?` ?{ ?| ?} ?~)
     ))
 
-(defun q-encoding-internal-encode-string (string &optional mode)
+(defun q-encoding-encode-string (string &optional mode)
   "Encode STRING to Q-encoding of encoded-word, and return the result.
 MODE allows `text', `comment', `phrase' or nil.  Default value is
 `phrase'."
@@ -294,7 +300,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 	       string "")
     ))
 
-(defun q-encoding-internal-decode-string (string)
+(defun q-encoding-decode-string (string)
   "Decode STRING which is encoded in Q-encoding and return the result."
   (let (q h l)
     (mapconcat (function
@@ -316,31 +322,14 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 			)))
 	       string "")))
 
+(mel-define-method-function (encoded-text-encode-string string (nil "Q"))
+			    'q-encoding-encode-string)
 
-;;; @@ etc
-;;;
-
-(defun q-encoding-printable-char-p (chr mode)
-  (and (not (memq chr '(?= ?? ?_)))
-       (<= ?\   chr)(<= chr ?~)
-       (cond ((eq mode 'text) t)
-	     ((eq mode 'comment)
-	      (not (memq chr '(?\( ?\) ?\\)))
-	      )
-	     (t
-	      (string-match "[A-Za-z0-9!*+/=_---]" (char-to-string chr))
-	      ))))
-
-(defun q-encoding-internal-encoded-length (string &optional mode)
-  (let ((l 0)(i 0)(len (length string)) chr)
-    (while (< i len)
-      (setq chr (elt string i))
-      (if (q-encoding-printable-char-p chr mode)
-	  (setq l (+ l 1))
-	(setq l (+ l 3))
-	)
-      (setq i (+ i 1)) )
-    l))
+(mel-define-method encoded-text-decode-string (string (nil "Q"))
+  (if (and (string-match Q-encoded-text-regexp string)
+	   (string= string (match-string 0 string)))
+      (q-encoding-decode-string string)
+    (error "Invalid encoded-text %s" string)))
 
 
 ;;; @ end

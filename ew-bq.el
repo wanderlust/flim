@@ -1,7 +1,14 @@
 (require 'emu)
 (require 'mel)
 
-(defalias 'ew-decode-q 'q-encoding-decode-string)
-(defalias 'ew-decode-b 'base64-decode-string)
+(defun ew-decode-q (string)
+  (if (equal string "")
+    ""
+    (encoded-text-decode-string string "Q")))
+
+(defun ew-decode-b (string)
+  (if (equal string "")
+    ""
+    (encoded-text-decode-string string "B")))
 
 (provide 'ew-bq)

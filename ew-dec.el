@@ -591,4 +591,6 @@ each line is separated by CRLF."
   (ew-decode-field-no-cache
      "From" "\"Cl\351ment Brousset\" <cbrousset@staffandline.com>"))
 
+(ew-decode-field-no-cache "From" " \"Jacek \\\"Jaytee\\\" Szyd\263owski\" <jaytee@friko.onet.pl>")
+
 )

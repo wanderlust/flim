@@ -6,7 +6,7 @@
 
 (setq flim-modules '(std11
                      mime-def
-		     mel mel-ccl mel-b mel-q mel-u mel-g
+		     mel mel-b mel-q mel-u mel-g
                      closure
                      natset
                      digraph
@@ -32,7 +32,11 @@
                      ))
 
 (if (fboundp 'dynamic-link)
-    (setq flim-modules (cons 'mel-dl flim-modules))
+    (setq flim-modules (cons 'mel-b-dl flim-modules))
+  )
+
+(if (featurep 'mule)
+    (setq flim-modules (cons 'mel-ccl flim-modules))
   )
 
 ;;; FLIM-ELS ends here

@@ -70,7 +70,8 @@
 	  (ew-ignore-75bytes-limit (memq 'ignore-75bytes-limit opts))
 	  (ew-ignore-76bytes-limit (memq 'ignore-76bytes-limit opts))
 	  (ew-permit-sticked-comment (memq 'permit-sticked-comment opts))
-	  (ew-permit-sticked-special (memq 'permit-sticked-special opts)))
+	  (ew-permit-sticked-special (memq 'permit-sticked-special opts))
+	  (ew-permit-null-encoded-text nil))
       (string-match "\\`[^:]*:" src)
       (let* ((field-name (substring src
 				    (match-beginning 0)
