@@ -24,8 +24,7 @@
 
 ;;; Code:
 
-(defconst mime-spadework-module-version-string
-  "Chao 1.4.0 - \"J,D~(Bj,Dr(B\"")
+(defconst mime-library-version-string "Chao 1.4.0 - \"J,D~(Bj,Dr(B\"")
 
 
 ;;; @ variables
