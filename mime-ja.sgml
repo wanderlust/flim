@@ -1,6 +1,6 @@
 <!doctype sinfo system>
 <head>
-<title>FLIM 1.6 MIME $B5!G=@bL@=q(B
+<title>FLIM 1.7 MIME $B5!G=@bL@=q(B
 <author>$B<i2,(B $BCNI'(B <mail>morioka@jaist.ac.jp</mail>
 <date>1998/06/23
 
@@ -88,82 +88,82 @@ local $BJQ?t(B <code>mime-message-structure</code> $B$K3JG<$9$k$3$H$K$7$^$9!#
 $B07$&$3$H$,$G$-$^$9!#(B
 
 
-<h2> mime-entity $B9=B$BN(B
-<node> mime-entity
-<p>
-<define type="Structure" name="mime-entity">
-<p>
-entity $B$K4X$9$k>pJs$r<}$a$k9=B$BN!#(B
-<p>
-$B$3$N9=B$BN$r;2>H$9$k$K$O(B <code>mime-entity-$BMWAGL>(B</code> $B$H$$$&L>A0$N;2(B
-$B>H4X?t$rMQ$$$k!#(B
-<p>
-$B$3$N9=B$BN$NMWAG$O0J2<$NDL$j$G$"$k!'(B
+<!-- <h2> mime-entity $B9=B$BN(B -->
+<!-- <node> mime-entity -->
+<!-- <p> -->
+<!-- <define type="Structure" name="mime-entity"> -->
+<!-- <p> -->
+<!-- entity $B$K4X$9$k>pJs$r<}$a$k9=B$BN!#(B -->
+<!-- <p> -->
+<!-- $B$3$N9=B$BN$r;2>H$9$k$K$O(B <code>mime-entity-$BMWAGL>(B</code> $B$H$$$&L>A0$N;2(B -->
+<!-- $B>H4X?t$rMQ$$$k!#(B -->
+<!-- <p> -->
+<!-- $B$3$N9=B$BN$NMWAG$O0J2<$NDL$j$G$"$k!'(B -->
 
-<vl>
-<dt>buffer<dd>entity $B$,B8:_$9$k(B buffer (buffer)
-</dd>
-<dt>header-start<dd>entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B header $B$N@hF,0LCV(B
-(point)
-</dd>
-<dt>header-end<dd>entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B header $B$NKvHx0LCV(B
-(point)
-</dd>
-<dt>body-start<dd>entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B body $B$N@hF,0LCV(B
-(point)
-</dd>
-<dt>body-end<dd>entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B body $B$NKvHx0LCV(B
-(point)
-</dd>
-<dt>node-id<dd>entity $B$N(B node-id ($B@0?t$N(B list)
-</dd>
-<dt>content-type<dd><dref>Content-Type</dref> $BMs$N>pJs(B
-(mime-content-type)
-</dd>
-<dt>content-disposition<dd><dref>Content-Disposition</dref> $BMs$N>pJs(B
-(mime-content-disposition)
-</dd>
-<dt>encoding<dd>entity $B$N(B <dref>Content-Transfer-Encoding</dref> ($BJ8;zNs(B)
-</dd>
-<dt>children<dd>entity $B$K4^$^$l$k(B entity $B$N(B list (mime-entity $B$N(B 
-list)
-</dd>
-</vl>
+<!-- <vl> -->
+<!-- <dt>buffer<dd>entity $B$,B8:_$9$k(B buffer (buffer) -->
+<!-- </dd> -->
+<!-- <dt>header-start<dd>entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B header $B$N@hF,0LCV(B -->
+<!-- (point) -->
+<!-- </dd> -->
+<!-- <dt>header-end<dd>entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B header $B$NKvHx0LCV(B -->
+<!-- (point) -->
+<!-- </dd> -->
+<!-- <dt>body-start<dd>entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B body $B$N@hF,0LCV(B -->
+<!-- (point) -->
+<!-- </dd> -->
+<!-- <dt>body-end<dd>entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B body $B$NKvHx0LCV(B -->
+<!-- (point) -->
+<!-- </dd> -->
+<!-- <dt>node-id<dd>entity $B$N(B node-id ($B@0?t$N(B list) -->
+<!-- </dd> -->
+<!-- <dt>content-type<dd><dref>Content-Type</dref> $BMs$N>pJs(B -->
+<!-- (mime-content-type) -->
+<!-- </dd> -->
+<!-- <dt>content-disposition<dd><dref>Content-Disposition</dref> $BMs$N>pJs(B -->
+<!-- (mime-content-disposition) -->
+<!-- </dd> -->
+<!-- <dt>encoding<dd>entity $B$N(B <dref>Content-Transfer-Encoding</dref> ($BJ8;zNs(B) -->
+<!-- </dd> -->
+<!-- <dt>children<dd>entity $B$K4^$^$l$k(B entity $B$N(B list (mime-entity $B$N(B  -->
+<!-- list) -->
+<!-- </dd> -->
+<!-- </vl> -->
 
-<p>
-$B$^$?!"2a5n$H$N8_49@-$N$?$a!"0J2<$NMWAGL>$N;2>H4X?t$bMxMQ2DG=$G$"$k!#(B
+<!-- <p> -->
+<!-- $B$^$?!"2a5n$H$N8_49@-$N$?$a!"0J2<$NMWAGL>$N;2>H4X?t$bMxMQ2DG=$G$"$k!#(B -->
 
-<vl>
-<dt>type/subtype<dd>entity $B$N(B type/subtype ($BJ8;zNs(B)
-</dd>
-<dt>media-type<dd>entity $B$N(B media-primary-type (symbol)
-</dd>
-<dt>media-subtype<dd>entity $B$N(B media-subtype (symbol)
-</dd>
-<dt>parameters<dd>entity $B$N(B Content-Type $BMs$N(B parameter ($BO"A[(B list)
-</dd>
-</vl>
-</define>
+<!-- <vl> -->
+<!-- <dt>type/subtype<dd>entity $B$N(B type/subtype ($BJ8;zNs(B) -->
+<!-- </dd> -->
+<!-- <dt>media-type<dd>entity $B$N(B media-primary-type (symbol) -->
+<!-- </dd> -->
+<!-- <dt>media-subtype<dd>entity $B$N(B media-subtype (symbol) -->
+<!-- </dd> -->
+<!-- <dt>parameters<dd>entity $B$N(B Content-Type $BMs$N(B parameter ($BO"A[(B list) -->
+<!-- </dd> -->
+<!-- </vl> -->
+<!-- </define> -->
 
-<defun name="make-mime-entity">
-	  <args> buffer header-start header-end body-start body-end
-	  <opts> node-id content-type content-disposition encoding
-	  children
-<p>
-entity $B$N@8@.;R!#(B
-</defun>
+<!-- <defun name="make-mime-entity"> -->
+<!-- 	  <args> buffer header-start header-end body-start body-end -->
+<!-- 	  <opts> node-id content-type content-disposition encoding -->
+<!-- 	  children -->
+<!-- <p> -->
+<!-- entity $B$N@8@.;R!#(B -->
+<!-- </defun> -->
 
-<defun name="mime-entity-point-min">
-	    <args> entity
-<p>
-entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B entity $B$N@hF,0LCV$rJV$9!#(B
-</defun>
+<!-- <defun name="mime-entity-point-min"> -->
+<!-- 	    <args> entity -->
+<!-- <p> -->
+<!-- entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B entity $B$N@hF,0LCV$rJV$9!#(B -->
+<!-- </defun> -->
 
-<defun name="mime-entity-point-max">
-	    <args> entity
-<p>
-entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B entity $B$NKvHx0LCV$rJV$9!#(B
-</defun>
+<!-- <defun name="mime-entity-point-max"> -->
+<!-- 	    <args> entity -->
+<!-- <p> -->
+<!-- entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B entity $B$NKvHx0LCV$rJV$9!#(B -->
+<!-- </defun> -->
 
 
 <h2> Message $B$N2r@O4o(B
@@ -172,27 +172,49 @@ entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B entity $B$NKvHx0LCV$rJV$9!#(B
 <defun name="mime-parse-message">
 	  <opts> default-ctl default-encoding node-id
 <p>
-$B8=:_$N(B buffer $B$r9=J82r@O$7$?7k2L$rJV$9!#(B
+$B8=:_$N(B buffer $B$r(B message $B$H$7$F9=J82r@O$7!"$=$N7k2L$N(B mime-entity $B$rJV(B
+$B$9!#(B
 </defun>
 
 <defun name="mime-parse-buffer">
 	  <opts> buffer
 <p>
-<var>buffer</var> $B$r9=J82r@O$7!"$=$N7k2L$r(B <var>buffer</var> $B$N(B
-<code>mime-message-structure</code> $B$K3JG<$9$k!#(B
+<var>buffer</var> $B$r(B message $B$H$7$F9=J82r@O$7!"$=$N7k2L$N(B mime-entity 
+$B$r(B <var>buffer</var> $B$N(B<code>mime-message-structure</code> $B$K3JG<$9$k!#(B
 <p>
 <var>buffer</var> $B$,>JN,$5$l$?>l9g!"8=:_$N(B buffer $B$r9=J82r@O$9$k!#(B
 </defun>
 
 
-<h2> Entity $B$N0LCV4X78$K4X$9$k5!G=(B
-<node> Entity as node in message
+<h2> Entity $B3,AX(B
+<node> Entity hierarchy
 <p>
 <defvar name="mime-message-structure">
 <p>
 $B8=:_$N(B buffer $B$K$*$1$k(B message $BA4BN$N(B mime-entity $B9=B$BN$r3JG<$9$k(B
 buffer local $BJQ?t!#(B
 </defvar>
+
+<defun name="mime-entity-children">
+	  <args> entity
+<p>
+<var>entity</var> $B$K4^$^$l$k(B entity $B$N(B list $B$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-parent">
+	  <args> entity <opts> message
+<p>
+<var>entity</var> $B$N?F$N(B entity $B$rJV$9!#(B
+<p>
+<var>message</var> $B$,;XDj$5$l$?>l9g!"$3$l$r:,$H8+Jo$9!#(B
+</defun>
+
+<defun name="mime-root-entity-p">
+	  <args> entity
+<p>
+<var>entity</var> $B$,:,!JB($A!"(Bmessage $BA4BN!K$G$"$k>l9g$K!"(B
+$BHs(B-<code>nil</code> $B$rJV$9!#(B
+</defun>
 
 <defun name="mime-entity-number">
 	  <args> entity
@@ -218,19 +240,56 @@ If <var>message</var> is not specified,
 <code>mime-message-structure</code> is used.
 </defun>
 
-<defun name="mime-entity-parent">
-	  <args> entity <opts> message
+
+<h2> Entity $B$N(B buffer $B$K$h$kI=8=(B
+<node> Entity buffer
 <p>
-<var>entity</var> $B$N?F$N(B entity $B$rJV$9!#(B
+<defun name="mime-entity-buffer">
+	    <args> entity
 <p>
-<var>message</var> $B$,;XDj$5$l$?>l9g!"$3$l$r:,$H8+Jo$9!#(B
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$rJV$9!#(B
 </defun>
 
-<defun name="mime-root-entity-p">
-	  <args> entity
+<defun name="mime-entity-point-min">
+	    <args> entity
 <p>
-<var>entity</var> $B$,:,!JB($A!"(Bmessage $BA4BN!K$G$"$k>l9g$K!"(B
-$BHs(B-<code>nil</code> $B$rJV$9!#(B
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(B<var>entity</var> $B$,@j$a$k(B
+$BNN0h$N@hF,0LCV$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-point-max">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(B<var>entity</var> $B$,@j$a$k(B
+$BNN0h$NKvHx0LCV$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-header-start">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bheader $B$,@j$a$kNN0h$N@hF,(B
+$B0LCV$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-header-end">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bheader $B$,@j$a$kNN0h$NKvHx(B
+$B0LCV$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-body-start">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bbody $B$,@j$a$kNN0h$N@hF,0L(B
+$BCV$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-body-end">
+	    <args> entity
+<p>
+<var>entity</var> $B$,B8:_$9$k(B buffer $B$K$*$1$k!"(Bbody $B$,@j$a$kNN0h$NKvHx0L(B
+$BCV$rJV$9!#(B
 </defun>
 
 
@@ -282,6 +341,37 @@ list $B$G!"$=$l$>$l!"I=<($7$?$/$J$$(B field $BL>$HI=<($7$?$$MsL>$rI=8=$7$?$b$
 </defun>
 
 
+<h2> Entity $B$NB0@-(B
+<node> Entity Attributes
+<p>
+<defun name="mime-entity-content-type">
+	    <args> entity
+<p>
+<var>entity</var> $B$N(B content-type $B$rJV$9!#(B<cf
+node="mime-content-type">
+</defun>
+
+<defun name="mime-entity-content-disposition">
+	    <args> entity
+<p>
+<var>entity</var> $B$N(B content-disposition $B$rJV$9!#(B<cf
+node="mime-content-disposition">
+</defun>
+
+<defun name="mime-entity-filename">
+	    <args> entity
+<p>
+Entity $B$N(B file $BL>$rJV$9!#(B
+</defun>
+
+<defun name="mime-entity-encoding">
+	    <args> entity
+<p>
+<var>entity</var> $B$N(B content-transfer-encoding $B$rJV$9!#(B<cf
+node="Content-Transfer-Encoding">
+</defun>
+
+
 <h2> Entity $B$NFbMF(B
 <node> Entity-content
 <p>
@@ -289,16 +379,6 @@ list $B$G!"$=$l$>$l!"I=<($7$?$/$J$$(B field $BL>$HI=<($7$?$$MsL>$rI=8=$7$?$b$
 	    <args> entity
 <p>
 <var>entity</var> $B$NFbMF$N(B byte $BNs$rJV$9!#(B
-</defun>
-
-
-<h2> Entity $B$NB0@-(B
-<node> Entity Attributes
-<p>
-<defun name="mime-entity-filename">
-	    <args> entity
-<p>
-Entity $B$N(B file $BL>$rJV$9!#(B
 </defun>
 
 
