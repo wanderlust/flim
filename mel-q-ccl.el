@@ -961,7 +961,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 (unless (featurep 'xemacs)
   (defun q-encoding-ccl-encoded-length (string &optional mode)
     (let ((status [nil nil nil nil nil nil nil nil nil]))
-      (fillarray status nil)		; XXX: Is this necessary?
+      (fillarray status nil)
       (ccl-execute-on-string
        (cond
 	((eq mode 'text) 'mel-ccl-count-uq)
