@@ -516,14 +516,14 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
      (list (list ";" nil nil))))))
 
 (defsubst eword-encode-addresses-to-rword-list (addresses)
-  (let ((dest (eword-encode-address-to-rword-list (car addresses))))
+  (let ((dest (eword-encode-mailbox-to-rword-list (car addresses))))
     (if dest
 	(while (setq addresses (cdr addresses))
 	  (setq dest
 		(nconc dest
 		       (list '("," nil nil))
 		       ;; (list '(" " nil nil))
-		       (eword-encode-address-to-rword-list (car addresses))))))
+		       (eword-encode-mailbox-to-rword-list (car addresses))))))
     dest))
 
 (defsubst eword-encode-msg-id-to-rword-list (msg-id)

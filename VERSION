@@ -1,4 +1,4 @@
-[FLIM Version names]
+[FLIM Version names] -*- coding: ctext; -*-
 
 1.0.0	-----
 
@@ -48,11 +48,11 @@
 1.13.0	Iwami			$(B@P8+(B
 1.13.1	Tawaramoto		$(BED86K\(B		; <=> $(B6aE4(B $(B@>ED86K\(B
 1.13.2	Kasanui			$(B3^K%(B
-1.14.0	Ninokuchi		$(B?7%N8}(B
-1.14.1	Yagi			$(BH,LZ(B		; = $(B6aE4(B $(BBg:e@~(B
-1.14.2	Yagi-Nishiguchi		$(BH,LZ@>8}(B
+------	Ninokuchi		$(B?7%N8}(B
+------	Yagi			$(BH,LZ(B		; = $(B6aE4(B $(BBg:e@~(B
+------	Yagi-Nishiguchi		$(BH,LZ@>8}(B
 ------	Unebigory-Dòmae-A		$(B@&K58fNMA0(B
-------	Kashiharajing-Dþ-mae-A	$(B3`86?@5\A0(B	; = $(B6aE4(B $(BFnBg:e@~!"5HLn@~(B
+------	Kashiharajingu-mae	$(B3`86?@5\A0(B	; = $(B6aE4(B $(BFnBg:e@~!"5HLn@~(B
 
 
 [Chao Version names]
@@ -90,3 +90,91 @@
 1.14.0	Momoyama		$(BEm;3(B
 1.14.1	Rokujiz-Dò-A		$(BO;COB"(B
 ------	Kohata			$(BLZH((B
+------	-DÒbaku-A			$(B2+]!(B
+------	Uji			$(B1'<#(B
+------	Shinden			$(B?7ED(B
+------	J-Dòyò-A			$(B>kM[(B
+------	Nagaike			$(BD9CS(B
+------	Yamashiro-Aodani	$(B;3>k@DC+(B
+------	Yamashiro-Taga		$(B;3>kB?2l(B
+------	Tamamizu		$(B6L?e(B
+------	Tanakura		$(BC*AR(B
+------	Kamikoma		$(B>e9}(B
+------	Kidu			$(BLZDE(B
+
+
+[CLIME Version names]
+
+;;-------------------------------------------------------------------------
+;;				$(BBg:eEE5$50F;(B
+;;				$(BK!N4;{@~(B	$(B!J5l(B $(BE7M}7ZJXoDF;(B $(BE7M}@~!K(B
+;;-------------------------------------------------------------------------
+1.13.0	Shin-H-Dòryþji-A		$(B?7K!N4;{(B	; <=> $(B4X@>K\@~(B $(BK!N4;{(B
+1.13.1	Ando			$(B0BEH(B
+1.13.2	Nukatabe		$(B3[EDIt(B
+1.13.3	Hirahata		$(BJ?C<(B		; = $(BBg50(B $(BE7M}@~!"@&K5@~(B
+
+;;-------------------------------------------------------------------------
+;;	Hokuriku Railway	$(BKLN&E4F;(B
+;;	Nomi Line		$(BG=H~@~(B		$(B!J5l(B $(BG=H~EE5$E4F;!K(B
+;;-------------------------------------------------------------------------
+1.13.4	Shin-Terai		$(B?7;{0f(B		; <=> $(BKLN&K\@~(B $(B;{0f(B
+1.13.5	Kaga-Fukuoka		$(B2C2lJ!2,(B
+1.13.6	Nakanosh-Dò-A		$(BCf%N>1(B
+
+
+[LIMIT Version names]
+
+;;-------------------------------------------------------------------------
+;;	Kinki Nippon Railway	$(B6a5&F|K\E4F;(B	http://www.kintetsu.co.jp/
+;;	Minami--DÒsaka-A Line	$(BFnBg:e@~(B
+;;-------------------------------------------------------------------------
+1.13.0	-DÒsaka-Abenobashi-A		$(BBg:e0$ItLn66(B	; <=> JR, $(BBg:e;T8rDL6I(B
+1.13.1	Koboreguchi			$(B2OKY8}(B
+1.13.2	Kita-tanabe			$(BKLEDJU(B
+1.13.3	Imagawa				$(B:#@n(B
+1.13.4	Harinakano			$(B?KCfLn(B
+1.14.0	Yata				$(BLpED(B
+1.14.1	Kawachi-Amami			$(B2OFbE7H~(B
+1.14.2	Nunose				$(BI[G&(B
+1.14.3	Takaminosato			$(B9b8+%NN$(B
+1.14.4	Kawachi-Matsubara		$(B2OFb>>86(B
+1.14.5	Eganosh-Dò-A			$(B7C2f%NAq(B
+1.14.6	Takawashi			$(B9bOI(B
+------	Fuj-Dïdera-A			$(BF#0f;{(B
+------	Hajinosato			$(BEZ;U$NN$(B
+------	D-Dòmyòji-A				$(BF;L@;{(B
+------	Furuichi			$(B8E;T(B		; = $(B6aE4(B $(BD9Ln@~(B
+------	Komagatani			$(B6p%vC+(B
+------	Kaminotaishi			$(B>e%NB@;R(B
+------	Nij-Dòsan-A				$(BFs>e;3(B
+------	Nij-Dòjinjaguchi-A			$(BFs>e?@<R8}(B
+------	Taimadera			$(BEvKc;{(B
+------	Iwaki				$(BHX>k(B
+------	Shakudo				$(B<\EZ(B		; = $(B6aE4(B $(B8f=j@~(B
+------	Takadashi			$(B9bED;T(B
+------	Ukiana				$(BIb9&(B
+------	B-Dòjò-A				$(BK7>k(B
+------	Kashiharajing-Dþ-Nisiguchi-A	$(B3`86?@5\@>8}(B
+------	Kashiharajing-Dþmae-A		$(B3`86?@5\A0(B	; = $(B6aE4(B $(B3`86@~(B
+
+;;-------------------------------------------------------------------------
+;;	Kinki Nippon Railway	$(B6a5&F|K\E4F;(B	http://www.kintetsu.co.jp/
+;;	Yoshino Line	$(B5HLn@~(B [$(B$G$b!"$3$l!"K\2H$,;H$&$s$d$m$J$!!D(B (^^;]
+;;-------------------------------------------------------------------------
+	(Kashiharajing-Dþmae)-A		($(B3`86?@5\A0(B)
+------	Okadera				$(B2,;{(B
+------	Asuka				$(BHtD;(B
+------	Tsubosakayama			$(BTd:e;3(B
+------	Ichio				$(B;THx(B
+------	Kuzu				$(B3k(B
+------	Yoshinoguchi			$(B5HLn8}(B		; = JR $(BOB2N;3@~(B
+------	Kusurimizu			$(BLt?e(B
+------	Fukugami			$(BJ!?@(B
+------	-DÒada-A				$(BBg0$B@(B
+------	Shimoichiguchi			$(B2<;T8}(B
+------	Koshibe				$(B1[It(B
+------	Muda				$(BO;ED(B
+------	Yamato-Kamiichi			$(BBgOB>e;T(B
+------	Yoshinojing-Dþ-A			$(B5HLn?@5\(B
+------	Yoshino				$(B5HLn(B

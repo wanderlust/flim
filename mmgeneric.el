@@ -41,20 +41,18 @@
 ;; (autoload 'mime-parse-external "mime-parse")
 (autoload 'mime-entity-content "mime")
 
-(eval-and-compile
-  (luna-define-class mime-entity ()
-		     (location
-		      content-type children parent
-		      node-id
-		      content-disposition encoding
-		      ;; for other fields
-		      original-header parsed-header))
-
-  (luna-define-internal-accessors 'mime-entity)
-  )
+(luna-define-class mime-entity ()
+		   (location
+		    content-type children parent
+		    node-id
+		    content-disposition encoding
+		    ;; for other fields
+		    original-header parsed-header))
 
 (defalias 'mime-entity-representation-type-internal 'luna-class-name)
 (defalias 'mime-entity-set-representation-type-internal 'luna-set-class-name)
+
+(luna-define-internal-accessors 'mime-entity)
 
 (luna-define-method mime-entity-fetch-field ((entity mime-entity)
 					     field-name)
@@ -63,15 +61,18 @@
   (cdr (assq field-name
 	     (mime-entity-original-header-internal entity))))
 
+;; unlimited patch by simm-emacs@fan.gr.jp
+;;   Tue, 01 Feb 2000 13:32:14 +0900
 (luna-define-method mime-insert-text-content ((entity mime-entity))
   (insert
-   (decode-mime-charset-string (mime-entity-content entity)
-			       (or (mime-content-type-parameter
-				    (mime-entity-content-type entity)
-				    "charset")
-				   default-mime-charset)
-			       'CRLF)
-   ))
+   (decode-mime-charset-string-unlimited
+    (mime-entity-content entity)
+    (or (mime-content-type-parameter
+	 (mime-entity-content-type entity)
+	 "charset")
+	default-mime-charset-unlimited
+	default-mime-charset)
+    'CRLF)))
 
 
 ;;; @ for mm-backend

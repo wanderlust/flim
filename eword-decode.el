@@ -180,24 +180,31 @@ decode the charset included in it, it is not decoded."
 	  (concat result (eword-decode-token token))
 	result))))
 
+;; unlimited patch by simm-emacs@fan.gr.jp
+;;   Tue, 01 Feb 2000 13:43:09 +0900
 (defun eword-decode-unstructured-field-body (string &optional start-column
 						    max-column)
   (eword-decode-string
-   (decode-mime-charset-string string default-mime-charset)))
+   (decode-mime-charset-string-unlimited
+    string
+    (or default-mime-charset-unlimited default-mime-charset))))
 
 (defun eword-decode-and-unfold-unstructured-field-body (string
 							&optional start-column
 							max-column)
   (eword-decode-string
-   (decode-mime-charset-string (std11-unfold-string string)
-			       default-mime-charset)
+   (decode-mime-charset-string-unlimited
+    (std11-unfold-string string)
+    (or default-mime-charset-unlimited default-mime-charset))
    'must-unfold))
 
 (defun eword-decode-unfolded-unstructured-field-body (string
 						      &optional start-column
 						      max-column)
   (eword-decode-string
-   (decode-mime-charset-string string default-mime-charset)
+   (decode-mime-charset-string-unlimited
+    string
+    (or default-mime-charset-unlimited default-mime-charset))
    'must-unfold))
 
 
@@ -743,10 +750,13 @@ be the result.")
       (setq ret
 	    (let ((rest mime-header-lexical-analyzer)
 		  func r)
+	      ;; unlimited patch by simm-emacs@fan.gr.jp,
+	      ;;   Mon, 10 Jan 2000 12:52:39 +0900
 	      (while (and (setq func (car rest))
-			  (null
-			   (setq r (funcall func string start must-unfold)))
-			  )
+			  (or (and mime-decode-unlimited
+				   (eq func 'eword-analyze-quoted-string))
+			      (null
+			       (setq r (funcall func string start must-unfold)))))
 		(setq rest (cdr rest)))
 	      (or r
 		  (cons (cons 'error (substring string start)) (1+ len)))
@@ -787,8 +797,14 @@ characters encoded as encoded-words or invalid \"raw\" format.
 	     (while value
 	       (setq dest (concat dest
 				  (if (stringp (car value))
-				      (std11-wrap-as-quoted-pairs
-				       (car value) '(?( ?)))
+				      ;; unlimited patch by simm-emacs@fan.gr.jp
+				      ;;   Mon, 10 Jan 2000 12:53:46 +0900
+				      (if mime-decode-unlimited
+					  (eword-decode-string
+					   (std11-wrap-as-quoted-pairs
+					    (car value) '(?( ?))))
+					(std11-wrap-as-quoted-pairs
+					 (car value) '(?( ?))))
 				    (eword-decode-token (car value))
 				    ))
 		     value (cdr value))

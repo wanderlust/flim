@@ -1,4 +1,4 @@
-;;; mime-def.el --- definition module about MIME -*- coding: iso-8859-4; -*-
+;;; mime-def.el --- definition module about MIME -*- coding: ctext; -*-
 
 ;; Copyright (C) 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 
@@ -34,7 +34,7 @@
   )
 
 (eval-and-compile
-  (defconst mime-library-product ["FLIM" (1 14 2) "Yagi-Nishiguchi"]
+  (defconst mime-library-product ["LIMIT" (1 14 7) "Fujiidera"]
     "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)
@@ -392,6 +392,39 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
 	  (and (file-exists-p path)
 	       path)
 	  ))))
+
+
+;;; @ unlimited patch
+;;;
+
+;; unlimited patch by simm-emacs@fan.gr.jp
+;;   Mon, 10 Jan 2000 12:55:49 +0900
+(defvar mime-decode-unlimited t
+  "If non-nil, LIMIT decodes where RFC-illegal position.
+If nil, LIMIT behaves as FLIM.")
+
+(defvar default-mime-charset-unlimited 'auto-detect
+  "Default Value of MIME-charset.
+It is used when MIME-charset is not specified.
+It must be symbol.
+
+If its value is 'auto-detect, (mime-insert-text-content) detects
+Japanese coding-system and convert it.
+
+If its value is nil, use `default-mime-charset' instead.")
+
+(static-if (boundp 'nonascii-translation-table)
+    (defconst nonascii-translation-table-unlimited
+      (let ((i 0) (vec (make-vector 256 0)))
+	(while (< i 256)
+	  (aset vec i i)
+	  (setq i (1+ i)))
+	vec)
+      "Translation table to convert non-ASCII unibyte codes to multibyte.
+This is used for no-converting unibyte text to multibyte,
+and for inserting character codes specified by number.
+
+See `nonascii-translation-table'."))
 
 
 ;;; @ end

@@ -2,9 +2,9 @@
 # Makefile for FLIM.
 #
 
-PACKAGE = flim
+PACKAGE = limit
 API	= 1.14
-RELEASE = 2
+RELEASE = 7
 
 TAR	= tar
 RM	= /bin/rm -f

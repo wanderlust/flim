@@ -388,16 +388,23 @@ default value."
 		(buffer-substring (match-beginning 0)(match-end 0))
 	      )))))
 
+;; unlimited patch by simm-emacs@fan.gr.jp
+;;   Mon, 10 Jan 2000 12:59:46 +0900
 (defun mime-entity-filename (entity)
   "Return filename of ENTITY."
-  (or (mime-entity-uu-filename entity)
-      (mime-content-disposition-filename
-       (mime-entity-content-disposition entity))
-      (cdr (let ((param (mime-content-type-parameters
-			 (mime-entity-content-type entity))))
-	     (or (assoc "name" param)
-		 (assoc "x-name" param))
-	     ))))
+  (let ((filename
+	 (or (mime-entity-uu-filename entity)
+	     (mime-content-disposition-filename
+	      (mime-entity-content-disposition entity))
+	     (cdr (let ((param (mime-content-type-parameters
+				(mime-entity-content-type entity))))
+		    (or (assoc "name" param)
+			(assoc "x-name" param))))
+	     "")))
+    (or (and mime-decode-unlimited
+	     (string-match "\033" filename)
+	     (decode-mime-charset-string filename 'iso-2022-jp 'CRLF))
+	(eword-decode-string filename))))
 
 
 (defsubst mime-entity-media-type (entity)
@@ -425,6 +432,150 @@ default value."
   "Set ENTITY's content-transfer-encoding to ENCODING."
   (mime-entity-set-encoding-internal entity encoding))
 
+
+;;; @ unlimited patch
+;;;
+
+;; unlimited patch by simm-emacs@fan.gr.jp (code derives from irchat-pj)
+;;   Tue, 01 Feb 2000 01:42:05 +0900
+(defun mime-detect-coding-system-region-unlimited (beg end)
+  "Detect coding system on region."
+  (let (ch esc prev flag)
+    (save-excursion
+      (catch 'detect
+	;; check ISO-2022-JP / ascii
+	(catch 'quit
+	  (goto-char beg)
+	  (while (< (point) end)
+	    (setq ch (following-char))
+	    (and (<= 256 ch)
+		 (throw 'detect nil)) ;;'noconv))
+	    (and (<= 128 ch)
+		 (throw 'quit t))
+	    (and (= 27 ch)
+		 (setq esc t))
+	    (forward-char 1))
+	  (throw 'detect (if esc 'iso-2022-jp nil))) ;;'noconv)))
+	;; check EUC-JP / SHIFT-JIS
+	(if esc (throw 'detect 'iso-2022-jp))
+	(while (< (point) end)
+	  (setq ch (following-char))
+	  (or (and (= 27 ch)                        ;; ESC
+		   (throw 'detect 'iso-2022-jp))
+	      (and (<= 128 ch) (<= ch 141)          ;; 0x80 <= ch <= 0x8d
+		   (throw 'detect 'shift_jis))
+	      (and (<= 144 ch) (<= ch 159)          ;; 0x90 <= ch <= 0x9f
+		   (throw 'detect 'shift_jis))
+	      (and (eq 'shift_jis prev) (<= ch 127) ;; second byte MSB == 0
+		   (throw 'detect 'shift_jis))
+	      (and (eq 'euc-jp prev)
+		   (<= 161 ch) (<= ch 243)          ;; second byte of EUC Kana
+		   (setq prev nil
+			 flag 'euc-jp))
+	      (and (eq nil prev)
+		   (or (= 164 ch) (= 165 ch))       ;; first byte of EUC kana
+		   (setq prev 'euc-jp))
+	      (< ch 160)                            ;;         ch <= 0xa0
+	      (and (eq 'euc-jp prev)
+		   (throw 'detect 'euc-jp))
+	      (setq prev (if prev nil 'shift_jis)
+		    flag (if (eq 'euc-jp flag) 'euc-jp 'shift_jis)))
+	  (forward-char 1))
+	flag))))
+	;;(or flag 'noconv)))))
+
+;; unlimited patch by simm-emacs@fan.gr.jp
+;;   Tue, 01 Feb 2000 01:56:38 +0900
+(defun mime-detect-coding-system-string-unlimited (str)
+  "Detect coding system on string."
+  (save-excursion
+    (set-buffer (get-buffer-create " *Temporary unlimited*"))
+    (insert str)
+    (unwind-protect
+	(mime-detect-coding-system-region-unlimited (point-min) (point-max))
+      (kill-buffer nil))))
+
+;; unlimited patch by simm-emacs@fan.gr.jp
+;;   Tue, 01 Feb 2000 13:32:14 +0900
+(defsubst insert-unlimited (str)
+  "Insert with no-conversion.
+On GNU Emacs 20.*, (insert str) after (set-buffer-multibyte nil).
+Other environment, perform (insert str)."
+  (static-if (boundp 'nonascii-translation-table-unlimited)
+      (let ((nonascii-translation-table nonascii-translation-table-unlimited))
+	(insert str))
+    (insert str)))
+
+(defun decode-mime-charset-string-dist-unlimited (str charset &optional lbt)
+  "Detect coding system on string."
+  (if (not (eq 'auto-detect charset))
+      (decode-mime-charset-string str charset lbt)
+    (save-excursion
+      (set-buffer (get-buffer-create " *Temporary unlimited*"))
+      (unwind-protect
+	  (let (code)
+	    (insert-unlimited str)
+	    (setq code (mime-detect-coding-system-region-unlimited (point-min) (point-max)))
+	    (cond ((eq code 'euc-jp)
+		   (message "EUC-JP code detected, so convert this message."))
+		  ((eq code 'shift_jis)
+		   (message "SHIFT-JIS code detected, so convert this message.")))
+	    (decode-mime-charset-region (point-min) (point-max)
+					(or code default-mime-charset)
+					lbt)
+	    (buffer-substring (point-min) (point-max)))
+	(kill-buffer nil)))))
+
+(defun decode-mime-charset-string-unlimited (str charset &optional lbt)
+  "Detect coding system on string."
+  (cond ((eq 'auto-detect charset)
+	 (save-excursion
+	   (set-buffer (get-buffer-create " *Temporary unlimited*"))
+	   (unwind-protect
+	       (let (code)
+		 (insert-unlimited str)
+		 (setq code
+		       (mime-detect-coding-system-region-unlimited (point-min) (point-max)))
+		 (cond ((eq code 'euc-jp)
+			(message "EUC-JP code detected, so convert this message."))
+		       ((eq code 'shift_jis)
+			(message "SHIFT-JIS code detected, so convert this message.")))
+		 (decode-mime-charset-region (point-min) (point-max)
+					     (or code default-mime-charset)
+					     lbt)
+		 (buffer-substring (point-min) (point-max)))
+	     (kill-buffer nil))))
+	((string= "us-ascii" charset)
+	 (save-excursion
+	   (set-buffer (get-buffer-create " *Temporary unlimited*"))
+	   (unwind-protect
+	       (let ((code 'us-ascii))
+		 (insert-unlimited str)
+		 (goto-char (point-min))
+		 (while (not (eobp))
+		   (if (and (<= 32 (following-char)) (< (following-char) 128))
+		       (forward-char 1)
+		     (setq code nil)
+		     (goto-char (point-max))))
+		 (cond ((eq code 'us-ascii)
+			(decode-mime-charset-region (point-min) (point-max) nil lbt))
+		       (code
+			(decode-mime-charset-region (point-min) (point-max) code lbt))
+		       (t
+			(setq code
+			      (mime-detect-coding-system-region-unlimited
+			       (point-min) (point-max)))
+			(when code
+			  (message "Declared US-ASCII but detected %s, so convert."
+				   (if (eq code 'shift_jis) "SHIFT-JIS"
+				     (upcase (prin1-to-string code))))
+			  (decode-mime-charset-region (point-min) (point-max)
+						      (or code default-mime-charset)
+						      lbt))))
+		 (buffer-substring (point-min) (point-max)))
+	     (kill-buffer nil))))
+	(t
+	 (decode-mime-charset-string str charset lbt))))
 
 ;;; @ end
 ;;;

@@ -217,15 +217,29 @@ If BOUNDARY is not nil, it is used as message header separator."
 	  ))
       (setq i (1+ i))
       )
-    (concat dest (substring string b))
-    ))
+    ;; unlimited patch by simm-emacs@fan.gr.jp
+    ;;   Mon, 10 Jan 2000 13:03:02 +0900
+    (if mime-decode-unlimited
+        (eword-encode-string (concat dest (substring string b)))
+      (concat dest (substring string b)))))
 
 (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
+
+;; unlimited patch by simm-emacs@fan.gr.jp
+;;   Mon, 10 Jan 2000 13:03:02 +0900
+(defvar std11-filename-coding-system nil
+  "Define coding-system for non-ASCII filename when send.
+Set this variable coding system symbol (ie. 'iso-2022-jp) or nil.
+If non-nil, std11-wrap-as-quoted-string use encode-coding-string.")
 
 (defun std11-wrap-as-quoted-string (string)
   "Wrap STRING as RFC 822 quoted-string."
   (concat "\""
-	  (std11-wrap-as-quoted-pairs string std11-non-qtext-char-list)
+          ;; unlimited patch by simm-emacs@fan.gr.jp
+          ;;   Mon, 10 Jan 2000 13:03:02 +0900
+          (if std11-filename-coding-system
+              (encode-coding-system string std11-filename-coding-system)
+            (std11-wrap-as-quoted-pairs string std11-non-qtext-char-list))
 	  "\""))
 
 (defun std11-strip-quoted-pair (string)
@@ -762,7 +776,7 @@ represents addr-spec of RFC 822."
   "Return string of address part from parsed ADDRESS of RFC 822."
   (cond ((eq (car address) 'group)
 	 (mapconcat (function std11-address-string)
-		    (nth 2 address)
+		    (car (cdr address))
 		    ", ")
 	 )
 	((eq (car address) 'mailbox)

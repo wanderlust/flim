@@ -83,16 +83,30 @@ be the result."
   (concat "^[ \t]*\;[ \t]*\\(" mime-token-regexp "\\)"
 	  "[ \t]*=[ \t]*\\(" mime/content-parameter-value-regexp "\\)"))
 
-(defun mime-parse-parameter (str)
-  (if (string-match mime::parameter-regexp str)
-      (let ((e (match-end 2)))
-	(cons
-	 (cons (downcase (substring str (match-beginning 1) (match-end 1)))
-	       (std11-strip-quoted-string
-		(substring str (match-beginning 2) e))
-	       )
-	 (substring str e)
-	 ))))
+;; unlimited patch by simm-emacs@fan.gr.jp
+;;   Mon, 10 Jan 2000 12:59:46 +0900
+(defun mime-parse-parameter (string)
+  (let ((str string))
+    (and mime-decode-unlimited
+         (string-match "\033" str)
+         (setq str (decode-coding-string string 'iso-2022-7bit-ss2)))
+    (if (string-match mime::parameter-regexp str)
+        (let ((e (match-end 2)))
+          (if mime-decode-unlimited
+              (cons
+               (cons (downcase
+                      (encode-coding-string
+                       (substring str (match-beginning 1) (match-end 1))
+                       'iso-2022-7bit-ss2))
+                     (encode-coding-string
+                      (std11-strip-quoted-string
+                       (substring str (match-beginning 2) e))
+                      'iso-2022-jp))
+               (encode-coding-string (substring str e) 'iso-2022-7bit-ss2))
+            (cons
+             (cons (downcase (substring str (match-beginning 1) (match-end 1)))
+                   (std11-strip-quoted-string (substring sutr (match-beginning 2) e)))
+             (substring str e)))))))
 
 
 ;;; @ Content-Type
