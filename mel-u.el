@@ -134,24 +134,28 @@ variable `uuencode-external-encoder'."
 START and END are buffer positions."
   (interactive "*r\nFWrite decoded region to file: ")
   (save-excursion
-    (let ((file (save-excursion
-		  (save-restriction
-		    (narrow-to-region start end)
-		    (goto-char start)
-		    (if (re-search-forward "^begin [0-9]+ " nil t)
-			(if (looking-at ".+$")
-			    (buffer-substring (match-beginning 0)
-					      (match-end 0)))))))
-	  (default-directory temporary-file-directory))
-      (if file
-	  (let ((coding-system-for-read  'binary)
-		(coding-system-for-write 'binary))
-	    (apply (function call-process-region)
-		   start end (car uuencode-external-decoder)
-		   nil nil nil
-		   (cdr uuencode-external-decoder))
-	    (rename-file file filename 'overwrites))))))
-
+    (let ((the-buf (current-buffer))
+	  (clone-buf (clone-buffer " *x-uue*"))
+	  (file (make-temp-name "x-uue")))
+      (save-excursion
+	(save-restriction
+	  (set-buffer clone-buf)
+	  (narrow-to-region start end)
+	  (setq buffer-read-only nil)
+	  (goto-char start)
+	  (when (and (re-search-forward "^begin [0-9]+ " nil t)
+		   (looking-at ".+$"))
+	    (replace-match file)
+	    (let ((coding-system-for-read  'binary)
+		  (coding-system-for-write 'binary)
+		  (default-directory temporary-file-directory))
+	      (apply (function call-process-region)
+		     (point-min) (point-max) (car uuencode-external-decoder)
+		     nil nil nil
+		     (cdr uuencode-external-decoder))
+	      (rename-file file filename 'overwrites)
+	      (message (concat "Wrote " filename))))))
+      (kill-buffer clone-buf))))
 
 ;;; @ end
 ;;;
