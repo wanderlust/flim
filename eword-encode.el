@@ -487,7 +487,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
       (eword-encode-addr-seq-to-rword-list (cdr addr-spec))
     ))
 
-(defun tm-eword::mailbox-to-rwl (mbox)
+(defun eword-encode-mailbox-to-rword-list (mbox)
   (let ((addr (nth 1 mbox))
 	(comment (nth 2 mbox))
 	dest)
@@ -505,14 +505,15 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     dest))
 
 (defsubst eword-encode-addresses-to-rword-list (addresses)
-  (let ((dest (tm-eword::mailbox-to-rwl (car addresses))))
+  (let ((dest (eword-encode-mailbox-to-rword-list (car addresses))))
     (if dest
 	(while (setq addresses (cdr addresses))
-	  (setq dest (append dest
-			     '(("," nil nil))
-			     '((" " nil nil))
-			     (tm-eword::mailbox-to-rwl (car addresses))
-			     ))
+	  (setq dest
+		(append dest
+			'(("," nil nil))
+			'((" " nil nil))
+			(eword-encode-mailbox-to-rword-list (car addresses))
+			))
 	  ))
     dest))
 
