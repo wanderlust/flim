@@ -56,6 +56,8 @@
 	 "Decode current region by base64." t)
        (autoload 'base64-insert-encoded-file "mel-dl"
 	 "Encode contents of file to base64, and insert the result." t)
+       (autoload 'base64-write-decoded-region "mel-dl"
+	 "Decode and write current region encoded by base64 into FILENAME." t)
        ;; for encoded-word
        (autoload 'base64-encoded-length "mel-dl")
        )
@@ -70,6 +72,8 @@
 	 "Decode current region by base64." t)
        (autoload 'base64-insert-encoded-file "mel-b"
 	 "Encode contents of file to base64, and insert the result." t)
+       (autoload 'base64-write-decoded-region "mel-b"
+	 "Decode and write current region encoded by base64 into FILENAME." t)
        ;; for encoded-word
        (autoload 'base64-encoded-length "mel-b")
        ))
@@ -84,6 +88,9 @@
   "Decode current region by Quoted-Printable." t)
 (autoload 'quoted-printable-insert-encoded-file "mel-q"
   "Encode contents of file to quoted-printable, and insert the result." t)
+(autoload 'quoted-printable-write-decoded-region "mel-q"
+  "Decode and write current region encoded by quoted-printable into FILENAME."
+  t)
 ;; for encoded-word
 (autoload 'q-encoding-encode-string "mel-q"
   "Encode STRING to Q-encoding of encoded-word, and return the result.")
@@ -97,6 +104,8 @@
   "Decode current region by unofficial uuencode format." t)
 (autoload 'uuencode-insert-encoded-file "mel-u"
   "Insert file encoded by unofficial uuencode format." t)
+(autoload 'uuencode-write-decoded-region "mel-u"
+  "Decode and write current region encoded by uuencode into FILENAME." t)
 
 (autoload 'gzip64-encode-region "mel-g"
   "Encode current region by unofficial x-gzip64 format." t)
@@ -104,6 +113,8 @@
   "Decode current region by unofficial x-gzip64 format." t)
 (autoload 'gzip64-insert-encoded-file "mel-g"
   "Insert file encoded by unofficial gzip64 format." t)
+(autoload 'gzip64-write-decoded-region "mel-g"
+  "Decode and write current region encoded by gzip64 into FILENAME." t)
 
 
 ;;; @ region
