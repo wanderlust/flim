@@ -1,3 +1,27 @@
+2000-11-21   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-client-set-encoder): New function.
+	(sasl-client-set-decoder): New function.
+	(sasl-client-encoder): New function.
+	(sasl-client-decoder): New function.
+
+	* sasl-digest.el: Require 'cl' when compiling.
+	(sasl-digest-md5-signing-encode-magic): New constant.
+	(sasl-digest-md5-signing-decode-magic): New constant.
+	(sasl-digest-md5-htonl-string): New function.
+	(sasl-digest-md5-make-integrity-encoder): New function.
+	(sasl-digest-md5-make-integrity-decoder): New function.
+	(sasl-digest-md5-ha1): New function.
+	(sasl-digest-md5-response-value): Accept the 1st argument `ha1'.
+	(sasl-digest-md5-response): Use `sasl-digest-md5-ha1'.
+	- Set integrity encoder and decoder of the client.
+
+	* smtp.el: Require `luna'.
+	(smtp-read-response): Accept `smtp-connection' object rather than
+	process-object.
+	(smtp-send-command): Likewise.
+	(smtp-send-data): Likewise.
+
 2000-11-12   Daiki Ueno  <ueno@unixuser.org>
 
 	* luna.el (luna-define-method): Clear method cache.

@@ -35,6 +35,8 @@
 (require 'sasl)
 (require 'hmac-md5)
 
+(eval-when-compile (require 'cl))
+
 (defvar sasl-digest-md5-nonce-count 1)
 (defvar sasl-digest-md5-unique-id-function
   sasl-unique-id-function)
@@ -77,36 +79,71 @@ charset algorithm cipher-opts auth-param)."
   (let ((sasl-unique-id-function sasl-digest-md5-unique-id-function))
     (sasl-unique-id)))
 
-(defun sasl-digest-md5-response-value (username
-				       realm
-				       nonce
-				       cnonce
-				       nonce-count
-				       qop
-				       digest-uri
-				       authzid)
+(defconst sasl-digest-md5-signing-encode-magic
+  "Digest session key to client-to-server signing key magic constant")
+
+(defconst sasl-digest-md5-signing-decode-magic
+  "Digest session key to server-to-client signing key magic constant")
+
+(defun sasl-digest-md5-htonl-string (n)
+  (car
+   (read-from-string
+    (format "\"\\x%02x\\x%02x\\x%02x\\x%02x\""
+	    (logand n 255)
+	    (logand (lsh n -8) 255)
+	    (logand (lsh n -16) 255)
+	    (logand (lsh n -24) 255)))))
+
+(defun sasl-digest-md5-make-integrity-encoder (ha1)
+  (lexical-let ((key (md5-binary (concat ha1 sasl-digest-md5-signing-encode-magic)))
+		(seqnum 0))
+    (lambda (string)
+      (let ((seqnum-string (sasl-digest-md5-htonl-string seqnum)))
+	(prog1 (concat (sasl-digest-md5-htonl-string (+ (length string) 16))
+		       string (hmac-md5 key (concat seqnum-string string))
+		       "\x0\x1\x0\x0" seqnum-string)
+	  (setq seqnum (1+ seqnum)))))))
+
+(defun sasl-digest-md5-make-integrity-decoder (ha1)
+  (lexical-let ((key (md5-binary (concat ha1 sasl-digest-md5-signing-decode-magic)))
+		(seqnum 0))
+    (lambda (string)
+      (let ((seqnum-string (sasl-digest-md5-htonl-string seqnum))
+	    (mac (substring string (- (length string) 16))))
+	(setq string (substring string 4 (- (length string) 20)))
+	(or (string= (concat (hmac-md5 key (concat seqnum-string string))
+			     "\x0\x1\x0\x0" seqnum-string)
+		     mac)
+	    (sasl-error "MAC doesn't match"))
+	(setq seqnum (1+ seqnum))
+	string))))
+
+(defun sasl-digest-md5-ha1 (username realm nonce cnonce authzid)
   (let ((passphrase
 	 (sasl-read-passphrase
 	  (format "DIGEST-MD5 passphrase for %s: "
 		  username))))
     (unwind-protect
-	(encode-hex-string
-	 (md5-binary
-	  (concat
-	   (encode-hex-string
-	    (md5-binary (concat (md5-binary 
-				 (concat username ":" realm ":" passphrase))
-				":" nonce ":" cnonce
-				(if authzid 
-				    (concat ":" authzid)))))
-	   ":" nonce
-	   ":" (format "%08x" nonce-count) ":" cnonce ":" qop ":"
-	   (encode-hex-string
-	    (md5-binary
-	     (concat "AUTHENTICATE:" digest-uri
-		     (if (member qop '("auth-int" "auth-conf"))
-			 ":00000000000000000000000000000000")))))))
+	(md5-binary
+	 (concat (md5-binary 
+		  (concat username ":" realm ":" passphrase))
+		 ":" nonce ":" cnonce
+		 (if authzid 
+		     (concat ":" authzid))))
       (fillarray passphrase 0))))
+
+(defun sasl-digest-md5-response-value (ha1 nonce cnonce nonce-count qop digest-uri)
+  (encode-hex-string
+   (md5-binary
+    (concat
+     (encode-hex-string ha1)
+     ":" nonce
+     ":" (format "%08x" nonce-count) ":" cnonce ":" qop ":"
+     (encode-hex-string
+      (md5-binary
+       (concat "AUTHENTICATE:" digest-uri
+	       (if (member qop '("auth-int" "auth-conf"))
+		   ":00000000000000000000000000000000"))))))))
 
 (defun sasl-digest-md5-response (client step)
   (let* ((plist
@@ -114,21 +151,28 @@ charset algorithm cipher-opts auth-param)."
 	 (realm
 	  (or (sasl-client-property client 'realm)
 	      (plist-get plist 'realm))) ;need to check
+	 (nonce (plist-get plist 'nonce))
+	 (cnonce
+	  (or (sasl-client-property client 'cnonce)
+	      (sasl-digest-md5-cnonce)))
 	 (nonce-count
 	  (or (sasl-client-property client 'nonce-count)
 	       sasl-digest-md5-nonce-count))
 	 (qop
 	  (or (sasl-client-property client 'qop)
-	      (setq qop "auth")))
+	      "auth"))
 	 (digest-uri
 	  (sasl-digest-md5-digest-uri
 	   (sasl-client-service client)(sasl-client-server client)))
-	 (cnonce
-	  (or (sasl-client-property client 'cnonce)
-	      (sasl-digest-md5-cnonce))))
+	 (ha1
+	  (sasl-digest-md5-ha1
+	   (sasl-client-name client) realm nonce cnonce (plist-get plist 'authzid))))
     (sasl-client-set-property client 'nonce-count (1+ nonce-count))
-    (unless (string= qop "auth")
-      (sasl-error (format "Unsupported \"qop-value\": %s" qop)))
+    (when (member qop '("auth-int" "auth-conf"))
+      (sasl-client-set-encoder
+       client (sasl-digest-md5-make-integrity-encoder ha1))
+      (sasl-client-set-decoder
+       client (sasl-digest-md5-make-integrity-decoder ha1)))
     (concat
      "username=\"" (sasl-client-name client) "\","
      "realm=\"" realm "\","
@@ -139,14 +183,7 @@ charset algorithm cipher-opts auth-param)."
      "qop=" qop ","
      "response="
      (sasl-digest-md5-response-value
-      (sasl-client-name client)
-      realm
-      (plist-get plist 'nonce)
-      cnonce
-      nonce-count
-      qop
-      digest-uri
-      (plist-get plist 'authzid)))))
+      ha1 nonce cnonce nonce-count qop digest-uri))))
 
 (put 'sasl-digest 'sasl-mechanism
      (sasl-make-mechanism "DIGEST-MD5" sasl-digest-md5-steps))

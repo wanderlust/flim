@@ -61,7 +61,8 @@
   "Return a newly allocated SASL client.
 NAME is name of the authorization.  SERVICE is name of the service desired.
 SERVER is the fully qualified host name of the server to authenticate to."
-  (vector mechanism name service server (make-symbol "sasl-client-properties")))
+  (vector mechanism name service server (make-symbol "sasl-client-properties")
+	  nil nil))
 
 (defun sasl-client-mechanism (client)
   "Return the authentication mechanism driver of CLIENT."
@@ -95,6 +96,22 @@ The second argument PLIST is the new property list."
 (defun sasl-client-properties (client)
   "Return the properties of CLIENT."
   (symbol-plist (aref client 4)))
+
+(defun sasl-client-set-encoder (client encoder)
+  "Set integrity encoder of CLIENT."
+  (aset client 5 encoder))
+
+(defun sasl-client-set-decoder (client decoder)
+  "Set integrity decoder of CLIENT."
+  (aset client 6 decoder))
+
+(defun sasl-client-encoder (client)
+  "Return the integrity encoder of CLIENT."
+  (aref client 5))
+
+(defun sasl-client-decoder (client)
+  "Retrun the integrity decoder of CLIENT."
+  (aref client 6))
 
 ;;; @ SASL mechanism
 ;;;
