@@ -25,7 +25,6 @@
 ;;; Code:
 
 (require 'poe)
-(require 'poem)
 (require 'custom)
 (require 'mcharset)
 (require 'alist)
@@ -79,7 +78,24 @@
 (defsubst regexp-or (&rest args)
   (concat "\\(" (mapconcat (function identity) args "\\|") "\\)"))
 
+(eval-when-compile (require 'static))
 
+(static-if (and (featurep 'xemacs)
+		(not (featurep 'utf-2000)))
+    (progn
+      (require 'pces)
+      (defalias 'binary-insert-file-contents 'insert-file-contents-as-binary)
+      (defalias 'binary-write-region 'write-region-as-binary))
+  (defalias 'binary-insert-file-contents 'insert-file-contents-literally)
+  (defun binary-write-region (start end filename
+				    &optional append visit lockname)
+    "Like `write-region', q.v., but don't encode."
+    (let ((coding-system-for-write 'binary)
+	  jka-compr-compression-info-list jam-zcat-filename-list)
+      (write-region start end filename append visit lockname)))
+  )
+
+  
 ;;; @ about STD 11
 ;;;
 
