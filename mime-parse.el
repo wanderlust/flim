@@ -102,7 +102,8 @@ and return parsed it.  Format of return value is as same as
 (defun mime-parse-Content-Disposition (string)
   "Parse STRING as field-body of Content-Disposition field."
   (setq string (std11-unfold-string string))
-  (if (string-match `,(concat "^" mime-disposition-type-regexp) string)
+  (if (string-match (eval-when-compile
+		      (concat "^" mime-disposition-type-regexp)) string)
       (let* ((e (match-end 0))
 	     (type (downcase (substring string 0 e)))
 	     ret dest)
