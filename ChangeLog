@@ -7,6 +7,8 @@
 
 	* tram.el: Rename from net-trans.el; require `closure'.
 	(tram-define-transaction): New function.
+	(tram-compose-&&): Expand macro `closure-call'.
+	(tram-compose-||): Ditto.
 
 2000-08-16   Daiki Ueno  <ueno@unixuser.org>
 
