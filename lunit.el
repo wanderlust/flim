@@ -75,19 +75,7 @@
 ;;; @ test listener
 ;;;
 
-(luna-define-class lunit-test-listener ())
-
-(luna-define-generic lunit-test-listener-error (listener case error)
-  "An error occurred.")
-
-(luna-define-generic lunit-test-listener-failure (listener case failure)
-  "A failure occurred.")
-
-(luna-define-generic lunit-test-listener-start (listener case)
-  "A test started.")
-
-(luna-define-generic lunit-test-listener-end (listener case)
-  "A test ended.")
+(luna-define-class lunit-test-listener)
 
 ;;; @ test result
 ;;;
@@ -109,6 +97,9 @@
 (luna-define-generic lunit-test-result-run (result case)
   "Run the test case.")
 
+(luna-define-generic lunit-test-result-notify (result message &rest args)
+  "Report the current state of execution.")
+
 (luna-define-generic lunit-test-result-error (result case error)
   "Add error to the list of errors.
 The passed in exception caused the error.")
@@ -124,45 +115,45 @@ The passed in exception caused the failure.")
   "Return a newly allocated `lunit-test-result' instance with LISTENERS."
   (luna-make-entity 'lunit-test-result :listeners listeners))
 
+(luna-define-method lunit-test-result-notify ((result lunit-test-result)
+					      message args)
+  (let ((listeners
+	 (lunit-test-result-listeners-internal result)))
+    (dolist (listener listeners)
+      (apply #'luna-send listener message listener args))))
+
 (luna-define-method lunit-test-result-run ((result lunit-test-result) case)
-  (let ((listeners (lunit-test-result-listeners-internal result)))
-    (dolist (listener listeners)
-      (lunit-test-listener-start listener case))
-    (condition-case error
-	(lunit-test-case-run case)
-      (lunit-failure
-       (lunit-test-result-failure result case (nth 1 error)))
-      (lunit-error
-       (lunit-test-result-error result case (cdr error))))
-    (dolist (listener listeners)
-      (lunit-test-listener-end listener case))))
+  (lunit-test-result-notify result 'lunit-test-listener-start case)
+  (condition-case error
+      (lunit-test-case-run case)
+    (lunit-failure
+     (lunit-test-result-failure result case (nth 1 error)))
+    (lunit-error
+     (lunit-test-result-error result case (cdr error))))
+  (lunit-test-result-notify result 'lunit-test-listener-end case))
 
 (luna-define-method lunit-test-result-error ((result lunit-test-result)
 					     case error)
-  (let ((listeners (lunit-test-result-listeners-internal result))
-	(errors (lunit-test-result-errors-internal result)))
-    (if errors
-	(nconc errors (list (cons case error)))
-      (lunit-test-result-set-errors-internal result (list (cons case error))))
-    (dolist (listener listeners)
-      (lunit-test-listener-error listener case error))))
+  (let ((errors
+	 (lunit-test-result-errors-internal result)))
+    (setq errors (nconc errors (list (cons case error))))
+    (lunit-test-result-set-errors-internal result errors))
+  (lunit-test-result-notify result 'lunit-test-listener-error case error))
 
 (luna-define-method lunit-test-result-failure ((result lunit-test-result)
 					       case failure)
-  (let ((listeners (lunit-test-result-listeners-internal result))
-	(failures (lunit-test-result-failures-internal result)))
-    (if failures
-	(nconc failures (list (cons case failure)))
-      (lunit-test-result-set-failures-internal result (list (cons case failure))))
-    (dolist (listener listeners)
-      (lunit-test-listener-failure listener case failure))))
+  (let ((failures
+	 (lunit-test-result-failures-internal result)))
+    (setq failures (nconc failures (list (cons case failure))))
+    (lunit-test-result-set-failures-internal result failures))
+  (lunit-test-result-notify result 'lunit-test-listener-failure case failure))
 
 (luna-define-method lunit-test-result-add-listener ((result lunit-test-result)
 						    listener)
-  (let ((listeners (lunit-test-result-listeners-internal result)))
-    (if listeners
-	(nconc listeners (list listener))
-      (lunit-test-result-set-listeners-internal result (list listener)))))
+  (let ((listeners
+	 (lunit-test-result-listeners-internal result)))
+    (setq listeners (nconc listeners (list listener)))
+    (lunit-test-result-set-listeners-internal result listeners)))
 
 ;;; @ test case
 ;;;
@@ -226,9 +217,7 @@ TESTS holds a number of instances of `lunit-test'."
 
 (luna-define-method lunit-test-suite-add-test ((suite lunit-test-suite) test)
   (let ((tests (lunit-test-suite-tests-internal suite)))
-    (if tests
-	(nconc tests (list test))
-      (lunit-test-suite-set-tests-internal suite (list test)))))
+    (lunit-test-suite-set-tests-internal suite (nconc tests (list test)))))
 
 (luna-define-method lunit-test-number-of-tests ((suite lunit-test-suite))
   (let ((tests (lunit-test-suite-tests-internal suite))
@@ -261,7 +250,8 @@ TESTS holds a number of instances of `lunit-test'."
 						 case failure)
   (princ (format " failure: %S" failure)))
 
-(luna-define-method lunit-test-listener-start ((printer lunit-test-printer) case)
+(luna-define-method lunit-test-listener-start ((printer lunit-test-printer)
+					       case)
   (princ (format "Running `%S#%S'..."
 		 (luna-class-name case)
 		 (lunit-test-name-internal case))))
@@ -285,16 +275,55 @@ TESTS holds a number of instances of `lunit-test'."
   (let* ((printer
 	  (luna-make-entity 'lunit-test-printer))
 	 (result
-	  (lunit-make-test-result printer))
-	 failures
-	 errors)
+	  (lunit-make-test-result printer)))
     (lunit-test-run test result)
-    (setq failures (lunit-test-result-failures-internal result)
-	  errors (lunit-test-result-errors-internal result))
-    (princ (format "%d runs, %d failures, %d errors\n"
-		   (lunit-test-number-of-tests test)
-		   (length failures)
-		   (length errors)))))
+    (let ((failures
+	   (lunit-test-result-failures-internal result))
+	  (errors
+	   (lunit-test-result-errors-internal result)))
+      (princ (format "%d runs, %d failures, %d errors\n"
+		     (lunit-test-number-of-tests test)
+		     (length failures)
+		     (length errors))))))
+
+(defvar imenu-create-index-function)
+(defun lunit-create-index-function ()
+  (require 'imenu)
+  (save-excursion
+    (unwind-protect
+	(progn
+	  (goto-char (point-min))
+	  (setq imenu-generic-expression
+		'((nil "^\\s-*(def\\(un\\|subst\\|macro\\)\\s-+\\([-A-Za-z0-9+*|:]+\\)" 2)))
+	  (funcall imenu-create-index-function))
+      (setq imenu-create-index-function lisp-imenu-generic-expression))))
+
+(defun lunit-generate-template (file)
+  (interactive "fGenerate lunit template for: ")
+  (save-excursion
+    (set-buffer (find-file-noselect file))
+    (let ((index-alist 
+	   (lunit-create-index-function)))
+      (with-output-to-temp-buffer "*Lunit template*"
+	(let* ((feature
+		(file-name-sans-extension
+		 (file-name-nondirectory file)))
+	       (class
+		(concat "test-" feature)))
+	  (set-buffer standard-output)
+	  (insert "\
+\(require 'lunit)
+\(require '" feature ")
+
+\(luna-define-class " class " (lunit-test-case))
+
+")
+	  (dolist (index index-alist)
+	    (insert "\
+\(luna-define-method " class "-" (car index) " ((case " class "))
+  (lunit-assert nil))
+
+")))))))
 
 (provide 'lunit)
 

@@ -7,6 +7,16 @@
 
 	* std11.el (std11-lexical-analyze): Fix typo.
 
+2001-04-01   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el (lunit-test-listener-*): Abolish generic interface.
+	(lunit-test-result-notify): New function.
+	(lunit-test-result-run): Use it.
+	(lunit-test-result-error): Use it.
+	(lunit-test-result-failure): Use it.
+	(lunit-create-index-function): New function.
+	(lunit-generate-template): New command.
+
 2001-03-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* hmac-md5.el, hmac-sha1.el: Revert to load-time check.
