@@ -299,9 +299,9 @@ used as default value.
 
 <defvar name="default-mime-charset">
 <p>
-Symbol to indicate default value of <dref>MIME-charset</dref>.
+Symbol to indicate default value of <dref>MIME charset</dref>.
 <p>
-It is used when MIME-charset is not specified.
+It is used when MIME charset is not specified.
 <p>
 It is originally variable of APEL.
 </defvar>
@@ -563,15 +563,16 @@ Return value of <var>parameter</var> of <var>content-type</var>.
 <node> Content-Type parser
 <p>
 <defun name="mime-parse-Content-Type">
-	  <args> string
+	    <args> string
 <p>
-Parse <var>string</var> as field-body of Content-Type field.
+Parse <var>string</var> as a field-body of Content-Type field, and
+return the result as <dref>mime-content-type</dref> structure.
 </defun>
 
 <defun name="mime-read-Content-Type">
 <p>
-Read field-body of Content-Type field from current-buffer,
-and return parsed it.
+Parse Content-Type field of the current buffer, and return the result
+as <dref>mime-content-type</dref> structure.
 <p>
 Return <code>nil</code> if Content-Type field is not found.
 </defun>
@@ -581,7 +582,7 @@ Return <code>nil</code> if Content-Type field is not found.
 <node> Content-Type utility
 <p>
 <defun name="mime-type/subtype-string">
-	  <args> type <opts> subtype
+	    <args> type <opts> subtype
 <p>
 Return type/subtype string from <var>type</var> and
 <var>subtype</var>.
@@ -596,10 +597,10 @@ specify presentation of an entity or attributes of an entity, such as
 file name.
 
 <rfc number="2183" type="Standards Track"
-	      author="S. Dorner, K. Moore and R. Troost"
-	      title="Communicating Presentation Information in
-	      Internet Messages: The Content-Disposition Header"
-	      date="August 1997">
+	  author="S. Dorner, K. Moore and R. Troost"
+	  title="Communicating Presentation Information in Internet
+	  Messages: The Content-Disposition Header" date="August
+	  1997">
 <p>
 FLIM provides parser for Content-Disposition field and structure
 <concept>mime-content-disposition</concept> to store information of
@@ -649,14 +650,16 @@ Return filename of <var>content-disposition</var>.
 	    <args> string
 <p>
 Parse <var>string</var> as field-body of Content-Disposition field,
-and return the result.
+and return the result as <dref>mime-content-disposition</dref>
+structure.
 </defun>
 
 <defun name="mime-read-Content-Disposition">
 <p>
-Read field-body of Content-Disposition field from current-buffer,
+Parse Content-Disposition field of the current buffer, and return the
+result as <dref>mime-content-disposition</dref> structure.
 <p>
-Return nil if Content-Disposition field is not found.
+Return <code>nil</code> if Content-Disposition field is not found.
 </defun>
 
 
@@ -678,19 +681,21 @@ Content-Transfer-Encoding.
 <node> Content-Transfer-Encoding parser
 <p>
 <defun name="mime-parse-Content-Transfer-Encoding">
-	  <args> string
+	    <args> string
 <p>
-<var>string</var> を content-transfer-encoding として解析した結果を返す。
+Parse <var>string</var> as a field-body of Content-Transfer-Encoding
+field, and return the result.
 </defun>
 
 <defun name="mime-read-Content-Transfer-Encoding">
-	  <opts>default-encoding
+	    <opts>default-encoding
 <p>
-現在の buffer の Content-Transfer-Encoding 欄を読み取り、解析した結果を
-返す。
+Parse Content-Transfer-Encoding field of the current buffer, and
+return the result.
 <p>
-Content-Transfer-Encoding 欄が存在しない場合は
-<var>default-encoding</var> を返す。
+Return <var>default-encoding</var> if Content-Transfer-Encoding field
+is not found.  If it is not specified, <code>nil</code> is used as the
+default value.
 </defun>
 
 
@@ -713,9 +718,10 @@ using <var>encoding</var>.
 
 
 <defun name="mime-decode-string">
-	      <args> string encoding
+	    <args> string encoding
 <p>
-<var>string</var> を <var>encoding</var> として復号した結果を返します。
+Decode <var>string</var> which is encoded in <var>encoding</var>, and
+return the result.
 </defun>
 
 
@@ -852,27 +858,48 @@ FLIM はこれらを符号化・復号化する機能を提供します。
 <h2> Header encoding/decoding
 <node> Header encoder/decoder
 <p>
-<defun name="eword-encode-header">
-	      <opts> code-conversion separator
+<defun name="eword-decode-header">
+	    <opts> code-conversion separator
 <p>
 Decode MIME encoded-words in header fields.
 <p>
-If <var>code-conversion</var> is <code>nil</code>, it decodes only
-encoded-words.  If it is mime-charset, it decodes non-ASCII bit
-patterns as the mime-charset.  Otherwise it decodes non-ASCII bit
-patterns as the default-mime-charset.
+If <var>code-conversion</var> is <code>nil</code>, only encoded-words
+are decoded.  If <var>code-conversion</var> is a <dref>MIME
+charset</dref>, non-ASCII bit patterns are decoded as the MIME
+charset.  Otherwise non-ASCII bit patterns are decoded as the
+<code>default-mime-charset</code>. <cf node="entity formatting">
 <p>
-If <var>separator</var> is not nil, it is used as header separator.
+If <var>separator</var> is not <code>nil</code>, it is used as header
+separator.
 </defun>
 
 <defun name="eword-encode-header">
-	      <opts> code-conversion
+	    <opts> code-conversion
 <p>
 Encode header fields to network representation, such as MIME
 encoded-word.
 <p>
-It refer variable <code>eword-field-encoding-method-alist</code>.
+Each field is encoded as corresponding method specified by variable
+<code>eword-field-encoding-method-alist</code>.
 </defun>
+
+<defvar name="eword-field-encoding-method-alist">
+<p>
+Association list to specify field encoding method.  Each element looks
+like (FIELD . METHOD).
+<p>
+If METHOD is <code>mime</code>, the FIELD will be encoded into MIME
+format (encoded-word).
+<p>
+If METHOD is <code>nil</code>, the FIELD will not be encoded.
+<p>
+If METHOD is a MIME charset, the FIELD will be encoded as the charset
+when it must be convert into network-code.
+<p>
+Otherwise the FIELD will be encoded as variable
+<code>default-mime-charset</code> when it must be convert into
+network-code.
+</defvar>
 
 
 <h1> Various Customization

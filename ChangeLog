@@ -1,5 +1,39 @@
 1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-en.sgml, mime-ja.sgml (Header encoder/decoder): Add
+	description about `eword-field-encoding-method-alist'.
+
+	* mime-en.sgml (Header encoder/decoder): Modify description about
+	`eword-encode-header'.
+
+	* mime-ja.sgml (Header encoder/decoder): Translate.
+
+1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml (entity formatting): Fix typo in description of
+	`default-mime-charset'.
+
+	* mime-en.sgml (Header encoder/decoder): Modify description of
+	`eword-decode-header'.
+
+	* mime-ja.sgml, mime-en.sgml (Header encoder/decoder): fix typo.
+
+	* mime-en.sgml (encoder/decoder): Translate description of
+	`mime-decode-string'.
+
+1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml (Content-Disposition parser): Modify description.
+
+	* mime-en.sgml (Content-Type parser): Modify description.
+
+1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml (Content-Transfer-Encoding parser): Translate.
+
+
+1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* FLIM: Version 1.11.0 (Yamadagawa) was released.
 
 1998-10-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>

@@ -103,7 +103,8 @@ mime-entity.@refill
 If @var{buffer} is omitted, current buffer is used.@refill
 
 @var{type} is representation-type of created
-mime-entity. (cf. @ref{mm-backend}) Default value is @var{buffer}.
+mime-entity. (cf. @ref{mm-backend})
+ Default value is @var{buffer}.
 @end defun
 
 
@@ -329,10 +330,9 @@ value.
 
 @defvar default-mime-charset
 
-Symbol to indicate default value of MIME-charset
-(@ref{MIME-charset}).@refill
+Symbol to indicate default value of MIME charset (@ref{MIME charset}).@refill
 
-It is used when MIME-charset is not specified.@refill
+It is used when MIME charset is not specified.@refill
 
 It is originally variable of APEL.
 @end defvar
@@ -626,14 +626,15 @@ Return value of @var{parameter} of @var{content-type}.
 
 @defun mime-parse-Content-Type string
 
-Parse @var{string} as field-body of Content-Type field.
+Parse @var{string} as a field-body of Content-Type field, and return the
+result as mime-content-type (@ref{mime-content-type}) structure.
 @end defun
 
 
 @defun mime-read-Content-Type
 
-Read field-body of Content-Type field from current-buffer, and return
-parsed it.@refill
+Parse Content-Type field of the current buffer, and return the result as
+mime-content-type (@ref{mime-content-type}) structure.@refill
 
 Return @code{nil} if Content-Type field is not found.
 @end defun
@@ -724,15 +725,18 @@ Return filename of @var{content-disposition}.
 @defun mime-parse-Content-Disposition string
 
 Parse @var{string} as field-body of Content-Disposition field, and
-return the result.
+return the result as mime-content-disposition
+(@ref{mime-content-disposition}) structure.
 @end defun
 
 
 @defun mime-read-Content-Disposition
 
-Read field-body of Content-Disposition field from current-buffer,@refill
+Parse Content-Disposition field of the current buffer, and return the
+result as mime-content-disposition (@ref{mime-content-disposition})
+structure.@refill
 
-Return nil if Content-Disposition field is not found.
+Return @code{nil} if Content-Disposition field is not found.
 @end defun
 
 
@@ -765,17 +769,18 @@ Content-Transfer-Encoding.
 
 @defun mime-parse-Content-Transfer-Encoding string
 
-@var{string} を content-transfer-encoding として解析した結果を返す。
+Parse @var{string} as a field-body of Content-Transfer-Encoding field,
+and return the result.
 @end defun
 
 
 @defun mime-read-Content-Transfer-Encoding &optional default-encoding
 
-現在の buffer の Content-Transfer-Encoding 欄を読み取り、解析した結果を
-返す。@refill
+Parse Content-Transfer-Encoding field of the current buffer, and return
+the result.@refill
 
-Content-Transfer-Encoding 欄が存在しない場合は@var{default-encoding} を
-返す。
+Return @var{default-encoding} if Content-Transfer-Encoding field is not
+found.  If it is not specified, @code{nil} is used as the default value.
 @end defun
 
 
@@ -800,7 +805,8 @@ Decode region @var{start} to @var{end} of current buffer using
 
 @defun mime-decode-string string encoding
 
-@var{string} を @var{encoding} として復号した結果を返します。
+Decode @var{string} which is encoded in @var{encoding}, and return the
+result.
 @end defun
 
 
@@ -948,16 +954,17 @@ FLIM はこれらを符号化・復号化する機能を提供します。
 @node Header encoder/decoder,  , encoded-word, encoded-word
 @section Header encoding/decoding
 
-@defun eword-encode-header &optional  code-conversion separator
+@defun eword-decode-header &optional  code-conversion separator
 
 Decode MIME encoded-words in header fields.@refill
 
-If @var{code-conversion} is @code{nil}, it decodes only encoded-words.
-If it is mime-charset, it decodes non-ASCII bit patterns as the
-mime-charset.  Otherwise it decodes non-ASCII bit patterns as the
-default-mime-charset.@refill
+If @var{code-conversion} is @code{nil}, only encoded-words are decoded.
+If @var{code-conversion} is a MIME charset (@ref{MIME charset}),
+non-ASCII bit patterns are decoded as the MIME charset.  Otherwise
+non-ASCII bit patterns are decoded as the
+@code{default-mime-charset}. (cf. @ref{entity formatting}) @refill
 
-If @var{separator} is not nil, it is used as header separator.
+If @var{separator} is not @code{nil}, it is used as header separator.
 @end defun
 
 
@@ -966,8 +973,27 @@ If @var{separator} is not nil, it is used as header separator.
 Encode header fields to network representation, such as MIME
 encoded-word.@refill
 
-It refer variable @code{eword-field-encoding-method-alist}.
+Each field is encoded as corresponding method specified by variable
+@code{eword-field-encoding-method-alist}.
 @end defun
+
+
+@defvar eword-field-encoding-method-alist
+
+Association list to specify field encoding method.  Each element looks
+like (FIELD . METHOD).@refill
+
+If METHOD is @code{mime}, the FIELD will be encoded into MIME format
+(encoded-word).@refill
+
+If METHOD is @code{nil}, the FIELD will not be encoded.@refill
+
+If METHOD is a MIME charset, the FIELD will be encoded as the charset
+when it must be convert into network-code.@refill
+
+Otherwise the FIELD will be encoded as variable
+@code{default-mime-charset} when it must be convert into network-code.
+@end defvar
 
 
 
