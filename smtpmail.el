@@ -43,7 +43,7 @@
 ;;; Code:
 
 (require 'poe)
-(require 'pcustom)
+(require 'custom)
 (require 'smtp)
 (require 'sendmail)
 (require 'time-stamp)

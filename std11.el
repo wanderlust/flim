@@ -26,7 +26,7 @@
 
 (require 'poe)
 (require 'poem)				; find-non-ascii-charset-string
-(require 'pcustom)			; std11-lexical-analyzer
+(require 'custom)			; std11-lexical-analyzer
 
 
 ;;; @ fetch

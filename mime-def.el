@@ -26,7 +26,7 @@
 
 (require 'poe)
 (require 'poem)
-(require 'pcustom)
+(require 'custom)
 (require 'mcharset)
 (require 'alist)
 
@@ -58,8 +58,6 @@
 
 ;;; @ variables
 ;;;
-
-(require 'custom)
 
 (defgroup mime '((default-mime-charset custom-variable))
   "Emacs MIME Interfaces"

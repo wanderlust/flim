@@ -34,7 +34,7 @@
 ;;; Code:
 
 (require 'poem)
-(require 'pcustom)
+(require 'custom)
 
 (defgroup qmtp nil
   "QMTP protocol for sending mail."
