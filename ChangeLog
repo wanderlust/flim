@@ -1,10 +1,8 @@
-1998-10-25  Tanaka Akira  <akr@jaist.ac.jp>
+1998-10-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* eword-decode.el (eword-decode-field-body): New function.
-	(eword-decode-header): Use `eword-decode-field-body'.
-
-	* mmgeneric.el (mime-insert-header-from-buffer): Use
-	`eword-decode-field-body'.
+	* eword-encode.el (eword-encode-field-body): Change interface.
+	(eword-encode-header): Use `eword-encode-field-body'; abolish
+	function `eword-encode-field'.
 
 1998-10-25  Tanaka Akira  <akr@jaist.ac.jp>
 
