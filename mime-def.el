@@ -105,10 +105,18 @@
 (eval-and-compile
   (defconst mime-tspecial-char-list
     '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=)))
+
+(defconst mime-token-exclude-chars-regexp
+  (eval-when-compile
+    (concat mime-tspecial-char-list "\000-\040")))
+
 (defconst mime-token-regexp
   (eval-when-compile
-    (concat "[^" mime-tspecial-char-list "\000-\040]+")))
-(defconst mime-charset-regexp mime-token-regexp)
+    (concat "[^" mime-token-exclude-chars-regexp "]+")))
+
+(defconst mime-charset-regexp
+  (eval-when-compile
+    (concat "[^" mime-token-exclude-chars-regexp "*]+")))
 
 (defconst mime-media-type/subtype-regexp
   (concat mime-token-regexp "/" mime-token-regexp))
@@ -216,9 +224,11 @@
 			(decode-mime-charset-region (point-min) (point-max)
 						    mcs)
 			(buffer-string)))
-		  (mapconcat #'cddr sorted-raw ""))))
-	  (put-text-property 0 (length val)
-			     'mime-language (mime-parameter-language parm) val)
+		  (mapconcat #'cddr sorted-raw "")))
+	       (language (mime-parameter-language parm)))
+	  (when language
+	    (put-text-property 0 (length val)
+			       'mime-language  val))
 	  (aset (cdr parm) 3 val)
 	  ))))
 
