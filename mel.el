@@ -131,20 +131,31 @@ mmencode included in metamail or XEmacs package)."
       (error "Invalid encoded-text %s" string)))
   )
 
-(defvar mel-ccl-module
-  (and (featurep 'mule)
-       (progn
-	 (require 'path-util)
-	 (module-installed-p 'mel-ccl)
-	 )))
-
 (mel-use-module 'mel-b-el '("base64" "B"))
 (mel-use-module 'mel-q '("quoted-printable" "Q"))
 (mel-use-module 'mel-g '("x-gzip64"))
 (mel-use-module 'mel-u '("x-uue" "x-uuencode"))
 
-(if mel-ccl-module
-    (mel-use-module 'mel-ccl '("base64" "quoted-printable" "B" "Q"))
+(defvar mel-b-ccl-module
+  (and (featurep 'mule)
+       (progn
+	 (require 'path-util)
+	 (module-installed-p 'mel-b-ccl)
+	 )))
+
+(defvar mel-q-ccl-module
+  (and (featurep 'mule)
+       (progn
+	 (require 'path-util)
+	 (module-installed-p 'mel-q-ccl)
+	 )))
+
+(if mel-b-ccl-module
+    (mel-use-module 'mel-b-ccl '("base64" "B"))
+  )
+
+(if mel-q-ccl-module
+    (mel-use-module 'mel-q-ccl '("quoted-printable" "Q"))
   )
 
 (if base64-dl-module
@@ -203,11 +214,7 @@ ENCODING must be string.")
 ENCODING must be string.")
 
 (defun base64-encoded-length (string)
-  (let ((len (length string)))
-    (* (+ (/ len 3)
-	  (if (= (mod len 3) 0) 0 1)
-	  ) 4)
-    ))
+  (* (/ (+ (length string) 2) 3) 4))
 
 (defsubst Q-encoding-printable-char-p (chr mode)
   (and (not (memq chr '(?= ?? ?_)))
