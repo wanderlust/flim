@@ -48,6 +48,17 @@
 (require 'sendmail)
 (require 'time-stamp)
 
+(eval-when-compile (require 'static))
+
+(static-when (featurep 'xemacs)
+  (define-obsolete-variable-alias 'smtpmail-default-smtp-server
+    'smtp-default-server)
+  (define-obsolete-variable-alias 'smtpmail-smtp-server 'smtp-server)
+  (define-obsolete-variable-alias 'smtpmail-smtp-service 'smtp-service)
+  (define-obsolete-variable-alias 'smtpmail-local-domain 'smtp-local-domain)
+  (define-obsolete-variable-alias 'smtpmail-debug-info 'smtp-debug-info)
+  )
+
 ;;;
 
 (defcustom smtpmail-queue-mail nil 
@@ -104,7 +115,7 @@ This is relative to `smtpmail-queue-dir'.")
 	  (backward-char 1)
 	  (setq delimline (point-marker))
 ;;	  (sendmail-synch-aliases)
-	  (if mail-aliases
+	  (if (and mail-aliases (fboundp 'expand-mail-aliases)) ; XEmacs
 	      (expand-mail-aliases (point-min) delimline))
 	  (goto-char (point-min))
 	  ;; ignore any blank lines in the header
