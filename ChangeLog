@@ -1,3 +1,7 @@
+2000-12-22  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmgeneric.el: Add comment for eword-decode.
+
 2000-12-21  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mailcap.el: Require `poe' for `define-obsolete-function-alias'.
