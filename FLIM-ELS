@@ -8,7 +8,7 @@
 		     mime-def
 		     mel mel-dl mel-b mel-q mel-u mel-g
 		     eword-decode eword-encode
-		     mailcap))
+		     mime-lib mailcap))
 
 (if (fboundp 'dynamic-link)
     (setq flim-modules (cons 'mel-dl flim-modules))
