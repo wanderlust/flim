@@ -1,3 +1,20 @@
+2000-12-22  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* raw-io.el: Require `pces'
+	(binary-insert-file-contents): Alias to
+	`insert-file-contents-as-binary'.
+	(binary-write-region): Alias to `write-region-as-binary'.
+	(binary-find-file-noselect): Alias to
+	`find-file-noselect-as-binary'.
+	(binary-open-network-stream): Alias to
+	`open-network-stream-as-binary'.
+	(binary-start-process): Use `as-binary-process'.
+	(binary-start-process-shell-command): Use `as-binary-process'.
+	(raw-text-insert-file-contents): Alias to
+	`insert-file-contents-as-raw-text'.
+	(raw-message-write-region): Alias to
+	`write-region-as-raw-text-CRLF'.
+
 2000-12-22  Keiichi Suzuki  <keiichi@mdcnet.co.jp>
 
 	* mel-q.el: Require `poem' for `string-to-char-list' when
