@@ -11,7 +11,7 @@
 		     mime mime-parse mmgeneric
 		     mmbuffer mmcooked mmdbuffer mmexternal
 		     mailcap
-		     net-trans smtp qmtp smtpmail))
+		     closure tram smtp qmtp smtpmail))
 
 (if (and (fboundp 'base64-encode-string)
 	 (subrp (symbol-function 'base64-encode-string)))
