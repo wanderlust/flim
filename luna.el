@@ -107,6 +107,7 @@ It must be plist and each slot name must have prefix `:'."
       (if s
 	  (aset v (get s 'luna-member-index) i)
 	))
+    (luna-send v 'initialize-instance v)
     v))
 
 (defsubst luna-class-find-member (class member-name)
