@@ -1,6 +1,6 @@
 ;;; mime-def.el --- definition module about MIME -*- coding: ctext; -*-
 
-;; Copyright (C) 1995,96,97,98,99,2000,2001,2002,2003
+;; Copyright (C) 1995,96,97,98,99,2000,2001,2002,2003,2004
 ;;   Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
@@ -33,7 +33,7 @@
 (eval-when-compile (require 'luna))	; luna-arglist-to-arguments
 
 (eval-and-compile
-  (defconst mime-library-product ["LIMIT" (1 14 8) "Hajinosato"]
+  (defconst mime-library-product ["LIMIT" (1 14 9) "Domyoji"] ;; D-Dòmyòji-A
     "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)

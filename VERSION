@@ -61,6 +61,12 @@
 ;;-------------------------------------------------------------------------
 1.14.5	Demachiyanagi		$B=PD.Lx(B		; <=> $B1CEE(B
 1.14.6	Marutamachi		$B4]B@D.(B
+1.14.7	Sanj-Dò-A			$(B;0>r(B		; = $(B5~ET;T8rDL6I(B $(BEl@>@~(B
+;;-------------------------------------------------------------------------
+;;	Keihan Electric Railway	$(B5~:eEE5$E4F;(B	http://www.keihan.co.jp/
+;;	Main Line		$(BK\@~(B
+;;-------------------------------------------------------------------------
+	(Sanj-Dò)-A			($(B;0>r(B)
 
 
 [Chao Version names]
@@ -175,7 +181,7 @@
 1.14.6	Takawashi			$B9bOI(B
 1.14.7	Fujiidera			$BF#0f;{(B
 1.14.8	Hajinosato			$BEZ;U$NN$(B
-------	D,Dr(Bmy,Dr(Bji				$BF;L@;{(B
+1.14.9	D,Dr(Bmy,Dr(Bji				$BF;L@;{(B
 ------	Furuichi			$B8E;T(B		; = $B6aE4(B $BD9Ln@~(B
 ------	Komagatani			$B6p%vC+(B
 ------	Kaminotaishi			$B>e%NB@;R(B
