@@ -62,7 +62,7 @@
 	      mime-charset-regexp
 	      "\\)"
 	      (regexp-quote "?")
-	      "\\(B\\|Q\\)"
+	      "\\([BbQq]\\)"
 	      (regexp-quote "?")
 	      "\\("
 	      eword-encoded-text-regexp
