@@ -10,10 +10,12 @@ RM	= /bin/rm -f
 CP	= /bin/cp -p
 
 EMACS	= emacs
+XEMACS	= xemacs
 FLAGS   = -batch -q -no-site-file -l FLIM-MK
 
 PREFIX = NONE
 LISPDIR = NONE
+PACKAGEDIR = NONE
 
 GOMI	= *.elc \
 	  *.cp *.cps *.ky *.kys *.fn *.fns *.vr *.vrs \
@@ -26,6 +28,18 @@ elc:
 
 install:	elc
 	$(EMACS) $(FLAGS) -f install-flim $(PREFIX) $(LISPDIR)
+
+
+package:
+	$(XEMACS) -batch -q -no-site-file \
+		-eval '(setq autoload-package-name "flim")' \
+		-l autoload -f batch-update-directory .
+	$(XEMACS) -batch -q -no-site-file \
+		-l cus-dep -f Custom-make-dependencies .
+	$(XEMACS) $(FLAGS) -f compile-flim-package $(PACKAGEDIR)
+
+install-package:	package
+	$(XEMACS) $(FLAGS) -f install-flim-package $(PACKAGEDIR)
 
 clean:
 	-$(RM) $(GOMI)
