@@ -1,3 +1,7 @@
+1999-08-17  MORIOKA Tomohiko  <tomo@etl.go.jp>
+
+	* FLIM: Version 1.13.2 (Kasanui) released.
+
 1999-08-03  Yuuichi Teranishi <teranisi@gohome.org>
 	
 	* smtp.el (smtp-notify-success): New option.
