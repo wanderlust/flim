@@ -297,6 +297,11 @@ such as a version of Net$cape)."
 
 (defvar mime-field-decoder-alist nil)
 
+(defvar mime-field-decoder-cache nil)
+
+(defvar mime-update-field-decoder-cache 'mime-update-field-decoder-cache
+  "*Field decoder cache update function.")
+
 ;;;###autoload
 (defun mime-set-field-decoder (field &rest specs)
   "Set decoder of FILED.
@@ -324,33 +329,66 @@ If mode is `nil', corresponding decoder is set up for every modes."
 				'nov function)
 	))))
 
-(defvar mime-field-decoder-cache nil)
+;;;###autoload
+(defmacro mime-find-field-presentation-method (name)
+  "Return field-presentation-method from NAME.
+NAME must be `plain', `wide', `summary' or `nov'."
+  (cond ((eq name nil)
+	 `(or (assq 'summary mime-field-decoder-cache)
+	      '(summary))
+	 )
+	((and (consp name)
+	      (car name)
+	      (consp (cdr name))
+	      (symbolp (car (cdr name)))
+	      (null (cdr (cdr name))))
+	 `(or (assq ,name mime-field-decoder-cache)
+	      (cons ,name nil))
+	 )
+	(t
+	 `(or (assq (or ,name 'summary) mime-field-decoder-cache)
+	      (cons (or ,name 'summary) nil))
+	 )))
+
+(defun mime-find-field-decoder-internal (field &optional mode)
+  "Return function to decode field-body of FIELD in MODE.
+Optional argument MODE must be object of field-presentation-method."
+  (cdr (or (assq field (cdr mode))
+	   (prog1
+	       (funcall mime-update-field-decoder-cache
+			field (car mode))
+	     (setcdr mode
+		     (cdr (assq (car mode) mime-field-decoder-cache)))
+	     ))))
 
 ;;;###autoload
 (defun mime-find-field-decoder (field &optional mode)
   "Return function to decode field-body of FIELD in MODE.
-Optional argument MODE must be `plain', `wide', `summary' or `nov'.
+Optional argument MODE must be object or name of
+field-presentation-method.  Name of field-presentation-method must be
+`plain', `wide', `summary' or `nov'.
 Default value of MODE is `summary'."
-  (let ((p (assq (or mode 'summary) mime-field-decoder-cache)))
-    (if (and p (setq p (assq field (cdr p))))
-        (cdr p)
-      (cdr (funcall mime-update-field-decoder-cache
-                    field (or mode 'summary))))))
-
-(defvar mime-update-field-decoder-cache 'mime-update-field-decoder-cache
-  "*Field decoder cache update function.")
+  (if (symbolp mode)
+      (let ((p (cdr (mime-find-field-presentation-method mode))))
+	(if (and p (setq p (assq field p)))
+	    (cdr p)
+	  (cdr (funcall mime-update-field-decoder-cache
+			field (or mode 'summary)))))
+    (inline (mime-find-field-decoder-internal field mode))
+    ))
 
 ;;;###autoload
 (defun mime-update-field-decoder-cache (field mode &optional function)
   "Update field decoder cache `mime-field-decoder-cache'."
-  (cond
-    ((eq function 'identity)
-     (setq function nil))
-    ((null function)
-     (let ((decoder-alist
-            (cdr (assq (or mode 'summary) mime-field-decoder-alist))))
-       (setq function (cdr (or (assq field decoder-alist)
-                               (assq t decoder-alist)))))))
+  (cond ((eq function 'identity)
+	 (setq function nil)
+	 )
+	((null function)
+	 (let ((decoder-alist
+		(cdr (assq (or mode 'summary) mime-field-decoder-alist))))
+	   (setq function (cdr (or (assq field decoder-alist)
+				   (assq t decoder-alist)))))
+	 ))
   (let ((cell (assq mode mime-field-decoder-cache))
         ret)
     (if cell
@@ -457,8 +495,7 @@ default-mime-charset."
 		      code-conversion
 		    default-mime-charset))))
 	(if default-charset
-	    (let ((decoder-alist
-		   (cdr (assq 'wide mime-field-decoder-cache)))
+	    (let ((mode-obj (mime-find-field-presentation-method 'wide))
 		  beg p end field-name len field-decoder)
 	      (goto-char (point-min))
 	      (while (re-search-forward std11-field-head-regexp nil t)
@@ -467,16 +504,9 @@ default-mime-charset."
 		      field-name (buffer-substring beg (1- p))
 		      len (string-width field-name)
 		      field-name (intern (capitalize field-name))
-		      field-decoder
-                        (cdr (or (assq field-name decoder-alist)
-                                 (prog1
-                                     (funcall
-                                       mime-update-field-decoder-cache
-                                       field-name 'wide)
-                                   (setq decoder-alist
-                                         (cdr (assq 'wide
-                                                    mime-field-decoder-cache))))
-                                     )))
+		      field-decoder (inline
+				      (mime-find-field-decoder-internal
+				       field-name mode-obj)))
 		(when field-decoder
 		  (setq end (std11-field-end))
 		  (let ((body (buffer-substring p end))
