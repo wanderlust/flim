@@ -2,7 +2,8 @@
 # Makefile for FLIM.
 #
 
-VERSION = 1.6.0
+PACKAGE = flim
+VERSION = 1.7.0
 
 TAR	= tar
 RM	= /bin/rm -f
@@ -31,20 +32,20 @@ clean:
 
 tar:
 	cvs commit
-	sh -c 'cvs tag -RF flim-`echo $(VERSION) \
+	sh -c 'cvs tag -RF $(PACKAGE)-`echo $(VERSION) \
 				| sed s/\\\\./_/ | sed s/\\\\./_/`; \
 	cd /tmp; \
 	cvs -d :pserver:anonymous@chamonix.jaist.ac.jp:/hare/cvs/root \
-		export -d flim-$(VERSION) \
-		-r flim-`echo $(VERSION) | sed s/\\\\./_/ | sed s/\\\\./_/` \
+		export -d $(PACKAGE)-$(VERSION) \
+		-r $(PACKAGE)-`echo $(VERSION) | sed s/\\\\./_/ | sed s/\\\\./_/` \
 		flim'
-	cd /tmp; $(RM) flim-$(VERSION)/ftp.in ; \
-		$(TAR) cvzf flim-$(VERSION).tar.gz flim-$(VERSION)
-	cd /tmp; $(RM) -r flim-$(VERSION)
+	cd /tmp; $(RM) $(PACKAGE)-$(VERSION)/ftp.in ; \
+		$(TAR) cvzf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
+	cd /tmp; $(RM) -r $(PACKAGE)-$(VERSION)
 	sed "s/VERSION/$(VERSION)/" < ftp.in > ftp
 
 release:
-	-$(RM) /pub/GNU/elisp/apel/flim-$(VERSION).tar.gz
-	mv /tmp/flim-$(VERSION).tar.gz /pub/GNU/elisp/flim/
+	-$(RM) /pub/GNU/elisp/apel/$(PACKAGE)-$(VERSION).tar.gz
+	mv /tmp/$(PACKAGE)-$(VERSION).tar.gz /pub/GNU/elisp/flim/
 	cd /pub/GNU/elisp/semi/ ; \
-		ln -s ../flim/flim-$(VERSION).tar.gz .
+		ln -s ../flim/$(PACKAGE)-$(VERSION).tar.gz .

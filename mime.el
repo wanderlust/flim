@@ -60,6 +60,47 @@ current-buffer, and return it.")
   "Parse BUFFER as a MIME message.")
 
 
+;;; @ Entity Representation and Implementation
+;;;
+
+(defvar mime-entity-implementation-alist nil)
+
+(defsubst mime-find-function (service type)
+  (let ((imps (cdr (assq type mime-entity-implementation-alist))))
+    (if imps
+	(let ((func (cdr (assq service imps))))
+	  (unless func
+	    (setq func (intern (format "mm%s-%s" type service)))
+	    (set-alist 'mime-entity-implementation-alist
+		       type (put-alist service func imps))
+	    )
+	  func)
+      (let ((prefix (format "mm%s" type)))
+	(require (intern prefix))
+	(let ((func (intern (format "%s-%s" prefix service))))
+	  (set-alist 'mime-entity-implementation-alist
+		     type
+		     (list (cons service func)))
+	  func)))))
+
+(defun mime-open-entity (type location)
+  "Open an entity and return it.
+TYPE is representation-type.
+LOCATION is location of entity.  Specification of it is depended on
+representation-type."
+  (funcall (mime-find-function 'open-entity type) location)
+  )
+
+(defsubst mime-entity-function (entity service)
+  (mime-find-function service
+		      (mime-entity-representation-type-internal entity)))
+
+(defun mime-entity-cooked-p (entity)
+  "Return non-nil if contents of ENTITY has been already code-converted."
+  (funcall (mime-entity-function entity 'cooked-p))
+  )
+
+
 ;;; @ Entity as node of message
 ;;;
 
@@ -67,7 +108,7 @@ current-buffer, and return it.")
 
 (defalias 'mime-entity-node-id 'mime-entity-node-id-internal)
 
-(defsubst mime-entity-number (entity)
+(defun mime-entity-number (entity)
   "Return entity-number of ENTITY."
   (reverse (mime-entity-node-id-internal entity)))
 
@@ -85,12 +126,12 @@ If MESSAGE is not specified, `mime-message-structure' is used."
 	  ))
       )))
 
-(defsubst mime-find-entity-from-node-id (entity-node-id &optional message)
+(defun mime-find-entity-from-node-id (entity-node-id &optional message)
   "Return entity from ENTITY-NODE-ID in MESSAGE.
 If MESSAGE is not specified, `mime-message-structure' is used."
   (mime-find-entity-from-number (reverse entity-node-id) message))
 
-(defsubst mime-entity-parent (entity &optional message)
+(defun mime-entity-parent (entity &optional message)
   "Return mother entity of ENTITY.
 If MESSAGE is not specified, `mime-message-structure' in the buffer of
 ENTITY is used."
@@ -101,7 +142,7 @@ ENTITY is used."
 	 (set-buffer (mime-entity-buffer entity))
 	 mime-message-structure))))
 
-(defsubst mime-root-entity-p (entity)
+(defun mime-root-entity-p (entity)
   "Return t if ENTITY is root-entity (message)."
   (null (mime-entity-node-id entity)))
 
@@ -109,16 +150,35 @@ ENTITY is used."
 ;;; @ Entity Buffer
 ;;;
 
-(defalias 'mime-entity-buffer		'mime-entity-buffer-internal)
+(defun mime-entity-buffer (entity)
+  (or (mime-entity-buffer-internal entity)
+      (funcall (mime-entity-function entity 'entity-buffer) entity)
+      ))
 
-(defalias 'mime-entity-point-min	'mime-entity-header-start-internal)
-(defalias 'mime-entity-point-max	'mime-entity-body-end-internal)
+(defun mime-entity-point-min (entity)
+  (funcall (mime-entity-function entity 'entity-point-min) entity)
+  )
+(defun mime-entity-point-max (entity)
+  (funcall (mime-entity-function entity 'entity-point-max) entity)
+  )
 
-(defalias 'mime-entity-header-start	'mime-entity-header-start-internal)
-(defalias 'mime-entity-header-end	'mime-entity-header-end-internal)
+(defun mime-entity-header-start (entity)
+  (or (mime-entity-header-start-internal entity)
+      (funcall (mime-entity-function entity 'entity-header-start) entity)
+      ))
+(defsubst mime-entity-header-end (entity)
+  (or (mime-entity-header-end-internal entity)
+      (funcall (mime-entity-function entity 'entity-header-end) entity)
+      ))
 
-(defalias 'mime-entity-body-start	'mime-entity-body-start-internal)
-(defalias 'mime-entity-body-end		'mime-entity-body-end-internal)
+(defsubst mime-entity-body-start (entity)
+  (or (mime-entity-body-start-internal entity)
+      (funcall (mime-entity-function entity 'entity-body-start) entity)
+      ))
+(defsubst mime-entity-body-end (entity)
+  (or (mime-entity-body-end-internal entity)
+      (funcall (mime-entity-function entity 'entity-body-end) entity)
+      ))
 
 
 ;;; @ Entity Header
@@ -133,14 +193,9 @@ ENTITY is used."
 	 (field-body (cdr (assq field-name header))))
     (or field-body
 	(progn
-	  (if (save-excursion
-		(set-buffer (mime-entity-buffer entity))
-		(save-restriction
-		  (narrow-to-region (mime-entity-header-start entity)
-				    (mime-entity-header-end entity))
-		  (setq field-body
-			(std11-fetch-field (symbol-name field-name)))
-		  ))
+	  (if (setq field-body
+		    (funcall (mime-entity-function entity 'fetch-field)
+			     entity (symbol-name field-name)))
 	      (mime-entity-set-original-header-internal
 	       entity (put-alist field-name field-body header))
 	    )
@@ -336,6 +391,42 @@ ENTITY is used."
     (mime-decode-string (buffer-substring (mime-entity-body-start entity)
 					  (mime-entity-body-end entity))
 			(mime-entity-encoding entity))))
+
+(defun mime-write-entity-content (entity filename)
+  "Write content of ENTITY into FILENAME."
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (let ((encoding (or (mime-entity-encoding entity) "7bit")))
+      (if (and (mime-entity-cooked-p entity)
+	       (member encoding '("7bit" "8bit" "binary")))
+	  (write-region (mime-entity-body-start entity)
+			(mime-entity-body-end entity) filename)
+	(mime-write-decoded-region (mime-entity-body-start entity)
+				   (mime-entity-body-end entity)
+				   filename encoding)
+	))))
+
+(defun mime-write-entity (entity filename)
+  "Write ENTITY into FILENAME."
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (if (mime-entity-cooked-p entity)
+	(write-region (mime-entity-point-min entity)
+		      (mime-entity-point-max entity) filename)
+      (write-region-as-binary (mime-entity-point-min entity)
+			      (mime-entity-point-max entity) filename)
+      )))
+
+(defun mime-write-entity-body (entity filename)
+  "Write body of ENTITY into FILENAME."
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (if (mime-entity-cooked-p entity)
+	(write-region (mime-entity-body-start entity)
+		      (mime-entity-body-end entity) filename)
+      (write-region-as-binary (mime-entity-body-start entity)
+			      (mime-entity-body-end entity) filename)
+      )))
 
 
 ;;; @ end
