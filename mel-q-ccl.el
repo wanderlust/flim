@@ -778,16 +778,16 @@ abcdefghijklmnopqrstuvwxyz\
 			))
 		  ;; [\t ]* r0:[^\r]
 		  ;; middle white spaces found.
-		  )))
-	 (` (if (r0 == ?\n)
-		;; trailing white spaces found.
-		;; -> ignore these white spacs.
-		((write (, (if output-crlf "\r\n" "\n")))
-		 (read r0)
-		 (repeat))
-	      ;; [\t ]* r0:[^\n]
-	      ;; middle white spaces found.
-	      )))
+		  ))
+	   (` (if (r0 == ?\n)
+		  ;; trailing white spaces found.
+		  ;; -> ignore these white spacs.
+		  ((write (, (if output-crlf "\r\n" "\n")))
+		   (read r0)
+		   (repeat))
+		;; [\t ]* r0:[^\n]
+		;; middle white spaces found.
+		))))
       (,@ (apply
 	   'append
 	   (mapcar
