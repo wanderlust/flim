@@ -1,6 +1,6 @@
 ;;; md5.el --- MD5 Message Digest Algorithm.
 
-;; Copyright (C) 1999 Shuhei KOBAYASHI
+;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: MD5, RFC 1321
@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; Examples from RFC 1321.
+;; Test cases from RFC 1321.
 ;;
 ;; (md5 "")
 ;; => d41d8cd98f00b204e9800998ecf8427e
@@ -64,4 +64,4 @@
 
 (provide 'md5)
 
-;;; md5.el ends here.
+;;; md5.el ends here
