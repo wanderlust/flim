@@ -246,6 +246,8 @@ message/rfc822, `mime-entity' structures of them are included in
 
 (make-variable-buffer-local 'mime-message-structure)
 
+(make-obsolete-variable 'mime-message-structure "should not use it.")
+
 
 ;;; @ for mm-backend
 ;;;
