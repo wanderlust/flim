@@ -1,6 +1,6 @@
 ;;; eword-decode.el --- RFC 2047 based encoded-word decoder for GNU Emacs
 
-;; Copyright (C) 1995,96,97,98,99,2000,01,03 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,01,03,04 Free Software Foundation, Inc.
 
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
 ;;         MORIOKA Tomohiko <tomo@m17n.org>
@@ -578,13 +578,15 @@ as a version of Net$cape)."
       (when dest
 	(setq dest (decode-mime-charset-string dest charset))
 	(when must-unfold
-	  (mapconcat
-	   (function
-	    (lambda (chr)
-	      (cond ((eq chr ?\n) "")
-		    ((eq chr ?\t) " ")
-		    (t (char-to-string chr)))))
-	   (std11-unfold-string dest) ""))
+	  (setq dest
+		(mapconcat
+		 (function
+		  (lambda (chr)
+		    (cond ((eq chr ?\n) "")
+			  ((eq chr ?\r) "")
+			  ((eq chr ?\t) " ")
+			  (t (char-to-string chr)))))
+		 (std11-unfold-string dest) "")))
 	(when language
 	  (put-text-property 0 (length dest) 'mime-language language dest))
 	dest))))
