@@ -1,5 +1,9 @@
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime.el (mime-write-entity): New function.
+
+1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-parse.el (mime-parse-multipart): Change media-type of
 	entity to application/octet-stream if the first delimiter is not
 	found.
