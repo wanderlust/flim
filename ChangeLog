@@ -1,5 +1,11 @@
 1998-08-23  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* Makefile (clean): Delete rule for cleaning tl.
+
+	* natset.el (natset-gen-ccl-branch256): New function.
+
+1998-08-23  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* Makefile (check): New rule.
 
 	* TESTPAT: Add batch testing facility.

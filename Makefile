@@ -27,7 +27,6 @@ install:	elc
 
 clean:
 	-$(RM) $(GOMI)
-	cd ../tl && make clean
 
 
 tar:

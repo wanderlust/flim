@@ -264,7 +264,7 @@
 	      ((read r0)
 	       (r2 += 1)
 	       ,(apply
-		 'natset-gen-ccl-branch
+		 'natset-gen-ccl-branch ; 'natset-gen-ccl-branch256 produce quote big codes.
 		 'r0
 		 '(end)
 		 (mapcar

@@ -187,6 +187,17 @@ It is impossible to set VALID to empty set because empty set is represented as n
    ((= (car ns) 0) (natset-gen-pred-exp-internal (cdr ns) var nil 0))
    (t (natset-gen-pred-exp-internal ns var t 0))))
 
+(defun natset-gen-ccl-branch256 (reg fail &rest clauses)
+  (let ((i 255) tmp blocks)
+    (while (<= 0 i)
+      (setq blocks (cons
+                     (if (setq tmp (natset-assoc i clauses))
+                       (cdr tmp)
+                       fail)
+                     blocks)
+            i (1- i)))
+    `(branch ,reg ,@blocks)))
+
 (defun natset-gen-ccl-branch (reg fail &rest clauses)
   (let* ((natsets (mapcar 'car clauses)))
     (let ((range (apply 'natset-union natsets)) tmp)
