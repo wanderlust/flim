@@ -1,3 +1,8 @@
+1998-10-17  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel-ccl.el: Check broken facility consistency by
+	`check-broken-facility'.
+
 1998-10-14  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up to flim-1_10_5 from flim-1_10_2.

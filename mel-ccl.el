@@ -1173,6 +1173,8 @@ abcdefghijklmnopqrstuvwxyz\
 ;;; @ B
 ;;;
 
+(check-broken-facility ccl-execute-eof-block-on-decoding-some)
+
 (unless-broken ccl-execute-eof-block-on-decoding-some
 
   (defun base64-ccl-encode-string (string)
