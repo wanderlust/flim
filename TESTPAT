@@ -598,7 +598,7 @@ ignore-76bytes-limit)
 
 (decode
 "Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= =?= =?ISO-2022-JP?B?GyRCJCIbKEI=?="
-"Subject: あ=?=あ")
+"Subject: あ =?= あ")
 
 ;;; Section 5: Encoding proper inputs.
 

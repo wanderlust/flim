@@ -9,13 +9,9 @@
 (defun ew-q-check (encoding encoded-text) (string-match ew-q-regexp encoded-text))
 
 (defsubst ew-eword-p (str)
-  (let ((len (length str)))
-    (and
-     (<= 3 len)
-     (eq (aref str 0) ?=)
-     (eq (aref str 1) ??)
-     (eq (aref str (- len 2)) ??)
-     (eq (aref str (1- len)) ?=))))
+  (and (string-match ew-anchored-encoded-word-regexp str)
+       (or ew-permit-null-encoded-text
+	   (< (match-beginning 3) (match-end 3)))))
 
 (defun ew-decode-eword (str)
   (if (string-match ew-anchored-encoded-word-regexp str)

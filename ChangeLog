@@ -1,3 +1,10 @@
+1999-05-26  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* TESTPAT: Does not treat =?= as encoded-word.
+
+	* ew-unit.el (ew-eword-p): Use `ew-anchored-encoded-word-regexp' to
+	test.
+
 1999-05-24  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* TESTPAT-DOODLE: New file.
