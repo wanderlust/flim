@@ -1,3 +1,7 @@
+1999-06-01  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* Chao: Version 1.13.0 (JR Fujinomori) released.
+
 1999-05-29  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mmbuffer.el (mime-entity-fetch-field): New implementation.
