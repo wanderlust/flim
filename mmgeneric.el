@@ -100,6 +100,13 @@
 		       (mime-entity-body-end-internal entity))
      (mime-entity-encoding entity))))
 
+(mm-define-method insert-entity-content ((entity generic))
+  (insert (with-current-buffer (mime-entity-buffer entity)
+	    (mime-decode-string
+	     (buffer-substring (mime-entity-body-start-internal entity)
+			       (mime-entity-body-end-internal entity))
+	     (mime-entity-encoding entity)))))
+
 (mm-define-method write-entity-content ((entity generic) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer entity))
