@@ -1,5 +1,10 @@
 1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* eword-decode.el (eword-decode-and-unfold-unstructured-field):
+	New function.
+
+1998-09-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime.el (mime-entity-content-type): New implementation.
 	(mime-entity-content-disposition): New implementation.
 	(mime-entity-encoding): New implementation.
