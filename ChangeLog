@@ -1,6 +1,17 @@
-1998-08-19  Tanaka Akira      <akr@jaist.ac.jp>
+1998-08-18  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* mime-def.el (mime-library-version-string): bump up to FLAM-DOODLE 1.9.1.
+	* DOODLE-TIPS: Change `gnus-unstructured-field-decoder' and
+	`gnus-structured-field-decoder' usable by FLAM-DOODLE and FLIM.
+
+	* ew-data.el (ew-mark-phrase): Update both ends of fragments after
+	fragments separation.
+
+	* ew-unit.el (ew-charset-aliases): Add 'x-ctext.
+
+1998-08-18  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mime-def.el (mime-library-version-string): bump up to
+	FLAM-DOODLE 1.9.1.
 
 1998-08-18  Tanaka Akira      <akr@jaist.ac.jp>
 

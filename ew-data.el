@@ -115,7 +115,9 @@
      (if ew-decode-quoted-encoded-word
 	 '(ew:atom-tok
 	   ew:qs-texts-tok)
-       '(ew:atom-tok))))
+       '(ew:atom-tok)))
+    (setq frag1 (get (get frag1 'prev-frag) 'next-frag))
+    (setq frag2 (get (get frag2 'next-frag) 'prev-frag)))
   (while (not (eq frag1 frag2))
     (unless (ew-comment-frag-p frag2)
       (put frag2 'decode 'ew-decode-phrase))

@@ -75,7 +75,10 @@
 
 (defconst ew-charset-aliases
   '((us-ascii . iso-8859-1)
-    (iso-2022-jp-2 . iso-2022-7bit-ss2)))
+    (iso-2022-jp-2 . iso-2022-7bit-ss2)
+    (x-ctext . ctext)
+    ))
+
 (defun ew-char-decoder (charset)
   (catch 'return 
     (setq charset (downcase charset))

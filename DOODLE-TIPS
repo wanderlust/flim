@@ -12,11 +12,15 @@ because DOODLE cannot decide whether an atom is in phrase or not without
 field name information.
 
 (setq gnus-unstructured-field-decoder
-  (lambda (string)
-    (let ((ew-ignore-76bytes-limit t))
-      (ew-cut-cr-lf (ew-decode-field "Subject" (ew-lf-to-crlf string))))))
+   (lambda (string)
+     (if (fboundp 'ew-decode-field)
+         (let ((ew-ignore-76bytes-limit t))
+           (ew-cut-cr-lf (ew-decode-field "Subject" (ew-lf-to-crlf string))))
+       (eword-decode-and-unfold-structured-field string))))
 
 (setq gnus-structured-field-decoder
-  (lambda (string)
-    (let ((ew-ignore-76bytes-limit t))
-      (ew-cut-cr-lf (ew-decode-field "From" (ew-lf-to-crlf string))))))
+   (lambda (string)
+     (if (fboundp 'ew-decode-field)
+         (let ((ew-ignore-76bytes-limit t))
+           (ew-cut-cr-lf (ew-decode-field "From" (ew-lf-to-crlf string) 'ew-cut-cr-lf)))
+       (eword-decode-unstructured-field-body (std11-unfold-string string) 'must-unfold))))
