@@ -261,6 +261,25 @@ If BOUNDARY is not nil, it is used as message header separator."
 ;;; @ lexical analyze
 ;;;
 
+(defcustom std11-lexical-analyzers
+  '(std11-analyze-quoted-string
+    std11-analyze-domain-literal
+    std11-analyze-comment
+    std11-analyze-spaces
+    std11-analyze-special
+    std11-analyze-atom)
+  "*List of functions to return result of lexical analyze.
+Each function must have two arguments: STRING and START.
+STRING is the target string to be analyzed.
+START is start position of STRING to analyze.
+
+Previous function is preferred to next function.  If a function
+returns nil, next function is used.  Otherwise the return value will
+be the result."
+  :group 'news
+  :group 'mail
+  :type '(repeat function))
+
 (eval-and-compile
   (defconst std11-space-char-list '(?  ?\t ?\n))
   (defconst std11-special-char-list '(?\] ?\[
@@ -369,14 +388,14 @@ If BOUNDARY is not nil, it is used as message header separator."
 	dest ret)
     (while (< start len)
       (setq ret
-	    (or (std11-analyze-quoted-string string start)
-		(std11-analyze-domain-literal string start)
-		(std11-analyze-comment string start)
-		(std11-analyze-spaces string start)
-		(std11-analyze-special string start)
-		(std11-analyze-atom string start)
-		(cons '(error) (1+ len))
-		))
+	    (let ((rest std11-lexical-analyzers)
+		  func r)
+	      (while (and (setq func (car rest))
+			  (null (setq r (funcall func string start))))
+		(setq rest (cdr rest)))
+	      (or r
+		  (list (cons 'error (substring string start)) (1+ len)))
+	      ))
       (setq dest (cons (car ret) dest)
 	    start (cdr ret))
       )
