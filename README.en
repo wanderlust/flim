@@ -118,11 +118,25 @@ Command base64-decode-region (start end)
 
 Command quoted-printable-encode-region (start end)
 
-  Encode region START to END of current buffer using quoted-printable.
+  Encode current region by quoted-printable.
+  START and END are buffer positions.
+
+  This function calls internal quoted-printable encoder if size of
+  region is smaller than `quoted-printable-internal-encoding-limit',
+  otherwise it calls external quoted-printable encoder specified by
+  `quoted-printable-external-encoder'.  In this case, you must install
+  the program (maybe mmencode included in metamail or XEmacs package).
 
 Command quoted-printable-decode-region (start end)
 
-  Decode region START to END of current buffer using quoted-printable.
+  Decode current region by quoted-printable.
+  START and END are buffer positions.
+
+  This function calls internal quoted-printable decoder if size of
+  region is smaller than `quoted-printable-internal-decoding-limit',
+  otherwise it calls external quoted-printable decoder specified by
+  `quoted-printable-external-decoder'.  In this case, you must install
+  the program (maybe mmencode included in metamail or XEmacs package).
 
 Command uuencode-encode-region (start end)
 
