@@ -1,3 +1,8 @@
+2001-03-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hmac-md5.el, hmac-sha1.el: Revert to load-time check.
+	Don't require 'poe.
+
 2001-03-18  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* mel-b-dl.el: Don't do `dynamic-call' at compile-time.
