@@ -149,7 +149,7 @@ external decoder is called.")
 			    ))
       )))
 
-(defun base64-decode-string (string)
+(defun base64-internal-decode-string (string)
   "Decode STRING which is encoded in base64, and return the result."
   (let ((len (length string))
 	(i 0)
@@ -188,6 +188,8 @@ external decoder is called.")
 		    ))))))))))
     dest))
 
+(defalias 'base64-decode-string 'base64-internal-decode-string)
+
 
 ;;; @ base64 encoder/decoder for region
 ;;;
@@ -210,7 +212,7 @@ external decoder is called.")
     (let ((str (buffer-substring beg end)))
       (delete-region beg end)
       (goto-char beg)
-      (insert (base64-decode-string str)))))
+      (insert (base64-internal-decode-string str)))))
 
 (defun base64-external-encode-region (beg end)
   (save-excursion
