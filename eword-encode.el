@@ -603,26 +603,26 @@ encoded-word.  ASCII token is not encoded."
       (if (symbolp field-name)
 	  (setq start (+ (length (symbol-name field-name)) 2))
 	(setq start (+ (length field-name) 2)
-	      field-name (intern (capitalize field-name)))
-	(cond ((memq field-name
-		     '(Reply-To
-		       From Sender
-		       Resent-Reply-To Resent-From
-		       Resent-Sender To Resent-To
-		       Cc Resent-Cc Bcc Resent-Bcc
-		       Dcc))
-	       (eword-encode-address-list field-body start)
-	       )
-	      ((eq field-name 'In-Reply-To)
-	       (eword-encode-in-reply-to field-body start)
-	       )
-	      ((memq field-name '(Mime-Version User-Agent))
-	       (eword-encode-structured-field-body field-body start)
-	       )
-	      (t
-	       (eword-encode-unstructured-field-body field-body start)
-	       ))
-	))))
+	      field-name (intern (capitalize field-name))))
+      (cond ((memq field-name
+		   '(Reply-To
+		     From Sender
+		     Resent-Reply-To Resent-From
+		     Resent-Sender To Resent-To
+		     Cc Resent-Cc Bcc Resent-Bcc
+		     Dcc))
+	     (eword-encode-address-list field-body start)
+	     )
+	    ((eq field-name 'In-Reply-To)
+	     (eword-encode-in-reply-to field-body start)
+	     )
+	    ((memq field-name '(Mime-Version User-Agent))
+	     (eword-encode-structured-field-body field-body start)
+	     )
+	    (t
+	     (eword-encode-unstructured-field-body field-body start)
+	     ))
+      )))
 
 (defun eword-in-subject-p ()
   (let ((str (std11-field-body "Subject")))
