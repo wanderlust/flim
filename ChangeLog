@@ -1,6 +1,36 @@
 2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-	* eword-encode.el (eword-encode): Switch to variable.
+	* mmdbuffer.el: Deleted.
+
+	* mime-def.el (mime-header): New group.
+	(mime-field-decoding-max-size): New user option [moved from
+	eword-decode.el].
+	(mime-field-encoding-method-alist): New user option [moved from
+	eword-encode.el].
+
+	* eword-encode.el (eword-field-encoding-method-alist): Moved to
+	mime-def.el and renamed to `mime-field-encoding-method-alist'.
+	(mime-header-charset-encoding-alist): Renamed from
+	`eword-charset-encoding-alist'.
+	(mime-header-default-charset-encoding): New variable.
+	(ew-find-charset-rule): Use
+	`mime-header-default-charset-encoding'.
+	(eword-in-subject-p): Declare as obsolete function.
+	(mime-encode-header-in-buffer): Renamed from
+	`eword-encode-header'; declare `eword-encode-header' as obsolete
+	alias.
+
+	* eword-decode.el (eword-max-size-to-decode): Moved to mime-def.el
+	and renamed to `mime-field-decoding-max-size'.
+	(mime-header-lexical-analyzer): Renamed from
+	`eword-lexical-analyzer'; switch to variable.
+
+	* FLIM-ELS (flim-modules): Add `raw-io'.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el (eword-encode-default-start-column): Switch to
+	variable.
 
 2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
