@@ -1,3 +1,141 @@
+1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.11.3 (Saidaiji) was released.
+
+1998-10-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* VERSION: New file (Renamed from FLIM-VERSION).
+
+1998-10-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-char-type): Return nil for ?\n.
+
+1998-10-27  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-field-body): Unfold `field-body'.
+
+1998-10-27  Yoshiki Hayashi   <g740685@komaba.ecc.u-tokyo.ac.jp>
+
+	* README.ja: Update.
+
+
+1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.11.2 (Heij-Dò)-A was released.
+
+	* NEWS (Abolish variable `mime-temp-directory'): New subsection.
+
+	* README.en (Installation): Modify for APEL 9.6.
+
+1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-field-body): Don't eliminate
+	top-spaces.
+
+1998-10-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS (flim-modules): Don't install mel-b-el for Emacs 20.4.
+
+1998-10-25  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-field-body): Refine implementation.
+
+1998-10-24  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel-b-ccl.el, mel-q-ccl.el, mel.el, FLIM-ELS: Divide mel-ccl.el
+	into mel-b-ccl.el and mel-q-ccl.el.
+
+1998-09-11  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel.el (base64-encoded-length): New implementation.
+
+1998-10-25  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-field-body): New function.
+
+1998-10-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-field-body): Change interface.
+	(eword-encode-header): Use `eword-encode-field-body'; abolish
+	function `eword-encode-field'.
+
+1998-10-25  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-field-body): New function.
+	(eword-encode-field): Use `eword-encode-field-body'.
+
+1998-10-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el, mel-b-el.el, FLIM-ELS: Rename mel-b.el -> mel-b-el.el.
+
+1998-10-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-u.el (uuencode-external-decode-region): Use
+	`temporary-file-directory' instead of `mime-temp-directory'.
+	(mime-write-decoded-region): Likewise.
+
+	* mime-def.el: Abolish variable `mime-temp-directory'.
+
+1998-10-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el (mime-insert-header-from-buffer): New function.
+	(insert-header): Use `mime-insert-header-from-buffer'.
+
+1998-10-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS: Don't install mel-b-dl.el if the running emacs has
+	builtin base64 encoder/decoder.
+
+	* mel.el: Set up builtin base64 encoder/decoder if they are
+	available.
+
+	* mime-def.el (base64-dl-module): Set nil as initial value if the
+	running emacs has builtin base64 encoder/decoder.
+
+	* mel-b.el: Require `poe' instead of `emu'.
+	(base64-encode-string): Use `defun-maybe'.
+	(base64-encode-region): Likewise.
+	(base64-decode-region): Likewise.
+	(base64-decode-string): Likewise.
+
+	* mel-b-dl.el: Require `poe' instead of `emu'.
+
+
+1998-10-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.11.1 (Takanohara) was released.
+
+1998-10-22  Yoshiki Hayashi   <g740685@komaba.ecc.u-tokyo.ac.jp>
+
+	* README.ja: New file.
+
+1998-10-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el: Require mcharset.
+
+1998-10-20  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mel-u.el (mime-write-decoded-region): Fix typo.
+
+	* mime-def.el: Enclose defining procedure for the constants
+	`std11-quoted-pair-regexp', `std11-non-qtext-char-list' and
+	`std11-qtext-regexp' with `eval-and-compile'.
+
+1998-10-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* NEWS (Behavior change of `mime-insert-header'): New subsection.
+
+	* mmgeneric.el (insert-header): Include `:' in field-name.
+
+1998-10-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el (std11-qtext-regexp): Use `eval-when-compile'; don't
+	use `char-list-to-string'.
+	(std11-quoted-string-regexp): Use `eval-when-compile'.
+	- Use `def-edebug-spec' to define edebug-form-spec of
+	  mm-define-method; fix definition of edebug-form-spec of
+	  mm-define-method.
+
 1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-en.sgml, mime-ja.sgml (Header encoder/decoder): Add

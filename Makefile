@@ -3,7 +3,7 @@
 #
 
 PACKAGE = flim
-VERSION = 1.11.0
+VERSION = 1.11.3
 
 TAR	= tar
 RM	= /bin/rm -f

@@ -1,0 +1,159 @@
+[FLIM の README (日本語版)]
+
+FLIM とは？
+===========
+
+  FLIM はメッセージ表現と符号化に関する基礎的な機能を提供するライブラ
+  リーです。以下のモジュールから構成されています:
+
+    std11.el	--- STD 11 (RFC 822) の解析器とユーティリティー
+
+    mime.el	--- MIME ライブラリー
+
+      mime-def.el --- MIME の様式に関する定義
+
+      mime-parse.el --- MIME 解析器
+
+      mel.el --- MIME 符号器/復号器
+	mel-b-dl.el --- base64 (B-encoding) 符号器/復号器
+			(Emacs 20 の動的読み込み機能付き用)
+	mel-b.el    --- base64 (B-encoding) 符号器/復号器
+			(他の emacs 環境用)
+	mel-q.el    --- quoted-printable と Q-encoding
+		    	符号器/復号器
+	mel-ccl.el  --- CCL を使った base64 (B-encoding),
+		    	quoted-printable と Q-encoding の符号器/復号器
+	mel-u.el    --- uuencode のための非公式モジュール
+	mel-g.el    --- gzip64 のための非公式モジュール
+
+      eword-decode.el --- encoded-word 復号器
+      eword-encode.el --- encoded-word 符号器
+
+    mailcap.el	--- mailcap 解析器とユーティリティー
+
+
+インストール
+============
+
+(0) インストールする前に、APEL パッケージ (9.6 以降)
+    をインストールしてください。APEL パッケージは以下のところで取得で
+    きます:
+
+	ftp://ftp.jaist.ac.jp/pub/GNU/elisp/apel/
+
+(1-a) 展開した場所で実行
+
+  他のディレクトリーにインストールしたくないなら、以下のことだけをやっ
+  てください:
+
+	% make
+
+  emacs のコマンド名を指定することができます。例えば、
+
+	% make EMACS=xemacs
+
+  `EMACS=...' が省略されると、Emacs=emacs が使われます。
+
+(b) make install
+
+  他のディレクトリーにインストールしたいなら、以下のことをしてください:
+
+	% make install
+
+  emacs のコマンド名を指定することができます。例えば、
+
+	% make install EMACS=xemacs
+
+  `EMACS=...' が省略されると、Emacs=emacs が使われます。
+
+  Emacs Lisp プログラムとシェルスクリプトのためのディレクトリー木の接
+  頭辞 (prefix) を指定することができます。例えば、
+
+	% make install PREFIX=~/
+
+  `PREFIX=...' が省略されると、指定された emacs コマンドのディレクトリー
+  木の接頭辞が使用されます (おそらく /usr/local です)。
+
+  例えば、PREFIX=/usr/local と Emacs 19.34 が指定されれば、以下のディレ
+  クトリー木が作成されます。
+
+	/usr/local/share/emacs/site-lisp/flim/	--- FLIM
+
+  Emacs Lisp プログラムのための lisp ディレクトリーを指定することがで
+  きます。例えば、:
+
+    % make install LISPDIR=~/share/emacs/elisp
+
+  `LISPDIR=...' が省略されると、指定された emacs のコマンドの
+  site-lisp ディレクトリーが使われます (おそらく
+  /usr/local/share/emacs/site-lisp か /usr/local/lib/xemacs/site-lisp)
+  です。
+
+  emu モジュール (APEL パッケージに入っています) が標準でないディレク
+  トリーにインストールされている場合は、それらのある場所を指定する必要
+  があります。例えば、:
+
+    % make install VERSION_SPECIFIC_LISPDIR=~/elisp
+
+  どのファイルが emu モジュールか apel モジュールの一部なのか、それら
+  がどこにインストールされるかを知りたいときは、次のようなコマンドを入
+  力することができます。
+
+    % make what-where LISPDIR=~/elisp VERSION_SPECIFIC_LISPDIR=~/elisp
+
+  ファイル FLIM-CFG を編集することで他の選択自由な設定を指定することが
+  できます。その中のコメントを読んでください。
+
+(1-c) XEmacs のパッケージとしてインストールする
+
+  XEmacs のパッケージディレクトリーにインストールする場合は、以下のこ
+  とをしてください:
+
+	% make install-package
+
+  emacs のコマンド名を指定することができます。例えば、
+
+	% make install-package XEMACS=xemacs-21
+
+  `XEMACS=...' が省略されると、XEMACS=xemacs が使用されます。
+
+  パッケージのディレクトリーを指定することができます。例えば:
+
+	% make install PACKAGEDIR=~/.xemacs
+
+  `PACKAGEDIR=...' が省略されると、存在するパッケージディレクトリーの
+  最初のものが使われます。
+
+  XEmacs のパッケージシステムは XEmacs 21.0 かそれ以降を要求することに
+  注意してください。
+
+load-path (Emacs と MULE 用)
+=============================
+
+  Emacs か Mule を使っているなら、FLIM のディレクトリーを
+  load-path に追加してください。初期設定でインストールしたなら、次のよ
+  うに subdirs.el を書くことができます。例:
+
+  --------------------------------------------------------------------
+  (normal-top-level-add-to-load-path '("apel" "flim"))
+  --------------------------------------------------------------------
+
+  XEmacs を使っているなら、load-path を設定する必要はありません。
+
+バグ報告
+===========
+
+  バグ報告や改善の提案を書いたときは、是非 tm メーリングリストに送って
+  ください:
+
+	bug-tm-en@chamonix.jaist.ac.jp	(英語)
+	bug-tm-ja@chamonix.jaist.ac.jp	(日本語)
+
+  tm ML を通して、FLIM のバグを報告したり、FLIM の最新のリリースを取得
+  したり、FLIM の将来の拡張の議論をしたりすることができます。tm ML に
+  参加するには、空の電子メールを
+
+	tm-en-help@chamonix.jaist.ac.jp	(英語)
+	tm-ja-help@chamonix.jaist.ac.jp	(日本語)
+
+  に送ってください。
