@@ -57,9 +57,31 @@
 	(mime-encode-field-body): Use `mime-header-encode-method-alist'.
 	(mime-encode-header-in-buffer): Error if cannot encode.
 
+2001-11-19  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el (smtp-find-server): Fix.
+
+2001-11-18  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el (smtp-send-by-myself): Fix.
+
+2001-11-18  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el (smtp-send-by-myself): New variable.
+	(smtp-use-starttls-ignore-error): New variable.
+	(smtp-find-mx): New function.
+	(smtp-dig): New function.
+	(smtp-find-server): New function.
+	(smtp-send-buffer-by-myself): New funcion.
+	(smtp-send-buffer): Change for `smtp-send-buffer-by-myself'.
+
 2001-11-03  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* hmac-md5.el: Removed kludge for Emacs 21 prerelease versions.
+
+2001-09-21  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el(smtp-submit-package): Check extensions for starttls.
 
 2001-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
 
