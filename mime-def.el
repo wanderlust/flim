@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-library-version
-  '("FLAM-DOODLE" "柿 10R6.5/10.0" 1 9 4)
+  '("FLAM-DOODLE" "深支子 10YR7.5/8.0" 1 9 5)
   "Implementation name, version name and numbers of MIME-library package.")
 
 (defconst mime-library-version-string

@@ -1,3 +1,12 @@
+1998-09-21  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel-ccl.el:
+	  - Require 'pccl instead of 'emu.
+	  - Use `unless-broken' to check facility.
+
+	* mime-def.el (mime-library-version): Bump up to FLAM-DOODLE
+	1.9.5.
+
 1998-09-19  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mel-ccl.el (q-encoding-ccl-encoded-length): Check
