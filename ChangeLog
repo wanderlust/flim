@@ -1,3 +1,8 @@
+1999-03-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el (mime-decode-string): Return STRING if return value of
+ 	`(mel-find-function 'mime-decode-string encoding)' is nil.
+
 1999-02-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-def.el (mel-define-service): Change size of obarray to 7.
