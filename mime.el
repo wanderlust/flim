@@ -137,6 +137,12 @@ If MESSAGE is specified, it is regarded as root entity."
       nil
     (mime-entity-parent-internal entity)))
 
+(defun mime-entity-root (entity)
+  "Return root entity of the ENTITY."
+  (while (mime-entity-parent-internal entity)
+    (setq entity (mime-entity-parent-internal entity)))
+  entity)
+
 (defun mime-root-entity-p (entity &optional message)
   "Return t if ENTITY is root-entity (message).
 If MESSAGE is specified, it is regarded as root entity."
