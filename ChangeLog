@@ -1,3 +1,8 @@
+2000-06-30  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-entity-read-field): Fix a bug when FIELD-NAME is a
+	string.
+
 2000-06-23  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mmexternal.el (initialize-instance): New method.
