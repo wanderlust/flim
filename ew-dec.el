@@ -589,4 +589,8 @@ each line is separated by CRLF."
 
 (ew-decode-field "From"" ()=?+US-ASCII?Q??=?+US-ASCII?Q?a?= =?US-ASCII?Q??= <akr@foo> (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)")
 
+(let ((ew-default-mime-charset 'iso-2022-jp-2))
+  (ew-decode-field-no-cache
+     "From" "\"Cl\351ment Brousset\" <cbrousset@staffandline.com>"))
+
 )

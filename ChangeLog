@@ -1,3 +1,61 @@
+1998-09-09  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel-ccl.el (mel-ccl-28-table): New compile time constant.
+	(mel-ccl-64-to-256-table): Ditto.
+	(mel-ccl-qp-table): Mark LF.
+	(mel-ccl-16-to-256-table): Convert integer from character.
+	(mel-ccl-u-raw): Ditto.
+	(mel-ccl-c-raw): Ditto.
+	(mel-ccl-p-raw): Ditto.
+	(mel-ccl-decode-q): Ditto.
+	(mel-ccl-encode-base64): Abolished.
+	(mel-ccl-encode-base64-crlf-crlf): Renamed from
+	`mel-ccl-encode-base64'.
+	(mel-ccl-encode-base64-crlf-lf): New CCL program.
+	(mel-ccl-encode-quoted-printable-generic): New compile-time
+	function.
+	(mel-ccl-decode-quoted-printable-generic): Ditto.
+	(mel-ccl-encode-quoted-printable): Abolished.
+	(mel-ccl-decode-quoted-printable): Ditto.
+	(mel-ccl-encode-quoted-printable-crlf-crlf): New CCL program.
+	(mel-ccl-encode-quoted-printable-crlf-lf): Ditto.
+	(mel-ccl-encode-quoted-printable-lf-crlf): Ditto.
+	(mel-ccl-encode-quoted-printable-lf-lf): Ditto.
+	(mel-ccl-decode-quoted-printable-crlf-crlf): Ditto.
+	(mel-ccl-decode-quoted-printable-crlf-lf): Ditto.
+	(mel-ccl-decode-quoted-printable-lf-crlf): Ditto.
+	(mel-ccl-decode-quoted-printable-lf-lf): Ditto.
+	(mel-ccl-uq): Abolished.
+	(mel-ccl-cq): Ditto.
+	(mel-ccl-pq): Ditto.
+	(mel-ccl-b): Ditto.
+	(mel-ccl-quoted-printable): Ditto.
+	(mel-ccl-base64): Ditto.
+	(mel-ccl-uq-rev): New coding-system.
+	(mel-ccl-cq-rev): Ditto.
+	(mel-ccl-pq-rev): Ditto.
+	(mel-ccl-quoted-printable-crlf-crlf-rev): Ditto.
+	(mel-ccl-quoted-printable-crlf-lf-rev): Ditto.
+	(mel-ccl-quoted-printable-lf-crlf-rev): Ditto.
+	(mel-ccl-quoted-printable-lf-lf-rev): Ditto.
+	(mel-ccl-base64-crlf): Ditto.
+	(mel-ccl-base64-lf): Ditto.
+	(base64-ccl-encode-string): Use `mel-ccl-b-rev'.
+	(base64-ccl-encode-region): Ditto.
+	(base64-ccl-insert-encoded-file): Ditto.
+	(base64-ccl-decode-string): Ditto.
+	(base64-ccl-decode-region): Ditto.
+	(quoted-printable-ccl-encode-string): Use
+	`mel-ccl-quoted-printable-lf-lf-rev'.
+	(quoted-printable-ccl-encode-region): Ditto.
+	(quoted-printable-ccl-insert-encoded-file): Ditto.
+	(quoted-printable-ccl-decode-string): Ditto.
+	(quoted-printable-ccl-decode-region): Ditto.
+	(quoted-printable-ccl-write-decoded-region): Ditto.
+	(q-encoding-ccl-encode-string): Use `mel-ccl-uq-rev',
+	`mel-ccl-cq-rev' and `mel-ccl-pq-rev'.
+	(q-encoding-ccl-decode-string): Use `mel-ccl-uq-rev'.
+
 1998-09-02  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ew-dec.el (ew-decode-field-interest-option-order): New
