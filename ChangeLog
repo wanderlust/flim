@@ -1,5 +1,35 @@
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* FLIM-ELS (flim-modules): Add `mmbuffer' and `mmcooked'.
+
+	* mmcooked.el: New file.
+
+	* mmbuffer.el: New file.
+
+	* mime.el (mime-entity-implementation-alist): New variable.
+	(mime-find-function): New function.
+	(mime-open-entity): New function.
+	(mime-entity-function): New function.
+	(mime-entity-cooked-p): New function.
+	(mime-entity-buffer): Use backend-module.
+	(mime-entity-point-min): Likewise.
+	(mime-entity-point-max): Likewise.
+	(mime-entity-header-start): Likewise.
+	(mime-entity-header-end): Likewise.
+	(mime-entity-body-start): Likewise.
+	(mime-entity-body-end): Likewise.
+	(mime-fetch-field): Likewise.
+
+	* mime-parse.el (mime-parse-message): New optional argument
+	`representation-type'.
+	(mime-parse-buffer): Likewise.
+
+	* mime-def.el: Change format of mime-entity-internal to add
+	`representation-type' and `location'.
+
+
+1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* FLIM-Chao: Version 1.7.0 (Goj-Dò)-A was released.
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
