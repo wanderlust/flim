@@ -1,5 +1,10 @@
 1999-02-08  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* eword-decode.el (ew-mime-update-field-decoder-cache): Do not refold
+	field-body if encoded word decoding is identity.
+
+1999-02-08  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): Fix previous
 	change.
 

@@ -604,11 +604,13 @@ Default value of MODE is `summary'."
                (lexical-let ((field-name (symbol-name field)))
                  (lambda (field-body &optional start-column max-column must-unfold)
                    (setq field-body (ew-lf-to-crlf field-body))
-                   (let ((res (ew-crlf-to-lf
-                               (ew-crlf-refold
-                                (ew-decode-field field-name field-body)
-                                (length field-name)
-                                (or max-column fill-column)))))
+		   (let* ((res (ew-decode-field field-name field-body))
+			  (res (if (string= res field-body)
+				   res
+				 (ew-crlf-refold res
+						 (length field-name)
+						 (or max-column fill-column))))
+			  (res (ew-crlf-to-lf res)))
                      (add-text-properties
                       0 (length res)
                       (list 'original-field-name field-name
