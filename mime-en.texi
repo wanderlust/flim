@@ -381,12 +381,11 @@ contains @var{entity}.
 @cindex entity 処理 method
 @cindex representation-type
 
-Entity は抽象化されたデータ表現で、実際のデータ表現としては用途に応じて
-さまざまなものが利用できるように設計されています。@refill
+Entity is an abstraction.  It is designed to use various data
+representations for their purposes.@refill
 
-ここで、entity がどういう種類の表現を行っているかを示すのが
-@strong{representation-type} で、entity を生成する時にはこれを指定します。
-(cf. @ref{Entity Creation}) @refill
+Each entity has @strong{representation-type}.  It must be specified when
+an entity is created. (cf. @ref{Entity Creation}) @refill
 
 前節までに述べて来た entity に対する処理は、entity に対してその処理を依
 頼することによって実現されています。Entity は自分の representation-type 
