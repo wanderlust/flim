@@ -150,16 +150,6 @@ be the result."
 
 (defun mime-decode-parameter-value (text charset language)
   (let ((start 0))
-    ;; RFC 2231 is ambiguous about case-sensitivity.
-    ;;
-    ;; ext-octet := "%" 2(DIGIT / "A" / "B" / "C" / "D" / "E" / "F")
-    ;;
-    ;; If RFC 2234 is employed, this rule will match "%ab" as well as
-    ;; "%AB" because ABNF strings are case-insensitive.
-    ;; But it is not clear whether RFC 2231 employs RFC 2234 or not:-<
-    ;;
-    ;; Anyway, we choose to recognize lowercase letters here.
-    ;; (while (string-match "%[0-9A-F][0-9A-F]" text start)
     (while (string-match "%[0-9A-Fa-f][0-9A-Fa-f]" text start)
       (setq text (replace-match
 		  (char-to-string
@@ -181,6 +171,21 @@ be the result."
       (put-text-property 0 (length text) 'mime-language language text))
     text))
 
+(defun mime-decode-parameter-encode-segment (segment)
+  (if (string-match (eval-when-compile
+		      (concat "^" mime-attribute-char-regexp "+$"))
+		    segment)
+      ;; shortcut
+      segment
+    ;; XXX: make too many temporary strings.
+    (mapconcat
+     (function
+      (lambda (chr)
+	(if (string-match mime-attribute-char-regexp (char-to-string chr))
+	    (char-to-string chr)
+	  (format "%%%02X" chr))))
+     segment "")))
+
 (defun mime-decode-parameter-plist (params)
   "Decode PARAMS as a property list of MIME parameter values.
 
@@ -201,30 +206,28 @@ property of the decoded-value."
     (while params
       (if (string-match (eval-when-compile
                           (concat "^\\(" mime-attribute-char-regexp "+\\)"
-				  "\\(\\*\\([0-9]+\\)\\)?\\(\\*\\)?$"))
+				  "\\(\\*\\([0-9]+\\)\\)?" ; continuation
+				  "\\(\\*\\)?$")) ; charset/language
                         (car params))
-          (let* ((attribute (downcase (substring (car params) 0 (match-end 1))))
-                 (section (if (match-beginning 3)
+          (let* ((attribute (downcase
+			     (substring (car params) 0 (match-end 1))))
+                 (section (if (match-beginning 2)
 			      (string-to-int
 			       (substring (car params)
 					  (match-beginning 3)(match-end 3)))
 			    0))
-		 ;; EPARAM := (ATTRIBUTE . VALUES)
-		 ;; VALUES := [1*V-ELT] ; vector of (length params) elements.
-		 ;; V-ELT  := (VALUE CHARSET LANGUAGE) ; extended-initial-value
-		 ;;         | (VALUE t) ; extended-other-values
-		 ;;         | (VALUE)   ; regular-parameter-values
+		 ;; EPARAM := (ATTRIBUTE CHARSET LANGUAGE VALUES)
+		 ;; VALUES := [1*VALUE] ; vector of (length params) elements.
                  (eparam (assoc attribute eparams)))
-	    ;; should signal an error?
-	    ;; (when (> section len) ...)
             (unless eparam
-              (setq eparam (cons attribute (make-vector len nil))
+              (setq eparam (cons attribute
+				 (list nil nil (make-vector len nil)))
                     eparams (cons eparam eparams)))
 	    (setq params (cdr params))
 	    ;; if parameter-name ends with "*", it is an extended-parameter.
             (if (match-beginning 4)
                 (if (zerop section)
-		    ;; extended-initial-value contains charset/language info.
+		    ;; extended-initial-parameter.
 		    (if (string-match (eval-when-compile
 					(concat
 					 "^\\("
@@ -235,71 +238,63 @@ property of the decoded-value."
 					 "\\)?'\\)"
 					 "\\("
 					 mime-attribute-char-regexp
-					 ;; allow lowercase letters.
-					 ;; "\\|%[0-9A-F][0-9A-F]\\)+$"
 					 "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+$"))
 				      (car params))
-			(aset (cdr eparam)
-			      0		; section == 0.
-			      (list
-			       ;; text
-			       (substring (car params)
-					  (match-end 2))
-			       ;; charset
-			       (substring (car params)
-					  0 (match-beginning 2))
-			       ;; language
-			       (substring (car params)
-					  (1+ (match-beginning 2))
-					  (1- (match-end 2)))))
-		      ;; invalid encoding.
-		      (aset (cdr eparam) section
-			    (list (std11-strip-quoted-string
-				   (car params)))))
-		  ;; extended-other-values
+			(progn
+			  ;; charset
+			  (setcar (cdr eparam) ; (nthcdr 1 eparam)
+				  (downcase
+				   (substring (car params)
+					      0 (match-beginning 2))))
+			  ;; language
+			  (setcar (nthcdr 2 eparam)
+				  (downcase
+				   (substring (car params)
+					      (1+ (match-beginning 2))
+					      (1- (match-end 2)))))
+			  ;; text
+			  (aset (nth 3 eparam) 0
+				(substring (car params)
+					   (match-end 2))))
+		      ;; invalid parameter-value.
+		      (aset (nth 3 eparam) 0
+			    (mime-decode-parameter-encode-segment
+			     (car params))))
+		  ;; extended-other-parameter.
 		  (if (string-match (eval-when-compile
 				      (concat
 				       "^\\("
 				       mime-attribute-char-regexp
-				       ;; allow lowercase letters.
-				       ;; "\\|%[0-9A-F][0-9A-F]\\)+$"
 				       "\\|%[0-9A-Fa-f][0-9A-Fa-f]\\)+$"))
 				    (car params))
-		      (aset (cdr eparam) section
-			    (list (car params) t))
-		    ;; invalid encoding.
-		    (aset (cdr eparam) section
-			  (list (std11-strip-quoted-string
-				 (car params))))))
-	      ;; regular-parameter-name
-              (aset (cdr eparam) section
-		    (list (std11-strip-quoted-string
-			   (car params))))))
-        ;; no parameter value extensions used, or invalid attribute-name.
+		      (aset (nth 3 eparam) section
+			    (car params))
+		    ;; invalid parameter-value.
+		    (aset (nth 3 eparam) section
+			  (mime-decode-parameter-encode-segment
+			   (car params)))))
+	      ;; regular-parameter.
+              (aset (nth 3 eparam) section
+		    (mime-decode-parameter-encode-segment
+		     (car params)))))
+        ;; invalid attribute-name.
         (setq dest (cons (cons (downcase (car params))
-			       (std11-strip-quoted-string
-				(car (cdr params))))
+			       (car (cdr params)))
 			 dest)
 	      params (cdr params)))
       (setq params (cdr params)))
     ;; decode and concat parameters.
     (while eparams
-      (let* ((attribute (car (car eparams)))
-             (values    (cdr (car eparams)))
-             (charset   (nth 1 (aref values 0)))
-             (language  (nth 2 (aref values 0))))
-        (setq dest (cons (cons attribute
-			       (mapconcat
-				(lambda (elt)
-				  (if (car (cdr elt))
-				      (mime-decode-parameter-value
-				       (car elt) charset language)
-				    ;; this value is not encoded.
-				    ;; should we decode encoded-words here?
-				    (car elt)))
-				values ""))
-			 dest)
-              eparams (cdr eparams))))
+      (setq dest (cons (cons (car (car eparams)) ; attribute
+			     (mime-decode-parameter-value
+			      (mapconcat (function identity)
+					 (nth 3 (car eparams)) ; values
+					 "")
+			      (nth 1 (car eparams)) ; charset
+			      (nth 2 (car eparams)) ; language
+			      ))
+		       dest)
+	    eparams (cdr eparams)))
     dest))
 
 (defun mime-parse-alist-to-plist (alist)
@@ -346,7 +341,9 @@ Return a property list, which is a list of the form
 		(equal (car tokens) '(tspecials . "="))
 		(setq tokens (cdr tokens))
 		(memq (car (car tokens)) '(mime-token quoted-string)))
-      (setq params (cons (cdr (car tokens))
+      (setq params (cons (if (eq (car (car tokens)) 'quoted-string)
+			     (std11-strip-quoted-pair (cdr (car tokens)))
+			   (cdr (car tokens)))
 			 (cons attribute params))
 	    tokens (cdr tokens)))
     (nreverse params)))
@@ -375,11 +372,11 @@ PRIMARY-TYPE and SUBTYPE are symbols, and other elements are strings."
 	(when (and (equal (car tokens) '(tspecials . "/"))
 		   (setq tokens (cdr tokens))
 		   (eq (car (car tokens)) 'mime-token))
-	  (cons (cons 'type (intern (downcase primary-type)))
-		(cons (cons 'subtype
-			    (intern (downcase (cdr (car tokens)))))
-		      (mime-decode-parameters
-		       (mime-parse-parameters (cdr tokens))))))))))
+	  (make-mime-content-type
+	   (intern (downcase primary-type))
+	   (intern (downcase (cdr (car tokens))))
+	   (mime-decode-parameters
+	    (mime-parse-parameters (cdr tokens)))))))))
 
 ;;;###autoload
 (defun mime-read-Content-Type ()
@@ -399,9 +396,10 @@ Format of return value is same as that of `mime-parse-Content-Type'."
   "Parse FIELD-BODY as Content-Disposition field.  FIELD-BODY is a string."
   (let ((tokens (mime-lexical-analyze field-body)))
     (when (eq (car (car tokens)) 'mime-token)
-      (cons (cons 'type (intern (downcase (cdr (car tokens)))))
-	    (mime-decode-parameters
-	     (mime-parse-parameters (cdr tokens)))))))
+      (make-mime-content-disposition
+       (intern (downcase (cdr (car tokens))))
+       (mime-decode-parameters
+	(mime-parse-parameters (cdr tokens)))))))
 
 ;;;###autoload
 (defun mime-read-Content-Disposition ()
