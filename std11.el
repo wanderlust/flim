@@ -495,7 +495,7 @@ be the result."
 	      (cons (cons 'word elt) rest)
 	    )))))
 
-(defun std11-parse-word-or-comment (lal)
+(defun std11-parse-word-or-comment-or-period (lal)
   (let ((ret (std11-parse-token-or-comment lal)))
     (if ret
 	(let ((elt (car ret))
@@ -507,12 +507,15 @@ be the result."
 		 )
 		((assq 'comment elt)
 		 (cons (cons 'comment-word elt) rest)
+		 )
+		((string-equal (cdr (assq 'specials elt)) ".")
+		 (cons (cons 'period elt) rest)
 		 ))
 	  ))))
 
 (defun std11-parse-phrase (lal)
   (let (ret phrase)
-    (while (setq ret (std11-parse-word-or-comment lal))
+    (while (setq ret (std11-parse-word-or-comment-or-period lal))
       (setq phrase (append phrase (cdr (car ret))))
       (setq lal (cdr ret))
       )
