@@ -7,9 +7,7 @@ What's FLIM
   representation or encoding.  It consists of following
   modules:
 
-    std11: RFC 822/STD 11 parser and utility
-	std11.el       --- main module
-	std11-parse.el --- parser
+    std11.el	--- STD 11 (RFC 822) parser and utility
 
     mime-def.el --- Definitions about MIME format
 
@@ -27,6 +25,8 @@ What's FLIM
 
 	eword-decode.el --- encoded-word decoder
 	eword-encode.el --- encoded-word encoder
+
+    mailcap.el	--- mailcap parser and utility
 
 
 Installation
