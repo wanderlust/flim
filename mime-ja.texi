@@ -1,13 +1,13 @@
 \input texinfo.tex
 @setfilename mime-ja.info
-@settitle{FLIM 1.6 MIME 機能説明書}
+@settitle{FLIM 1.7 MIME 機能説明書}
 @titlepage
-@title FLIM 1.6 MIME 機能説明書
+@title FLIM 1.7 MIME 機能説明書
 @author 守岡 知彦 <morioka@@jaist.ac.jp>
 @subtitle 1998/06/23
 @end titlepage
 @node Top, Introduction, (dir), (dir)
-@top FLIM 1.6 MIME 機能説明書
+@top FLIM 1.7 MIME 機能説明書
 
 @ifinfo
 
@@ -108,135 +108,69 @@ local 変数 @code{mime-message-structure} に格納することにします。
 扱うことができます。
 
 
+
+
+
+
+
+
 @menu
-* mime-entity::                 mime-entity 構造体
 * Message parser::              Message の解析器
-* Entity as node in message::   Entity の位置関係に関する機能
+* Entity hierarchy::            Entity 階層
+* Entity buffer::               Entity の buffer による表現
 * Entity-header::               Entity header の情報
-* Entity-content::              Entity の内容
 * Entity Attributes::           Entity の属性
+* Entity-content::              Entity の内容
 @end menu
 
-@node mime-entity, Message parser, Entity, Entity
-@section mime-entity 構造体
-
-@deffn{Structure} mime-entity
-
-entity に関する情報を収める構造体。@refill
-
-この構造体を参照するには @code{mime-entity-要素名} という名前の参照関数
-を用いる。@refill
-
-この構造体の要素は以下の通りである：
-
-@table @var
-@item buffer
-entity が存在する buffer (buffer)
-
-@item header-start
-entity の存在する buffer における header の先頭位置
-(point)
-
-@item header-end
-entity の存在する buffer における header の末尾位置
-(point)
-
-@item body-start
-entity の存在する buffer における body の先頭位置
-(point)
-
-@item body-end
-entity の存在する buffer における body の末尾位置
-(point)
-
-@item node-id
-entity の node-id (整数の list)
-
-@item content-type
-Content-Type (@ref{Content-Type}) 欄の情報(mime-content-type)
-
-@item content-disposition
-Content-Disposition (@ref{Content-Disposition}) 欄の情報
-(mime-content-disposition)
-
-@item encoding
-entity の Content-Transfer-Encoding (@ref{Content-Transfer-Encoding})
-(文字列)
-
-@item children
-entity に含まれる entity の list (mime-entity の 
-list)
-
-@end table
-
-
-また、過去との互換性のため、以下の要素名の参照関数も利用可能である。
-
-@table @var
-@item type/subtype
-entity の type/subtype (文字列)
-
-@item media-type
-entity の media-primary-type (symbol)
-
-@item media-subtype
-entity の media-subtype (symbol)
-
-@item parameters
-entity の Content-Type 欄の parameter (連想 list)
-
-@end table
-@end deffn
-
-
-@defun make-mime-entity buffer header-start header-end body-start body-end
-	   &optional  node-id content-type content-disposition encoding
-	  children
-
-entity の生成子。
-@end defun
-
-
-@defun mime-entity-point-min entity
-
-entity の存在する buffer における entity の先頭位置を返す。
-@end defun
-
-
-@defun mime-entity-point-max entity
-
-entity の存在する buffer における entity の末尾位置を返す。
-@end defun
-
-
-
-@node Message parser, Entity as node in message, mime-entity, Entity
+@node Message parser, Entity hierarchy, Entity, Entity
 @section Message の解析器
 
 @defun mime-parse-message &optional  default-ctl default-encoding node-id
 
-現在の buffer を構文解析した結果を返す。
+現在の buffer を message として構文解析し、その結果の mime-entity を返す。
 @end defun
 
 
 @defun mime-parse-buffer &optional  buffer
 
-@var{buffer} を構文解析し、その結果を @var{buffer} の
-@code{mime-message-structure} に格納する。@refill
+@var{buffer} を message として構文解析し、その結果の mime-entity を 
+@var{buffer} の@code{mime-message-structure} に格納する。@refill
 
 @var{buffer} が省略された場合、現在の buffer を構文解析する。
 @end defun
 
 
 
-@node Entity as node in message, Entity-header, Message parser, Entity
-@section Entity の位置関係に関する機能
+@node Entity hierarchy, Entity buffer, Message parser, Entity
+@section Entity 階層
 
 @defvar mime-message-structure
 
 現在の buffer における message 全体の mime-entity 構造体を格納するbuffer
 local 変数。
 @end defvar
+
+
+@defun mime-entity-children entity
+
+@var{entity} に含まれる entity の list を返す。
+@end defun
+
+
+@defun mime-entity-parent entity  &optional  message
+
+@var{entity} の親の entity を返す。@refill
+
+@var{message} が指定された場合、これを根と見倣す。
+@end defun
+
+
+@defun mime-root-entity-p entity
+
+@var{entity} が根（即ち、message 全体）である場合に、非-@code{nil} を返
+す。
+@end defun
 
 
 @defun mime-entity-number entity
@@ -263,23 +197,60 @@ used.
 @end defun
 
 
-@defun mime-entity-parent entity  &optional  message
 
-@var{entity} の親の entity を返す。@refill
+@node Entity buffer, Entity-header, Entity hierarchy, Entity
+@section Entity の buffer による表現
 
-@var{message} が指定された場合、これを根と見倣す。
+@defun mime-entity-buffer entity
+
+@var{entity} が存在する buffer を返す。
 @end defun
 
 
-@defun mime-root-entity-p entity
+@defun mime-entity-point-min entity
 
-@var{entity} が根（即ち、message 全体）である場合に、非-@code{nil} を返
+@var{entity} が存在する buffer における、@var{entity} が占める領域の先頭
+位置を返す。
+@end defun
+
+
+@defun mime-entity-point-max entity
+
+@var{entity} が存在する buffer における、@var{entity} が占める領域の末尾
+位置を返す。
+@end defun
+
+
+@defun mime-entity-header-start entity
+
+@var{entity} が存在する buffer における、header が占める領域の先頭位置を
+返す。
+@end defun
+
+
+@defun mime-entity-header-end entity
+
+@var{entity} が存在する buffer における、header が占める領域の末尾位置を
+返す。
+@end defun
+
+
+@defun mime-entity-body-start entity
+
+@var{entity} が存在する buffer における、body が占める領域の先頭位置を返
+す。
+@end defun
+
+
+@defun mime-entity-body-end entity
+
+@var{entity} が存在する buffer における、body が占める領域の末尾位置を返
 す。
 @end defun
 
 
 
-@node Entity-header, Entity-content, Entity as node in message, Entity
+@node Entity-header, Entity Attributes, Entity buffer, Entity
 @section Entity header の情報
 
 @defun mime-fetch-field field-name  &optional  entity
@@ -327,22 +298,42 @@ used.
 
 
 
-@node Entity-content, Entity Attributes, Entity-header, Entity
+@node Entity Attributes, Entity-content, Entity-header, Entity
+@section Entity の属性
+
+@defun mime-entity-content-type entity
+
+@var{entity} の content-type を返す。(cf. @ref{mime-content-type})
+@end defun
+
+
+@defun mime-entity-content-disposition entity
+
+@var{entity} の content-disposition を返す。
+(cf. @ref{mime-content-disposition})
+@end defun
+
+
+@defun mime-entity-filename entity
+
+Entity の file 名を返す。
+@end defun
+
+
+@defun mime-entity-encoding entity
+
+@var{entity} の content-transfer-encoding を返す。
+(cf. @ref{Content-Transfer-Encoding})
+@end defun
+
+
+
+@node Entity-content,  , Entity Attributes, Entity
 @section Entity の内容
 
 @defun mime-entity-content entity
 
 @var{entity} の内容の byte 列を返す。
-@end defun
-
-
-
-@node Entity Attributes,  , Entity-content, Entity
-@section Entity の属性
-
-@defun mime-entity-filename entity
-
-Entity の file 名を返す。
 @end defun
 
 
