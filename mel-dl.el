@@ -3,7 +3,6 @@
 ;; Copyright (C) 1998 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;; Version: $Id$
 ;; Keywords: MIME, Base64
 
 ;; This file is part of MEL (MIME Encoding Library).
