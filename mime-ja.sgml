@@ -103,16 +103,16 @@ depended on representation-type.
 </defun>
 
 <defun name="mime-parse-buffer">
-	  <opts> buffer representation-type
+	  <opts> buffer type
 <p>
 <var>buffer</var> を message として構文解析し、その結果の mime-entity 
 を <var>buffer</var> の<code>mime-message-structure</code> に格納する。
 <p>
 <var>buffer</var> が省略された場合、現在の buffer を構文解析する。
 <p>
-<var>representation-type</var> が指定された場合、その値を生成される
-mime-entity の表象型として用いる。省略された場合は <var>buffer</var> と
-なる。
+<var>type</var> が指定された場合、その値を生成される mime-entity の表
+象型として用いる。<cf node="mm-backend"> 省略された場合は 
+<var>buffer</var> となる。
 </defun>
 
 

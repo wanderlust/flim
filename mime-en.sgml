@@ -1,6 +1,6 @@
 <!doctype sinfo system>
 <head>
-<title>FLIM 1.8 Manual about MIME Features
+<title>FLIM 1.9 Manual about MIME Features
 <author>MORIOKA Tomohiko <mail>morioka@jaist.ac.jp</mail>
 <date>1998/07/01
 
@@ -99,7 +99,7 @@ depended on representation-type.
 </defun>
 
 <defun name="mime-parse-buffer">
-	  <opts> buffer representation-type
+	  <opts> buffer type
 <p>
 Parse <var>buffer</var> as message, and set the result to buffer local
 variable <code>mime-message-structure</code> of <var>buffer</var> as
@@ -107,8 +107,8 @@ mime-entity.
 <p>
 If <var>buffer</var> is omitted, current buffer is used.
 <p>
-<var>representation-type</var> is representation-type of created
-mime-entity.  Default value is <var>buffer</var>.
+<var>type</var> is representation-type of created mime-entity. <cf
+node="mm-backend"> Default value is <var>buffer</var>.
 </defun>
 
 
