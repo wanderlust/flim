@@ -51,6 +51,8 @@
 	 (` ("sh" "-c" (, (concat file " -u | gzip -dc"))))))
   "*list of gzip64 decoder program name and its arguments.")
 
+(unless (and gzip64-external-encoder gzip64-external-decoder)
+  (error "Please install mmencode command."))
 
 ;;; @ encoder/decoder for region
 ;;;
