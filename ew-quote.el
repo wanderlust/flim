@@ -1,5 +1,6 @@
 ;;; quoted encoded word library
 
+(require 'ew-var)
 (require 'ew-util)
 (require 'ew-line)
 (provide 'ew-quote)
@@ -18,20 +19,8 @@
 ;; C : encoded-text.
 
 (defconst ew-quoting-char ?+)
-(defconst ew-quoting-char-singleton (list ew-quoting-char))
 (defconst ew-quoting-chars-regexp
   (concat (regexp-quote (char-to-string ew-quoting-char)) "*"))
-
-(defconst ew-token-regexp "[-!#-'*+0-9A-Z^-~]+")
-(defconst ew-encoded-text-regexp "[!->@-~]+")
-(defconst ew-encoded-word-regexp
-  (concat (regexp-quote "=?")
-          "\\(" ew-token-regexp "\\)"
-          (regexp-quote "?")
-          "\\(" ew-token-regexp "\\)"
-          (regexp-quote "?")
-          "\\(" ew-encoded-text-regexp "\\)"
-          (regexp-quote "?=")))
 
 (defconst ew-type2-regexp
   (concat (regexp-quote "=?")

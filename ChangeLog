@@ -1,5 +1,28 @@
 1998-08-17  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* FLIM-ELS (flim-modules): Add `ew-var' and reorder.
+
+	* ew-var.el: New file.
+
+	* ew-data.el: Require 'ew-var.
+	(ew-separate-eword): New function.
+	(ew-mark-phrase): Use `ew-separate-eword'.
+
+	* ew-dec.el: 
+	  - Require 'ew-var.
+	  - Move `ew-decode-quoted-encoded-word',
+	  `ew-ignore-75bytes-limit', `ew-ignore-76bytes-limit',
+	  `ew-permit-sticked-comment', `ew-permit-sticked-special',
+	  `ew-decode-us-ascii', `ew-decode-field-syntax-alist' and
+	  `ew-decode-field-default-syntax' to ew-var.el.
+	(ew-decode-field): Use `ew-separate-eword'.
+
+	* ew-quote.el: Require 'ew-var.
+	  - Move `ew-token-regexp', `ew-encoded-text-regexp',
+	  `ew-encoded-word-regexp', 
+
+1998-08-17  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* DOODLE-TIPS: Use `ew-decode-field' directly instead of
 	`eword-decode-unstructured-field-body' and
 	`eword-decode-and-unfold-structured-field'.

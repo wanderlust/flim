@@ -6,52 +6,6 @@
 (require 'ew-parse)
 (provide 'ew-dec)
 
-;;; user customizable variable.
-
-(defvar ew-decode-quoted-encoded-word nil)
-(defvar ew-ignore-75bytes-limit nil)
-(defvar ew-ignore-76bytes-limit nil)
-(defvar ew-permit-sticked-comment nil)
-(defvar ew-permit-sticked-special nil)
-
-;; anonymous function to decode ground string.
-;; NOTE: STR is CRLF-form and it should return as CRLF-form.
-(defvar ew-decode-us-ascii (lambda (str) (decode-coding-string str 'iso-latin-1-unix)))
-
-;;;
-(defvar ew-decode-field-syntax-alist
-'(("from"               ew-scan-unibyte-std11 . ew:tag-mailbox+-tok)
-  ("sender"             ew-scan-unibyte-std11 . ew:tag-mailbox-tok)
-  ("to"                 ew-scan-unibyte-std11 . ew:tag-address+-tok)
-  ("resent-to"          ew-scan-unibyte-std11 . ew:tag-address+-tok)
-  ("cc"                 ew-scan-unibyte-std11 . ew:tag-address+-tok)
-  ("resent-cc"          ew-scan-unibyte-std11 . ew:tag-address+-tok)
-  ("bcc"                ew-scan-unibyte-std11 . ew:tag-address*-tok)
-  ("resent-bcc"         ew-scan-unibyte-std11 . ew:tag-address*-tok)
-  ("message-id"         ew-scan-unibyte-std11)
-  ("resent-message-id"  ew-scan-unibyte-std11)
-  ("in-reply-to"        ew-scan-unibyte-std11 . ew:tag-phrase-msg-id*-tok)
-  ("references"         ew-scan-unibyte-std11 . ew:tag-phrase-msg-id*-tok)
-  ("keywords"           ew-scan-unibyte-std11 . ew:tag-phrase*-tok)
-  ("subject"            ew-scan-unibyte-unstructured)
-  ("comments"           ew-scan-unibyte-unstructured)
-  ("encrypted"          ew-scan-unibyte-std11)
-  ("date"               ew-scan-unibyte-std11)
-  ("reply-to"           ew-scan-unibyte-std11 . ew:tag-address+-tok)
-  ("received"           ew-scan-unibyte-std11)
-  ("resent-reply-to"    ew-scan-unibyte-std11 . ew:tag-address+-tok)
-  ("resent-from"        ew-scan-unibyte-std11 . ew:tag-mailbox+-tok)
-  ("resent-sender"      ew-scan-unibyte-std11 . ew:tag-mailbox-tok)
-  ("resent-date"        ew-scan-unibyte-std11)
-  ("return-path"        ew-scan-unibyte-std11)
-  ("mime-version"       ew-scan-unibyte-std11)
-  ("content-type"       ew-scan-unibyte-mime)
-  ("content-transfer-encoding"  ew-scan-unibyte-mime)
-  ("content-id"         ew-scan-unibyte-mime)
-  ("content-description"        ew-scan-unibyte-unstructured)
-))
-(defvar ew-decode-field-default-syntax '(ew-scan-unibyte-unstructured))
-
 (defun ew-decode-field (field-name field-body &optional eword-filter)
   "Decode MIME RFC2047 encoded-words in a field.
 FIELD-NAME is a name of the field such as \"To\", \"Subject\" etc. and
@@ -74,6 +28,11 @@ instead of its argument."
       (setq tmp ew-decode-field-default-syntax))
     (setq frag-anchor (funcall (car tmp) (1+ (length field-name)) field-body))
     ;;(setq zzz frag-anchor)
+    (when (and (eq (car tmp) 'ew-scan-unibyte-unstructured)
+	       ew-decode-sticked-encoded-word)
+      (ew-separate-eword (get frag-anchor 'next-frag)
+			 frag-anchor
+			 '(ew:raw-us-texts-tok)))
     (when (cdr tmp)
       (ew-mark (cdr tmp) frag-anchor))
     (setq frag1 (get frag-anchor 'next-frag))
@@ -94,7 +53,7 @@ instead of its argument."
     (ew-parse
      (lambda () (if (null tlist) '(0)
 		  (prog1 (car tlist) (setq tlist (cdr tlist)))))
-     (lambda (msg tok) (setq zzz-anchor anchor) (message "parse error: %s%s : %s" msg tok anchor)))))
+     (lambda (msg tok) (message "parse error: %s%s : %s" msg tok anchor)))))
 
 (defun ew-decode-none (anchor frag end eword-filter)
   (while (not (eq frag end))
