@@ -3,6 +3,10 @@
 	* mel-b-ccl.el, mel-q-ccl.el, mel.el, FLIM-ELS: Divide mel-ccl.el
 	into mel-b-ccl.el and mel-q-ccl.el.
 
+1998-09-11  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel.el (base64-encoded-length): New implementation.
+
 1998-10-25  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-field-body): New function.
