@@ -1,5 +1,9 @@
 1998-10-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* VERSION: New file (Renamed from FLIM-VERSION).
+
+1998-10-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* eword-encode.el (eword-encode-char-type): Return nil for ?\n.
 
 1998-10-27  Tanaka Akira      <akr@jaist.ac.jp>
