@@ -1,14 +1,20 @@
-[README for MEL (English Version)]
-by MORIOKA Tomohiko <morioka@jaist.ac.jp>
-$Id$
+[README for FLIM (English Version)]
 
-What's MEL
+What's FLIM
 ===========
 
-  MEL stands for "MIME Encoding Library".  It consists of following
+  FLIM is a library to provide basic features about message
+  representation or encoding.  It consists of following
   modules:
 
-	mel.el	  --- main module
+    std11: RFC 822/STD 11 parser and utility
+	std11.el       --- main module
+	std11-parse.el --- parser
+
+    mime-def.el --- Definitions about MIME format
+
+    MEL: MIME encoder/decoder
+	mel.el    --- main module
 	mel-dl.el --- base64 (b-encoding) encoder/decoder
 		      (for Emacs 20 with dynamic loading support)
 	mel-b.el  --- base64 (b-encoding) encoder/decoder
@@ -16,6 +22,11 @@ What's MEL
 	mel-q.el  --- quoted-printable and q-encoding encoder/decoder
 	mel-u.el  --- unofficial module for uuencode
 	mel-g.el  --- unofficial module for gzip64
+
+    eword: encoded-word encoder/decoder
+
+	eword-decode.el --- encoded-word decoder
+	eword-encode.el --- encoded-word encoder
 
 
 Installation
@@ -62,7 +73,7 @@ Installation
   For example, if PREFIX=/usr/local and EMACS 19.34 is specified, it
   will create the following directory tree:
 
-	/usr/local/share/emacs/site-lisp/mel/   --- MEL
+	/usr/local/share/emacs/site-lisp/flim/   --- FLIM
 
   You can specify site-lisp directory, for example
 
@@ -79,12 +90,12 @@ Installation
 load-path (for Emacs or MULE)
 =============================
 
-  If you are using Emacs or Mule, please add directory of MEL to
+  If you are using Emacs or Mule, please add directory of FLIM to
   load-path.  If you install by default setting, you can write
   subdirs.el for example:
 
   --------------------------------------------------------------------
-  (normal-top-level-add-to-load-path '("apel" "mel"))
+  (normal-top-level-add-to-load-path '("apel" "flim"))
   --------------------------------------------------------------------
 
   If you are using XEmacs, there are no need of setting about
@@ -254,9 +265,9 @@ Bug reports
 	bug-tm-en@chamonix.jaist.ac.jp	(English)
 	bug-tm-ja@chamonix.jaist.ac.jp	(Japanese)
 
-  Via the tm ML, you can report MEL bugs, obtain the latest release of
-  MEL, and discuss future enhancements to MEL. To join the tm ML, send
-  an empty e-mail to
+  Via the tm ML, you can report FLIM bugs, obtain the latest release
+  of FLIM, and discuss future enhancements to FLIM. To join the tm ML,
+  send an empty e-mail to
 
 	tm-en-help@chamonix.jaist.ac.jp	(English)
 	tm-ja-help@chamonix.jaist.ac.jp	(Japanese)
