@@ -108,3 +108,37 @@
  title*2=\"isn%27t%20it!\"")
      "title")
     "This is even more ***fun*** isn%27t%20it!")))
+
+;;; both flim-1_13-rfc2231 and flim-1_14-rfc2231 choose to put language
+;;; info to the `mime-language' text-property of the parameter value.
+(luna-define-method test-rfc2231-10 ((case test-rfc2231))
+  (lunit-assert
+   (string=
+    (get-text-property
+     0 'mime-language
+     (mime-content-type-parameter
+      (mime-parse-Content-Type "application/x-stuff;
+ title*=us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A")
+      "title"))
+    "en-us")))
+
+(luna-define-method test-rfc2231-11 ((case test-rfc2231))
+  (lunit-assert
+   (string=
+    (get-text-property
+     0 'mime-language
+     (mime-content-type-parameter
+      (mime-parse-Content-Type "application/x-stuff;
+ title*=US-ASCII'EN-US'This%20is%20%2A%2A%2Afun%2A%2A%2A")
+      "title"))
+    "en-us")))
+
+(luna-define-method test-rfc2231-12 ((case test-rfc2231))
+  (lunit-assert
+   (null
+    (get-text-property
+     0 'mime-language
+     (mime-content-type-parameter
+      (mime-parse-Content-Type "application/x-stuff;
+ title*=us-ascii''This%20is%20%2A%2A%2Afun%2A%2A%2A")
+      "title")))))
