@@ -215,6 +215,7 @@
 (autoload 'mime-entity-content-type "mime")
 (autoload 'mime-parse-multipart "mime-parse")
 (autoload 'mime-parse-encapsulated "mime-parse")
+(autoload 'mime-entity-content "mime")
 
 (luna-define-class mime-entity ()
 		   (location
@@ -249,6 +250,16 @@
 	   (mime-parse-encapsulated entity)
 	   ))
     ))
+
+(luna-define-method mime-insert-text-content ((entity mime-entity))
+  (insert
+   (decode-mime-charset-string (mime-entity-content entity)
+			       (or (mime-content-type-parameter
+				    (mime-entity-content-type entity)
+				    "charset")
+				   default-mime-charset)
+			       'CRLF)
+   ))
 
 
 ;;; @ for mm-backend
