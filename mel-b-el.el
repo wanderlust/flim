@@ -27,6 +27,9 @@
 ;;; Code:
 
 (require 'mime-def)
+(eval-when-compile
+  ;; XXX: the macro `as-binary-process' should be provided when compiling.
+  (require 'pces))
 
 
 ;;; @ variables

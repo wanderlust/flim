@@ -1,3 +1,11 @@
+2001-06-01  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mel-b-el.el: Require `pces' for the macro `as-binary-process'
+	when compiling.
+
+	* mel-q.el: Add a comment that the feature `poem' is also required
+	for the macro `as-binary-process'.
+
 2001-05-31  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	Merged MIME Parameter Value decoder.
