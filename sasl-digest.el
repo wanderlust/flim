@@ -145,8 +145,8 @@ charset algorithm cipher-opts auth-param)."
 		  '(charset qop maxbuf cipher authzid)))
     ",")))
 
-(defun sasl-digest-md5-response (client continuation)
-  (sasl-digest-md5-parse-digest-challenge (nth 1 continuation))
+(defun sasl-digest-md5-response (client step)
+  (sasl-digest-md5-parse-digest-challenge (sasl-step-data step))
   (let ((passphrase
 	 (sasl-read-passphrase
 	  (format "DIGEST-MD5 passphrase for %s: "

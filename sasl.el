@@ -133,20 +133,34 @@ STEPS is list of continuation function."
 	(require mechanism))
     (get mechanism 'sasl-mechanism)))
 
-(defun sasl-next-step (client continuation)
+;;; @ SASL authentication step
+;;;
+
+(defun sasl-step-data (step)
+  "Return the data which STEP holds, a string."
+  (if (vectorp step)
+      (aref step 1)))
+
+(defun sasl-step-set-data (step data)
+  "Store DATA string to STEP."
+  (if (vectorp step)
+      (aset step 1 data)
+    (vector nil data)))
+
+(defun sasl-next-step (client step)
   "Evaluate the challenge and prepare an appropriate next response.
-The data type of the value and optional 3rd argument CONTINUATION is nil or
-a cons cell of the form \(STEP RESPONSE-OR-CHALLENGE).
-At the first time STEP should be set to nil."
+The data type of the value and optional 2nd argument STEP is nil or
+opaque authentication step which holds the reference to the next action
+and the current challenge.  At the first time STEP should be set to nil."
   (let* ((steps
 	  (sasl-mechanism-steps
 	   (sasl-client-mechanism client)))
 	 (function
-	  (if (car continuation)
-	      (nth 1 (memq (car continuation) steps))
+	  (if (vectorp step)
+	      (nth 1 (memq (aref step 0) steps))
 	    (car steps))))
     (if function
-	(list function (funcall function client continuation)))))
+	(vector function (funcall function client step)))))
 
 (defvar sasl-read-passphrase nil)
 (defun sasl-read-passphrase (prompt)
@@ -197,7 +211,7 @@ It contain at least 64 bits of entropy."
 (defconst sasl-plain-steps
   '(sasl-plain-response))
 
-(defun sasl-plain-response (client continuation)
+(defun sasl-plain-response (client step)
   (let ((passphrase
 	 (sasl-read-passphrase
 	  (format "PLAIN passphrase for %s: " (sasl-client-name client))))
@@ -223,14 +237,14 @@ It contain at least 64 bits of entropy."
     sasl-login-response-1
     sasl-login-response-2))
 
-(defun sasl-login-response-1 (client continuation)
-  (or (string= (nth 1 continuation) "Username:")
-      (sasl-error (format "Unexpected response: %s" (nth 1 continuation))))
+(defun sasl-login-response-1 (client step)
+  (unless (string= (sasl-step-data step) "Username:")
+    (sasl-error (format "Unexpected response: %s" (sasl-step-data step))))
   (sasl-client-name client))
 
-(defun sasl-login-response-2 (client continuation)
-  (or (string= (nth 1 continuation) "Password:")
-      (sasl-error (format "Unexpected response: %s" (nth 1 continuation))))
+(defun sasl-login-response-2 (client step)
+  (unless (string= (sasl-step-data step) "Password:")
+    (sasl-error (format "Unexpected response: %s" (sasl-step-data step))))
   (sasl-read-passphrase
    (format "LOGIN passphrase for %s: " (sasl-client-name client))))
 
@@ -244,7 +258,7 @@ It contain at least 64 bits of entropy."
   '(identity				;no initial response
     sasl-anonymous-response))
 
-(defun sasl-anonymous-response (client continuation)
+(defun sasl-anonymous-response (client step)
   (or (sasl-client-property client 'trace)
       (sasl-client-name client)))
 

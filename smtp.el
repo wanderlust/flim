@@ -369,7 +369,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	  (sasl-find-mechanism mechanisms))
 	 client
 	 name
-	 continuation
+	 step
 	 response)
     (unless mechanism
       (error "No authentication mechanism available"))
@@ -379,28 +379,28 @@ of the host to connect to.  SERVICE is name of the service desired."
 	(sasl-client-set-property client 'realm smtp-sasl-user-realm))
     (setq name (sasl-mechanism-name mechanism)
 	  ;; Retrieve the initial response
-	  continuation (sasl-next-step client nil))
+	  step (sasl-next-step client nil))
     (smtp-send-command
      process
-     (if (nth 1 continuation)
-	 (format "AUTH %s %s" name (base64-encode-string (nth 1 continuation) t))
+     (if (sasl-step-data step)
+	 (format "AUTH %s %s" name (base64-encode-string (sasl-step-data step) t))
        (format "AUTH %s" name)))
     (catch 'done
       (while t
 	(setq response (smtp-read-response process))
 	(when (= (car response) 235)
 	  ;; The authentication process is finished.
-	  (setq continuation (sasl-next-step client continuation))
-	  (if (null continuation)
+	  (setq step (sasl-next-step client step))
+	  (if (null step)
 	      (throw 'done nil))
 	  (smtp-response-error response)) ;Bogus server?
 	(if (/= (car response) 334)
 	    (smtp-response-error response))
-	(setcar (cdr continuation) (base64-decode-string (nth 1 response)))
-	(setq continuation (sasl-next-step client continuation))
+	(sasl-step-set-data step (base64-decode-string (nth 1 response)))
+	(setq step (sasl-next-step client step))
 	(smtp-send-command
-	 process (if (nth 1 continuation)
-		     (base64-encode-string (nth 1 continuation) t)
+	 process (if (sasl-step-data step)
+		     (base64-encode-string (sasl-step-data step) t)
 		   ""))))))
 
 (defun smtp-primitive-starttls (package)

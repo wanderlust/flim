@@ -32,7 +32,7 @@
   '(ignore				;no initial response
     sasl-cram-md5-response))
 
-(defun sasl-cram-md5-response (client continuation)
+(defun sasl-cram-md5-response (client step)
   (let ((passphrase
 	 (sasl-read-passphrase
 	  (format "CRAM-MD5 passphrase for %s: "
@@ -40,7 +40,7 @@
     (unwind-protect
 	(concat (sasl-client-name client) " "
 		(encode-hex-string
-		 (hmac-md5 (nth 1 continuation) passphrase)))
+		 (hmac-md5 (sasl-step-data step) passphrase)))
       (fillarray passphrase 0))))
 
 (put 'sasl-cram 'sasl-mechanism
