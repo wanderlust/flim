@@ -113,9 +113,9 @@
 (mm-define-method write-entity ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
-    (write-region-as-CRLF (mime-entity-header-start-internal entity)
-			  (mime-entity-body-end-internal entity)
-			  filename)
+    (write-region-as-raw-text-CRLF (mime-entity-header-start-internal entity)
+				   (mime-entity-body-end-internal entity)
+				   filename)
     ))
 
 (mm-define-method write-entity-body ((entity buffer) filename)
