@@ -151,20 +151,18 @@ charset algorithm cipher-opts auth-param)."
   (sasl-digest-md5-parse-digest-challenge (nth 1 challenge))
   (let ((passphrase
 	 (sasl-read-passphrase
-	  (format "DIGEST-MD5 passphrase for %s: "
-		  (sasl-principal-name-internal principal)))))
+	  (format "DIGEST-MD5 passphrase for %s: " (sasl-principal-name principal)))))
     (unwind-protect
 	(sasl-digest-md5-build-response-value
-	 (sasl-principal-name-internal principal)
-	 (or (sasl-principal-realm-internal principal)
+	 (sasl-principal-name principal)
+	 (or (sasl-principal-realm principal)
 	     (sasl-digest-md5-challenge 'realm))	;need to check
 	 passphrase
 	 (sasl-digest-md5-challenge 'nonce)
 	 (sasl-digest-md5-cnonce)
 	 sasl-digest-md5-nonce-count
 	 (sasl-digest-md5-digest-uri
-	  (sasl-principal-service-internal principal)
-	  (sasl-principal-server-internal principal)))
+	  (sasl-principal-service principal) (sasl-principal-server principal)))
       (fillarray passphrase 0))))
 
 (put 'sasl-digest 'sasl-authenticator

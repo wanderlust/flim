@@ -125,15 +125,15 @@ don't define this value."
 ;;; we should guarantee the user to access the current sending package
 ;;; anywhere from the hook methods (or SMTP commands).
 
-(defmacro smtp-package-sender-internal (package)
+(defmacro smtp-package-sender (package)
   "Return the sender of PACKAGE, a string."
   `(aref ,package 0))
 
-(defmacro smtp-package-recipients-internal (package)
+(defmacro smtp-package-recipients (package)
   "Return the recipients of PACKAGE, a list of strings."
   `(aref ,package 1))
 
-(defmacro smtp-package-buffer-internal (package)
+(defmacro smtp-package-buffer (package)
   "Return the data of PACKAGE, a buffer."
   `(aref ,package 2))
 
@@ -149,7 +149,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 (defun smtp-package-buffer-size (package)
   "Return the size of PACKAGE, an integer."
   (save-excursion
-    (set-buffer (smtp-package-buffer-internal package))
+    (set-buffer (smtp-package-buffer package))
     (let ((size
 	   (+ (buffer-size)
 	      ;; Add one byte for each change-of-line
@@ -170,23 +170,23 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 ;;; They are likely to be implemented with a external program and the function
 ;;; `process-contact' returns the process ID instead of `(HOST SERVICE)' pair.
 
-(defmacro smtp-connection-process-internal (connection)
+(defmacro smtp-connection-process (connection)
   "Return the subprocess-object of CONNECTION."
   `(aref ,connection 0))
 
-(defmacro smtp-connection-server-internal (connection)
+(defmacro smtp-connection-server (connection)
   "Return the server of CONNECTION, a string."
   `(aref ,connection 1))
 
-(defmacro smtp-connection-service-internal (connection)
+(defmacro smtp-connection-service (connection)
   "Return the service of CONNECTION, a string or an integer."
   `(aref ,connection 2))
 
-(defmacro smtp-connection-extensions-internal (connection)
+(defmacro smtp-connection-extensions (connection)
   "Return the SMTP extensions of CONNECTION, a list of strings."
   `(aref ,connection 3))
 
-(defmacro smtp-connection-set-extensions-internal (connection extensions)
+(defmacro smtp-connection-set-extensions (connection extensions)
   "Set the SMTP extensions of CONNECTION.
 EXTENSIONS is a list of cons cells of the form \(EXTENSION . PARAMETERS).
 Where EXTENSION is a symbol and PARAMETERS is a list of strings."
@@ -200,13 +200,13 @@ to connect to.  SERVICE is name of the service desired."
 
 (defun smtp-connection-opened (connection)
   "Say whether the CONNECTION to server has been opened."
-  (let ((process (smtp-connection-process-internal connection)))
+  (let ((process (smtp-connection-process connection)))
     (if (memq (process-status process) '(open run))
 	t)))
 
 (defun smtp-close-connection (connection)
   "Close the CONNECTION to server."
-  (let ((process (smtp-connection-process-internal connection)))
+  (let ((process (smtp-connection-process connection)))
     (delete-process process)))
 
 (defun smtp-make-fqdn ()
@@ -318,7 +318,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	  (smtp-find-connection (current-buffer)))
 	 (response
 	  (smtp-read-response
-	   (smtp-connection-process-internal connection))))
+	   (smtp-connection-process connection))))
     (if (/= (car response) 220)
 	(smtp-response-error response))))
 
@@ -326,13 +326,13 @@ of the host to connect to.  SERVICE is name of the service desired."
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (process
-	  (smtp-connection-process-internal connection))
+	  (smtp-connection-process connection))
 	 response)
     (smtp-send-command process (format "EHLO %s" (smtp-make-fqdn)))
     (setq response (smtp-read-response process))
     (if (/= (car response) 250)
 	(smtp-response-error response))
-    (smtp-connection-set-extensions-internal
+    (smtp-connection-set-extensions
      connection (mapcar
 		 (lambda (extension)
 		   (let ((extensions
@@ -347,7 +347,7 @@ of the host to connect to.  SERVICE is name of the service desired."
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (process
-	  (smtp-connection-process-internal connection))
+	  (smtp-connection-process connection))
 	 response)
     (smtp-send-command process (format "HELO %s" (smtp-make-fqdn)))
     (setq response (smtp-read-response process))
@@ -357,20 +357,20 @@ of the host to connect to.  SERVICE is name of the service desired."
 (eval-and-compile
   (autoload 'sasl-make-principal "sasl")
   (autoload 'sasl-find-authenticator "sasl")
-  (autoload 'sasl-authenticator-mechanism-internal "sasl")
+  (autoload 'sasl-authenticator-mechanism "sasl")
   (autoload 'sasl-evaluate-challenge "sasl"))
 
 (defun smtp-primitive-auth (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (process
-	  (smtp-connection-process-internal connection))
+	  (smtp-connection-process connection))
 	 (mechanisms
-	  (cdr (assq 'auth (smtp-connection-extensions-internal connection))))
+	  (cdr (assq 'auth (smtp-connection-extensions connection))))
 	 (principal
 	  (sasl-make-principal
 	   smtp-sasl-principal-name
-	   "smtp" (smtp-connection-server-internal connection)
+	   "smtp" (smtp-connection-server connection)
 	   smtp-sasl-principal-realm))
 	 (authenticator
 	  (let ((sasl-mechanisms smtp-sasl-mechanisms))
@@ -378,7 +378,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	 mechanism sasl-response response)
     (unless authenticator
       (error "No authentication mechanism available"))
-    (setq mechanism (sasl-authenticator-mechanism-internal authenticator)
+    (setq mechanism (sasl-authenticator-mechanism authenticator)
 	  ;; Retrieve the initial response
 	  sasl-response (sasl-evaluate-challenge authenticator principal))
     (smtp-send-command
@@ -411,7 +411,7 @@ of the host to connect to.  SERVICE is name of the service desired."
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (process
-	  (smtp-connection-process-internal connection))
+	  (smtp-connection-process connection))
 	 response)
     ;; STARTTLS --- begin a TLS negotiation (RFC 2595)
     (smtp-send-command process "STARTTLS")
@@ -424,12 +424,12 @@ of the host to connect to.  SERVICE is name of the service desired."
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (process
-	  (smtp-connection-process-internal connection))
+	  (smtp-connection-process connection))
 	 (extensions
-	  (smtp-connection-extensions-internal
+	  (smtp-connection-extensions
 	   connection))
 	 (sender
-	  (smtp-package-sender-internal package))
+	  (smtp-package-sender package))
 	 extension
 	 response)
     ;; SIZE --- Message Size Declaration (RFC1870)
@@ -453,9 +453,9 @@ of the host to connect to.  SERVICE is name of the service desired."
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (process
-	  (smtp-connection-process-internal connection))
+	  (smtp-connection-process connection))
 	 (recipients
-	  (smtp-package-recipients-internal package))
+	  (smtp-package-recipients package))
 	 response)
     (while recipients
       (smtp-send-command
@@ -468,14 +468,14 @@ of the host to connect to.  SERVICE is name of the service desired."
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (process
-	  (smtp-connection-process-internal connection))
+	  (smtp-connection-process connection))
 	 response)
     (smtp-send-command process "DATA")
     (setq response (smtp-read-response process))
     (if (/= (car response) 354)
 	(smtp-response-error response))
     (save-excursion
-      (set-buffer (smtp-package-buffer-internal package))
+      (set-buffer (smtp-package-buffer package))
       (goto-char (point-min))
       (while (not (eobp))
 	(smtp-send-data
@@ -490,7 +490,7 @@ of the host to connect to.  SERVICE is name of the service desired."
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (process
-	  (smtp-connection-process-internal connection))
+	  (smtp-connection-process connection))
 	 response)
     (smtp-send-command process "QUIT")
     (setq response (smtp-read-response process))

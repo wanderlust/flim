@@ -37,10 +37,9 @@
 (defun sasl-cram-md5-response (principal challenge)
   (let ((passphrase
 	 (sasl-read-passphrase
-	  (format "CRAM-MD5 passphrase for %s: "
-		  (sasl-principal-name-internal principal)))))
+	  (format "CRAM-MD5 passphrase for %s: " (sasl-principal-name principal)))))
     (unwind-protect
-	(concat (sasl-principal-name-internal principal) " "
+	(concat (sasl-principal-name principal) " "
 		(encode-hex-string
 		 (hmac-md5 (nth 1 challenge) passphrase)))
       (fillarray passphrase 0))))

@@ -39,25 +39,25 @@
 
 (defvar sasl-unique-id-function #'sasl-unique-id-function)
 
-(defmacro sasl-authenticator-mechanism-internal (authenticator)
+(defmacro sasl-authenticator-mechanism (authenticator)
   `(aref ,authenticator 0))
 
-(defmacro sasl-authenticator-continuations-internal (authenticator)
+(defmacro sasl-authenticator-continuations (authenticator)
   `(aref ,authenticator 1))
 
 (defmacro sasl-make-principal (name service server &optional realm)
   `(vector ,name ,realm ,service ,server))
 
-(defmacro sasl-principal-name-internal (principal)
+(defmacro sasl-principal-name (principal)
   `(aref ,principal 0))
 
-(defmacro sasl-principal-realm-internal (principal)
+(defmacro sasl-principal-realm (principal)
   `(aref ,principal 1))
 
-(defmacro sasl-principal-service-internal (principal)
+(defmacro sasl-principal-service (principal)
   `(aref ,principal 2))
 
-(defmacro sasl-principal-server-internal (principal)
+(defmacro sasl-principal-server (principal)
   `(aref ,principal 3))
 
 (defun sasl-make-authenticator (mechanism continuations)
@@ -95,7 +95,7 @@ At the first time CONTINUATION should be set to nil.
 Argument AUTHENTICATOR is the current evaluator.
 Argument PRINCIPAL is the client principal."
   (let* ((continuations
-	  (sasl-authenticator-continuations-internal authenticator))
+	  (sasl-authenticator-continuations authenticator))
 	 (function
 	  (if (car challenge)
 	      (nth 1 (memq (car challenge) continuations))
@@ -155,10 +155,9 @@ It contain at least 64 bits of entropy."
 (defun sasl-plain-response (principal challenge)
   (let ((passphrase
 	 (sasl-read-passphrase
-	  (format "PLAIN passphrase for %s: "
-		  (sasl-principal-name-internal principal)))))
+	  (format "PLAIN passphrase for %s: " (sasl-principal-name principal)))))
     (unwind-protect
-	(concat "\0" (sasl-principal-name-internal principal) "\0" passphrase)
+	(concat "\0" (sasl-principal-name principal) "\0" passphrase)
       (fillarray passphrase 0))))
 
 (put 'sasl-plain 'sasl-authenticator
