@@ -207,7 +207,7 @@ NAME is name of the method to be tested."
 	  (lunit-failure
 	   (signal (car error)(cdr error)))
 	  (error
-	   (signal 'lunit-error (cdr error)))))
+	   (signal 'lunit-error error))))
     (lunit-test-case-teardown case)))
 
 ;;; @ test suite
