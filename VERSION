@@ -36,15 +36,23 @@
 ;;	Kinki Nippon Railway	$(B6a5&F|K\E4F;(B	http://www.kintetsu.co.jp/
 ;;	Ky-Dòto-A Line		$(B3`86@~(B
 ;;-------------------------------------------------------------------------
-	(Saidaiji)		($(B@>Bg;{(B)	; $(B!{J?>k5\@W!"@>Bg;{(B
-1.12.0	Amagatsuji		$(BFt%vDT(B		; $(B!{?b?NE79DNM(B
-1.12.1	Nishinoky-Dò-A		$(B@>$N5~(B		; $(B!{Eb>7Ds;{!"Lt;U;{(B
+	(Saidaiji)		($(B@>Bg;{(B)
+1.12.0	Amagatsuji		$(BFt%vDT(B
+1.12.1	Nishinoky-Dò-A		$(B@>$N5~(B
 1.12.2	Kuj-Dò-A			$(B6e>r(B
-1.12.3	Kintetsu-K-Dòriyama-A	$(B6aE474;3(B	; $(B!{74;3>k@W!"(B
-						;   $(B%"%Z%k!"%]!<!"CcHx$N2H(B
+1.12.3	Kintetsu-K-Dòriyama-A	$(B6aE474;3(B
 1.12.4	Tsutsui			$(BE{0f(B
-1.12.5	Hirahata		$(BJ?C<(B		; = $(B6aE4(B $(BE7M}@~(B
+1.12.5	Hirahata		$(BJ?C<(B
 1.12.6	Family-K-Dòenmae-A		$(B%U%!%_%j!<8x1`A0(B
+------	Y-Dþzaki-A			$(B7k:j(B
+------	Iwami			$(B@P8+(B
+------	Tawaramoto		$(BED86K\(B		; <=> $(B6aE4(B $(B@>ED86K\(B
+------	Kasanui			$(B3^K%(B
+------	Ninokuchi		$(B?7%N8}(B
+------	Yagi			$(BH,LZ(B		; = $(B6aE4(B $(BBg:e@~(B
+------	Yagi-Nishiguchi		$(BH,LZ@>8}(B
+------	Unebigory-Dòmae-A		$(B@&K58fNMA0(B
+------	Kashiharajingu-mae	$(B3`86?@5\A0(B	; = $(B6aE4(B $(BFnBg:e@~!"5HLn@~(B
 
 
 [Chao Version names]
