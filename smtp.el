@@ -206,37 +206,37 @@ don't define this value."
 			 (format "AUTH mechanism %s not available" auth)))))
 
 	    ;; ONEX --- One message transaction only (sendmail extension?)
-;;	    (if (or (memq 'onex extensions)
-;;		    (memq 'xone extensions))
-;;		(progn
-;;		  (smtp-send-command process "ONEX")
-;;		  (setq response (smtp-read-response process))
-;;		  (if (or (null (car response))
-;;			  (not (integerp (car response)))
-;;			  (>= (car response) 400))
-;;		      (throw 'done (car (cdr response))))))
+;;;	    (if (or (memq 'onex extensions)
+;;;		    (memq 'xone extensions))
+;;;		(progn
+;;;		  (smtp-send-command process "ONEX")
+;;;		  (setq response (smtp-read-response process))
+;;;		  (if (or (null (car response))
+;;;			  (not (integerp (car response)))
+;;;			  (>= (car response) 400))
+;;;		      (throw 'done (car (cdr response))))))
 
 	    ;; VERB --- Verbose (sendmail extension?)
-;;	    (if (and smtp-debug-info
-;;		     (or (memq 'verb extensions)
-;;			 (memq 'xvrb extensions)))
-;;		(progn
-;;		  (smtp-send-command process "VERB")
-;;		  (setq response (smtp-read-response process))
-;;		  (if (or (null (car response))
-;;			  (not (integerp (car response)))
-;;			  (>= (car response) 400))
-;;		      (throw 'done (car (cdr response))))))
+;;;	    (if (and smtp-debug-info
+;;;		     (or (memq 'verb extensions)
+;;;			 (memq 'xvrb extensions)))
+;;;		(progn
+;;;		  (smtp-send-command process "VERB")
+;;;		  (setq response (smtp-read-response process))
+;;;		  (if (or (null (car response))
+;;;			  (not (integerp (car response)))
+;;;			  (>= (car response) 400))
+;;;		      (throw 'done (car (cdr response))))))
 
 	    ;; XUSR --- Initial (user) submission (sendmail extension?)
-;;	    (if (memq 'xusr extensions)
-;;		(progn
-;;		  (smtp-send-command process "XUSR")
-;;		  (setq response (smtp-read-response process))
-;;		  (if (or (null (car response))
-;;			  (not (integerp (car response)))
-;;			  (>= (car response) 400))
-;;		      (throw 'done (car (cdr response))))))
+;;;	    (if (memq 'xusr extensions)
+;;;		(progn
+;;;		  (smtp-send-command process "XUSR")
+;;;		  (setq response (smtp-read-response process))
+;;;		  (if (or (null (car response))
+;;;			  (not (integerp (car response)))
+;;;			  (>= (car response) 400))
+;;;		      (throw 'done (car (cdr response))))))
 
 	    ;; MAIL FROM:<sender>
 	    (smtp-send-command

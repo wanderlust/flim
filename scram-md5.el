@@ -5,6 +5,8 @@
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: SCRAM-MD5, HMAC-MD5, SASL, IMAP, POP, ACAP
 
+;; This file is part of FLIM (Faithful Library about Internet Message).
+
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2, or
@@ -62,7 +64,7 @@
 (defun scram-make-unique-nonce ()	; 8*OCTET, globally unique.
   ;; For example, concatenated string of process-identifier, system-clock,
   ;; sequence-number, random-number, and domain-name.
-  (concat "foo" "bar" "baz" "@" (system-name))) ; TEMPORARY
+  (concat "<" "foo" "bar" "baz" "@" (system-name) ">")) ; TEMPORARY
   
 (defun scram-xor-string (str1 str2)
   ;; (length str1) == (length str2) == (length dst) == 16 (in SCRAM-MD5)
