@@ -7,9 +7,10 @@
 ;;         TANAKA Akira <akr@jaist.ac.jp>
 ;; Created: 1995/10/03
 ;; Original: 1992/07/20 ENAMI Tsugutomo's `mime.el'.
-;;	Renamed: 1993/06/03 to tiny-mime.el
-;;	Renamed: 1995/10/03 from tiny-mime.el (split off encoder)
-;;	Renamed: 1997/02/22 from tm-ew-d.el
+;;	Renamed: 1993/06/03 to tiny-mime.el by MORIOKA Tomohiko
+;;	Renamed: 1995/10/03 to tm-ew-d.el (split off encoder)
+;;               by MORIOKA Tomohiko
+;;	Renamed: 1997/02/22 from tm-ew-d.el by MORIOKA Tomohiko
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -602,8 +603,9 @@ It is max size of eword-lexical-analyze-cache - 1.")
     eword-analyze-encoded-word
     eword-analyze-atom)
   "*List of functions to return result of lexical analyze.
-Each function must have two arguments: STRING and MUST-UNFOLD.
+Each function must have three arguments: STRING, START and MUST-UNFOLD.
 STRING is the target string to be analyzed.
+START is start position of STRING to analyze.
 If MUST-UNFOLD is not nil, each function must unfold and eliminate
 bare-CR and bare-LF from the result even if they are included in
 content of the encoded-word.
@@ -631,7 +633,7 @@ be the result."
 (defun eword-analyze-domain-literal (string start &optional must-unfold)
   (std11-analyze-domain-literal string start))
 
-(defun eword-parse-comment (string &optional from must-unfold)
+(defun eword-analyze-comment (string from &optional must-unfold)
   (let ((len (length string))
 	(i (or from 0))
 	dest last-str
@@ -672,7 +674,7 @@ be the result."
 			      (1+ i)))
 		 )
 		((eq chr ?\()
-		 (if (setq ret (eword-parse-comment string i must-unfold))
+		 (if (setq ret (eword-analyze-comment string i must-unfold))
 		     (setq last-str
 			   (concat last-str
 				   (substring string from i))
@@ -695,14 +697,6 @@ be the result."
 		 (setq i (1+ i))
 		 ))
 	  )))))
-
-;; (defun eword-analyze-comment (string start &optional must-unfold)
-;;   (let ((ret (eword-parse-comment string start must-unfold)))
-;;     (if ret
-;;         (cons (car ret)
-;;               (substring string (cdr ret))
-;;               ))))
-(defalias 'eword-analyze-comment 'eword-parse-comment)
 
 (defun eword-analyze-spaces (string start &optional must-unfold)
   (std11-analyze-spaces string start))
