@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (defmacro luna-find-class (name)
   "Return the luna-class of the given NAME."
   `(get ,name 'luna-class))
@@ -33,6 +35,9 @@
 
 (defmacro luna-class-obarray (class)
   `(aref ,class 1))
+
+(defmacro luna-class-parents (class)
+  `(aref ,class 2))
 
 (defmacro luna-class-number-of-slots (class)
   `(aref ,class 3))
@@ -105,7 +110,15 @@ It must be plist and each slot name must have prefix `:'."
 (defsubst luna-class-find-member (class member-name)
   (or (stringp member-name)
       (setq member-name (symbol-name member-name)))
-  (intern-soft member-name (luna-class-obarray class)))
+  (or (intern-soft member-name (luna-class-obarray class))
+      (let ((parents (luna-class-parents class))
+	    ret)
+	(while (and parents
+		    (null
+		     (setq ret (luna-class-find-member
+				(luna-find-class (pop parents))
+				member-name)))))
+	ret)))
 
 (defsubst luna-class-find-or-make-member (class member-name)
   (or (stringp member-name)
@@ -141,8 +154,18 @@ specialized parameter.  (car (car ARGS)) is name of variable and (nth
 
 (put 'luna-define-method 'lisp-indent-function 'defun)
 
-(defmacro luna-class-find-function (class service)
-  `(symbol-function (luna-class-find-member ,class ,service)))
+(defsubst luna-class-find-function (class service)
+  (let ((sym (luna-class-find-member class service)))
+    (if (fboundp sym)
+	(symbol-function sym)
+      (let ((parents (luna-class-parents class))
+	    ret)
+	(while (and parents
+		    (null
+		     (setq ret (luna-class-find-function
+				(luna-find-class (pop parents))
+				service)))))
+	ret))))
 
 (defmacro luna-find-function (entity service)
   `(luna-class-find-function (luna-find-class (luna-class-name ,entity))
