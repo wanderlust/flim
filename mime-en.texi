@@ -1,13 +1,13 @@
 \input texinfo.tex
 @setfilename mime-en.info
-@settitle{FLIM 1.8 Manual about MIME Features}
+@settitle{FLIM 1.9 Manual about MIME Features}
 @titlepage
-@title FLIM 1.8 Manual about MIME Features
+@title FLIM 1.9 Manual about MIME Features
 @author MORIOKA Tomohiko <morioka@@jaist.ac.jp>
 @subtitle 1998/07/01
 @end titlepage
 @node Top, Introduction, (dir), (dir)
-@top FLIM 1.8 Manual about MIME Features
+@top FLIM 1.9 Manual about MIME Features
 
 @ifinfo
 
@@ -126,7 +126,7 @@ on representation-type.
 @end defun
 
 
-@defun mime-parse-buffer &optional  buffer representation-type
+@defun mime-parse-buffer &optional  buffer type
 
 Parse @var{buffer} as message, and set the result to buffer local
 variable @code{mime-message-structure} of @var{buffer} as
@@ -134,8 +134,8 @@ mime-entity.@refill
 
 If @var{buffer} is omitted, current buffer is used.@refill
 
-@var{representation-type} is representation-type of created mime-entity.
-Default value is @var{buffer}.
+@var{type} is representation-type of created
+mime-entity. (cf. @ref{mm-backend}) Default value is @var{buffer}.
 @end defun
 
 

@@ -140,7 +140,7 @@ on representation-type.
 @var{buffer} が省略された場合、現在の buffer を構文解析する。@refill
 
 @var{type} が指定された場合、その値を生成される mime-entity の表象型とし
-て用いる。(cf. @ref{mm-backend})省略された場合は @var{buffer} となる。
+て用いる。省略された場合は @var{buffer} となる。(cf. @ref{mm-backend})
 @end defun
 
 

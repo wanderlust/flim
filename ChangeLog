@@ -1,3 +1,12 @@
+1998-07-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el: Delete autoload setting for `mime-parse-message'.
+
+	* mime-en.sgml, mime-ja.sgml (Entity creation): Delete description
+	of `mime-parse-message'; modify description of `mime-parse-buffer'
+	to add `representation-type'.
+
+
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM-Chao: Version 1.8.0 (Shij-Dò)-A was released.
