@@ -301,7 +301,8 @@ such as a version of Net$cape)."
 (defun mime-set-field-decoder (field &rest specs)
   "Set decoder of FILED.
 SPECS must be like `MODE1 DECODER1 MODE2 DECODER2 ...'.
-Each mode must be `nil', `native', `folding' or `unfolding'.
+Each mode must be `nil', `native', `folding', `unfolding' or
+`unfolding-xover'.
 If mode is `nil', corresponding decoder is set up for every modes."
   (when specs
     (let ((mode (pop specs))
@@ -320,7 +321,8 @@ If mode is `nil', corresponding decoder is set up for every modes."
 	(mime-set-field-decoder field
 				'native function
 				'folding function
-				'unfolding function)
+				'unfolding function
+				'unfolding-xover function)
 	))))
 
 (defvar mime-field-decoder-cache nil)
@@ -328,7 +330,8 @@ If mode is `nil', corresponding decoder is set up for every modes."
 ;;;###autoload
 (defun mime-find-field-decoder (field &optional mode)
   "Return function to decode field-body of FIELD in MODE.
-Optional argument MODE must be `native', `folding' or `unfolding'.
+Optional argument MODE must be `native', `folding', `unfolding' or
+`unfolding-xover'.
 Default value of MODE is `unfolding'."
   (let ((p (assq (or mode 'unfolding) mime-field-decoder-cache)))
     (if (and p (setq p (assq field (cdr p))))
@@ -399,7 +402,8 @@ Default value of MODE is `unfolding'."
      field
      'native	#'eword-decode-structured-field-body
      'folding	#'eword-decode-and-fold-structured-field
-     'unfolding	#'eword-decode-and-unfold-structured-field)
+     'unfolding	#'eword-decode-and-unfold-structured-field
+     'unfolding-xover	#'eword-decode-and-unfold-structured-field)
     ))
 
 ;; unstructured fields (default)
@@ -407,13 +411,15 @@ Default value of MODE is `unfolding'."
  t
  'native	#'eword-decode-unstructured-field-body
  'folding	#'eword-decode-unstructured-field-body
- 'unfolding	#'eword-decode-and-unfold-unstructured-field)
+ 'unfolding	#'eword-decode-and-unfold-unstructured-field
+ 'unfolding-xover	#'eword-decode-and-unfold-unstructured-field)
 
 ;;;###autoload
 (defun mime-decode-field-body (field-body field-name
 					  &optional mode max-column)
   "Decode FIELD-BODY as FIELD-NAME in MODE, and return the result.
-Optional argument MODE must be `unfolding', `folding' and `native'.
+Optional argument MODE must be `unfolding', `folding', `native' or
+`unfolding-xover'.
 Default mode is `unfolding'.
 
 If MODE is `folding' and MAX-COLUMN is non-nil, the result is folded

@@ -1,3 +1,8 @@
+1998-11-07  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (mime-set-field-decoder): Add mode `unfolding-xover'.
+	(mime-find-field-decoder): Ditto.
+
 1998-11-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-encode.el (eword-encode-phrase-route-addr-to-rword-list):
