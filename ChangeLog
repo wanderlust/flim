@@ -1,5 +1,9 @@
 1998-08-16  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* TESTPAT: Add a driver for `ew-decode-field'.
+
+1998-08-16  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* FLIM-ELS (flim-modules): Reorder.
 
 1998-08-16  Tanaka Akira      <akr@jaist.ac.jp>
