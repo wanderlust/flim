@@ -172,6 +172,9 @@ If MESSAGE is specified, it is regarded as root entity."
 (luna-define-generic mime-goto-body-start-point (entity)
   "Set buffer and point to body-start-position of ENTITY.")
 
+(luna-define-generic mime-goto-body-end-point (entity)
+  "Set buffer and point to body-end-position of ENTITY.")
+
 
 ;;; @ Entity Header
 ;;;
