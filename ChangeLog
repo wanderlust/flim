@@ -1,7 +1,12 @@
 1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
 
+	* FLIM-ELS: (flim-modules): Do not install mel-b-ccl.el for
+	mule-2.3@19.34.
+
+1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
+
 	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): workaround 
-	for mule 2.3@19.34.
+	for mule-2.3@19.34.
 
 1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
 

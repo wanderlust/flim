@@ -21,6 +21,8 @@
 
 (require 'pccl)
 (unless-broken ccl-usable
-  (setq flim-modules (cons 'mel-b-ccl (cons 'mel-q-ccl flim-modules))))
+  (if (not (and (boundp 'MULE) MULE))
+      (setq flim-modules (cons 'mel-b-ccl flim-modules)))
+  (setq flim-modules (cons 'mel-q-ccl flim-modules)))
 
 ;;; FLIM-ELS ends here
