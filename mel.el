@@ -186,7 +186,7 @@ external decoder is called.")
       "Encode STRING with quoted-printable encoding.")
     (autoload 'quoted-printable-ccl-encode-region "mel-ccl"
       "Encode the region from START to END with quoted-printable
-  encoding." t)
+encoding." t)
     (autoload 'quoted-printable-ccl-insert-encoded-file "mel-ccl"
       "Encode contents of the file named as FILENAME, and insert it." t))
 
@@ -200,16 +200,13 @@ external decoder is called.")
 
   (autoload 'q-encoding-ccl-encode-string "mel-ccl"
     "Encode STRING to Q-encoding of encoded-word, and return the result.
-  MODE allows `text', `comment', `phrase' or nil.  Default value is
-  `phrase'.")
+MODE allows `text', `comment', `phrase' or nil.  Default value is
+`phrase'.")
   (autoload 'q-encoding-ccl-decode-string "mel-ccl"
     "Decode Q encoded STRING and return the result.")
 
   (unless running-xemacs
-    (autoload 'q-encoding-ccl-encoded-length "mel-ccl"
-      "Encode STRING to Q-encoding of encoded-word, and return the result.
-MODE allows `text', `comment', `phrase' or nil.  Default value is
-`phrase'.")
+    (autoload 'q-encoding-ccl-encoded-length "mel-ccl")
     )
   )
 

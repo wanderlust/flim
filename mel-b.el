@@ -288,11 +288,7 @@ START and END are buffer positions."
 ;;;
 
 (defun base64-internal-encoded-length (string)
-  (let ((len (length string)))
-    (* (+ (/ len 3)
-	  (if (= (mod len 3) 0) 0 1)
-	  ) 4)
-    ))
+  (* (/ (+ (length string) 2) 3) 4))
 
 (defun pack-sequence (seq size)
   "Split sequence SEQ into SIZE elements packs,

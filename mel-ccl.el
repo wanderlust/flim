@@ -1180,9 +1180,6 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 
 (unless running-xemacs
   (defun q-encoding-ccl-encoded-length (string &optional mode)
-    "Encode STRING to Q-encoding of encoded-word, and return the result.
-MODE allows `text', `comment', `phrase' or nil.  Default value is
-`phrase'."
     (let ((status [nil nil nil nil nil nil nil nil nil]))
       (fillarray status nil)
       (ccl-execute-on-string
