@@ -4,7 +4,7 @@
 
 PACKAGE = clime
 API	= 1.13
-RELEASE = 4
+RELEASE = 5
 
 TAR	= tar
 RM	= /bin/rm -f
