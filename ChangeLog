@@ -1,5 +1,12 @@
 1998-09-02  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-data.el (ew-search-sticked-eword): New function.
+	(ew-separate-eword): Use `ew-search-sticked-eword' to
+	check `ew-permit-null-encoded-text', `ew-ignore-75bytes-limit',
+	`ew-permit-sticked-comment' and `ew-permit-sticked-special'.
+
+1998-09-02  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-data.el (ew-separate-eword): Remove
 	`ew-permit-null-encoded-text' checking.
 
