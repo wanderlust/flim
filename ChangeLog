@@ -1,3 +1,10 @@
+1998-09-14  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel-ccl.el (mel-ccl-try-to-read-crlf): New compile-time
+	function.
+	(mel-ccl-encode-quoted-printable-generic): quote "F" in "From "
+	on beginning of a line and "." apeared in a line alone.
+
 1998-09-11  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mel-b.el (base64-internal-encoded-length): Refined.

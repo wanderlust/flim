@@ -463,6 +463,17 @@ abcdefghijklmnopqrstuvwxyz\
 
 (eval-when-compile
 
+(defun mel-ccl-try-to-read-crlf (input-crlf reg eof-reg cr-eof lf-eof crlf-eof succ fail-cr fail-lf fail-crlf)
+  (if input-crlf
+      `((,eof-reg = ,cr-eof) (read-if (,reg == ?\r)
+	((,eof-reg = ,lf-eof) (read-if (,reg == ?\n)
+	 ,succ
+	 ,fail-lf))
+	,fail-cr))
+    `((,eof-reg = ,crlf-eof) (read-if (,reg == ?\n)
+      ,succ
+      ,fail-crlf))))
+
 ;; Generated CCL program works not properly on 20.2 because CCL_EOF_BLOCK
 ;; is not executed.
 (defun mel-ccl-encode-quoted-printable-generic (input-crlf output-crlf)
@@ -480,6 +491,45 @@ abcdefghijklmnopqrstuvwxyz\
             (lambda (r0)
               (let ((tmp (aref mel-ccl-qp-table r0)))
                 (cond
+		 ((eq r0 (char-int ?F))
+		  `(if (r6 == 0)
+		       ((r4 = 15) (read-if (r0 == ?r)
+			((r4 = 16) (read-if (r0 == ?o)
+			 ((r4 = 17) (read-if (r0 == ?m)
+			  ((r4 = 18) (read-if (r0 == ? )
+			   ((r6 = 7)
+			    (r5 = 1)
+			    (write "=46rom ")
+			    (r4 = 19)
+			    (read r0)
+			    (repeat))
+			   ((r6 = 4)
+			    (write-repeat "From"))))
+			  ((r6 = 3)
+			   (write-repeat "Fro"))))
+			 ((r6 = 2)
+			  (write-repeat "Fr"))))
+			((r6 = 1)
+			 (write-repeat "F"))))
+		     ((r3 = 0) (break)) ; RAW
+		     ))
+		 ((eq r0 (char-int ?.))
+		  `(if (r6 == 0)
+		       ,(mel-ccl-try-to-read-crlf
+			 input-crlf
+			 'r0 'r4 20 21 22
+			 `((write ,(if output-crlf "=2E\r\n" "=2E\n"))
+			   (r4 = 23)
+			   (read r0)
+			   (repeat))
+			 '((r6 = 1)
+			   (write-repeat "."))
+			 '((r6 = 4)
+			   (write-repeat ".=0D"))
+			 '((r6 = 1)
+			   (write-repeat ".")))
+		     ((r3 = 0) (break)) ; RAW
+		     ))
                  ((eq tmp 'raw) '((r3 = 0) (break))) ; RAW
                  ((eq tmp 'enc) '((r3 = 1) (break))) ; ENC
                  ((eq tmp 'wsp) '((r3 = 2) (break))) ; WSP
@@ -540,11 +590,13 @@ abcdefghijklmnopqrstuvwxyz\
                  (r6 = 0)
                  (write ,(if output-crlf "=\r\n" "=\n"))
                  ,@(if output-crlf '((write ?\r)) '())
+		 (r4 = 0)
                  (write-read-repeat r0))
               ;; noWSP ; r0:r3=CRLF
               ((r5 = 0)
 	       (r6 = 0)
 	       ,@(if output-crlf '((write ?\r)) '())
+	       (r4 = 0)
 	       (write-read-repeat r0)))
 	   )))
       ;; r0:r3={RAW,ENC,CR}
@@ -758,6 +810,24 @@ abcdefghijklmnopqrstuvwxyz\
       (end)
       ;; 14: r0:r3=ENC CR LF ;
       ;; 14: r0:r3=ENC CRLF ;
+      (end)
+      ;; 15: r6=0 ; "F"
+      ((write "F") (end))
+      ;; 16: r6=0 ; "Fr"
+      ((write "Fr") (end))
+      ;; 17: r6=0 ; "Fro"
+      ((write "Fro") (end))
+      ;; 18: r6=0 ; "From"
+      ((write "From") (end))
+      ;; 19: r6=0 "From " ;
+      (end)
+      ;; 20: r6=0 ; "."
+      ((write ".") (end))
+      ;; 21: r6=0 ; ".\r"
+      ((write ".=0D") (end))
+      ;; 22: r6=0 ; "."
+      ((write ".") (end))
+      ;; 23: r6=0 ".\r\n" ;
       (end)
       ))
     ))
