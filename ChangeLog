@@ -1,5 +1,9 @@
 2001-02-17  Kenichi OKADA <okada@opaopa.org>
 
+	* ntlm.el(smb-passwd-hash): Fix `upcase' for XEmacs.
+
+2001-02-17  Kenichi OKADA <okada@opaopa.org>
+
 	* ntlm.el(TopLevel): Require `poem'
 	(ntlm-build-auth-request): Omit `request-bufIndex'
 	(ntlm-build-auth-response): Omit `response', `ident' and `msgType'

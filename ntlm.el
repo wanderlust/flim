@@ -237,11 +237,10 @@ little-endian utf16."
 (defun smb-passwd-hash (passwd)
   "Return the SMB password hash string of 16 bytes long for the given password
 string PASSWD.  PASSWD is truncated to 14 bytes if longer."
-  (let* ((len (min (length passwd) 14))
-	 p15)
-    (setq p15 (concat (substring passwd 0 len) ;fill top 14 bytes with passwd
-		      (make-string (- 15 len) 0)))
-    (smbdes-e-p16 (upcase p15))))
+  (let ((len (min (length passwd) 14)))
+    (smbdes-e-p16
+     (concat (substring (upcase passwd) 0 len) ;fill top 14 bytes with passwd
+	     (make-string (- 15 len) 0)))))
 
 (defun smb-owf-encrypt (passwd c8)
   "Return the response string of 24 bytes long for the given password
