@@ -1,3 +1,42 @@
+2004-03-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* sha1-el.el (sha1-maximum-internal-length): Doc fix.
+
+2004-02-23  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* lunit.el (lunit-make-test-suite-from-class): Fix regexp.
+	Use "^test" instead of "^test-".
+
+2004-02-19  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* lunit.el (lunit-assert): Avoid double-eval `condtion-expr'.
+	Use ,(not (not condition)) instead of ,condition.
+
+2004-02-18  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* lunit.el (lunit-make-test-suite-from-class): Restrict test
+	method name to test-*.
+
+2004-02-17  Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-starttls-program): New user option.
+	(smtp-starttls-extra-args): New user option.
+	(smtp-send-buffer): Bind starttls-program and starttls-extra-args.
+
+2004-01-27  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* mel-q.el (quoted-printable-external-decoder-option-to-specify-file): 
+	Accept nil.
+	(mime-write-decoded-region): If the value of the variable
+	`quoted-printable-external-decoder-option-to-specify-file' is nil,
+	write stdout to the output file.
+
+	* mel-b-el.el (base64-external-decoder-option-to-specify-file): 
+	Accept nil.
+	(base64-write-decoded-region): If the value of the variable
+	`base64-external-decoder-option-to-specify-file' is nil, write
+	stdout to the output file.
+
 2004-01-12  Daiki Ueno  <ueno@unixuser.org>
 
 	* sasl.texi: Texinfo markup fixes.  From Jesper Harder

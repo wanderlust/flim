@@ -102,6 +102,14 @@ don't define this value."
   :type 'boolean
   :group 'smtp-extensions)
 
+(defcustom smtp-starttls-program "starttls"
+  "The program to run in a subprocess to open an TLSv1 connection."
+  :group 'smtp-extensions)
+
+(defcustom smtp-starttls-extra-args nil
+  "Extra arguments to `starttls-program'"
+  :group 'smtp-extensions)
+
 (defcustom smtp-use-sasl nil
   "If non-nil, use SMTP Authentication (RFC2554) if available."
   :type 'boolean
@@ -343,17 +351,19 @@ RECIPIENTS is a list of envelope recipient addresses.
 BUFFER may be a buffer or a buffer name which contains mail message."
   (if smtp-send-by-myself
       (smtp-send-buffer-by-myself sender recipients buffer)
-    (let ((server
-	   (if (functionp smtp-server)
-	       (funcall smtp-server sender recipients)
-	     (or smtp-server
-		 (error "`smtp-server' not defined"))))
-	  (package
-	   (smtp-make-package sender recipients buffer))
-	  (smtp-open-connection-function
-	   (if smtp-use-starttls
-	       #'starttls-open-stream
-	     smtp-open-connection-function)))
+    (let* ((server
+	    (if (functionp smtp-server)
+		(funcall smtp-server sender recipients)
+	      (or smtp-server
+		  (error "`smtp-server' not defined"))))
+	   (package
+	    (smtp-make-package sender recipients buffer))
+	   (starttls-program smtp-starttls-program)
+	   (starttls-extra-args smtp-starttls-extra-args)
+	   (smtp-open-connection-function
+	    (if smtp-use-starttls
+		#'starttls-open-stream
+	      smtp-open-connection-function)))
       (save-excursion
 	(set-buffer
 	 (get-buffer-create

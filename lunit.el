@@ -237,7 +237,7 @@ TESTS holds a number of instances of `lunit-test'."
 (defmacro lunit-assert (condition-expr)
   "Verify that CONDITION-EXPR returns non-nil; signal an error if not."
   (let ((condition (eval condition-expr)))
-    `(unless ,condition
+    `(when ,(not condition)
        (signal 'lunit-failure (list ',condition-expr)))))
 
 (luna-define-class lunit-test-printer (lunit-test-listener))
@@ -265,6 +265,7 @@ TESTS holds a number of instances of `lunit-test'."
     (mapatoms
      (lambda (symbol)
        (if (and (fboundp symbol)
+		(string-match "^test" (symbol-name symbol))
 		(null (get symbol 'luna-method-qualifier)))
 	   (push (lunit-make-test-case class symbol) tests)))
      (luna-class-obarray (luna-find-class class)))
