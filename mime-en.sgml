@@ -874,12 +874,13 @@ separator.
 </defun>
 
 <defun name="eword-encode-header">
-	      <opts> code-conversion
+	    <opts> code-conversion
 <p>
 Encode header fields to network representation, such as MIME
 encoded-word.
 <p>
-It refer variable <code>eword-field-encoding-method-alist</code>.
+Each field is encoded as corresponding method specified by variable
+<code>eword-field-encoding-method-alist</code>.
 </defun>
 
 
