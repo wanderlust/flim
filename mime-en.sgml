@@ -42,9 +42,9 @@ a message or one of the parts in the body of a multipart entity.'  In
 this document, the term <concept>entity</concept> indicates all of
 header fields and body.
 <p>
-The definition of RFC 2045 indicates that a MIME message is a tree.
-An message is a tree, each node is an entity, like following figure.
-Namely MIME extends message to tree structure.
+The definition of RFC 2045 indicates that a MIME message is a tree,
+and each node of the tree is an entity.  Namely MIME extends message
+to tree structure.
 <p>
 FLIM uses <concept>mime-entity</concept> structure to represent
 information of entity.  In this document, it is called simply

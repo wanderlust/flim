@@ -47,9 +47,8 @@ field と内容を指す」となっています。ここでは、MIME で定義された head
 field 以外の全ての header と body を指す語として 
 <concept>entity</concept>を用いることにします。
 <p>
-RFC 2045 の定義は、MIME message が entity を単位とする木構造であることを
-示しています。message は下図で示すような木となり、entity はこの木におけ
-る節となります。つまり、MIME は message を木構造に拡張した訳です。
+RFC 2045 の定義は、MIME message が entity を節とする木構造であることを
+示しています。つまり、MIME は message を木構造に拡張した訳です。
 <p>
 FLIM は entity の情報を表現するために<concept>mime-entity</concept> 構
 造体を用います。以下では単に mime-entity と呼ぶことにします。
