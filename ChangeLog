@@ -1,3 +1,7 @@
+1998-10-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el: Require mcharset.
+
 1998-10-20  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mel-u.el (mime-write-decoded-region): Fix typo.
