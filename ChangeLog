@@ -1,3 +1,12 @@
+2000-11-22  Kenichi OKADA   <okada@opaopa.org>
+
+	* smtp.el (smtp-primitive-starttls): Call `smtp-primitive-helo'	
+	after `starttls-negotiate'.
+
+2000-11-20  Kenichi OKADA   <okada@opaopa.org>
+
+	* sasl-digest.el (sasl-digest-md5-response): Fix typo.
+
 2000-11-20  Kenichi OKADA   <okada@opaopa.org>
 
 	* FLIM-ELS (flim-modules): Add `sasl-cram', `sasl-digest' , `qmtp'.

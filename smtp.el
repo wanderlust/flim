@@ -413,7 +413,9 @@ of the host to connect to.  SERVICE is name of the service desired."
     (setq response (smtp-read-response process))
     (if (/= (car response) 220)
 	(smtp-response-error response))
-    (starttls-negotiate process)))
+    (starttls-negotiate process)
+    ;; for sendmail warning XXX
+    (smtp-primitive-helo package)))
 
 (defun smtp-primitive-mailfrom (package)
   (let* ((connection
