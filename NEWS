@@ -67,6 +67,26 @@ position of `STRING' to analyze.
 Interface of lexical analyzers for STD 11 was changed from `(string)'
 to `(string &optional start)'.
 
+
+** Function `std11-parse-in-reply-to' -> `std11-parse-msg-ids'
+
+Rename function `std11-parse-in-reply-to' to `std11-parse-msg-ids'.
+Function `std11-parse-in-reply-to' was defined as obsolete alias.
+
+
+** New function `std11-parse-msg-id-string'
+
+
+** New function `std11-parse-msg-ids-string'
+
+
+** New generic function `mime-insert-entity'
+
+Add new generic function `mime-insert-entity' to insert header and
+body of ENTITY at point.
+
+Each mm-backend must have new method `insert-entity'.
+
 
 * Changes in FLIM 1.11
 
