@@ -393,12 +393,42 @@ return the result.
 </defun>
 
 
-<h3> How to make mm-backend
+<h3> Definition of mm-backend
 <node> mm-backend module
 <p>
-(It is not written yet, sorry. (^_^;)
+<defmacro name="mm-define-backend">
+<args> type
+<opts> parents
 <p>
-(Please read mm*.el)
+Define <var>type</var> as a mm-backend.
+<p>
+If <var>PARENTS</var> is specified, <var>type</var> inherits parents.
+Each parent must be representation-type.
+<p>
+Example:
+<p>
+<lisp>
+(mm-define-backend chao (generic))
+</lisp>
+</defmacro>
+
+<defmacro name="mm-define-method">
+<args> name args <rest> body
+<p>
+Define <var>name</var> as a method function of (nth 1 (car
+<var>args</var>)) backend.
+<p>
+<var>args</var> is like an argument list of lambda, but (car
+<var>args</var>) must be specialized parameter.  (car (car
+<var>args</var>)) is name of variable and (nth 1 (car
+<var>args</var>)) is name of backend (representation-type).
+<p>
+Example:
+<p>
+<lisp>
+(mm-define-method entity-cooked-p ((entity chao)) nil)
+</lisp>
+</defmacro>
 
 
 <h1> Information of Content-Type field
@@ -729,6 +759,28 @@ Each element looks like <code>(STRING . FUNCTION)</code>.  STRING is
 content-transfer-encoding.  FUNCTION is function to write decoded
 region to file.
 </defvar>
+
+
+<h2> Other utilities
+<node> Encoding information
+<p>
+<defun name="mime-encoding-list">
+	    <opts> SERVICE
+<p>
+Return list of Content-Transfer-Encoding.
+<p>
+If <var>service</var> is specified, it returns available list of
+Content-Transfer-Encoding for it.
+</defun>
+
+<defun name="mime-encoding-alist">
+	    <opts> SERVICE
+<p>
+Return table of Content-Transfer-Encoding for completion.
+<p>
+If <var>service</var> is specified, it returns available list of
+Content-Transfer-Encoding for it.
+</defun>
 
 
 <h1> Network representation of header

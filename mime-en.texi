@@ -101,7 +101,8 @@ mime-entity.@refill
 If @var{buffer} is omitted, current buffer is used.@refill
 
 @var{type} is representation-type of created
-mime-entity. (cf. @ref{mm-backend}) Default value is @var{buffer}.
+mime-entity. (cf. @ref{mm-backend})
+ Default value is @var{buffer}.
 @end defun
 
 
@@ -414,7 +415,7 @@ when its entity is created at first.
 
 @menu
 * Request for entity::          Message-passing for entity
-* mm-backend module::           How to make mm-backend
+* mm-backend module::           Definition of mm-backend
 @end menu
 
 @node Request for entity, mm-backend module, mm-backend, mm-backend
@@ -431,11 +432,40 @@ result.@refill
 
 
 @node mm-backend module,  , Request for entity, mm-backend
-@subsection How to make mm-backend
+@subsection Definition of mm-backend
 
-(It is not written yet, sorry. (^_^;)@refill
+@defmac mm-define-backend type &optional  parents
 
-(Please read mm*.el)
+Define @var{type} as a mm-backend.@refill
+
+If @var{PARENTS} is specified, @var{type} inherits parents.  Each parent
+must be representation-type.@refill
+
+Example:@refill
+
+@lisp
+(mm-define-backend chao (generic))
+@end lisp
+@end defmac
+
+
+@defmac mm-define-method name args  &rest  body
+
+Define @var{name} as a method function of (nth 1 (car @var{args}))
+backend.@refill
+
+@var{args} is like an argument list of lambda, but (car @var{args}) must
+be specialized parameter.  (car (car @var{args})) is name of variable
+and (nth 1 (car @var{args})) is name of backend
+(representation-type).@refill
+
+Example:@refill
+
+@lisp
+(mm-define-method entity-cooked-p ((entity chao)) nil)
+@end lisp
+@end defmac
+
 
 
 @node Content-Type, Content-Disposition, Entity, Top
@@ -697,6 +727,7 @@ Content-Transfer-Encoding.
 * Region encoder/decoder::      Region encoding/decoding
 * String encoder/decoder::      String encoding/decoding
 * File encoder/decoder::        File encoding/decoding
+* Encoding information::        Other utilities
 @end menu
 
 @node Content-Transfer-Encoding parser, Region encoder/decoder, Content-Transfer-Encoding, Content-Transfer-Encoding
@@ -776,7 +807,7 @@ content-transfer-encoding.  FUNCTION is string decoder.
 
 
 
-@node File encoder/decoder,  , String encoder/decoder, Content-Transfer-Encoding
+@node File encoder/decoder, Encoding information, String encoder/decoder, Content-Transfer-Encoding
 @section File encoding/decoding
 
 @defun mime-insert-encoded-file filename encoding
@@ -813,6 +844,28 @@ Each element looks like @code{(STRING . FUNCTION)}.  STRING is
 content-transfer-encoding.  FUNCTION is function to write decoded region
 to file.
 @end defvar
+
+
+
+@node Encoding information,  , File encoder/decoder, Content-Transfer-Encoding
+@section Other utilities
+
+@defun mime-encoding-list &optional  SERVICE
+
+Return list of Content-Transfer-Encoding.@refill
+
+If @var{service} is specified, it returns available list of
+Content-Transfer-Encoding for it.
+@end defun
+
+
+@defun mime-encoding-alist &optional  SERVICE
+
+Return table of Content-Transfer-Encoding for completion.@refill
+
+If @var{service} is specified, it returns available list of
+Content-Transfer-Encoding for it.
+@end defun
 
 
 

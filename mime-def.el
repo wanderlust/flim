@@ -24,15 +24,24 @@
 
 ;;; Code:
 
-(defconst mime-library-version
-  '("Chao" "Imadegawa" 1 11 0)
-  "Implementation name, version name and numbers of MIME-library package.")
+(defconst mime-library-product ["Chao" (1 11 1) "Kuramaguchi"]
+  "Product name, version number and code name of MIME-library package.")
 
-(defconst mime-library-version-string
-  `,(concat (car mime-library-version) " "
+(defmacro mime-product-name (product)
+  `(aref ,product 0))
+
+(defmacro mime-product-version (product)
+  `(aref ,product 1))
+
+(defmacro mime-product-code-name (product)
+  `(aref ,product 2))
+
+(defconst mime-library-version
+  (eval-when-compile
+    (concat (mime-product-name mime-library-product) " "
 	    (mapconcat #'number-to-string
-		       (cddr mime-library-version) ".")
-	    " - \"" (cadr mime-library-version) "\""))
+		       (mime-product-version mime-library-product) ".")
+	    " - \"" (mime-product-code-name mime-library-product) "\"")))
 
 
 ;;; @ variables
@@ -359,6 +368,9 @@ message/rfc822, `mime-entity' structures of them are included in
 (defvar mime-entity-implementation-alist nil)
 
 (defmacro mm-define-backend (type &optional parents)
+  "Define mm-backend TYPE.
+If PARENTS is specified, TYPE inherits PARENTS.
+Each parent must be backend name (symbol)."
   (if parents
       `(let ((rest ',(reverse parents)))
 	 (while rest
@@ -371,6 +383,11 @@ message/rfc822, `mime-entity' structures of them are included in
 	   ))))
 
 (defmacro mm-define-method (name args &rest body)
+  "Define NAME as a method function of (nth 1 (car ARGS)) backend.
+
+ARGS is like an argument list of lambda, but (car ARGS) must be
+specialized parameter.  (car (car ARGS)) is name of variable and (nth
+1 (car ARGS)) is name of backend."
   (let* ((specializer (car args))
 	 (class (nth 1 specializer))
 	 (self (car specializer)))

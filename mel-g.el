@@ -82,21 +82,40 @@
 		       )
     ))
 
-(defalias 'gzip64-encode-region 'gzip64-external-encode-region)
-(defalias 'gzip64-decode-region 'gzip64-external-decode-region)
+(mel-define-method-function (mime-encode-region start end (nil "x-gzip64"))
+			    'gzip64-external-encode-region)
+(mel-define-method-function (mime-decode-region start end (nil "x-gzip64"))
+			    'gzip64-external-decode-region)
+
+
+;;; @ encoder/decoder for string
+;;;
+
+(mel-define-method mime-encode-string (string (nil "x-gzip64"))
+  (with-temp-buffer
+    (insert string)
+    (gzip64-external-encode-region (point-min)(point-max))
+    (buffer-string)))
+
+(mel-define-method mime-decode-string (string (nil "x-gzip64"))
+  (with-temp-buffer
+    (insert string)
+    (gzip64-external-decode-region (point-min)(point-max))
+    (buffer-string)))
 
 
 ;;; @ encoder/decoder for file
 ;;;
 
-(defun gzip64-insert-encoded-file (filename)
+(mel-define-method mime-insert-encoded-file (filename (nil "x-gzip64"))
   (interactive (list (read-file-name "Insert encoded file: ")))
   (apply (function call-process) (car gzip64-external-encoder)
 	 filename t nil
 	 (cdr gzip64-external-encoder))
   )
 
-(defun gzip64-write-decoded-region (start end filename)
+(mel-define-method mime-write-decoded-region (start end filename
+						    (nil "x-gzip64"))
   "Decode and write current region encoded by gzip64 into FILENAME.
 START and END are buffer positions."
   (interactive

@@ -1,3 +1,38 @@
+1998-10-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-g.el: Define method functions of mel.
+	(mime-encode-region): Use `mel-define-method-function'; abolish
+	`gzip64-encode-region'.
+	(mime-decode-region): Use `mel-define-method-function'; abolish
+	`gzip64-decode-region'.
+	(mime-encode-string): New method.
+	(mime-decode-string): New method.
+	(mime-insert-encoded-file): Use `mel-define-method'; abolish
+	`gzip64-insert-encoded-file'.
+	(mime-write-decoded-region): Use `mel-define-method'; abolish
+	`gzip64-write-decoded-region'.
+
+	* mime-def.el (mime-library-product): New variable; abolish
+	`mime-library-version'.
+	(mime-product-name): New macro.
+	(mime-product-version): New macro.
+	(mime-product-code-name): New macro.
+	(mime-library-version): Renamed from
+	`mime-library-version-string'; use `mime-library-product',
+	`mime-product-name', `mime-product-version' and
+	`mime-product-code-name'.
+
+	* mime-def.el (mm-define-backend): Add DOC.
+	(mm-define-method): Add DOC.
+
+	* mel.el (mime-encoding-list): Modify DOC to add description about
+	optional argument SERVICE.
+
+1998-10-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml, mime-en.sgml (mm-backend module): Write
+	description of `mm-define-backend' and `mm-define-method'.
+
 1998-10-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11.el (std11-unfold-string): New implementation.
