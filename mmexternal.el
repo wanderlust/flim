@@ -38,165 +38,139 @@
   ;; entity are in the body of the parent entity.
   )
 
+(luna-define-method initialize-instance :after ((entity mime-external-entity)
+						&rest init-args)
+  (or (mime-external-entity-body-file-internal entity)
+      (let* ((ct (mime-entity-content-type
+		  (mime-entity-parent-internal entity)))
+	     (access-type (mime-content-type-parameter ct "access-type")))
+	(if (and access-type
+		 (string= access-type "anon-ftp"))
+	    (let ((site (mime-content-type-parameter ct "site"))
+		  (directory (mime-content-type-parameter ct "directory"))
+		  (name (mime-content-type-parameter ct "name")))
+	      (mime-external-entity-set-body-file-internal
+	       entity
+	       (expand-file-name
+		name
+		(concat "/anonymous@" site ":" directory)))))))
+  entity)
+
 (luna-define-method mime-entity-name ((entity mime-external-entity))
   (concat "child of "
-	  (buffer-name
-	   (mime-entity-name
-	    (mime-entity-parent-internal entity)))))
+	  (mime-entity-name
+	   (mime-entity-parent-internal entity))))
 
 
-(luna-define-method mime-insert-header ((entity mime-external-entity)
-					&optional invisible-fields
-					visible-fields)
-  (mime-insert-header-from-buffer
-   (mime-entity-body-buffer (mime-entity-parent-internal entity))
-   (mime-entity-body-start-point (mime-entity-parent-internal entity))
-   (mime-entity-body-end-point (mime-entity-parent-internal entity))
-   invisible-fields visible-fields))
+(defun mmexternal-require-buffer (entity)
+  (unless (and (mime-external-entity-body-buffer-internal entity)
+	       (buffer-live-p
+		(mime-external-entity-body-buffer-internal entity)))
+    (condition-case nil
+	(mime-external-entity-set-body-buffer-internal
+	 entity
+	 (with-current-buffer (get-buffer-create
+			       (concat " *Body of "
+				       (mime-entity-name entity)
+				       "*"))
+	   (insert-file-contents-as-binary
+	    (mime-external-entity-body-file-internal entity))
+	   (current-buffer)))
+      (error (message "Can't get external-body.")))))
 
+
+;;; @ entity
+;;;
+
+(luna-define-method mime-insert-entity ((entity mime-external-entity))
+  (mime-insert-entity-body (mime-entity-parent-internal entity))
+  (insert "\n")
+  (mime-insert-entity-body entity))
+
+(luna-define-method mime-write-entity ((entity mime-external-entity) filename)
+  (with-temp-buffer
+    (mime-insert-entity entity)
+    (write-region-as-raw-text-CRLF (point-min) (point-max) filename)))
+
+
+;;; @ entity header
+;;;
+
+
+;;; @ entity body
+;;;
+
+(luna-define-method mime-entity-body ((entity mime-external-entity))
+  (mmexternal-require-buffer entity)
+  (with-current-buffer (mime-external-entity-body-buffer-internal entity)
+    (buffer-string)))
+
+(luna-define-method mime-insert-entity-body ((entity mime-external-entity))
+  (mmexternal-require-buffer entity)
+  (insert-buffer-substring
+   (mime-external-entity-body-buffer-internal entity)))
+
+(luna-define-method mime-write-entity-body ((entity mime-external-entity)
+					    filename)
+  (mmexternal-require-buffer entity)
+  (with-current-buffer (mime-external-entity-body-buffer-internal entity)
+    (write-region-as-binary (point-min) (point-max) filename)))
+
+
+;;; @ entity content
+;;;
 
 (luna-define-method mime-entity-content ((entity mime-external-entity))
-  (let ((buf (mime-entity-body-buffer entity)))
-    (if buf
-	(with-current-buffer buf
-	  (mime-decode-string
-	   (buffer-string)
-	   (mime-entity-encoding entity)))
-      (message "Cannot get external content")
+  (let ((ret (mime-entity-body entity)))
+    (if ret
+	(mime-decode-string ret (mime-entity-encoding entity))
+      (message "Cannot get content")
       nil)))
+
+(luna-define-method mime-insert-entity-content ((entity mime-external-entity))
+  (insert (mime-entity-content entity)))
+
+(luna-define-method mime-write-entity-content ((entity mime-external-entity)
+					       filename)
+  (mmexternal-require-buffer entity)
+  (with-current-buffer (mime-external-entity-body-buffer-internal entity)
+    (mime-write-decoded-region (point-min) (point-max)
+			       filename
+			       (or (mime-entity-encoding entity) "7bit"))))
+
+
+;;; @ header field
+;;;
 
 (luna-define-method mime-entity-fetch-field :around
   ((entity mime-external-entity) field-name)
   (or (luna-call-next-method)
-      (save-excursion
-	(mime-goto-body-start-point (mime-entity-parent-internal entity))
-	(save-restriction
-	  (narrow-to-region
-	   (point)
-	   (mime-entity-body-end-point (mime-entity-parent-internal entity)))
-	  (let ((ret (std11-fetch-field field-name)))
-	    (when ret
-	      (or (symbolp field-name)
-		  (setq field-name
-			(intern (capitalize (capitalize field-name)))))
-  	      (mime-entity-set-original-header-internal
-	       entity
-	       (put-alist field-name ret
-			  (mime-entity-original-header-internal entity)))
-	      ret))))))
+      (with-temp-buffer
+	(mime-insert-entity-body (mime-entity-parent-internal entity))
+	(let ((ret (std11-fetch-field field-name)))
+	  (when ret
+	    (or (symbolp field-name)
+		(setq field-name
+		      (intern (capitalize (capitalize field-name)))))
+	    (mime-entity-set-original-header-internal
+	     entity
+	     (put-alist field-name ret
+			(mime-entity-original-header-internal entity)))
+	    ret)))))
 
-(luna-define-method mime-insert-entity-content ((entity mime-external-entity))
-  (insert
-   (with-current-buffer (mime-external-entity-body-buffer-internal entity)
-     (mime-decode-string
-      (buffer-string)
-      (mime-entity-encoding entity)))))
-
-(mm-define-method write-entity-content ((entity buffer) filename)
-  (save-excursion
-    (set-buffer (mime-external-entity-buffer-internal entity))
-    (mime-write-decoded-region (mime-external-entity-body-start-internal entity)
-			       (mime-external-entity-body-end-internal entity)
-			       filename
-			       (or (mime-entity-encoding entity) "7bit"))
-    ))
-
-(mm-define-method insert-entity ((entity buffer))
-  (insert-buffer-substring (mime-external-entity-buffer-internal entity)
-			   (mime-external-entity-header-start-internal entity)
-			   (mime-external-entity-body-end-internal entity))
-  )
-
-(mm-define-method write-entity ((entity buffer) filename)
-  (save-excursion
-    (set-buffer (mime-external-entity-buffer-internal entity))
-    (write-region-as-raw-text-CRLF
-     (mime-external-entity-header-start-internal entity)
-     (mime-external-entity-body-end-internal entity)
-     filename)
-    ))
-
-(mm-define-method write-entity-body ((entity buffer) filename)
-  (save-excursion
-    (set-buffer (mime-external-entity-buffer-internal entity))
-    (write-region-as-binary (mime-external-entity-body-start-internal entity)
-			    (mime-external-entity-body-end-internal entity)
-			    filename)
-    ))
-
-
-;;; @ header buffer
-;;;
-
-(luna-define-method mime-entity-header-buffer ((entity mime-external-entity))
-  (mime-entity-body-buffer (mime-entity-parent-internal entity)))
-
-(luna-define-method mime-goto-header-start-point ((entity
-						   mime-external-entity))
-  (mime-goto-body-start-point (mime-entity-parent-internal entity)))
-
-(luna-define-method mime-entity-header-start-point ((entity
-						     mime-external-entity))
-  (mime-entity-body-start-point (mime-entity-parent-internal entity)))
-
-(luna-define-method mime-entity-header-end-point ((entity
-						   mime-external-entity))
-  (mime-entity-body-end-point (mime-entity-parent-internal entity)))
-
-
-;;; @ body buffer
-;;;
-
-(luna-define-method mime-entity-body-buffer ((entity mime-external-entity))
-  (or (mime-external-entity-body-buffer-internal entity)
-      (let* ((ct
-	      (mime-entity-content-type (mime-entity-parent-internal entity))))
-	(if (string= (mime-content-type-parameter ct "access-type")
-		     "anon-ftp")
-	    (let* ((site (mime-content-type-parameter ct "site"))
-		   (directory (mime-content-type-parameter ct "directory"))
-		   (name (mime-content-type-parameter ct "name"))
-		   (pathname
-		    (expand-file-name
-		     name (concat "/anonymous@" site ":" directory)))
-		   (buf (create-file-buffer pathname)))
-	      (condition-case nil
-		  (with-current-buffer buf
-		    (insert-file-contents-as-binary pathname)
-		    (mime-external-entity-set-body-buffer-internal
-		     entity buf))
-		(error (message "Cannot open external buffer")))
-	      buf)))))
-
-(luna-define-method mime-goto-body-start-point ((entity mime-external-entity))
-  (set-buffer (mime-entity-body-buffer entity))
-  (goto-char (point-min)))
-
-(luna-define-method mime-goto-body-end-point ((entity mime-external-entity))
-  (set-buffer (mime-entity-body-buffer entity))
-  (goto-char (point-max)))
-
-(luna-define-method mime-entity-body-start-point ((entity
-						   mime-external-entity))
-  (with-current-buffer (mime-entity-body-buffer entity)
-    (point-min)))
-
-(luna-define-method mime-entity-body-end-point ((entity mime-external-entity))
-  (with-current-buffer (mime-entity-body-buffer entity)
-    (point-max)))
-
-
-;;; @ buffer (obsolete)
-;;;
-
-(luna-define-method mime-entity-buffer ((entity mime-external-entity))
-  (mime-entity-body-buffer entity))
-
-(luna-define-method mime-entity-point-min ((entity mime-external-entity))
-  (mime-entity-body-start-point entity))
-
-(luna-define-method mime-entity-point-max ((entity mime-external-entity))
-  (mime-entity-body-end-point entity))
+(luna-define-method mime-insert-header ((entity mime-external-entity)
+					&optional invisible-fields
+					visible-fields)
+  (let ((the-buf (current-buffer))
+	buf p-min p-max)
+    (with-temp-buffer
+      (mime-insert-entity-body (mime-entity-parent-internal entity))
+      (setq buf (current-buffer)
+	    p-min (point-min)
+	    p-max (point-max))
+      (set-buffer the-buf)
+      (mime-insert-header-from-buffer buf p-min p-max
+				      invisible-fields visible-fields))))
 
 
 ;;; @ end
