@@ -58,7 +58,6 @@
   (autoload 'base64-encode-string "base64")
   (autoload 'starttls-open-stream "starttls")
   (autoload 'starttls-negotiate "starttls")
-;  (autoload 'digest-md5-parse-digest-challenge "digest-md5")
   (autoload 'digest-md5-digest-response "digest-md5")
   (autoload 'scram-md5-make-salted-pass "scram-md5")
   (autoload 'scram-md5-parse-server-msg-1 "scram-md5")
