@@ -117,6 +117,8 @@ charset algorithm cipher-opts auth-param)."
 	 (nonce-count
 	  (or (sasl-client-property client 'nonce-count)
 	       sasl-digest-md5-nonce-count))
+	 (qop-options (plist-get plist 'qop))
+	 (qop (sasl-client-property client 'qop))
 	 (digest-uri
 	  (sasl-digest-md5-digest-uri
 	   (sasl-client-service client)(sasl-client-server client)))
@@ -124,6 +126,10 @@ charset algorithm cipher-opts auth-param)."
 	  (or (sasl-client-property client 'cnonce)
 	      (sasl-digest-md5-cnonce))))
     (sasl-client-set-property client 'nonce-count (1+ nonce-count))
+    (if qop-options
+	(setq qop-options (split-string qop-options ",")))
+    (unless (member qop qop-options)
+      (setq qop "auth"))
     (concat
      "username=\"" (sasl-client-name client) "\","
      "realm=\"" realm "\","
@@ -131,6 +137,7 @@ charset algorithm cipher-opts auth-param)."
      "cnonce=\"" cnonce "\","
      (format "nc=%08x," nonce-count)
      "digest-uri=\"" digest-uri "\","
+     "qop=" qop ","
      "response="
      (sasl-digest-md5-response-value
       (sasl-client-name client)
@@ -138,8 +145,7 @@ charset algorithm cipher-opts auth-param)."
       (plist-get plist 'nonce)
       cnonce
       nonce-count
-      (or (sasl-client-property client 'qop)
-	  "auth")
+      qop
       digest-uri
       (plist-get plist 'authzid)))))
 
