@@ -69,22 +69,22 @@ This function uses external uuencode decoder which is specified by
 variable `uuencode-external-decoder'."
   (interactive "*r")
   (save-excursion
-    (let ((filename (save-excursion
-		      (save-restriction
-			(narrow-to-region start end)
-			(goto-char start)
-			(if (re-search-forward "^begin [0-9]+ " nil t)
-			    (if (looking-at ".+$")
-				(buffer-substring (match-beginning 0)
-						  (match-end 0)))))))
-	  (default-directory temporary-file-directory))
-      (if filename
-	  (let ((coding-system-for-read  'binary)
-		(coding-system-for-write 'binary))
-	    (apply (function call-process-region)
-		   start end (car uuencode-external-decoder)
-		   t nil nil
-		   (cdr uuencode-external-decoder))
+    (let ((the-buf (current-buffer))
+	  (filename (make-temp-file "x-uue")))
+      (save-excursion
+	(save-restriction
+	  (set-mark end)
+	  (narrow-to-region start end)
+	  (goto-char start)
+	  (when (and (re-search-forward "^begin [0-9]+ " nil t)
+		     (looking-at ".+$"))
+	    (replace-match filename)
+	    (let ((coding-system-for-read  'binary)
+		  (coding-system-for-write 'binary))
+	      (apply (function call-process-region)
+		     start (mark) (car uuencode-external-decoder)
+		     t nil nil
+		     (cdr uuencode-external-decoder)))
 	    (insert-file-contents filename)
 	    ;; The previous line causes the buffer to be made read-only, I
 	    ;; do not pretend to understand the control flow leading to this
@@ -92,7 +92,7 @@ variable `uuencode-external-decoder'."
 	    ;;	Use `inhibit-read-only' to avoid to force
 	    ;;	buffer-read-only nil. - tomo.
 	    (let ((inhibit-read-only t))
-	      (delete-file filename)))))))
+	      (delete-file filename))))))))
 
 (mel-define-method-function (mime-encode-region start end (nil "x-uue"))
 			    'uuencode-external-encode-region)
@@ -136,7 +136,7 @@ START and END are buffer positions."
   (save-excursion
     (let ((the-buf (current-buffer))
 	  (clone-buf (clone-buffer " *x-uue*"))
-	  (file (make-temp-name "x-uue")))
+	  (file (make-temp-file "x-uue")))
       (save-excursion
 	(save-restriction
 	  (set-buffer clone-buf)
@@ -147,8 +147,7 @@ START and END are buffer positions."
 		   (looking-at ".+$"))
 	    (replace-match file)
 	    (let ((coding-system-for-read  'binary)
-		  (coding-system-for-write 'binary)
-		  (default-directory temporary-file-directory))
+		  (coding-system-for-write 'binary))
 	      (apply (function call-process-region)
 		     (point-min) (point-max) (car uuencode-external-decoder)
 		     nil nil nil
