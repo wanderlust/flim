@@ -1,3 +1,9 @@
+2000-12-09  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmbuffer.el (mmbuffer-parse-multipart): Add new optional
+	argument `representation-type'.
+	(mmbuffer-parse-encapsulated): Likewise.
+
 2000-12-07  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mmexternal.el: Must require `mmgeneric'.
