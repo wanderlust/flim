@@ -1,3 +1,8 @@
+2004-04-13  Kenichi Okada  <okada@opaopa.org>
+
+	* mel-u.el (mime-write-decoded-region): Use make-temp-file.
+	(mime-write-decoded-region): Ditto.
+
 2004-04-12  Kenichi Okada  <okada@opaopa.org>
 
 	* mel-u.el (mime-write-decoded-region): Use temporary filename.
