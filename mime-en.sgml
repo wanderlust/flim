@@ -494,7 +494,7 @@ Content-Type $BMs$N>pJs$r3JG<$9$k$?$a$N9=B$BN!#(B
 </defun>
 
 
-<h2> Content-Type $BMs$N2r@O4o(B
+<h2> Parser for Content-Type field
 <node> Content-Type parser
 <p>
 <defun name="mime-parse-Content-Type">
@@ -511,18 +511,18 @@ Content-Type $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
 </defun>
 
 
-<h2> Content-Type $B$K4X$9$kM-MQ$J4X?t(B
+<h2> Content-Type
 <node> Content-Type utility
 <p>
 <defun name="mime-type/subtype-string">
 	  <args> type <opts> subtype
 <p>
-<var>type</var> $B$H(B <var>subtype</var> $B$+$i(B type/subtype $B7A<0$NJ8;zNs$rJV(B
-$B$9!#(B
+Return type/subtype string from <var>type</var> and
+<var>subtype</var>.
 </defun>
 
 
-<h1> Content-Disposition $BMs$N>pJs(B
+<h1> Information of Content-Disposition field
 <node> Content-Disposition
 <p>
 <concept>Content-Disposition $BMs(B</concept> $B$O(B entity $B$NI=<($d(B file $BL>$J$I(B
@@ -539,7 +539,7 @@ FLIM $B$O(B Content-Disposition $BMs$r9=J82r@O$9$k4X?t$H(B Content-Dispositi
 <concept>mime-content-disposition</concept> $B$rDs6!$7$^$9!#(B
 
 
-<h2> mime-content-disposition $B9=B$BN(B
+<h2> mime-content-disposition structure
 <node> mime-content-disposition
 <p>
 <define type="Structure" name="mime-content-disposition">
@@ -572,7 +572,7 @@ Content-Disposition $BMs$N2r@O7k2L$r<}$a$k$?$a$N9=B$BN!#(B
 </defun>
 
 
-<h2> Content-Disposition $BMs$N2r@O4o(B
+<h2> Parser for Content-Disposition field
 <node> Content-Disposition parser
 <p>
 <defun name="mime-parse-Content-Disposition">
@@ -589,7 +589,7 @@ Content-Disposition $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
 </defun>
 
 
-<h1> $BId9f2=K!(B
+<h1> Encoding Method
 <node> Content-Transfer-Encoding
 <p>
 <concept>Content-Transfer-Encoding $BMs(B</concept> $B$O(B entity $B$NId9f2=K!$r5-(B
@@ -602,7 +602,7 @@ FLIM $B$G$O(B Content-Transfer-Encoding $BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$
 $B6!$5$l$^$9!#(B
 
 
-<h2> Content-Transfer-Encoding $BMs$N2r@O4o(B
+<h2> Parser for Content-Transfer-Encoding field
 <node> Content-Transfer-Encoding parser
 <p>
 <defun name="mime-parse-Content-Transfer-Encoding">
@@ -622,7 +622,7 @@ Content-Transfer-Encoding $BMs$,B8:_$7$J$$>l9g$O(B
 </defun>
 
 
-<h2> $BNN0h$NId9f2=!&I|9f2=(B
+<h2> Region encoding/decoding
 <node> Region encoder/decoder
 <p>
 <defun name="mime-encode-region">
@@ -660,7 +660,7 @@ and <code>nil</code> means not to decode.
 </defvar>
 
 
-<h2> $BJ8;zNs$NId9f2=!&I|9f2=(B
+<h2> String encoding/decoding
 <node> String encoder/decoder
 <p>
 <defun name="mime-decode-string">
@@ -679,7 +679,7 @@ FUNCTION is string decoder.
 </defvar>
 
 
-<h2> File $B$NId9f2=!&I|9f2=(B
+<h2> File encoding/decoding
 <node> File encoder/decoder
 <p>
 <defun name="mime-insert-encoded-file">
@@ -717,7 +717,7 @@ region to file.
 </defvar>
 
 
-<h1> Header $B$N(B network $BI=8=(B
+<h1> Network representation of header
 <node> encoded-word
 <p>
 encoded-word $B$O(B header $B$GHs(B <dref>ASCII</dref> $BJ8;z$rI=8=$9$k$?$a$N7A(B
@@ -734,7 +734,7 @@ encoded-word $B$O(B header $B$GHs(B <dref>ASCII</dref> $BJ8;z$rI=8=$9$k$?$a
 FLIM $B$O$3$l$i$rId9f2=!&I|9f2=$9$k5!G=$rDs6!$7$^$9!#(B
 
 
-<h2> Header $B$NId9f2=!&I|9f2=(B
+<h2> Header encoding/decoding
 <node> Header encoder/decoder
 <p>
 <defun name="eword-encode-header">
@@ -760,7 +760,7 @@ It refer variable <code>eword-field-encoding-method-alist</code>.
 </defun>
 
 
-<h1> $B0lHL@_Dj(B
+<h1> Various Customization
 <node> custom
 <p>
 <define type="group" name="mime">
