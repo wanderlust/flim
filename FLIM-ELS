@@ -5,7 +5,7 @@
 ;;; Code:
 
 (setq flim-modules '(std11
-		     luna mime-def
+		     luna lunit mime-def
 		     mel mel-q mel-u mel-g
 		     eword-decode eword-encode
 		     mime mime-parse mmgeneric
@@ -17,12 +17,8 @@
 (setq flim-version-specific-modules '(mailcap))
 
 (setq hmac-modules '(hex-util
-		     hmac-def
-		     md5 md5-el md5-dl
-		     sha1 sha1-el sha1-dl
+		     hmac-def md5 sha1
 		     hmac-md5 hmac-sha1))
-
-(setq flim-modules (nconc hmac-modules flim-modules))
 
 (if (and (fboundp 'base64-encode-string)
 	 (subrp (symbol-function 'base64-encode-string)))
@@ -34,5 +30,18 @@
 (require 'pccl)
 (unless-broken ccl-usable
   (setq flim-modules (cons 'mel-b-ccl (cons 'mel-q-ccl flim-modules))))
+
+(if (and (fboundp 'md5)
+	 (subrp (symbol-function 'md5)))
+    nil
+  (if (fboundp 'dynamic-link)
+      (setq hmac-modules (cons 'md5-dl hmac-modules))
+    (setq hmac-modules (cons 'md5-el hmac-modules))))
+
+(if (fboundp 'dynamic-link)
+    (setq hmac-modules (cons 'sha1-dl hmac-modules))
+  (setq hmac-modules (cons 'sha1-el hmac-modules)))
+
+(setq flim-modules (nconc hmac-modules flim-modules))
 
 ;;; FLIM-ELS ends here

@@ -1,3 +1,74 @@
+2000-12-12   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el: Rewrite with luna.
+
+2000-12-06   Daiki Ueno  <ueno@unixuser.org>
+
+	* FLIM-ELS: Don't install md5-dl.el, md5-el.el, sha1-dl.el and
+	sha1-el.el if the running emacs has builtin message digest
+	functions.
+
+	* md5-dl.el, sha1-dl.el: Don't bind `dynamic-link' and
+	`dynamic-call'.
+
+	* md5.el (md5-dl-module): Moved from md5-dl.el.
+	* sha1.el: Don't bind `sha1-string'.
+
+2000-12-04   Daiki Ueno  <ueno@unixuser.org>
+
+	* README.ja, README.en (load-path): Remove section.
+	(What's FLIM): Specify prerequisite version of Emacsen.
+
+2000-11-21   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-client-set-encoder): New function.
+	(sasl-client-set-decoder): New function.
+	(sasl-client-encoder): New function.
+	(sasl-client-decoder): New function.
+
+	* sasl-digest.el: Require 'cl' when compiling.
+	(sasl-digest-md5-signing-encode-magic): New constant.
+	(sasl-digest-md5-signing-decode-magic): New constant.
+	(sasl-digest-md5-htonl-string): New function.
+	(sasl-digest-md5-make-integrity-encoder): New function.
+	(sasl-digest-md5-make-integrity-decoder): New function.
+	(sasl-digest-md5-ha1): New function.
+	(sasl-digest-md5-response-value): Accept the 1st argument `ha1'.
+	(sasl-digest-md5-response): Use `sasl-digest-md5-ha1'.
+	- Set integrity encoder and decoder of the client.
+
+	* smtp.el: Require `luna'.
+	(smtp-read-response): Accept `smtp-connection' object rather than
+	process-object.
+	(smtp-send-command): Likewise.
+	(smtp-send-data): Likewise.
+
+2000-11-10   Daiki Ueno  <ueno@unixuser.org>
+
+	* tests/test-sasl.el (test-sasl-digest-md5-imap): New testcase.
+	(test-sasl-digest-md5-acap): New testcase.
+
+2000-11-10   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el (lunit-make-test-suite-from-class): New function.
+	(lunit-class): Abolish.
+	(lunit-test-results-buffer): Abolish.
+
+	* FLIM-ELS (check-flim): New function.
+
+	* Makefile (check): New target.
+
+	* tests: New directory.
+
+2000-11-09   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el (lunit-test-method-regexp): New variable.
+	(lunit-class): New function.
+
+2000-11-09   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el: New file.
+
 2000-12-13  Kenichi Handa     <handa@etl.go.jp>
 
 	* luna.el: Fix and add DOCs and comments; fix coding style.
@@ -75,7 +146,8 @@
 	(sasl-digest-md5-syntax-table): Rename from
 	`sasl-digest-md5-parse-digest-challenge-syntax-table'.
 	(sasl-digest-md5-parse-string): Rename from
-	`sasl-digest-md5-parse-digest-challenge'; only return a property list.
+	`sasl-digest-md5-parse-digest-challenge'; only return a property
+	list.
 	(sasl-digest-md5-challenge): Abolish.
 	(sasl-digest-md5-build-response-value-1): Abolish.
 	(sasl-digest-md5-response-value): Define as function.
@@ -236,7 +308,13 @@
 
 2000-10-31   Daiki Ueno  <ueno@unixuser.org>
 
-	* smtp.el: New implementation; don't use `tram.el' and `luna.el'.
+	* smtp.el: New implementation.
+
+2000-08-16   Daiki Ueno  <ueno@unixuser.org>
+
+	* FLIM-ELS (flim-modules): Add `qmtp'.
+
+	* qmtp.el: New file.
 
 2000-08-28  Yuuichi Teranishi  <teranisi@gohome.org>
 

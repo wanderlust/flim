@@ -35,6 +35,7 @@
 (require 'pcustom)
 (require 'mail-utils)			; mail-strip-quoted-names
 (require 'sasl)
+(require 'luna)
 
 (defgroup smtp nil
   "SMTP protocol for sending mail."
@@ -120,36 +121,32 @@ don't define this value."
 
 (defvar smtp-submit-package-function #'smtp-submit-package)
 
-;;; @ SMTP package structure
+;;; @ SMTP package
 ;;; A package contains a mail message, an envelope sender address,
 ;;; and one or more envelope recipient addresses.  In ESMTP model
 ;;; the current sending package should be guaranteed to be accessible
 ;;; anywhere from the hook methods (or SMTP commands).
 
-(defmacro smtp-package-sender (package)
-  "Return the sender of PACKAGE, a string."
-  `(aref ,package 0))
+(eval-and-compile
+  (luna-define-class smtp-package ()
+		     (sender
+		      recipients
+		      buffer))
 
-(defmacro smtp-package-recipients (package)
-  "Return the recipients of PACKAGE, a list of strings."
-  `(aref ,package 1))
+  (luna-define-internal-accessors 'smtp-package))
 
-(defmacro smtp-package-buffer (package)
-  "Return the data of PACKAGE, a buffer."
-  `(aref ,package 2))
-
-(defmacro smtp-make-package (sender recipients buffer)
+(defun smtp-make-package (sender recipients buffer)
   "Create a new package structure.
 A package is a unit of SMTP message
 SENDER specifies the package sender, a string.
 RECIPIENTS is a list of recipients.
 BUFFER may be a buffer or a buffer name which contains mail message."
-  `(vector ,sender ,recipients ,buffer))
+  (luna-make-entity 'smtp-package :sender sender :recipients recipients :buffer buffer))
 
-(defun smtp-package-buffer-size (package)
+(defun smtp-package-buffer-internal-size (package)
   "Return the size of PACKAGE, an integer."
   (save-excursion
-    (set-buffer (smtp-package-buffer package))
+    (set-buffer (smtp-package-buffer-internal package))
     (let ((size
 	   (+ (buffer-size)
 	      ;; Add one byte for each change-of-line
@@ -165,49 +162,42 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	(setq size (1+ size)))
       size)))
 
-;;; @ SMTP connection structure
+;;; @ SMTP connection
 ;;; We should consider the function `open-network-stream' is a emulation
 ;;; for another network stream.  They are likely to be implemented with an
 ;;; external program and the function `process-contact' returns the
 ;;; process id instead of `(HOST SERVICE)' pair.
 
-(defmacro smtp-connection-process (connection)
-  "Return the subprocess-object of CONNECTION."
-  `(aref ,connection 0))
+(eval-and-compile
+  (luna-define-class smtp-connection ()
+		     (process
+		      server
+		      service
+		      extensions
+		      encoder
+		      decoder))
 
-(defmacro smtp-connection-server (connection)
-  "Return the server of CONNECTION, a string."
-  `(aref ,connection 1))
+  (luna-define-internal-accessors 'smtp-connection))
 
-(defmacro smtp-connection-service (connection)
-  "Return the service of CONNECTION, a string or an integer."
-  `(aref ,connection 2))
-
-(defmacro smtp-connection-extensions (connection)
-  "Return the SMTP extensions of CONNECTION, a list of strings."
-  `(aref ,connection 3))
-
-(defmacro smtp-connection-set-extensions (connection extensions)
-  "Set the SMTP extensions of CONNECTION.
-EXTENSIONS is a list of cons cells of the form \(EXTENSION . PARAMETERS).
-Where EXTENSION is a symbol and PARAMETERS is a list of strings."
-  `(aset ,connection 3 ,extensions))
-
-(defmacro smtp-make-connection (process server service)
+(defun smtp-make-connection (process server service)
   "Create a new connection structure.
 PROCESS is an internal subprocess-object.  SERVER is name of the host
 to connect to.  SERVICE is name of the service desired."
-  `(vector ,process ,server ,service nil))
+  (luna-make-entity 'smtp-connection :process process :server server :service service))
 
-(defun smtp-connection-opened (connection)
-  "Say whether the CONNECTION to server has been opened."
-  (let ((process (smtp-connection-process connection)))
+(luna-define-generic smtp-connection-opened (connection)
+  "Say whether the CONNECTION to server has been opened.")
+
+(luna-define-generic smtp-close-connection (connection)
+  "Close the CONNECTION to server.")
+
+(luna-define-method smtp-connection-opened ((connection smtp-connection))
+  (let ((process (smtp-connection-process-internal connection)))
     (if (memq (process-status process) '(open run))
 	t)))
 
-(defun smtp-close-connection (connection)
-  "Close the CONNECTION to server."
-  (let ((process (smtp-connection-process connection)))
+(luna-define-method smtp-close-connection ((connection smtp-connection))
+  (let ((process (smtp-connection-process-internal connection)))
     (delete-process process)))
 
 (defun smtp-make-fqdn ()
@@ -318,22 +308,19 @@ of the host to connect to.  SERVICE is name of the service desired."
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (response
-	  (smtp-read-response
-	   (smtp-connection-process connection))))
+	  (smtp-read-response connection)))
     (if (/= (car response) 220)
 	(smtp-response-error response))))
 
 (defun smtp-primitive-ehlo (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
-	 (process
-	  (smtp-connection-process connection))
 	 response)
-    (smtp-send-command process (format "EHLO %s" (smtp-make-fqdn)))
-    (setq response (smtp-read-response process))
+    (smtp-send-command connection (format "EHLO %s" (smtp-make-fqdn)))
+    (setq response (smtp-read-response connection))
     (if (/= (car response) 250)
 	(smtp-response-error response))
-    (smtp-connection-set-extensions
+    (smtp-connection-set-extensions-internal
      connection (mapcar
 		 (lambda (extension)
 		   (let ((extensions
@@ -347,21 +334,17 @@ of the host to connect to.  SERVICE is name of the service desired."
 (defun smtp-primitive-helo (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
-	 (process
-	  (smtp-connection-process connection))
 	 response)
-    (smtp-send-command process (format "HELO %s" (smtp-make-fqdn)))
-    (setq response (smtp-read-response process))
+    (smtp-send-command connection (format "HELO %s" (smtp-make-fqdn)))
+    (setq response (smtp-read-response connection))
     (if (/= (car response) 250)
 	(smtp-response-error response))))
 
 (defun smtp-primitive-auth (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
-	 (process
-	  (smtp-connection-process connection))
 	 (mechanisms
-	  (cdr (assq 'auth (smtp-connection-extensions connection))))
+	  (cdr (assq 'auth (smtp-connection-extensions-internal connection))))
 	 (sasl-mechanisms
 	  (or smtp-sasl-mechanisms sasl-mechanisms))
 	 (mechanism
@@ -373,20 +356,20 @@ of the host to connect to.  SERVICE is name of the service desired."
     (unless mechanism
       (error "No authentication mechanism available"))
     (setq client (sasl-make-client mechanism smtp-sasl-user-name "smtp"
-				   (smtp-connection-server connection)))
+				   (smtp-connection-server-internal connection)))
     (if smtp-sasl-properties
 	(sasl-client-set-properties client smtp-sasl-properties))
     (setq name (sasl-mechanism-name mechanism)
 	  ;; Retrieve the initial response
 	  step (sasl-next-step client nil))
     (smtp-send-command
-     process
+     connection
      (if (sasl-step-data step)
 	 (format "AUTH %s %s" name (base64-encode-string (sasl-step-data step) t))
        (format "AUTH %s" name)))
     (catch 'done
       (while t
-	(setq response (smtp-read-response process))
+	(setq response (smtp-read-response connection))
 	(when (= (car response) 235)
 	  ;; The authentication process is finished.
 	  (setq step (sasl-next-step client step))
@@ -398,97 +381,93 @@ of the host to connect to.  SERVICE is name of the service desired."
 	(sasl-step-set-data step (base64-decode-string (nth 1 response)))
 	(setq step (sasl-next-step client step))
 	(smtp-send-command
-	 process (if (sasl-step-data step)
-		     (base64-encode-string (sasl-step-data step) t)
-		   ""))))))
+	 connection
+	 (if (sasl-step-data step)
+	     (base64-encode-string (sasl-step-data step) t)
+	   ""))))
+;;;    (smtp-connection-set-encoder-internal
+;;;     connection (sasl-client-encoder client))
+;;;    (smtp-connection-set-decoder-internal
+;;;     connection (sasl-client-decoder client))
+    ))
 
 (defun smtp-primitive-starttls (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
-	 (process
-	  (smtp-connection-process connection))
 	 response)
     ;; STARTTLS --- begin a TLS negotiation (RFC 2595)
-    (smtp-send-command process "STARTTLS")
-    (setq response (smtp-read-response process))
+    (smtp-send-command connection "STARTTLS")
+    (setq response (smtp-read-response connection))
     (if (/= (car response) 220)
 	(smtp-response-error response))
-    (starttls-negotiate process)))
+    (starttls-negotiate (smtp-connection-process-internal connection))))
 
 (defun smtp-primitive-mailfrom (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
-	 (process
-	  (smtp-connection-process connection))
 	 (extensions
-	  (smtp-connection-extensions
+	  (smtp-connection-extensions-internal
 	   connection))
 	 (sender
-	  (smtp-package-sender package))
+	  (smtp-package-sender-internal package))
 	 extension
 	 response)
     ;; SIZE --- Message Size Declaration (RFC1870)
     (if (and smtp-use-size
 	     (assq 'size extensions))
-	(setq extension (format "SIZE=%d" (smtp-package-buffer-size package))))
+	(setq extension (format "SIZE=%d" (smtp-package-buffer-internal-size package))))
     ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
     (if (and smtp-use-8bitmime
 	     (assq '8bitmime extensions))
 	(setq extension (concat extension " BODY=8BITMIME")))
     (smtp-send-command
-     process
+     connection
      (if extension
 	 (format "MAIL FROM:<%s> %s" sender extension)
        (format "MAIL FROM:<%s>" sender)))
-    (setq response (smtp-read-response process))
+    (setq response (smtp-read-response connection))
     (if (/= (car response) 250)
 	(smtp-response-error response))))
 
 (defun smtp-primitive-rcptto (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
-	 (process
-	  (smtp-connection-process connection))
 	 (recipients
-	  (smtp-package-recipients package))
+	  (smtp-package-recipients-internal package))
 	 response)
     (while recipients
       (smtp-send-command
-       process (format "RCPT TO:<%s>" (pop recipients)))
-      (setq response (smtp-read-response process))
+       connection (format "RCPT TO:<%s>" (pop recipients)))
+      (setq response (smtp-read-response connection))
       (unless (memq (car response) '(250 251))
 	(smtp-response-error response)))))
 
 (defun smtp-primitive-data (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
-	 (process
-	  (smtp-connection-process connection))
 	 response)
-    (smtp-send-command process "DATA")
-    (setq response (smtp-read-response process))
+    (smtp-send-command connection "DATA")
+    (setq response (smtp-read-response connection))
     (if (/= (car response) 354)
 	(smtp-response-error response))
     (save-excursion
-      (set-buffer (smtp-package-buffer package))
+      (set-buffer (smtp-package-buffer-internal package))
       (goto-char (point-min))
       (while (not (eobp))
 	(smtp-send-data
-	 process (buffer-substring (point) (progn (end-of-line)(point))))
+	 connection (buffer-substring (point) (progn (end-of-line)(point))))
 	(beginning-of-line 2)))
-    (smtp-send-command process ".")
-    (setq response (smtp-read-response process))
+    (smtp-send-command connection ".")
+    (setq response (smtp-read-response connection))
     (if (/= (car response) 250)
 	(smtp-response-error response))))
 
 (defun smtp-primitive-quit (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
-	 (process
-	  (smtp-connection-process connection))
 	 response)
-    (smtp-send-command process "QUIT")
-    (setq response (smtp-read-response process))
+    (smtp-send-command connection "QUIT")
+    (setq response (smtp-read-response connection))
     (if (/= (car response) 221)
 	(smtp-response-error response))))
 
@@ -509,14 +488,20 @@ of the host to connect to.  SERVICE is name of the service desired."
 (defun smtp-response-error (response)
   (signal 'smtp-response-error response))
 
-(defun smtp-read-response (process)
-  (let ((response-continue t)
+(defun smtp-read-response (connection)
+  (let ((decoder
+	 (smtp-connection-decoder-internal connection))
+	(response-continue t)
 	response)
     (while response-continue
       (goto-char smtp-read-point)
       (while (not (search-forward "\r\n" nil t))
-	(accept-process-output process)
+	(accept-process-output (smtp-connection-process-internal connection))
 	(goto-char smtp-read-point))
+      (if decoder
+	  (let ((string (buffer-substring smtp-read-point (- (point) 2))))
+	    (delete-region smtp-read-point (point))
+	    (insert (funcall decoder string) "\r\n")))
       (setq response
 	    (nconc response
 		   (list (buffer-substring
@@ -530,21 +515,33 @@ of the host to connect to.  SERVICE is name of the service desired."
 		response-continue nil)))
     response))
 
-(defun smtp-send-command (process command)
+(defun smtp-send-command (connection command)
   (save-excursion
-    (set-buffer (process-buffer process))
-    (goto-char (point-max))
-    (insert command "\r\n")
-    (setq smtp-read-point (point))
-    (process-send-string process command)
-    (process-send-string process "\r\n")))
+    (let ((process
+	   (smtp-connection-process-internal connection))
+	  (encoder
+	   (smtp-connection-encoder-internal connection)))
+      (set-buffer (process-buffer process))
+      (goto-char (point-max))
+      (setq command (concat command "\r\n"))
+      (insert command)
+      (setq smtp-read-point (point))
+      (if encoder
+	  (setq command (funcall encoder command)))
+      (process-send-string process command))))
 
-(defun smtp-send-data (process data)
-  ;; Escape "." at start of a line.
-  (if (eq (string-to-char data) ?.)
-      (process-send-string process "."))
-  (process-send-string process data)
-  (process-send-string process "\r\n"))
+(defun smtp-send-data (connection data)
+  (let ((process
+	 (smtp-connection-process-internal connection))
+	(encoder
+	 (smtp-connection-encoder-internal connection)))
+    ;; Escape "." at start of a line.
+    (if (eq (string-to-char data) ?.)
+	(setq data (concat "." data "\r\n"))
+      (setq data (concat data "\r\n")))
+    (if encoder
+	(setq data (funcall encoder data)))
+    (process-send-string process data)))
 
 (defun smtp-deduce-address-list (smtp-text-buffer header-start header-end)
   "Get address list suitable for smtp RCPT TO:<address>."
