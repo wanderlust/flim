@@ -1,3 +1,33 @@
+1999-11-05  Keiichi Suzuki  <keiichi@nanap.org>
+
+	* mime-parse.el (mime::attribute-char-regexp): New constant.
+	(mime::attribute-char-regexp): Ditto.
+	(mime::attribute-regexp): Ditto.
+	(mime::ext-octet-regexp): Ditto.
+	(mime::extended-other-values-regexp): Ditto.
+	(mime::extended-initial-value-regexp): Ditto.
+	(mime::parameter-regexp): Match with RFC-2231.
+	(mime-parse-parameter): Abolished.
+	(mime-parse-parameters): New function.
+	(mime-parse-Content-Type): Use `mime-parse-parameters'.
+	(mime-read-Content-Type): Modify doc-string.
+	(mime-parse-Content-Disposition): Use `mime-parse-parameters'.
+
+	* mime-def.el (make-mime-parameter): New inline function.
+	(mime-parameter-language): Ditto.
+	(mime-parameter-set-language): Ditto.
+	(mime-parameter-set-charset): Ditto.
+	(mime-parameter-charset): Ditto.
+	(mime-parameter-raw-values): Ditto.
+	(mime-parameter-append-raw-value): Ditto.
+	(mime-parameters): Ditto.
+	(mime-parameter): Ditto.
+	(mime-parameter-value): New function.
+	(mime-content-type-parameters): Use `mime-parameters'.
+	(mime-content-type-parameter): Use `mime-parameter-value'.
+	(mime-content-disposition-parameters): Use `mime-parameters'.
+	(mime-content-disposition-parameter): Use `mime-parameter-value'.
+
 1999-10-17  Yoshiki Hayashi  <t90553@mail.ecc.u-tokyo.ac.jp>
 
 	* FLIM-MK (install-flim-package): Delete auto-autoloads.el
