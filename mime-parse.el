@@ -28,6 +28,8 @@
 (require 'std11)
 (require 'mime-def)
 
+(eval-when-compile (require 'cl))
+
 
 ;;; @ field parser
 ;;;
