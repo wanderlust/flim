@@ -32,8 +32,9 @@
 
 (autoload 'mime-entity-content-type "mime")
 (autoload 'mime-parse-multipart "mime-parse")
-(autoload 'mime-parse-encapsulated "mime-parse")
-(autoload 'mime-parse-external "mime-parse")
+(autoload 'mime-parse-message "mime-parse")
+;; (autoload 'mime-parse-encapsulated "mime-parse")
+;; (autoload 'mime-parse-external "mime-parse")
 (autoload 'mime-entity-content "mime")
 
 (luna-define-class mime-entity ()
@@ -55,22 +56,6 @@
       (setq field-name (intern (capitalize (capitalize field-name)))))
   (cdr (assq field-name
 	     (mime-entity-original-header-internal entity))))
-
-(luna-define-method mime-entity-children ((entity mime-entity))
-  (let* ((content-type (mime-entity-content-type entity))
-	 (primary-type (mime-content-type-primary-type content-type))
-	 sub-type)
-    (cond ((eq primary-type 'multipart)
-	   (mime-parse-multipart entity))
-	  ((eq primary-type 'message)
-	   (setq sub-type (mime-content-type-subtype content-type))
-	   (cond ((eq sub-type 'external-body)
-		  (mime-parse-external entity))
-		 ((memq sub-type '(rfc822 news))
-		  (mime-parse-encapsulated entity)
-		  ;; [tomo] Should we make a variable to specify
-		  ;; encapsulated media-types?
-		  ))))))
 
 (luna-define-method mime-insert-text-content ((entity mime-entity))
   (insert
