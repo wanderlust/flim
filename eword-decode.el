@@ -35,6 +35,8 @@
 (require 'mel)
 (require 'mime-def)
 
+(eval-when-compile (require 'cl))
+
 (defgroup eword-decode nil
   "Encoded-word decoding"
   :group 'mime)
@@ -154,7 +156,9 @@ such as a version of Net$cape)."
 	  (concat result (eword-decode-token token))
 	result))))
 
-(defun eword-decode-and-unfold-structured-field (string)
+(defun eword-decode-and-unfold-structured-field (string
+						 &optional start-column
+						 max-column)
   "Decode and unfold STRING as structured field body.
 It decodes non us-ascii characters in FULL-NAME encoded as
 encoded-words or invalid \"raw\" string.  \"Raw\" non us-ascii
@@ -175,8 +179,8 @@ decode the charset included in it, it is not decoded."
 		))))
     result))
 
-(defun eword-decode-structured-field-body (string &optional must-unfold
-						  start-column max-column)
+(defun eword-decode-structured-field-body (string &optional start-column
+						  max-column must-unfold)
   "Decode non us-ascii characters in STRING as structured field body.
 STRING is unfolded before decoding.
 
@@ -200,7 +204,8 @@ such as a version of Net$cape)."
 	       "")
     ))
 
-(defun eword-decode-unstructured-field-body (string &optional must-unfold)
+(defun eword-decode-unstructured-field-body (string &optional start-column
+						    max-column must-unfold)
   "Decode non us-ascii characters in STRING as unstructured field body.
 STRING is unfolded before decoding.
 
@@ -218,7 +223,9 @@ such as a version of Net$cape)."
    (decode-mime-charset-string string default-mime-charset)
    must-unfold))
 
-(defun eword-decode-and-unfold-unstructured-field (string)
+(defun eword-decode-and-unfold-unstructured-field (string
+						   &optional start-column
+						   max-column)
   "Decode and unfold STRING as unstructured field body.
 It decodes non us-ascii characters in FULL-NAME encoded as
 encoded-words or invalid \"raw\" string.  \"Raw\" non us-ascii
@@ -267,120 +274,6 @@ such as a version of Net$cape)."
 	)
       )))
 
-
-;;; @ for message header
-;;;
-
-(defcustom eword-decode-ignored-field-list
-  '(Newsgroups Path Lines Nntp-Posting-Host Received Message-Id Date)
-  "*List of field-names to be ignored when decoding.
-Each field name must be symbol."
-  :group 'eword-decode
-  :type '(repeat symbol))
-
-(defcustom eword-decode-structured-field-list
-  '(Reply-To Resent-Reply-To From Resent-From Sender Resent-Sender
-	     To Resent-To Cc Resent-Cc Bcc Resent-Bcc Dcc
-	     Mail-Followup-To
-	     Mime-Version Content-Type Content-Transfer-Encoding
-	     Content-Disposition User-Agent)
-  "*List of field-names to decode as structured field.
-Each field name must be symbol."
-  :group 'eword-decode
-  :type '(repeat symbol))
-
-(defun eword-decode-field-body
-  (field-body field-name &optional unfolded max-column)
-  "Decode FIELD-BODY as FIELD-NAME, and return the result.
-
-If UNFOLDED is non-nil, it is assumed that FIELD-BODY is
-already unfolded.
-
-If MAX-COLUMN is non-nil, the result is folded with MAX-COLUMN
-or `fill-column' if MAX-COLUMN is t.
-Otherwise, the result is unfolded.
-
-MIME encoded-word in FIELD-BODY is recognized according to
-`eword-decode-ignored-field-list',
-`eword-decode-structured-field-list' and FIELD-NAME.
-
-Non MIME encoded-word part in FILED-BODY is decoded with
-`default-mime-charset'."
-  (when (eq max-column t)
-    (setq max-column fill-column))
-  (let (field-name-symbol len)
-    (if (symbolp field-name)
-        (setq field-name-symbol field-name
-              len (1+ (string-width (symbol-name field-name))))
-      (setq field-name-symbol (intern (capitalize field-name))
-            len (1+ (string-width field-name))))
-    (if (memq field-name-symbol eword-decode-ignored-field-list)
-        ;; Don't decode
-        (if max-column
-            field-body
-          (std11-unfold-string field-body))
-      (if (memq field-name-symbol eword-decode-structured-field-list)
-          ;; Decode as structured field
-          (if max-column
-              (eword-decode-and-fold-structured-field
-               field-body len max-column t)
-            (eword-decode-and-unfold-structured-field field-body))
-        ;; Decode as unstructured field
-        (if max-column
-            (eword-decode-unstructured-field-body field-body len)
-          (eword-decode-unstructured-field-body
-           (std11-unfold-string field-body) len))))))
-
-(defun eword-decode-header (&optional code-conversion separator)
-  "Decode MIME encoded-words in header fields.
-If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
-mime-charset, it decodes non-ASCII bit patterns as the mime-charset.
-Otherwise it decodes non-ASCII bit patterns as the
-default-mime-charset.
-If SEPARATOR is not nil, it is used as header separator."
-  (interactive "*")
-  (save-excursion
-    (save-restriction
-      (std11-narrow-to-header separator)
-      (let ((default-charset
-	      (if code-conversion
-		  (if (mime-charset-to-coding-system code-conversion)
-		      code-conversion
-		    default-mime-charset))))
-	(if default-charset
-	    (let (beg p end field-name len)
-	      (goto-char (point-min))
-	      (while (re-search-forward std11-field-head-regexp nil t)
-		(setq beg (match-beginning 0)
-		      p (match-end 0)
-		      field-name (buffer-substring beg (1- p))
-		      len (string-width field-name)
-		      field-name (intern (capitalize field-name))
-		      end (std11-field-end))
-		(cond ((memq field-name eword-decode-ignored-field-list)
-		       ;; Don't decode
-		       )
-		      ((memq field-name eword-decode-structured-field-list)
-		       ;; Decode as structured field
-		       (let ((body (buffer-substring p end))
-			     (default-mime-charset default-charset))
-			 (delete-region p end)
-			 (insert (eword-decode-and-fold-structured-field
-				  body (1+ len)))
-			 ))
-		      (t
-		       ;; Decode as unstructured field
-		       (save-restriction
-			 (narrow-to-region beg (1+ end))
-			 (decode-mime-charset-region p end default-charset)
-			 (goto-char p)
-			 (if (re-search-forward eword-encoded-word-regexp
-						nil t)
-			     (eword-decode-region beg (point-max) 'unfold))
-			 )))))
-	  (eword-decode-region (point-min) (point-max) t)
-	  )))))
-
 (defun eword-decode-unfold ()
   (goto-char (point-min))
   (let (field beg end)
@@ -397,6 +290,153 @@ If SEPARATOR is not nil, it is used as header separator."
 	    (goto-char (point-max))
 	    ))
       )))
+
+
+;;; @ for message header
+;;;
+
+(defvar mime-field-decoder-alist nil)
+
+;;;###autoload
+(defun mime-set-field-decoder (field &rest specs)
+  "Set decoder of FILED.
+SPECS must be like `MODE1 DECODER1 MODE2 DECODER2 ...'.
+Each mode must be `nil', `native', `folding' or `unfolding'.
+If mode is `nil', corresponding decoder is set up for every modes."
+  (when specs
+    (let ((mode (pop specs))
+	  (function (pop specs)))
+      (if mode
+	  (progn
+	    (let ((cell (assq mode mime-field-decoder-alist)))
+	      (if cell
+		  (setcdr cell (put-alist field function (cdr cell)))
+		(setq mime-field-decoder-alist
+		      (cons (cons mode (list (cons field function)))
+			    mime-field-decoder-alist))
+		))
+	    (apply (function mime-set-field-decoder) field specs)
+	    )
+	(mime-set-field-decoder field
+				'native function
+				'folding function
+				'unfolding function)
+	))))
+
+;;;###autoload
+(defun mime-find-field-decoder (field &optional mode)
+  "Return function to decode field-body of FIELD in MODE.
+Optional argument MODE must be `native', `folding' or `unfolding'.
+Default value of MODE is `unfolding'."
+  (let ((decoder-alist
+	 (cdr (assq (or mode 'unfolding) mime-field-decoder-alist))))
+    (cdr (or (assq field decoder-alist)
+	     (assq t decoder-alist)
+	     ))))
+
+;; ignored fields
+(mime-set-field-decoder 'Newsgroups		nil nil)
+(mime-set-field-decoder 'Path			nil nil)
+(mime-set-field-decoder 'Lines			nil nil)
+(mime-set-field-decoder 'Nntp-Posting-Host	nil nil)
+(mime-set-field-decoder 'Received		nil nil)
+(mime-set-field-decoder 'Message-Id		nil nil)
+(mime-set-field-decoder 'Date			nil nil)
+
+;; structured fields
+(let ((fields
+       '(Reply-To Resent-Reply-To From Resent-From Sender Resent-Sender
+	 To Resent-To Cc Resent-Cc Bcc Resent-Bcc Dcc
+	 Mail-Followup-To
+	 Mime-Version Content-Type Content-Transfer-Encoding
+	 Content-Disposition User-Agent))
+      field)
+  (while fields
+    (setq field (pop fields))
+    (mime-set-field-decoder
+     field
+     'native	#'eword-decode-structured-field-body
+     'folding	#'eword-decode-and-fold-structured-field
+     'unfolding	#'eword-decode-and-unfold-structured-field)
+    ))
+
+;; unstructured fields (default)
+(mime-set-field-decoder
+ t
+ 'native	'eword-decode-unstructured-field-body
+ 'folding	'eword-decode-unstructured-field-body
+ 'unfolding	'eword-decode-and-unfold-unstructured-field)
+  
+;;;###autoload
+(defun mime-decode-field-body (field-body field-name
+					  &optional mode max-column)
+  "Decode FIELD-BODY as FIELD-NAME in MODE, and return the result.
+Optional argument MODE must be `unfolding', `folding' and `native'.
+Default mode is `unfolding'.
+
+If MODE is `folding' and MAX-COLUMN is non-nil, the result is folded
+with MAX-COLUMN.
+
+Non MIME encoded-word part in FILED-BODY is decoded with
+`default-mime-charset'."
+  (let (field-name-symbol len decoder)
+    (if (symbolp field-name)
+        (setq field-name-symbol field-name
+              len (1+ (string-width (symbol-name field-name))))
+      (setq field-name-symbol (intern (capitalize field-name))
+            len (1+ (string-width field-name))))
+    (setq decoder (mime-find-field-decoder field-name-symbol mode))
+    (if decoder
+	(funcall decoder field-body len max-column)
+      ;; Don't decode
+      (if (eq mode 'unfolding)
+	  (std11-unfold-string field-body)
+	field-body)
+      )))
+
+;;;###autoload
+(defun mime-decode-header-in-buffer (&optional code-conversion separator)
+  "Decode MIME encoded-words in header fields.
+If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
+mime-charset, it decodes non-ASCII bit patterns as the mime-charset.
+Otherwise it decodes non-ASCII bit patterns as the
+default-mime-charset.
+If SEPARATOR is not nil, it is used as header separator."
+  (interactive "*")
+  (save-excursion
+    (save-restriction
+      (std11-narrow-to-header separator)
+      (let ((default-charset
+	      (if code-conversion
+		  (if (mime-charset-to-coding-system code-conversion)
+		      code-conversion
+		    default-mime-charset))))
+	(if default-charset
+	    (let ((decoder-alist
+		   (cdr (assq 'folding mime-field-decoder-alist)))
+		  beg p end field-name len field-decoder)
+	      (goto-char (point-min))
+	      (while (re-search-forward std11-field-head-regexp nil t)
+		(setq beg (match-beginning 0)
+		      p (match-end 0)
+		      field-name (buffer-substring beg (1- p))
+		      len (string-width field-name)
+		      field-name (intern (capitalize field-name))
+		      field-decoder (cdr (or (assq field-name decoder-alist)
+					     (assq t decoder-alist))))
+		(when field-decoder
+		  (setq end (std11-field-end))
+		  (let ((body (buffer-substring p end))
+			(default-mime-charset default-charset))
+		    (delete-region p end)
+		    (insert (funcall field-decoder body (1+ len)))
+		    ))
+		))
+	  (eword-decode-region (point-min) (point-max) t)
+	  )))))
+
+(define-obsolete-function-alias 'eword-decode-header
+  'mime-decode-header-in-buffer)
 
 
 ;;; @ encoded-word decoder
