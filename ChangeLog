@@ -1,3 +1,7 @@
+2000-12-22  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.1 (Yagi) released.
+
 2000-12-22  Keiichi Suzuki  <keiichi@mdcnet.co.jp>
 
 	* mel-q.el: Require `poem' for `string-to-char-list' when
