@@ -1,3 +1,8 @@
+2001-04-11  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Allow lowercase.
+	(mime-decode-parameter-plist): Ditto.
+
 2001-04-11  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* std11.el (std11-lexical-analyze): Fix typo.
