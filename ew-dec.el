@@ -459,6 +459,37 @@ each line is separated by CRLF."
 (defun ew-contain-non-ascii-p (str)
   (not (eq (charsets-to-mime-charset (find-charset-string str)) 'us-ascii)))
 
+;;;
+
+(defun ew-decode-field-test (field-name field-body)
+  (with-output-to-temp-buffer "*DOODLE*"
+    (save-excursion
+      (let ((ew-decode-sticked-encoded-word nil)
+	    (ew-decode-quoted-encoded-word nil)
+	    (ew-ignore-75bytes-limit nil)
+	    (ew-ignore-76bytes-limit nil)
+	    (ew-permit-sticked-comment nil)
+	    (ew-permit-sticked-special nil))
+	(princ field-name) (princ ":") (princ field-body) (princ "\n")
+	(princ (make-string fill-column ?-)) (princ "\n")
+	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
+	(setq ew-ignore-76bytes-limit t) (princ "[ew-ignore-76bytes-limit -> t]\n")
+	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
+	(setq ew-ignore-75bytes-limit t) (princ "[ew-ignore-75bytes-limit -> t]\n")
+	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
+	(setq ew-permit-sticked-special t) (princ "[ew-ignore-76bytes-limit -> t]\n")
+	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
+	(setq ew-permit-sticked-comment t) (princ "[ew-ignore-76bytes-comment -> t]\n")
+	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
+	(setq ew-decode-sticked-encoded-word t) (princ "[ew-decode-sticked-encoded-word -> t]\n")
+	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
+	(setq ew-decode-quoted-encoded-word t) (princ "[ew-decode-quoted-encoded-word -> t]\n")
+	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
+	;; ew-permit-null-encoded-text is not changable when runtime.
+	))))
+
+;;;
+
 '(
 
 (ew-decode-field "To" " =?US-ASCII?Q?phrase?= <akr@jaist.ac.jp>")

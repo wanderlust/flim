@@ -1,5 +1,9 @@
 1998-08-26  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-dec.el (ew-decode-field-test): New function.
+
+1998-08-26  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* DOODLE-TIPS (gnus-structured-field-decoder): Use
 	`eword-decode-and-unfold-structured-field'.
 	(gnus-unstructured-field-decoder): Use
