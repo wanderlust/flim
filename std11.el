@@ -24,7 +24,6 @@
 
 ;;; Code:
 
-(require 'poe)
 (require 'custom)			; std11-lexical-analyzer
 
 

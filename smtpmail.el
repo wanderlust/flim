@@ -42,7 +42,6 @@
 
 ;;; Code:
 
-(require 'poe)
 (require 'custom)
 (require 'smtp)
 (require 'sendmail)

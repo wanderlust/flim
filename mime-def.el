@@ -24,7 +24,6 @@
 
 ;;; Code:
 
-(require 'poe)
 (require 'custom)
 (require 'mcharset)
 (require 'alist)
