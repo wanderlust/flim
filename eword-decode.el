@@ -477,26 +477,22 @@ Each field name must be symbol."
   :type '(repeat symbol))
 
 (defun eword-decode-field-body
-  (field-name field-body &optional unfolded max-column)
-  "Decode header field body FIELD-BODY, and return the result.
+  (field-body field-name &optional unfolded max-column)
+  "Decode FIELD-BODY as FIELD-NAME, and return the result.
 
-If FILED-BODY is already unfolded, UNFOLDED should be non-nil.
+If UNFOLDED is non-nil, it is assumed that FIELD-BODY is
+already unfolded.
 
-If MAX-COLUMN is non-nil, result is folded with MAX-COLUMN.
-(Or `fill-column' if MAX-COLUMN is t.)
+If MAX-COLUMN is non-nil, the result is folded with MAX-COLUMN
+or `fill-column' if MAX-COLUMN is t.
 Otherwise, the result is unfolded.
 
-If FIELD-NAME is in `eword-decode-ignored-field-list',
-return FIELD-BODY itself.
+MIME encoded-word in FIELD-BODY is recognized according to
+`eword-decode-ignored-field-list',
+`eword-decode-structured-field-list' and FIELD-NAME.
 
-If FIELD-NAME is in `eword-decode-structured-field-list',
-FIELD-BODY is interpreted as structured field,
-decode MIME encoded-words and return it.
-
-Otherwise, FIELD-BODY is interpreted as unstructured field,
-decode MIME encoded-words and return it.
-
-Anyway, non-encoded-word part is decoded with `default-mime-charset'."
+Non MIME encoded-word part in FILED-BODY is decoded with
+`default-mime-charset'."
   (let ((decoded
           (if unfolded
             (let ((ew-ignore-76bytes-limit t))

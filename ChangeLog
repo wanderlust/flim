@@ -1,5 +1,9 @@
 1998-10-25  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* eword-decode.el (eword-decode-field-body): Change interface.
+
+1998-10-25  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* eword-decode.el (eword-decode-field): Abolished.
 	(eword-decode-field-body): New function.
 
