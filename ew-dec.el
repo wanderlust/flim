@@ -49,7 +49,7 @@ instead of its argument."
 
 (defun ew-decode-field-no-cache (field-name field-body &optional eword-filter)
   "No caching version of ew-decode-field."
-  (let ((tmp (assoc (downcase field-name) ew-decode-field-syntax-alist))
+  (let ((tmp (assq (intern (downcase field-name)) ew-decode-field-syntax-alist))
 	frag-anchor frag1 frag2 decode)
     (if tmp
 	(setq tmp (cdr tmp))

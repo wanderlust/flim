@@ -51,4 +51,4 @@ release:
 		ln -s ../flim/$(PACKAGE)-$(VERSION).tar.gz .
 
 ew-parse.el: ew-parse.scm lalr-el.scm
-	-scm -f lalr-el.scm -f ew-parse.scm > states.output
+	-scm -f lalr-el.scm -f ew-parse.scm > ew-parse.out

@@ -1,3 +1,13 @@
+1998-08-20  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* Makefile: Output parse table to ew-parse.out instead of
+	states.output.
+
+	* ew-var.el (ew-decode-field-syntax-alist): Keys are now symbols
+	instead of strings.
+
+	* ew-dec.el (ew-decode-field-no-cache): Ditto.
+
 1998-08-19  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Makefile: Avoid an error about unexisting `scm'.

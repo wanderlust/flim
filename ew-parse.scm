@@ -1,4 +1,4 @@
-(define message-grammar
+(define field-grammar
 '(
 ; Terminal symbols
 *anchor*
@@ -12,53 +12,57 @@ tag-address+
 tag-phrase*
 tag-phrase-msg-id*
 
-lt
-gt
-at
-comma
-semicolon
-colon
+;; S : STD11 structured field
+;; M : MIME structured field
+;; U : Unstructured field
 
-dot         ; for STD11
-atom        ; for STD11
+lt              ; S/M
+gt              ; S/M
+at              ; S/M
+comma           ; S/M
+semicolon       ; S/M
+colon           ; S/M
 
-slash       ; for MIME
-question    ; for MIME
-equal       ; for MIME
-token       ; for MIME
+dot             ; S
+atom            ; S
 
-us-texts    ; for UNSTRUCTURED
-us-wsp      ; for UNSTRUCTURED
-us-fold     ; for UNSTRUCTURED
+slash           ; M
+question        ; M
+equal           ; M
+token           ; M
 
-wsp
-fold
+qs-begin        ; S/M
+qs-end          ; S/M
+qs-texts        ; S/M
+qs-wsp          ; S/M
+qs-fold         ; S/M
+qs-qfold        ; S/M
+qs-qpair        ; S/M
 
-qs-begin
-qs-end
-qs-texts
-qs-wsp
-qs-fold
-qs-qfold
-qs-qpair
+dl-begin        ; S/M
+dl-end          ; S/M
+dl-texts        ; S/M
+dl-wsp          ; S/M
+dl-fold         ; S/M
+dl-qfold        ; S/M
+dl-qpair        ; S/M
 
-dl-begin
-dl-end
-dl-texts
-dl-wsp
-dl-fold
-dl-qfold
-dl-qpair
+cm-begin        ; S/M
+cm-end          ; S/M
+cm-nested-begin ; S/M
+cm-nested-end   ; S/M
+cm-texts        ; S/M
+cm-wsp          ; S/M
+cm-fold         ; S/M
+cm-qfold        ; S/M
+cm-qpair        ; S/M
 
-cm-begin
-cm-end
-cm-nested-begin
-cm-nested-end
-cm-texts
-cm-wsp
-cm-fold
-cm-qfold
-cm-qpair
+wsp             ; S/M
+fold            ; S/M
+
+us-texts        ; U
+us-wsp          ; U
+us-fold         ; U
 
 ; Productions
 (start (tag-mailbox gap mailbox)                  : ()
@@ -160,7 +164,7 @@ cm-qpair
 
 ))
 
-(gen-lalr1 message-grammar "ew-parse.el"
+(gen-lalr1 field-grammar "ew-parse.el"
 "(provide 'ew-parse)
 (require 'ew-data)
 "
