@@ -39,8 +39,10 @@
   (let ((len (length str)))
     (and
      (<= 3 len)
-     (string= (substring str 0 2) "=?")
-     (string= (substring str (- len 2) len) "?="))))
+     (eq (aref str 0) ?=)
+     (eq (aref str 1) ??)
+     (eq (aref str (- len 2)) ??)
+     (eq (aref str (1- len)) ?=))))
 
 (defun ew-decode-eword (str &optional eword-filter1 eword-filter2)
   (if (string-match ew-anchored-encoded-word-regexp str)
@@ -80,14 +82,12 @@
     ))
 
 (defun ew-char-decoder (charset)
-  (catch 'return 
-    (setq charset (downcase charset))
-    (let ((sym (intern charset))
-	  tmp cs)
-      (when (setq tmp (assq sym ew-charset-aliases))
-	(setq sym (cdr tmp)))
-      (setq cs (intern (concat (symbol-name sym) "-unix")))
-      (when (coding-system-p cs)
-	(throw 'return
-	       (closure-make (lambda (str) (decode-coding-string str cs)) cs)))
-      nil)))
+  (let ((sym (intern (downcase charset)))
+        tmp cs)
+    (when (setq tmp (assq sym ew-charset-aliases))
+      (setq sym (cdr tmp)))
+    (setq cs (intern (concat (symbol-name sym) "-unix")))
+    (when (coding-system-p cs)
+      (closure-make
+        (lambda (str) (decode-coding-string str cs))
+        cs))))

@@ -308,6 +308,25 @@
 (define ngotos          #f)
 (define token-set-size  #f)
 
+(define (gen-larl1 gram output-file header footer . opt)
+  (define (conv-rule-right rr)
+    (if (null? rr)
+      '()
+      (cons (reverse (car rr))
+        (cons (cadr rr)
+          (cons (caddr rr)
+            (conv-rule-right (cdddr rr)))))))
+  (apply gen-lalr1
+    (map
+      (lambda (elt)
+        (if (symbol? elt)
+          elt
+          (cons (car elt) (conv-rule-right (cdr elt)))))
+      gram)
+    output-file
+    header
+    footer
+    opt))
 
 (define (gen-lalr1 gram output-file header footer . opt)
   (initialize-all)
