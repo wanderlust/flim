@@ -88,14 +88,14 @@ FLIM $B$O(B entity $B$N>pJs$rI=8=$9$k$?$a$K(B@strong{mime-entity} $B9=(B
 @node Entity creation, Entity hierarchy, Entity, Entity
 @section Entity $B$N@8@.(B
 
-@defun mime-open-entity &optional  type location
+@defun mime-open-entity type location
 
-Open an entity and return it.@refill
+Entity $B$r3+$$$F!"$=$l$rJV$7$^$9!#(B@refill
 
-@var{type} is representation-type. (cf. @ref{mm-backend}) @refill
+@var{type} $B$O(B representation-type $B$G$9!#(B(cf. @ref{mm-backend}) @refill
 
-@var{location} is location of entity.  Specification of it is depended
-on representation-type.
+@var{location} $B$O(B entity $B$N0LCV$G$9!#;XDjJ}K!$O(B
+representation-type $B$K0M$C$FJQ$o$j$^$9!#(B
 @end defun
 
 
@@ -209,28 +209,28 @@ local $BJQ?t!#(B
 
 @defun mime-find-entity-from-number entity-number  &optional  message
 
-Return entity from @var{entity-number} in @var{message}.@refill
+@var{message} $B$+$i!"(B@var{enity-number} $B$N(B entity $B$rJV$7$^$9!#(B@refill
 
-If @var{message} is not specified, @code{mime-message-structure} is
-used.
+@var{message} $B$,;XDj$5$l$F$$$J$$>l9g$O!"(B
+@code{mime-message-structrue} $B$,;H$o$l$^$9!#(B
 @end defun
 
 
 @defun mime-find-entity-from-node-id entity-node-id  &optional  message
 
-Return entity from @var{entity-node-id} in @var{message}.@refill
+@var{message} $B$+$i!"(B@var{entity-node-id} $B$N(B entity $B$rJV$7$^$9!#(B@refill
 
-If @var{message} is not specified, @code{mime-message-structure} is
-used.
+@var{message} $B$,;XDj$5$l$F$$$J$$>l9g$O!"(B
+@code{mime-message-structure} $B$,;H$o$l$^$9!#(B
 @end defun
 
 
 @defun mime-find-entity-from-content-id cid  &optional  message
 
-Return entity from @var{cid} in @var{message}.@refill
+@var{message} $B$+$i!"(B@var{cid} $B$N(B entity $B$rJV$7$^$9!#(B@refill
 
-If @var{message} is not specified, @code{mime-message-structure} is
-used.
+@var{message} $B$,;XDj$5$l$F$$$J$$>l9g$O!"(B
+@code{mime-message-structure} $B$,;H$o$l$^$9!#(B
 @end defun
 
 
@@ -270,8 +270,8 @@ used.
 
 @defun mime-entity-cooked-p entity
 
-Return non-nil if contents of @var{entity} has been already
-code-converted.
+@var{entity} $B$NFbMF$,4{$K%3!<%IJQ49$5$l$F$$$k>l9g$O(B nil $B$GL5$$CM(B
+$B$rJV$9!#(B
 @end defun
 
 
@@ -332,11 +332,11 @@ encoded-word (@ref{encoded-word}) $B$OI|9f$5$l$k!#!X@8$NHs(B us-ascii $BJ8;z!
 
 @defun mime-insert-text-content entity
 
-Insert before point a contents of @var{entity} as text entity.@refill
+point $B$NA0$K(B @var{entity} $B$r(B text entity $B$H$7$FA^F~$7$^$9!#(B@refill
 
-Contents of the @var{entity} are decoded as MIME charset (@ref{MIME charset}).  If the @var{entity} does not have charset parameter of
-Content-Type field, @code{default-mime-charset} is used as default
-value.
+@var{entity} $B$NFbMF$O(B @ref{MIME charset} $B$H$7$FI|9f2=$5$l(B
+$B$^$9!#(B@var{entity} $B$N(B Content-Type field $B$K(B charset paramter $B$,L5(B
+$B$$$H!"(B@code{default-mime-charset} $B$,=i4|CM$H$7$F;H$o$l$^$9!#(B
 @end defun
 
 
@@ -361,13 +361,13 @@ value.
 
 @defun mime-insert-entity-content entity
 
-Insert content of @var{entity} at point.
+point $B$N0LCV$K(B @var{entity} $B$NFbMF$rA^F~$7$^$9!#(B
 @end defun
 
 
 @defun mime-write-entity-content entity filename
 
-Write content of @var{entity} into @var{filename}.
+@var{entity} $B$NFbMF$r(B @var{filename} $B$K=q$-9~$_$^$9!#(B
 @end defun
 
 
@@ -377,19 +377,19 @@ Write content of @var{entity} into @var{filename}.
 
 @defun mime-insert-entity entity
 
-Insert header and body of @var{entity} at point.
+@var{entity} $B$N(B header $B$H(B body $B$r(B point $B$N$H$3$m$KA^F~$7$^$9!#(B
 @end defun
 
 
 @defun mime-write-entity entity filename
 
-Write representation of @var{entity} into @var{filename}.
+@var{entity} $B$NI=8=$r(B @var{filename} $B$K=q$-9~$_$^$9!#(B
 @end defun
 
 
 @defun mime-write-entity-body entity filename
 
-Write body of @var{entity} into @var{filename}.
+@var{entity} $B$N(B body $B$r(B @var{filename} $B$K=q$-9~$_$^$9!#(B
 @end defun
 
 
@@ -495,12 +495,13 @@ representation-type $B$NL>A0$N@hF,$K(B @code{mm} $B$rIU$1$?$b$N$K$J$C$F(B
 
 @defmac mm-define-backend type &optional  parents
 
-Define @var{type} as a mm-backend.@refill
+@var{type} $B$r(B mm-backend $B$H$7$FDj5A$7$^$9!#(B@refill
 
-If @var{PARENTS} is specified, @var{type} inherits parents.  Each parent
-must be representation-type.@refill
+@var{PARENTS} $B$,;XDj$5$l$F$$$k>l9g$O!"(B@var{type} $B$O(B prents
+$B$r7Q>5$7$^$9!#$=$l$>$l$N(B parent $B$O(B representation-type $B$G$"$kI,MW$,$"(B
+$B$j$^$9!#(B
 
-Example:@refill
+$BNc(B:@refill
 
 @lisp
 (mm-define-backend chao (generic))
@@ -510,15 +511,15 @@ Example:@refill
 
 @defmac mm-define-method name args  &rest  body
 
-Define @var{name} as a method function of (nth 1 (car @var{args}))
-backend.@refill
+@var{name} $B$r(B (nth 1 (car @var{args})) backend $B$N(B method $B4X(B
+$B?t$H$7$FDj5A$7$^$9!#(B@refill
 
-@var{args} is like an argument list of lambda, but (car @var{args}) must
-be specialized parameter.  (car (car @var{args})) is name of variable
-and (nth 1 (car @var{args})) is name of backend
-(representation-type).@refill
+@var{args} $B$O(B lambda $B$N0z?t%j%9%H$N$h$&$J$b$N$G$9$,!"(B(car
+@var{args}) $B$O;XDj$5$l$?(B parameter $B$G$"$kI,MW$,$"$j$^$9!#(B(car
+(car @var{args})) $B$OJQ?t$NL>A0$G!"(B(nth 1 (car @var{args}))
+$B$O(B backend $B$NL>A0(B (representation-type) $B$G$9!#(B@refill
 
-Example:@refill
+$BNc(B:@refill
 
 @lisp
 (mm-define-method entity-cooked-p ((entity chao)) nil)
@@ -812,15 +813,15 @@ Content-Transfer-Encoding $BMs$,B8:_$7$J$$>l9g$O(B@var{default-encoding} $B$r
 
 @defun mime-encode-region start end encoding
 
-Encode region @var{start} to @var{end} of current buffer using
-@var{encoding}.
+$B8=:_$N(B buffer $B$N(B @var{start} $B$+$i(B @var{end} $B$^$G$N(B region $B$r(B
+@var{encoding} $B$r;H$C$FId9f2=$7$^$9!#(B
 @end defun
 
 
 @defun mime-decode-region start end encoding
 
-Decode region @var{start} to @var{end} of current buffer using
-@var{encoding}.
+$B8=:_$N(B buffer $B$N(B @var{start} $B$+$i(B @var{end} $B$^$G$N(B region $B$r(B
+@var{encoding} $B$r;H$C$FI|9f2=$7$^$9!#(B
 @end defun
 
 
@@ -834,16 +835,17 @@ Decode region @var{start} to @var{end} of current buffer using
 
 @defun mime-insert-encoded-file filename encoding
 
-Insert file @var{FILENAME} encoded by @var{ENCODING} format.
+@var{ENCODING} format $B$GId9f2=$5$l$?(B file @var{FILENAME} $B$r(B
+$BA^F~$9$k!#(B
 @end defun
 
 
 @defun mime-write-decoded-region start end filename encoding
 
-Decode and write current region encoded by @var{encoding} into
-@var{filename}.@refill
+@var{encoding} $B$GId9f2=$5$l$?8=:_$N(B region $B$rI|9f2=$7$F(B
+@var{filename}$B$K=q$-9~$_$^$9!#(B
 
-@var{start} and @var{end} are buffer positions.
+<var>start<var> $B$H(B @var{end} $B$O(B buffer $B$N0LCV$G$9!#(B
 @end defun
 
 
@@ -853,19 +855,19 @@ Decode and write current region encoded by @var{encoding} into
 
 @defun mime-encoding-list &optional  SERVICE
 
-Return list of Content-Transfer-Encoding.@refill
+Content-Transfer-Encoding $B$N(B list $B$rJV$7$^$9!#(B@refill
 
-If @var{service} is specified, it returns available list of
-Content-Transfer-Encoding for it.
+@var{service} $B$,;XDj$5$l$F$$$k$H!"$=$l$KBP$9$k(B
+Content-Transfer-Encoding $B$rJV$7$^$9!#(B
 @end defun
 
 
 @defun mime-encoding-alist &optional  SERVICE
 
-Return table of Content-Transfer-Encoding for completion.@refill
+$BJd40$N$?$a$N(B Content-Transfer-Encoding $B$NI=$rJV$7$^$9!#(B@refill
 
-If @var{service} is specified, it returns available list of
-Content-Transfer-Encoding for it.
+@var{service} $B$,;XDj$5$l$F$$$k>l9g$O$=$l$KBP$9$k(B
+Content-Transfer-Encoding $B$N(B list $B$rJV$7$^$9!#(B
 @end defun
 
 
@@ -875,15 +877,15 @@ Content-Transfer-Encoding for it.
 
 @defmac mel-define-method name args  &rest  body
 
-Define @var{name} as a method function of (nth 1 (car (last
-@var{args}))) backend.@refill
+@var{name} $B$r(B (nth 1 (car (last @var{args}))) backend $B$N(B
+method $B4X?t$H$7$FDj5A$7$^$9!#(B
 
-@var{args} is like an argument list of lambda, but (car (last
-@var{args})) must be specialized parameter.  (car (car (last
-@var{args}))) is name of variable and (nth 1 (car (last @var{args}))) is
-name of backend (encoding).@refill
+@var{args} $B$O(B lambda $B$N0z?t(B list $B$H;w$F$$$^$9$,!"(B(car (last
+@var{args})) $B$O;XDj$5$l$?(B parameter $B$G$"$kI,MW$,$"$j$^$9!#(B(car
+(car (last @var{args}))) $B$OJQ?t$NL>A0$G!"(B(nth 1 (car (last
+@var{args}))) $B$O(B backend $B$NL>A0(B (encoding) $B$G$9!#(B@refill
 
-Example:@refill
+$BNc(B:@refill
 
 @lisp
 (mel-define-method mime-write-decoded-region (start end filename
@@ -904,16 +906,16 @@ START and END are buffer positions."
 
 @defmac mel-define-method-function spec function
 
-Set @var{spec}'s function definition to @var{function}.@refill
+@var{spec} $B$N4X?tDj5A$r(B @var{function} $B$K@_Dj$7$^$9!#(B@refill
 
-First element of @var{spec} is service.@refill
+@var{spec} $B$N:G=i$NMWAG$O(B service $B$G$9!#(B@refill
 
-Rest of @var{args} is like an argument list of lambda, but (car (last
-@var{args})) must be specialized parameter.  (car (car (last
-@var{args}))) is name of variable and (nth 1 (car (last @var{args}))) is
-name of backend (encoding).@refill
+@var{args} $B$N;D$j$O(B lambda $B$N0z?t(B list $B;w$F$$$^$9$,!"(B(car (last
+@var{args})) $B$O;XDj$5$l$?(B parameter $B$G$"$kI,MW$,$"$j$^$9!#(B(car
+(car (last @var{args}))) $B$OJQ?t$NL>A0$G!"(B(nth 1 (car (last
+@var{args}))) $B$O(B backend $B$NL>A0(B (encoding) $B$G$9!#(B@refill
 
-Example:@refill
+$BNc(B:@refill
 
 @lisp
 (mel-define-method-function (mime-encode-string string (nil "base64"))
@@ -924,16 +926,17 @@ Example:@refill
 
 
 @node generic function for mel-backend,  , mel-backend, Content-Transfer-Encoding
-@section How to add encoding/decoding service
+@section $BId9f2=(B/$BI|9f2=(B service $B$rDI2C$9$kJ}K!(B
 
 @defmac mel-define-service name &optional  args doc-string
 
-Define @var{name} as a service for Content-Transfer-Encodings.@refill
+@var{name} $B$r(B Content-Transfer-Encoding $B$N(B service $B$H$7$FDj5A$7$^(B
+$B$9!#(B@refill
 
-If @var{args} is specified, @var{name} is defined as a generic function
-for the service.@refill
+@var{args} $B$,;XDj$5$l$F$$$k$H!"(B@var{name} $B$O(B service $B$N(B
+generic function $B$H$7$FDj5A$5$l$^$9!#(B@refill
 
-Example:@refill
+$BNc(B:@refill
 
 @lisp
 (mel-define-service encoded-text-encode-string (string encoding)
@@ -1001,19 +1004,19 @@ Header $B$r(B network $BI=8=$KId9f2=$9$k!#(B@refill
 
 @defvar eword-field-encoding-method-alist
 
-Association list to specify field encoding method.  Each element looks
-like (FIELD . METHOD).@refill
+Field $B$rId9f2=$9$kJ}K!$r;XDj$9$kO"A[(B list$B!#3F(B element $B$O(B (FIELD
+. METHOD) $B$NMM$K$J$C$F$$$k!#(B@refill
 
-If METHOD is @code{mime}, the FIELD will be encoded into MIME format
-(encoded-word).@refill
+METHOD $B$,(B @code{mime} $B$G$"$l$P!"(BFIELD $B$O(B MIME format $B$KId9f2=$5(B
+$B$l$k(B (encoded-word)$B!#(B
 
-If METHOD is @code{nil}, the FIELD will not be encoded.@refill
+METHOD $B$,(B @code{nil} $B$G$"$l$P!"(BFIELD $B$OId9f2=$5$l$J$$!#(B
 
-If METHOD is a MIME charset, the FIELD will be encoded as the charset
-when it must be convert into network-code.@refill
+METHOD $B$,(B MIME charset $B$G$"$l$P!"(BFIELD $B$O%M%C%H%o!<%/%3!<%I$KJQ49$7$J(B
+$B$1$l$P$J$i$J$$$H$-$K(B charset $B$KId9f2=$5$l$k!#(B@refill
 
-Otherwise the FIELD will be encoded as variable
-@code{default-mime-charset} when it must be convert into network-code.
+$B$=$&$G$J$1$l$P!"(BFIELD $B$O%M%C%H%o!<%/%3!<%I$KJQ49$7$J$1$l$P$J$i$J$$$H$-(B
+$B$K(B $BJQ?t(B @code{default-mime-charset} $B$GId9f2=$5$l$k(B
 @end defvar
 
 
@@ -1495,9 +1498,9 @@ FLIM $B$N%P%0$r8+$D$1$?$i!"0J2<$N(B address $B$K(B mail $B$rAw$C$F$/$@$5$$!
 
 @itemize @bullet
 @item
- $BF|K\8l(B <bug-tm-ja@@chamonix.jaist.ac.jp>
+ $B1Q8l(B <emacs-mime-en@@m17n.org>
 @item
- $B1Q8l(B <bug-tm-en@@chamonix.jaist.ac.jp>
+ $BF|K\8l(B <emacs-mime-ja@@m17n.org>
 @end itemize
 
 
@@ -1515,14 +1518,14 @@ FLIM $B$N%P%0$r8+$D$1$?$i!"0J2<$N(B address $B$K(B mail $B$rAw$C$F$/$@$5$$!
 $B$r2?DL$b=q$/1)L\$K$J$j$^$9!#$@$+$i!"I,$:(B bug $BJs9p$O>e5-$N(B address $B$KAw$C(B
 $B$F$/$@$5$$!#(B
 
-tm ML $B$G$O(B FLIM $B$N%P%0>pJs$N8r49$d:G?7HG$NG[I[!"(BFLIM $B$N2~NI$K4X$9$k5D(B
-$BO@$r9T$J$C$F$$$^$9!#(Btm ML $B$K;22C$7$?$$J}$O(B
+EMACS-MIME ML $B$G$O(B FLIM $B$N%P%0>pJs$N8r49$d:G?7HG$NG[I[!"(BFLIM $B$N2~NI$K(B
+$B4X$9$k5DO@$r9T$J$C$F$$$^$9!#(BEMACS-MIME ML $B$K;22C$7$?$$J}$O(B
 
 @itemize @bullet
 @item
- $BF|K\8l(B <tm-ja-help@@chamonix.jaist.ac.jp>
+ $B1Q8l(B <emacs-mime-en-ctl@@m17n.org>
 @item
- $B1Q8l(B <tm-en-help@@chamonix.jaist.ac.jp>
+ $BF|K\8l(B <emacs-mime-ja-ctl@@m17n.org>
 @end itemize
 
 @noindent

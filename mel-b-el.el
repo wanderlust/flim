@@ -1,9 +1,9 @@
 ;;; mel-b-el.el --- Base64 encoder/decoder.
 
-;; Copyright (C) 1992,1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1992,1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
-;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;         MORIOKA Tomohiko <tomo@m17n.org>
 ;; Created: 1995/6/24
 ;; Keywords: MIME, Base64
 

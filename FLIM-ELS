@@ -5,15 +5,16 @@
 ;;; Code:
 
 (setq flim-modules '(std11
-		     mime-def
+		     luna mime-def
 		     mel mel-q mel-u mel-g
 		     eword-decode eword-encode
-		     mime mime-parse mmgeneric mmbuffer mmcooked
+		     mime mime-parse mmbuffer mmcooked mmdbuffer
 		     mailcap
 		     smtp smtpmail))
 
-(unless (and (fboundp 'base64-encode-string)
-	     (subrp (symbol-function 'base64-encode-string)))
+(if (and (fboundp 'base64-encode-string)
+	 (subrp (symbol-function 'base64-encode-string)))
+    nil
   (if (fboundp 'dynamic-link)
       (setq flim-modules (cons 'mel-b-dl flim-modules))
     )

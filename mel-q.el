@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
-;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Created: 1995/6/25
 ;; Keywords: MIME, Quoted-Printable, Q-encoding
 

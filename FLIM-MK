@@ -74,6 +74,8 @@ LISPDIR=%s\n" PREFIX LISPDIR))
 			 (expand-file-name FLIM_PREFIX
 					   (expand-file-name "lisp"
 							     PACKAGEDIR)))
+  (delete-file "./auto-autoloads.el")
+  (delete-file "./custom-load.el")
   )
 
 ;;; FLIM-MK ends here

@@ -1,6 +1,6 @@
 ;;; smtpmail.el --- SMTP interface for mail-mode
 
-;; Copyright (C) 1995, 1996, 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
 ;; Keywords: mail
@@ -62,14 +62,14 @@
 ;;;
 
 (defcustom smtpmail-queue-mail nil 
-  "*Specify if mail is queued (if t) or sent immediately (if nil).
+  "Specify if mail is queued (if t) or sent immediately (if nil).
 If queued, it is stored in the directory `smtpmail-queue-dir'
 and sent with `smtpmail-send-queued-mail'."
   :type 'boolean
   :group 'smtp)
 
 (defcustom smtpmail-queue-dir "~/Mail/queued-mail/"
-  "*Directory where `smtpmail.el' stores queued mail."
+  "Directory where `smtpmail.el' stores queued mail."
   :type 'directory
   :group 'smtp)
 
@@ -77,8 +77,9 @@ and sent with `smtpmail-send-queued-mail'."
   "File name of queued mail index,
 This is relative to `smtpmail-queue-dir'.")
 
-(defvar smtpmail-queue-index (concat smtpmail-queue-dir
-				     smtpmail-queue-index-file))
+(defvar smtpmail-queue-index
+  (concat (file-name-as-directory smtpmail-queue-dir)
+	  smtpmail-queue-index-file))
 
 (defvar smtpmail-recipient-address-list nil)
 
@@ -130,7 +131,9 @@ This is relative to `smtpmail-queue-dir'.")
 		    (save-restriction
 		      (narrow-to-region (point)
 					(save-excursion
-					  (end-of-line)
+					  (forward-line 1)
+					  (while (looking-at "^[ \t]")
+					    (forward-line 1))
 					  (point)))
 		      (append (mail-parse-comma-list)
 			      resend-to-addresses))))
@@ -228,10 +231,11 @@ This is relative to `smtpmail-queue-dir'.")
 					  tembuf))
 		      (error "Sending failed; SMTP protocol error"))
 		(error "Sending failed; no recipients"))
-	    (let* ((file-data (concat 
-			       smtpmail-queue-dir
-			       (time-stamp-strftime 
-				"%02y%02m%02d-%02H%02M%02S")))
+	    (let* ((file-data (convert-standard-filename
+			       (concat
+				(file-name-as-directory smtpmail-queue-dir)
+				(time-stamp-yyyy-mm-dd)
+				"_" (time-stamp-hh:mm:ss))))
 		   (file-elisp (concat file-data ".el"))
 		   (buffer-data (create-file-buffer file-data))
 		   (buffer-elisp (create-file-buffer file-elisp))
@@ -240,7 +244,9 @@ This is relative to `smtpmail-queue-dir'.")
 		(set-buffer buffer-data)
 		(erase-buffer)
 		(insert-buffer tembuf)
-		(write-file file-data)
+		(or (file-directory-p smtpmail-queue-dir)
+		    (make-directory smtpmail-queue-dir t))
+		(write-region-as-binary (point-min) (point-max) file-data)
 		(set-buffer buffer-elisp)
 		(erase-buffer)
 		(insert (concat
@@ -276,7 +282,7 @@ This is relative to `smtpmail-queue-dir'.")
 						   (end-of-line)
 						   (point))))
 	(load file-msg)
-	(setq tembuf (find-file-noselect file-msg))
+	(setq tembuf (find-file-noselect-as-binary file-msg))
 	(if smtpmail-recipient-address-list
 	    (if (not (smtp-via-smtp user-mail-address
 				    smtpmail-recipient-address-list tembuf))
