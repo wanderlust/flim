@@ -1,3 +1,9 @@
+2000-08-24  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* eword-encode.el (eword-encode-address-to-rword-list): Define as
+	function.
+	(eword-encode-addresses-to-rword-list): Ditto.
+
 2000-08-23  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-fqdn): New variable.

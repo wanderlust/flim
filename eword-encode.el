@@ -517,7 +517,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		      )))
     dest))
 
-(defsubst eword-encode-address-to-rword-list (address)
+(defun eword-encode-address-to-rword-list (address)
   (cond
    ((eq (car address) 'mailbox)
     (eword-encode-mailbox-to-rword-list address))
@@ -528,7 +528,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
      (eword-encode-addresses-to-rword-list (nth 2 address))
      (list (list ";" nil nil))))))
 
-(defsubst eword-encode-addresses-to-rword-list (addresses)
+(defun eword-encode-addresses-to-rword-list (addresses)
   (let ((dest (eword-encode-address-to-rword-list (car addresses))))
     (if dest
 	(while (setq addresses (cdr addresses))
