@@ -698,7 +698,6 @@
 	* FLIM-ELS: Use `if' instead of `unless'.
 
 
->>>>>>> 1.134.2.18
 1999-08-17  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM: Version 1.13.2 (Kasanui) released.
