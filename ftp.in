@@ -2,16 +2,16 @@
 
   It is available from
 
-    ftp://ftp.jaist.ac.jp/pub/GNU/elisp/mel/
+    ftp://ftp.jaist.ac.jp/pub/GNU/elisp/flim/
 
 --[[message/external-body;
 	access-type=anon-ftp;
 	site="ftp.jaist.ac.jp";
-	directory="/pub/GNU/elisp/mel";
-	name="mel-VERSION.tar.gz";
+	directory="/pub/GNU/elisp/flim";
+	name="flim-VERSION.tar.gz";
 	mode=image]]
 Content-Type: application/octet-stream;
-	name="mel-VERSION.tar.gz";
+	name="flim-VERSION.tar.gz";
 	type=tar;
 	conversions=gzip
 --}-<<alternative>>
