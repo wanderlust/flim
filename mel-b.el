@@ -52,19 +52,21 @@
   :group 'base64
   :type '(repeat :tag "Arguments" string))
 
-(defcustom base64-internal-encoding-limit 70000
+(defcustom base64-internal-encoding-limit 1000
   "*limit size to use internal base64 encoder.
 If size of input to encode is larger than this limit,
 external encoder is called."
   :group 'base64
-  :type 'integer)
+  :type '(choice (const :tag "Always use internal encoder" nil)
+		 (integer :tag "Size")))
 
-(defcustom base64-internal-decoding-limit 1000
+(defcustom base64-internal-decoding-limit 70000
   "*limit size to use internal base64 decoder.
 If size of input to decode is larger than this limit,
 external decoder is called."
   :group 'base64
-  :type 'integer)
+  :type '(choice (const :tag "Always use internal decoder" nil)
+		 (integer :tag "Size")))
 
 
 ;;; @ internal base64 encoder
