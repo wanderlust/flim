@@ -2,6 +2,9 @@
 
 	* luna.el: Don't require `static'.
 	(luna-define-class-function): Don't bind colon keywords.
+	(luna-class-find-functions): Quote colon keywords.
+	(luna-send): Likewise.
+	(luna-call-next-method): Likewise.
 
 2000-11-21   Daiki Ueno  <ueno@unixuser.org>
 
