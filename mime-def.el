@@ -212,11 +212,11 @@ If method is nil, this field will not be encoded."
   (cdr (car content-type)))
 
 (defsubst mime-content-type-subtype (content-type)
-  "Return primary-type of CONTENT-TYPE."
+  "Return subtype of CONTENT-TYPE."
   (cdr (cadr content-type)))
 
 (defsubst mime-content-type-parameters (content-type)
-  "Return primary-type of CONTENT-TYPE."
+  "Return parameters of CONTENT-TYPE."
   (cddr content-type))
 
 (defsubst mime-content-type-parameter (content-type parameter)

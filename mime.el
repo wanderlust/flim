@@ -417,9 +417,11 @@ default value."
 			    (mime-entity-media-subtype entity-info)))
 
 (defun mime-entity-set-content-type (entity content-type)
+  "Set ENTITY's content-type to CONTENT-TYPE."
   (mime-entity-set-content-type-internal entity content-type))
 
 (defun mime-entity-set-encoding (entity encoding)
+  "Set ENTITY's content-transfer-encoding to ENCODING."
   (mime-entity-set-encoding-internal entity encoding))
 
 
