@@ -113,6 +113,7 @@ don't define this value."
 (defvar sasl-mechanisms)
 
 (autoload 'binary-open-network-stream "raw-io")
+;;;###autoload
 (defvar smtp-open-connection-function #'binary-open-network-stream)
 
 (defvar smtp-read-point nil)
