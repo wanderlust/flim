@@ -461,6 +461,43 @@ each line is separated by CRLF."
   (not (eq (charsets-to-mime-charset (find-charset-string str)) 'us-ascii)))
 
 ;;;
+
+(defun ew-decode-field-interest-option-order (field-name field-body)
+  (let* ((ew-decode-sticked-encoded-word nil)
+	 (ew-decode-quoted-encoded-word nil)
+	 (ew-ignore-75bytes-limit nil)
+	 (ew-ignore-76bytes-limit nil)
+	 (ew-permit-sticked-comment nil)
+	 (ew-permit-sticked-special nil)
+	 (ew-permit-null-encoded-text nil)
+	 (decoded (make-vector (lsh 1 (length ew-option-list)) nil))
+	 tmp
+	 i j k
+	 )
+    (aset decoded 0 (list 0 (ew-decode-field field-name field-body)))
+    (setq i 1)
+    (while (< i (length decoded))
+      (ew-restore-boolean-options i)
+      (setq tmp (ew-decode-field field-name field-body))
+      (setq j 0)
+      (while (<= (lsh 1 j) i)
+	(unless (zerop (logand i (lsh 1 j)))
+	  (setq k (logand i (lognot (lsh 1 j))))
+	  (when (or (not (aref decoded i))
+		    (< (car (aref decoded i))
+		       (+ (if (equal (cadr (aref decoded k)) tmp) 0 1)
+			  (car (aref decoded k)))))
+	    (aset decoded i
+		  (ew-cons*
+		   (+ (if (equal (cadr (aref decoded k)) tmp) 0 1)
+		      (car (aref decoded k)))
+		   tmp
+		   (nth j ew-option-list)
+		   (cddr (aref decoded k))))))
+	(setq j (1+ j)))
+      (setq i (1+ i)))
+    (reverse (cddr (aref decoded (1- (length decoded)))))))
+
 (defun ew-decode-field-test (field-name field-body)
   (interactive
    (list
@@ -501,6 +538,8 @@ each line is separated by CRLF."
 	       ew-permit-null-encoded-text
 	       ))
 	    d1 d2)
+	(when (<= 16 (prefix-numeric-value current-prefix-arg))
+	  (setq options (ew-decode-field-interest-option-order field-name field-body)))
 	(setq d1 (ew-decode-field-no-cache field-name field-body))
 	(insert field-name ":" field-body "\n"
 		(make-string 76 ?-) "\n"
@@ -514,7 +553,7 @@ each line is separated by CRLF."
 	    (setq d1 d2))
 	  (setq options (cdr options)))
 	(insert (make-string 76 ?-) "\n")
-	(when current-prefix-arg
+	(when (<= 4 (prefix-numeric-value current-prefix-arg))
 	  (mapcar
 	   (lambda (frag)
 	     (insert (format "%-15s %S\n"
@@ -547,5 +586,7 @@ each line is separated by CRLF."
 (ew-decode-field-test "Subject" " =?US-ASCII?Q??=?US-ASCII?Q?a?=")
 (ew-decode-field-test "Subject" " =?xUS-ASCII?Q??=?xUS-ASCII?Q?a?=")
 (ew-decode-field-test "Subject" " =?+US-ASCII?Q??=?+US-ASCII?Q?a?=")
+
+(ew-decode-field "From"" ()=?+US-ASCII?Q??=?+US-ASCII?Q?a?= =?US-ASCII?Q??= <akr@foo> (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)")
 
 )

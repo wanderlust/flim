@@ -179,16 +179,32 @@
 
 ;;; utilities for variables.
 
+(defconst ew-option-list
+  '(ew-decode-sticked-encoded-word
+    ew-decode-quoted-encoded-word
+    ew-ignore-75bytes-limit
+    ew-ignore-76bytes-limit
+    ew-permit-sticked-comment
+    ew-permit-sticked-special
+    ew-permit-null-encoded-text))
+
+(defun ew-save-boolean-options ()
+  (let ((tmp 1) (opts ew-option-list) (val 0))
+    (while opts
+      (when (symbol-value (car opts)) (setq val (logior val tmp)))
+      (setq tmp (lsh tmp 1)
+	    opts (cdr opts)))
+    val))
+
+(defun ew-restore-boolean-options (val)
+  (let ((tmp 1) (opts ew-option-list))
+    (while opts
+      (set (car opts) (not (zerop (logand val tmp))))
+      (setq tmp (lsh tmp 1)
+	    opts (cdr opts)))))
+
 (defun ew-dynamic-options ()
   (cons
    ew-default-mime-charset
-   (logior
-    (if ew-decode-sticked-encoded-word 1 0)
-    (if ew-decode-quoted-encoded-word 2 0)
-    (if ew-ignore-75bytes-limit 4 0)
-    (if ew-ignore-76bytes-limit 8 0)
-    (if ew-permit-sticked-comment 16 0)
-    (if ew-permit-sticked-special 32 0)
-    (if ew-remove-bare-crlf 64 0)
-    (if ew-permit-null-encoded-text 128 0)
-    )))
+   (ew-save-boolean-options)))
+

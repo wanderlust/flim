@@ -1,5 +1,17 @@
 1998-09-02  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-dec.el (ew-decode-field-interest-option-order): New
+	function.
+	(ew-decode-field-test): Use
+	`ew-decode-field-interest-option-order'.
+
+	* ew-var.el (ew-option-list): New constant.
+	(ew-save-boolean-options): New function.
+	(ew-restore-boolean-options): New function.
+	(ew-dynamic-options): Use `ew-save-boolean-options'.
+
+1998-09-02  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-data.el (ew-search-sticked-eword): New function.
 	(ew-separate-eword): Use `ew-search-sticked-eword' to
 	check `ew-permit-null-encoded-text', `ew-ignore-75bytes-limit',
