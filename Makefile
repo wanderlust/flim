@@ -26,7 +26,7 @@ FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 VERSION	= $(API).$(RELEASE)
 ARC_DIR = /pub/GNU/elisp/flim/$(PACKAGE)-$(API)
-SEMI_ARC_DIR = /pub/GNU/elisp/semi/semi-1.12-for-flim-$(API)
+SEMI_ARC_DIR = /pub/GNU/elisp/semi/semi-1.13-for-flim-$(API)
 
 elc:
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
