@@ -1,6 +1,6 @@
 ;;; smtpmail.el --- SMTP interface for mail-mode
 
-;; Copyright (C) 1995, 1996, 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
 ;; Keywords: mail
@@ -130,7 +130,9 @@ This is relative to `smtpmail-queue-dir'.")
 		    (save-restriction
 		      (narrow-to-region (point)
 					(save-excursion
-					  (end-of-line)
+					  (forward-line 1)
+					  (while (looking-at "^[ \t]")
+					    (forward-line 1))
 					  (point)))
 		      (append (mail-parse-comma-list)
 			      resend-to-addresses))))
@@ -230,8 +232,9 @@ This is relative to `smtpmail-queue-dir'.")
 		(error "Sending failed; no recipients"))
 	    (let* ((file-data (concat 
 			       smtpmail-queue-dir
-			       (time-stamp-strftime 
-				"%02y%02m%02d-%02H%02M%02S")))
+				   (mapconcat
+					(lambda (arg) (format "%x" arg))
+					(current-time) "")))
 		   (file-elisp (concat file-data ".el"))
 		   (buffer-data (create-file-buffer file-data))
 		   (buffer-elisp (create-file-buffer file-elisp))
@@ -240,7 +243,7 @@ This is relative to `smtpmail-queue-dir'.")
 		(set-buffer buffer-data)
 		(erase-buffer)
 		(insert-buffer tembuf)
-		(write-file file-data)
+		(write-region-as-binary (point-min) (point-max) file-data)
 		(set-buffer buffer-elisp)
 		(erase-buffer)
 		(insert (concat
@@ -276,7 +279,7 @@ This is relative to `smtpmail-queue-dir'.")
 						   (end-of-line)
 						   (point))))
 	(load file-msg)
-	(setq tembuf (find-file-noselect file-msg))
+	(setq tembuf (find-file-noselect-as-binary file-msg))
 	(if smtpmail-recipient-address-list
 	    (if (not (smtp-via-smtp user-mail-address
 				    smtpmail-recipient-address-list tembuf))

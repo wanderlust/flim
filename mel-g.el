@@ -4,7 +4,8 @@
 ;; Copyright (C) 1996,1997,1999 Shuhei KOBAYASHI
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
-;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;         MORIOKA Tomohiko <tomo@m17n.org>
+;; Maintainer: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Created: 1995/10/25
 ;; Keywords: Gzip64, base64, gzip, MIME
 
