@@ -1,5 +1,14 @@
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* eword-encode.el (eword-encode-default-start-column): New user
+	option.
+	(eword-encode-string): Use `eword-encode-default-start-column'.
+	(eword-encode-address-list): Likewise.
+	(eword-encode-structured-field-body): Likewise.
+	(eword-encode-unstructured-field-body): Likewise.
+
+1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* eword-encode.el (eword-encode): New group.
 	(eword-field-encoding-method-alist): Now a user option (was:
 	variable).
