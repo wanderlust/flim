@@ -38,7 +38,10 @@
   (autoload 'starttls-open-stream "starttls")
   (autoload 'starttls-negotiate "starttls")
   (autoload 'sasl-cram-md5 "sasl")
-  (autoload 'sasl-plain "sasl"))
+  (autoload 'sasl-plain "sasl")
+  (autoload 'sasl-scram-md5-client-msg-1 "sasl")
+  (autoload 'sasl-scram-md5-client-msg-2 "sasl")
+  (autoload 'sasl-scram-md5-authenticate-server "sasl"))
 		       
 (eval-when-compile (require 'cl))	; push
 

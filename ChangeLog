@@ -1,5 +1,10 @@
 1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
+	* FLIM-ELS (flim-modules): Add `unique-id'.
+	* smtp.el (TopLevel): Add autoload `sasl-scram-md5'.
+
+1999-12-13  Kenichi OKADA <okada@opaopa.org>
+
 	* unique-id.el: New file.
 	* scram-md5.el (TopLevel): Require `unique-id'.
 	(scram-make-unique-nonce): Use `unique-id'.
