@@ -1,8 +1,8 @@
 ;;; std11.el --- STD 11 functions for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
 
-;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author:   MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: mail, news, RFC 822, STD 11
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -25,7 +25,6 @@
 ;;; Code:
 
 (require 'poe)
-(require 'poem)				; find-non-ascii-charset-string
 (require 'custom)			; std11-lexical-analyzer
 
 
@@ -435,8 +434,7 @@ be the result."
 		(setq token (car lal))
 		(or (std11-ignored-token-p token)
 		    (if (and (setq token-value (cdr token))
-			     (find-non-ascii-charset-string token-value)
-			     )
+			     (delq 'ascii (find-charset-string token-value)))
 			(setq token nil)
 		      )))
       (setq lal (cdr lal))
