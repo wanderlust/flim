@@ -60,7 +60,7 @@ current-buffer, and return it.")
 (autoload 'mime-uri-parse-cid "mime-parse"
   "Parse STRING as cid URI.")
 
-(autoload 'mime-parse-buffer "mmbuffer"
+(autoload 'mime-parse-buffer "mime-parse"
   "Parse BUFFER as a MIME message.")
 
 )
