@@ -230,11 +230,10 @@ This is relative to `smtpmail-queue-dir'.")
 					  tembuf))
 		      (error "Sending failed; SMTP protocol error"))
 		(error "Sending failed; no recipients"))
-	    (let* ((file-data (concat 
+	    (let* ((file-data (concat
 			       smtpmail-queue-dir
-				   (mapconcat
-					(lambda (arg) (format "%x" arg))
-					(current-time) "")))
+			       (concat (time-stamp-yyyy-mm-dd)
+				       "_" (time-stamp-hh:mm:ss))))
 		   (file-elisp (concat file-data ".el"))
 		   (buffer-data (create-file-buffer file-data))
 		   (buffer-elisp (create-file-buffer file-elisp))
