@@ -4,13 +4,6 @@
 
     ftp://ftp.jaist.ac.jp/pub/GNU/elisp/mel/		(Japan)
 
-or its mirrors
-
-    ftp://ftp.nis.co.jp/pub/gnu/emacs-lisp/tm/libs/	(Japan)
-    ftp://ftp.nisiq.net/pub/gnu/emacs-lisp/tm/libs/	(US)
-    ftp://ftp.miranova.com/pub/mime/jaist.ac.jp/libs/	(US)
-    ftp://ftp.unicamp.br/pub/mail/mime/tm/libs/		(Brazil)
-
 --[[message/external-body;
 	access-type=anon-ftp;
 	site="ftp.jaist.ac.jp";
