@@ -32,8 +32,6 @@
 (require 'mcharset)
 (require 'alist)
 
-(eval-when-compile (require 'cl))	; list*
-
 (eval-and-compile
   (defconst mime-library-product ["CLIME" (1 13 3) "平端"]
     "Product name, version number and code name of MIME-library package.")
@@ -155,10 +153,9 @@
 ;;;
 
 (defsubst make-mime-content-type (type subtype &optional parameters)
-  (list* (cons 'type type)
-	 (cons 'subtype subtype)
-	 (nreverse parameters))
-  )
+  (cons (cons 'type type)
+	(cons (cons 'subtype subtype)
+	      (nreverse parameters))))
 
 (defsubst mime-content-type-primary-type (content-type)
   "Return primary-type of CONTENT-TYPE."
