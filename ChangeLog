@@ -1,3 +1,102 @@
+2000-12-15  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* tests/test-sasl.el (test-sasl-digest-md5-acap): Replace #' with
+	`function'.
+	(test-sasl-digest-md5-imap): Ditto.
+	* lunit.el (lunit-make-test-suite-from-class): Ditto.
+
+	* luna.el (luna-define-method): Don't clear method cache because
+	old Emacs does not have `unintern'.
+
+2000-12-12   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el: Rewrite with luna.
+
+2000-12-06   Daiki Ueno  <ueno@unixuser.org>
+
+	* FLIM-ELS: Don't install md5-dl.el, md5-el.el, sha1-dl.el and
+	sha1-el.el if the running emacs has builtin message digest
+	functions.
+
+	* md5-dl.el, sha1-dl.el: Don't bind `dynamic-link' and
+	`dynamic-call'.
+
+	* md5.el (md5-dl-module): Moved from md5-dl.el.
+	* sha1.el: Don't bind `sha1-string'.
+
+2000-11-21   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-client-set-encoder): New function.
+	(sasl-client-set-decoder): New function.
+	(sasl-client-encoder): New function.
+	(sasl-client-decoder): New function.
+
+	* sasl-digest.el: Require 'cl' when compiling.
+	(sasl-digest-md5-signing-encode-magic): New constant.
+	(sasl-digest-md5-signing-decode-magic): New constant.
+	(sasl-digest-md5-htonl-string): New function.
+	(sasl-digest-md5-make-integrity-encoder): New function.
+	(sasl-digest-md5-make-integrity-decoder): New function.
+	(sasl-digest-md5-ha1): New function.
+	(sasl-digest-md5-response-value): Accept the 1st argument `ha1'.
+	(sasl-digest-md5-response): Use `sasl-digest-md5-ha1'.
+	- Set integrity encoder and decoder of the client.
+
+	* smtp.el: Require `luna'.
+	(smtp-read-response): Accept `smtp-connection' object rather than
+	process-object.
+	(smtp-send-command): Likewise.
+	(smtp-send-data): Likewise.
+
+2000-11-10   Daiki Ueno  <ueno@unixuser.org>
+
+	* tests/test-sasl.el (test-sasl-digest-md5-imap): New testcase.
+	(test-sasl-digest-md5-acap): New testcase.
+
+2000-11-10   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el (lunit-make-test-suite-from-class): New function.
+	(lunit-class): Abolish.
+	(lunit-test-results-buffer): Abolish.
+
+	* FLIM-ELS (check-flim): New function.
+
+	* Makefile (check): New target.
+
+	* tests: New directory.
+
+2000-11-09   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el (lunit-test-method-regexp): New variable.
+	(lunit-class): New function.
+
+2000-11-09   Daiki Ueno  <ueno@unixuser.org>
+
+	* lunit.el: New file.
+
+2000-12-13  Kenichi Handa     <handa@etl.go.jp>
+
+	* luna.el: Fix and add DOCs and comments; fix coding style.
+
+2000-12-09  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmbuffer.el (mmbuffer-parse-multipart): Add new optional
+	argument `representation-type'.
+	(mmbuffer-parse-encapsulated): Likewise.
+
+2000-12-07  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmexternal.el: Must require `mmgeneric'.
+
+	* sha1.el: Don't use `defun-maybe'.
+
+2000-11-12   Daiki Ueno  <ueno@unixuser.org>
+
+	* luna.el 
+	(luna-apply-generic): New function.
+	(luna-define-generic): Use `luna-apply-generic' instead of
+	`luna-send'.
+
 2000-12-14  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtp.el (smtp-primitive-ehlo): Enclose the `lambda' form with
@@ -240,7 +339,7 @@
 
 2000-07-12  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-	* FLIM-Chao: Version 1.14.1 (Rokujiz-Dò)-A released.
+	* FLIM-Chao: Version 1.14.1 (Rokujiz~) released.
 
 2000-07-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -439,7 +538,7 @@
 
 1999-12-14  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* CLIME: Version 1.13.6 (Nakanosh-Dò)-A released.
+	* CLIME: Version 1.13.6 (Nakanosh~) released.
 
 1999-12-13  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -586,7 +685,7 @@
 
 1999-08-19  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* CLIME: Version 1.13.0 (Shin-H-Dòryþji)-A released.
+	* CLIME: Version 1.13.0 (Shin-H~ry~ji) released.
 
 1999-08-18  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -1018,7 +1117,7 @@
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.7 (Y-Dþzaki)-A released.
+	* FLIM: Version 1.12.7 (Y~zaki) released.
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -1193,7 +1292,7 @@
 
 1999-05-11  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.6 (Family-K-Dòenmae)-A released.
+	* FLIM: Version 1.12.6 (Family-K~enmae) released.
 
 1999-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
@@ -1310,7 +1409,7 @@
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama)-A released.
+	* FLIM: Version 1.12.3 (Kintetsu-K~riyama) released.
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1353,7 +1452,7 @@
 
 1999-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.2 (Kuj-Dò)-A released.
+	* FLIM: Version 1.12.2 (Kuj~) released.
 
 1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1539,7 +1638,7 @@
 
 1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.1 (Nishinoky-Dò)-A released.
+	* FLIM: Version 1.12.1 (Nishinoky~) released.
 
 1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1757,7 +1856,7 @@
 
 1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.11.2 (Heij-Dò)-A was released.
+	* FLIM: Version 1.11.2 (Heij~) was released.
 
 	* NEWS (Abolish variable `mime-temp-directory'): New subsection.
 
@@ -2037,7 +2136,7 @@
 
 1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.4 (Shin-H-Dòsono)-A was released.
+	* FLIM: Version 1.10.4 (Shin-H~sono) was released.
 
 1998-10-12  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -2222,7 +2321,7 @@
 
 1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.0 (K-Dòdo)-A was released.
+	* FLIM: Version 1.10.0 (K~do) was released.
 
 	* README.en (What's FLIM): Add mel-ccl.el.
 
@@ -2509,7 +2608,7 @@
 
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.9.1 (Tonosh-Dò)-A was released.
+	* FLIM: Version 1.9.1 (Tonosh~) was released.
 
 	* mime-en.sgml (mm-backend): Translate a little.
 
@@ -2652,7 +2751,7 @@
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.8.0 (Shij-Dò)-A was released.
+	* FLIM-Chao: Version 1.8.0 (Shij~) was released.
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2764,7 +2863,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-DÒkubo)-A was released.
+	* FLIM: Version 1.8.0 (~kubo) was released.
 
 	* README.en: Delete `How to use'.
 
@@ -2889,7 +2988,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (Goj-Dò)-A was released.
+	* FLIM-Chao: Version 1.7.0 (Goj~) was released.
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3148,7 +3247,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae)-A was released.
+	* FLIM: Version 1.4.1 (Momoyama-Gory~mae) was released.
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3268,7 +3367,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J-Dþjò)-A was released.
+	* FLIM: Version 1.2.0 (J~j~) was released.
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -3319,7 +3418,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Dòji)-A was released.
+	* FLIM: Version 1.1.0 (T~ji) was released.
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3355,7 +3454,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
+	* FLIM: Version 1.0.1 (Ky~to) was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
