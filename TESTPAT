@@ -1210,6 +1210,25 @@
  <akr@jaist.ac.jp>")
 'permit-sticked-comment)
 
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
+ =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
+"From:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
+ =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
+"From:\r
+ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
+ =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
 ;----------------------------------------------------------------------------
 
 ;;; Section 7: Using embedded-encoded-words.
