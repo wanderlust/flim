@@ -496,9 +496,9 @@ each line is separated by CRLF."
 	       ew-ignore-75bytes-limit
 	       ew-permit-sticked-special
 	       ew-permit-sticked-comment
-	       ew-permit-null-encoded-text
 	       ew-decode-sticked-encoded-word
 	       ew-decode-quoted-encoded-word
+	       ew-permit-null-encoded-text
 	       ))
 	    d1 d2)
 	(setq d1 (ew-decode-field-no-cache field-name field-body))
@@ -543,5 +543,9 @@ each line is separated by CRLF."
 (ew-decode-field "To" "\"A\\BC\e$B\\\"\\\\\e(B\" <foo@bar>")
 (ew-decode-field "To" "\"A\\BC\" <foo@bar>")
 (ew-decode-field "To" "\"\e\\$\\B\\$\\\"\e\\(\\B\" <foo@bar>")
+
+(ew-decode-field-test "Subject" " =?US-ASCII?Q??=?US-ASCII?Q?a?=")
+(ew-decode-field-test "Subject" " =?xUS-ASCII?Q??=?xUS-ASCII?Q?a?=")
+(ew-decode-field-test "Subject" " =?+US-ASCII?Q??=?+US-ASCII?Q?a?=")
 
 )

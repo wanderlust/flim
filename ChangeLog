@@ -1,5 +1,11 @@
 1998-09-01  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* TESTPAT: Add a notice about null encoded-text.
+
+	* ew-dec.el (ew-decode-field-test): Reorder options.
+
+1998-09-01  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* TESTPAT: Add 16 tests.
 
 	* ew-data.el (ew-separate-eword): Check
