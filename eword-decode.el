@@ -36,6 +36,9 @@
 (require 'mel)
 (require 'mime-def)
 
+(require 'ew-dec)
+(require 'ew-line)
+
 (eval-when-compile (require 'cl))
 
 (defgroup eword-decode nil
@@ -269,7 +272,6 @@ such as a version of Net$cape)."
   "*Field decoder cache update function.")
 
 (defun ew-mime-update-field-decoder-cache (field mode)
-  (require 'ew-dec)
   (let ((fun (cond
               ((eq mode 'plain)
                (lexical-let ((field-name (symbol-name field)))
@@ -553,7 +555,7 @@ default-mime-charset."
 		    (insert (funcall field-decoder body (1+ len)))
 		    (add-text-properties beg (min (1+ (point)) (point-max))
 					 (list 'original-field-name field-name
-					       'original-field-body field-body))
+					       'original-field-body body))
 		    ))
 		))
 	  (eword-decode-region (point-min) (point-max) t)
