@@ -689,7 +689,7 @@ be the result.")
 			   (setq r (funcall func string start must-unfold))))
 		(setq rest (cdr rest)))
 	      (or r
-		  (list (cons 'error (substring string start)) (1+ len)))))
+		  (cons (cons 'error (substring string start)) (1+ len)))))
       (setq dest (cons (car ret) dest)
 	    start (cdr ret)))
     (nreverse dest)))
