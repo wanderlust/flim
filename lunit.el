@@ -222,7 +222,8 @@ NAME is name of the method to be tested."
   (luna-define-internal-accessors 'lunit-test-suite))
 
 (defun lunit-make-test-suite (&rest tests)
-  "Return a newly allocated `lunit-test-suite' instance."
+  "Return a newly allocated `lunit-test-suite' instance.
+TESTS holds a number of instances of `lunit-test'."
   (luna-make-entity 'lunit-test-suite :tests tests))
 
 (luna-define-method lunit-test-suite-add-test ((suite lunit-test-suite) test)
@@ -247,6 +248,7 @@ NAME is name of the method to be tested."
 ;;;
 
 (defmacro lunit-assert (condition-expr)
+  "Verify that CONDITION-EXPR returns non-nil; signal an error if not."
   (let ((condition (eval condition-expr)))
     `(unless ,condition
        (signal 'lunit-failure (list ',condition-expr)))))
