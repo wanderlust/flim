@@ -1,3 +1,8 @@
+1999-02-19  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mime.el (mime-read-field): Use `plain' instead of `native' for
+	third argument for `mime-decode-field-body'.
+
 1999-02-18  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up to flim-1_12_5 from flim-1_12_1.

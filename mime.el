@@ -322,7 +322,7 @@ If MESSAGE is specified, it is regarded as root entity."
 			     (funcall parser
 				      (eword-lexical-analyze field-body))
 			   (mime-decode-field-body
-			    field-body field-name 'native)
+			    field-body field-name 'plain)
 			   ))
 		   (mime-entity-set-parsed-header-internal
 		    entity (put-alist field-name field header))
