@@ -65,6 +65,10 @@ current-buffer, and return it.")
 
 )
 
+(autoload 'mime-encode-field-body "eword-encode"
+  "Encode FIELD-BODY as FIELD-NAME, and return the result.")
+
+
 ;;; @ Entity Representation and Implementation
 ;;;
 
