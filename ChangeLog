@@ -1,3 +1,9 @@
+1998-09-21  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel-ccl.el:
+	  - Require 'pccl instead of 'emu.
+	  - Use `unless-broken' to check facility.
+
 1998-09-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel.el (mime-encoding-list): New user option (renamed from

@@ -27,7 +27,6 @@
 ;;; Code:
 
 (require 'ccl)
-(require 'emu)
 (require 'pccl)
 (require 'mime-def)
 
@@ -1174,8 +1173,7 @@ abcdefghijklmnopqrstuvwxyz\
 ;;; @ B
 ;;;
 
-(unless (and (boundp 'ccl-encoder-eof-block-is-broken)
-	     ccl-encoder-eof-block-is-broken)
+(unless-broken ccl-execute-eof-block-on-encoding-some
 
   (defun base64-ccl-encode-string (string)
     "Encode STRING with base64 encoding."
@@ -1239,8 +1237,7 @@ abcdefghijklmnopqrstuvwxyz\
 ;;; @ quoted-printable
 ;;;
 
-(unless (and (boundp 'ccl-encoder-eof-block-is-broken)
-	     ccl-encoder-eof-block-is-broken)
+(unless-broken ccl-execute-eof-block-on-encoding-some
 
   (defun quoted-printable-ccl-encode-string (string)
     "Encode STRING with quoted-printable encoding."
