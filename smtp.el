@@ -39,10 +39,7 @@
 (eval-and-compile
   (luna-define-class smtp-transaction (net-transaction)
 		     (process
-		      extensions
-		      sender
-		      recipients
-		      buffer))
+		      extensions))
 
   (luna-define-internal-accessors 'smtp-transaction))
 
@@ -86,17 +83,12 @@ don't define this value."
   :type 'boolean
   :group 'smtp)
 
+(defvar smtp-transaction-compose-function
+  #'smtp-default-transaction-compose-function)
+
 (defvar smtp-open-connection-function (function open-network-stream))
 
-(defvar smtp-default-commands
-  '(&& smtp-greeting (|| smtp-ehlo smtp-helo)
-       smtp-mailfrom smtp-rcptto  smtp-data))
-
-(defvar smtp-commands smtp-default-commands)
-
 (defvar smtp-read-point nil)
-
-(defvar smtp-transaction-function nil)
 
 (defun smtp-make-fqdn ()
   "Return user's fully qualified domain name."
@@ -109,14 +101,7 @@ don't define this value."
      (t
       (error "Cannot generate valid FQDN. Set `smtp-local-domain' correctly.")))))
 
-(luna-define-generic smtp-greeting (trans))
-(luna-define-generic smtp-ehlo (trans))
-(luna-define-generic smtp-helo (trans))
-(luna-define-generic smtp-mailfrom (trans))
-(luna-define-generic smtp-rcptto (trans))
-(luna-define-generic smtp-data (trans))
-
-(luna-define-method smtp-greeting ((trans smtp-transaction))
+(defun smtp-greeting (trans)
   (let ((response
 	 (smtp-read-response
 	  (smtp-transaction-process-internal trans))))
@@ -124,7 +109,7 @@ don't define this value."
 	(net-transaction-error trans 'greeting))
     trans))
   
-(luna-define-method smtp-ehlo ((trans smtp-transaction))
+(defun smtp-ehlo (trans)
   (smtp-send-command
    (smtp-transaction-process-internal trans)
    (format "EHLO %s" (smtp-make-fqdn)))
@@ -140,7 +125,7 @@ don't define this value."
 	    (cdr response)))
     trans))
 
-(luna-define-method smtp-helo ((trans smtp-transaction))
+(defun smtp-helo (trans)
   (smtp-send-command
    (smtp-transaction-process-internal trans)
    (format "HELO %s" (smtp-make-fqdn)))
@@ -151,18 +136,17 @@ don't define this value."
 	(net-transaction-error trans 'helo))
     trans))
 
-(luna-define-method smtp-mailfrom ((trans smtp-transaction))
+(defun smtp-mailfrom (sender buffer trans)
   (smtp-send-command
    (smtp-transaction-process-internal trans)
    (format "MAIL FROM:<%s>%s%s"
-	   (smtp-transaction-sender-internal trans)
+	   sender
 	   ;; SIZE --- Message Size Declaration (RFC1870)
 	   (if (memq 'size
 		     (smtp-transaction-extensions-internal trans))
 	       (format " SIZE=%d"
 		       (save-excursion
-			 (set-buffer
-			  (smtp-transaction-buffer-internal trans))
+			 (set-buffer buffer)
 			 (+ (- (point-max) (point-min))
 			    ;; Add one byte for each change-of-line
 			    ;; because or CR-LF representation:
@@ -186,27 +170,23 @@ don't define this value."
 	(net-transaction-error trans 'mailfrom))
     trans))
 
-(luna-define-method smtp-rcptto ((trans smtp-transaction))
-  (let ((recipients
-	 (smtp-transaction-recipients-internal trans))
-	response)
-    (while recipients
-      (smtp-send-command
-       (smtp-transaction-process-internal trans)
-       (format
-	(if smtp-notify-success
-	    "RCPT TO:<%s> NOTIFY=SUCCESS"
-	  "RCPT TO:<%s>")
-	(car recipients)))
-      (setq response
-	    (smtp-read-response
-	     (smtp-transaction-process-internal trans)))
-      (or (smtp-check-response response)
-	  (net-transaction-error trans 'rcptto))
-      (setq recipients (cdr recipients)))
+(defun smtp-rcptto (recipient trans)
+  (let (response)
+    (smtp-send-command
+     (smtp-transaction-process-internal trans)
+     (format
+      (if smtp-notify-success
+	  "RCPT TO:<%s> NOTIFY=SUCCESS"
+	"RCPT TO:<%s>")
+      recipient))
+    (setq response
+	  (smtp-read-response
+	   (smtp-transaction-process-internal trans)))
+    (or (smtp-check-response response)
+	(net-transaction-error trans 'rcptto))
     trans))
 
-(luna-define-method smtp-data ((trans smtp-transaction))
+(defun smtp-data (buffer trans)
   (smtp-send-command
    (smtp-transaction-process-internal trans)
    "DATA")
@@ -219,8 +199,7 @@ don't define this value."
     ;; Mail contents
     (smtp-send-data 
      (smtp-transaction-process-internal trans)
-     (smtp-transaction-buffer-internal trans))
-
+     buffer)
     ;; DATA end "."
     (smtp-send-command
      (smtp-transaction-process-internal trans)
@@ -231,6 +210,24 @@ don't define this value."
     (or (smtp-check-response response)
 	(net-transaction-error trans 'data))
     trans))
+
+(defun smtp-closure-partial-apply (function &rest args)
+  `(lambda (trans) (funcall #',function ,@args trans)))
+
+(defun smtp-default-transaction-compose-function (sender recipients buffer)
+  (net-transaction-compose-&&
+   (net-transaction-compose-&&
+    (net-transaction-compose-&&
+     (net-transaction-compose-&&
+      #'smtp-greeting
+      (net-transaction-compose-|| #'smtp-ehlo #'smtp-helo))
+     (smtp-closure-partial-apply #'smtp-mailfrom sender buffer))
+    (net-transaction-fold-left
+     (lambda (accu recipient)
+       (net-transaction-compose-&&
+	accu (smtp-closure-partial-apply #'smtp-rcptto recipient)))
+     #'identity recipients))
+   (smtp-closure-partial-apply #'smtp-data buffer)))
 
 (defun smtp-via-smtp (sender recipients smtp-text-buffer)
   (let ((server (if (functionp smtp-server)
@@ -245,14 +242,14 @@ don't define this value."
       (erase-buffer)
       (make-local-variable 'smtp-read-point)
       (setq smtp-read-point (point-min))
-      (make-local-variable 'smtp-transaction-function)
-      (or smtp-transaction-function
-	  (let ((function (net-transaction-compose-commands smtp-commands)))
+      (unwind-protect
+	  (let ((function
+		 (funcall smtp-transaction-compose-function
+			  sender recipients smtp-text-buffer)))
 	    (or (functionp function)
 		(error "Unable to compose SMTP commands"))
-	    (setq smtp-transaction-function function)))
-      (unwind-protect
-	  (progn
+	    (if (and (listp function) (eq (car function) 'lambda))
+		(setq function (byte-compile function)));; XXX
 	    (as-binary-process
 	     (setq process
 		   (funcall smtp-open-connection-function
@@ -261,13 +258,10 @@ don't define this value."
 	      (set-process-filter process 'smtp-process-filter)
 	      (setq trans
 		    (luna-make-entity 'smtp-transaction
-				      :process process
-				      :sender sender
-				      :recipients recipients
-				      :buffer smtp-text-buffer)
+				      :process process)
 		    error
 		    (catch (net-transaction-error-name trans)
-		      (funcall smtp-transaction-function trans)
+		      (funcall function trans)
 		      nil))
 	      (not error)))
 	(when (and process
@@ -305,7 +299,7 @@ don't define this value."
     response))
 
 (defun smtp-check-response (response)
-  (= (/ (car response) 100) 2))
+  (memq (/ (car response) 100) '(2 3)));; XXX
 
 (defun smtp-send-command (process command)
   (goto-char (point-max))
