@@ -1,3 +1,7 @@
+1998-06-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml, mime-ja.texi: New files.
+
 1998-06-22  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* mime-parse.el (mime-parse-message): Would error if empty body.
