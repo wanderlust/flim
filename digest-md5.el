@@ -24,6 +24,8 @@
 
 ;;; Commentary:
 
+;; NOW BUILDING.
+
 ;; This program is implemented from draft-leach-digest-sasl-05.txt.
 ;;
 ;; It is caller's responsibility to base64-decode challenges and
@@ -33,16 +35,57 @@
 
 ;; Examples.
 ;;
-;; (digest-md5-make-response "chris" "elwood.innosoft.com"
-;; 			  "OA6MG9tEQGm2hh" "OA6MHXh6VqTrRk" 1
-;; 			  "auth" "imap/elwood.innosoft.com"
-;; 			  "d388dad90d4bbd760a152321f2143af7" nil "utf-8")
+;; (digest-md5-digest-response "chris" "elwood.innosoft.com"
+;; 			  "OA6MG9tEQGm2hh" "OA6MHXh6VqTrRk"
+;; 			  "imap/elwood.innosoft.com"
+;;  			  "d388dad90d4bbd760a152321f2143af7"
+;; 			  1 "auth" nil "utf-8")
 ;; => "charset=utf-8,username=\"chris\",realm=\"elwood.innosoft.com\",nonce=\"OA6MG9tEQGm2hh\",nc=00000001,cnonce=\"OA6MHXh6VqTrRk\",digest-uri=\"imap/elwood.innosoft.com\",response=d388dad90d4bbd760a152321f2143af7,qop=auth"
 ;;
 
 ;;; Code:
 
 (require 'hmac-md5)
+(require 'unique-id)
+
+(defun degest-md5-parse-digest-challenge (digest-challenge)
+  ;; return list of 
+  ;; (realm nonce qop-options stale maxbuf charset 
+  ;; algorithm cipher-opts auth-param).
+  (let (realm nonce qop-options stale maxbuf charset 
+	      algorithm cipher-opts auth-param
+	      challenges challenge)
+    (setq challenges
+	  (split-string digest-challenge ","))
+    (while (car challenges)
+      (if (null (string-match
+		 "\\([a-z]+\\)=\"?\\(.+\\)\"?" (car challenges)))
+	  (error "Parse error in digest-challenge1."))
+      (setq challenge (cons
+		       (match-string 1 (car challenges))
+		       (match-string 2 (car challenges))))
+      (cond
+       ((string= (car challenge) "realm")
+	(setq realm (cdr challenge)))
+       ((string= (car challenge) "nonce")
+	(setq nonce (cdr challenge)))
+       ((string= (car challenge) "qop")
+	(setq qop-options  (cdr challenge)))
+       ((string= (car challenge) "stale")
+	(setq stale (cdr challenge)))
+       ((string= (car challenge) "maxbuf")
+	(setq maxbuf (cdr challenge)))
+       ((string= (car challenge) "charset")
+	(setq charset (cdr challenge)))
+       ((string= (car challenge) "algorithm")
+	(setq algorithm (cdr challenge)))
+       ((string= (car challenge) "cipher")
+	(setq cipher-opts (cdr challenge)))
+       (t
+	(error "Parse error in digest-challenge.")))
+  (setq challenges (cdr challenges)))
+    (list realm nonce qop-options stale maxbuf charset 
+	  algorithm cipher-opts auth-param)))
 
 (defun digest-md5-digest-uri (serv-type host &optional serv-name)
   (concat serv-type "/" host
@@ -50,21 +93,29 @@
 		   (null (string= host serv-name)))
 	      (concat "/" serv-name))))
 
+(defun digest-md5-cnonce ()
+  ;; It is RECOMMENDED that it 
+  ;; contain at least 64 bits of entropy.
+  (concat (unique-id-m "") (unique-id-m "")))
+
 (defun digest-md5-digest-response (username 
 				   realm nonce cnonce
-				   nonce-count qop digest-uri response 
-				   &optional maxbuf charset cipher authzid)
+				   digest-uri response 
+				   &optional nonce-count qop 
+				   maxbuf charset cipher authzid)
   (concat
    (if charset
        (concat "charset=" charset ","))
    "username=\"" username "\""
    ",realm=\"" realm "\""
    ",nonce=\"" nonce "\""
-   (format ",nc=%08x" nonce-count)
+   (format ",nc=%08x"
+	   (or nonce-count 1))
    ",cnonce=\"" cnonce "\""
    ",digest-uri=\"" digest-uri "\""
    ",response=" response
-   ",qop=" qop
+   (if qop
+       (concat ",qop=" qop))
    (if maxbuf
        (concat ",maxbuf=" maxbuf))
    (if cipher
