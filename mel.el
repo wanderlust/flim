@@ -41,7 +41,9 @@
 
 (defvar base64-dl-module
   (and (fboundp 'dynamic-link)
-       (expand-file-name "base64.so" exec-directory)))
+       (let ((path (expand-file-name "base64.so" exec-directory)))
+	 (and (file-exists-p path)
+	      path))))
 
 
 ;;; @ autoload
