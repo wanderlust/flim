@@ -24,10 +24,9 @@
 
 ;;; Code:
 
-(require 'poem)
+(require 'mime-def)
 (require 'mel)
 (require 'std11)
-(require 'mime-def)
 (require 'eword-decode)
 
 
