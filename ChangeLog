@@ -154,7 +154,7 @@
 
 1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* mime-def.el: Avoid compile error when ediff is missing.
+	* mime-def.el: Avoid compile error when edebug is missing.
 
 
 1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
