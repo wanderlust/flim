@@ -1,5 +1,9 @@
 1998-08-26  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-scan-n.el: New file.
+
+1998-08-26  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* FLIM-ELS (flim-modules): Add `ew-scan-n'.
 
 	* ew-dec.el: Require 'ew-scan-n.
