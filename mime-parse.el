@@ -6,7 +6,7 @@
 ;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: parse, MIME, multimedia, mail, news
 
-;; This file is part of SEMI (Spadework for Emacs MIME Interfaces).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -284,7 +284,7 @@ property of the decoded-value."
 			 dest)
 	      params (cdr params)))
       (setq params (cdr params)))
-    ;; decode and concat parameters.
+    ;; concat and decode parameters.
     (while eparams
       (setq dest (cons (cons (car (car eparams)) ; attribute
 			     (mime-decode-parameter-value
