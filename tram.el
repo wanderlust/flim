@@ -44,36 +44,36 @@
 (luna-define-generic tram-stream-error (stream error)
   "Throw an ERROR of the STREAM.")
 
-(luna-define-method tram-stream-error-name ((trans tram-stream))
-  (intern (format "%s-error" (luna-class-name trans))))
+(luna-define-method tram-stream-error-name ((stream tram-stream))
+  (intern (format "%s-error" (luna-class-name stream))))
 
-(luna-define-method tram-stream-error ((trans tram-stream) error)
-  (throw (tram-stream-error-name trans) error))
+(luna-define-method tram-stream-error ((stream tram-stream) error)
+  (throw (tram-stream-error-name stream) error))
 
 (put '&& 'tram-compose-function #'tram-compose-&&)
 (put '|| 'tram-compose-function #'tram-compose-||)
 
 (defun tram-compose-&& (left right)
   "Multiplicative combinator which composes LEFT and RIGHT operations."
-  `(lambda (trans)
+  `(lambda (stream)
      (let ((next
 	    ,(if (functionp left)
-		 `(closure-call #',left trans)
-	       `(closure-call ',left trans))))
+		 `(closure-call #',left stream)
+	       `(closure-call ',left stream))))
        ,(if (functionp right)
 	    `(closure-call #',right next)
 	  `(closure-call ',right next)))))
 
 (defun tram-compose-|| (left right)
   "Additive combinator which composes LEFT and RIGHT operations."
-  `(lambda (trans)
+  `(lambda (stream)
      (let (next error)
        (setq error
-	     (catch (tram-stream-error-name trans)
+	     (catch (tram-stream-error-name stream)
 	       (setq next
 		     ,(if (functionp left)
-			   `(closure-call #',left trans)
-			 `(closure-call ',left trans)))
+			   `(closure-call #',left stream)
+			 `(closure-call ',left stream)))
 	       nil))
        (if error
 	   ,(if (functionp right)
@@ -82,7 +82,7 @@
 	 next))))
 
 (defun tram-fold-left (function accu sequence)
-  "Apply FUNCTION to ACCU while folding SEQUENCE left to right."
+  "Apply FUNCTION to ACCU while folding SEQUENCE from left to right."
   (if (null sequence)
       accu
     (tram-fold-left
@@ -102,23 +102,20 @@
   (if (not (symbolp (car tram-transaction)))
       tram-transaction
     (let ((combinator
-	   (get (pop tram-transaction) 'tram-compose-function))
-	  accu)
-      (if (null combinator)
-	  (error "Unknown operator")
-	(setq accu
-	      (tram-fold-left
-	       `(lambda (accu c)
-		  (funcall
-		   #',combinator accu
-		   (if (listp c)
-		       (tram-compose-transaction c)
-		     c)))
-	       (if (listp (car tram-transaction))
-		   (tram-compose-transaction (pop tram-transaction))
-		 (pop tram-transaction))
-	       tram-transaction))
-	accu))))
+	   (get (pop tram-transaction) 'tram-compose-function)))
+      (or combinator
+	  (error "Unknown operator"))
+      (tram-fold-left
+       `(lambda (accu c)
+	  (funcall
+	   #',combinator accu
+	   (if (listp c)
+	       (tram-compose-transaction c)
+	     c)))
+       (if (listp (car tram-transaction))
+	   (tram-compose-transaction (pop tram-transaction))
+	 (pop tram-transaction))
+       tram-transaction))))
 
 (provide 'tram)
 
