@@ -276,14 +276,9 @@ If MESSAGE is specified, it is regarded as root entity."
 			  (setq field (std11-parse-address
 				       (eword-lexical-analyze field-body)))
 			  )
-			 ((memq field-name eword-decode-ignored-field-list)
-			  (setq field field-body))
-			 ((memq field-name eword-decode-structured-field-list)
-			  (setq field (eword-decode-structured-field-body
-				       field-body)))
 			 (t
-			  (setq field (eword-decode-unstructured-field-body
-				       field-body))
+			  (setq field (mime-decode-field-body
+				       field-body field-name 'native))
 			  ))
 		   (mime-entity-set-parsed-header-internal
 		    entity (put-alist field-name field header))

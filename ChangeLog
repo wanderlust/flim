@@ -1,3 +1,104 @@
+1998-11-10  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* FLIM-ELS: require 'pccl.
+	(flim-modules): Check CCL availability by broken facility.
+
+1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-structured-field-body): New
+	implementation; abolish optional argument `must-unfold'; delete
+	DOC-string.
+	(eword-decode-and-unfold-structured-field-body): Renamed from
+	`eword-decode-and-unfold-structured-field'; delete DOC-string.
+	(eword-decode-and-fold-structured-field-body): Renamed from
+	`eword-decode-and-fold-structured-field'; abolish optional
+	argument `must-unfold'; delete DOC-string.
+	(eword-decode-unstructured-field-body): Abolish optional argument
+	`must-unfold'; delete DOC-string.
+	(eword-decode-and-unfold-unstructured-field-body): Renamed from
+	`eword-decode-and-unfold-unstructured-field'; delete DOC-string.
+	(eword-decode-unfolded-unstructured-field-body): New function.
+
+1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Use
+	`mime-find-field-presentation-method' and
+	`mime-find-field-decoder-internal'.
+
+	* eword-decode.el (mime-find-field-presentation-method): New
+	macro.
+	(mime-find-field-decoder-internal): New function.
+	(mime-find-field-decoder): New implementation (use
+	mime-find-field-decoder-internal).
+	(mime-decode-header-in-region): Use
+	`mime-find-field-presentation-method' and
+	`mime-find-field-decoder-internal'.
+
+1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Rename
+	field-presentation-mode `folding' to `wide'.
+
+	* eword-decode.el: Rename field-presentation-modes from `native',
+	`folding', `unfolding', `unfolding-xover' to `plain', `wide',
+	`summary', `nov'.
+
+1998-11-07  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (mime-set-field-decoder): Add mode `unfolding-xover'.
+	(mime-find-field-decoder): Ditto.
+
+1998-11-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-phrase-route-addr-to-rword-list):
+	Don't delete the front spaces.
+	(eword-encode-addresses-to-rword-list): Don't supplement space;
+	use `nconc' instead of `append'.
+	(eword-encode-msg-id-to-rword-list): Supplement the front space;
+	use `nconc' instead of `append'.
+
+1998-11-02  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (mime-field-decoder-cache): New variable.
+	(mime-find-field-decoder): Use `mime-field-decoder-cache'.
+	(mime-update-field-decoder-cache): New variable.
+	(mime-update-field-decoder-cache): New function.
+	(mime-decode-header-in-region): Use `mime-field-decoder-cache'.
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Use
+	`mime-field-decoder-cache'.
+
+1998-11-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (mime-decode-header-in-region): New function.
+	(mime-decode-header-in-buffer): Use function
+	`mime-decode-header-in-region'.
+
+1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Refer
+	`mime-field-decoder-alist' instead of hard-coding.
+
+	* mime.el (mime-read-field): Use `mime-decode-field-body'.
+
+	* eword-decode.el (eword-decode-and-unfold-structured-field): Add
+	optional dummy argument `start-column' and `max-column'.
+	(eword-decode-structured-field-body): Change interface.
+	(eword-decode-unstructured-field-body): Change interface to add
+	optional dummy argument `start-column' and `max-column'.
+	(eword-decode-and-unfold-unstructured-field): Add optional dummy
+	argument `start-column' and `max-column'.
+	(mime-field-decoder-alist): New variable; abolish user option
+	`eword-decode-ignored-field-list' and
+	`eword-decode-structured-field-list'.
+	(mime-set-field-decoder): New function.
+	(mime-find-field-decoder): New function.
+	(mime-decode-field-body): New function; abolish function
+	`eword-decode-field-body'.
+	(mime-decode-header-in-buffer): Renamed from
+	`eword-decode-header'; refer `mime-field-decoder-alist' instead of
+	hard-coding; add obsolete alias `eword-decode-header'.
+
 1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-def.el: Avoid compile error when ediff is missing.

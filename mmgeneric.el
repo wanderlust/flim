@@ -148,6 +148,8 @@
 					      &optional invisible-fields
 					      visible-fields)
   (let ((the-buf (current-buffer))
+	(mode-obj (mime-find-field-presentation-method 'wide))
+	field-decoder
 	f-b p f-e field-name len field field-body)
     (save-excursion
       (set-buffer buffer)
@@ -164,19 +166,15 @@
 				      visible-fields invisible-fields)
 	    (setq field (intern
 			 (capitalize (buffer-substring f-b (1- p))))
-		  field-body (buffer-substring p f-e))
+		  field-body (buffer-substring p f-e)
+		  field-decoder (inline (mime-find-field-decoder-internal
+					 field mode-obj)))
 	    (with-current-buffer the-buf
 	      (insert field-name)
-	      (insert
-	       (if (memq field eword-decode-ignored-field-list)
-		   ;; Don't decode
-		   field-body
-		 (if (memq field eword-decode-structured-field-list)
-		     ;; Decode as structured field
-		     (eword-decode-and-fold-structured-field field-body len)
-		   ;; Decode as unstructured field
-		   (eword-decode-unstructured-field-body field-body len)
-		   )))
+	      (insert (if field-decoder
+			  (funcall field-decoder field-body len)
+			;; Don't decode
+			field-body))
 	      (insert "\n")
 	      )))))))
 

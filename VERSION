@@ -37,7 +37,7 @@
 ;;	Ky-Dòto-A Line		$(B3`86@~(B
 ;;-------------------------------------------------------------------------
 	(Saidaiji)		($(B@>Bg;{(B)
------	Amagatsuji		$(BFt%vDT(B
+1.12.0	Amagatsuji		$(BFt%vDT(B
 -----	Nishinoky-Dò-A		$(B@>$N5~(B
 -----	Kuj-Dò-A			$(B6e>r(B
 -----	Kintetsu-K-Dòriyama-A	$(B6aE474;3(B
@@ -66,3 +66,11 @@
 1.11.3	Kitayama		$(BKL;3(B
 1.11.4	Matugasaki		$(B>>%v:j(B
 1.11.5	Kokusaikaikan		$(B9q:]2q4[(B
+
+;;-------------------------------------------------------------------------
+;;	West Japan Railway	$(B@>F|K\N95RE4F;(B	http://www.westjr.co.jp/
+;;	Nara Line	 	$(BF`NI@~(B
+;;-------------------------------------------------------------------------
+1.12.0	[JR] Ky-Dòto-A		$(B5~ET(B		; <=> $(B6aE4(B, $(B5~ET;T8rDL6I(B
+1.12.1	T-Dòfukuji-A		$(BElJ!;{(B		; <=> $(B5~:e(B
+1.12.2	Inari			$(B0p2Y(B
