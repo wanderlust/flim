@@ -76,6 +76,7 @@ This is relative to `smtpmail-queue-dir'.")
 ;;;
 ;;;
 
+;;;###autoload
 (defun smtpmail-send-it ()
   (require 'mail-utils)
   (let ((errbuf (if mail-interactive
@@ -207,12 +208,13 @@ This is relative to `smtpmail-queue-dir'.")
 		(or resend-to-addresses
 		    (smtp-deduce-address-list tembuf (point-min) delimline)))
 
-	  (smtp-do-bcc delimline)
+	  (smtpmail-do-bcc delimline)
 	  ; Send or queue
 	  (if (not smtpmail-queue-mail)
 	      (if smtpmail-recipient-address-list
-		  (if (not (smtp-via-smtp
-			    smtpmail-recipient-address-list tembuf))
+		  (if (not (smtp-via-smtp user-mail-address
+					  smtpmail-recipient-address-list
+					  tembuf))
 		      (error "Sending failed; SMTP protocol error"))
 		(error "Sending failed; no recipients"))
 	    (let* ((file-data (concat 
@@ -265,7 +267,8 @@ This is relative to `smtpmail-queue-dir'.")
 	(load file-msg)
 	(setq tembuf (find-file-noselect file-msg))
 	(if smtpmail-recipient-address-list
-	    (if (not (smtp-via-smtp smtpmail-recipient-address-list tembuf))
+	    (if (not (smtp-via-smtp user-mail-address
+				    smtpmail-recipient-address-list tembuf))
 		(error "Sending failed; SMTP protocol error"))
 	  (error "Sending failed; no recipients"))  
 	(delete-file file-msg)
@@ -276,6 +279,25 @@ This is relative to `smtpmail-queue-dir'.")
       (save-buffer smtpmail-queue-index)
       (kill-buffer buffer-index)
       )))
+
+
+(defun smtpmail-do-bcc (header-end)
+  "Delete BCC: and their continuation lines from the header area.
+There may be multiple BCC: lines, and each may have arbitrarily
+many continuation lines."
+  (let ((case-fold-search t))
+    (save-excursion
+      (goto-char (point-min))
+      ;; iterate over all BCC: lines
+      (while (re-search-forward "^BCC:" header-end t)
+	(delete-region (match-beginning 0) (progn (forward-line 1) (point)))
+	;; get rid of any continuation lines
+	(while (and (looking-at "^[ \t].*\n") (< (point) header-end))
+	  (replace-match ""))
+	)
+      ) ;; save-excursion
+    ) ;; let
+  )
 
 
 ;;;
