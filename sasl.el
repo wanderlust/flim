@@ -23,7 +23,16 @@
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
+
+;; This module provides common interface functions to share several
+;; SASL mechanism drivers.  The toplevel is designed to be mostly
+;; compatible with [Java-SASL].
 ;;
+;; [SASL] J. Myers, "Simple Authentication and Security Layer (SASL)",
+;;	RFC 2222, October 1997.
+;;
+;; [Java-SASL] R. Weltman & R. Lee, "The Java SASL Application Program
+;;	Interface", draft-weltman-java-sasl-03.txt, March 2000.
 
 ;;; Code:
 
@@ -141,7 +150,7 @@ Argument INSTANTIATOR is the instantiator instantiator."
 	(list function (funcall function instantiator challenge)))))
 
 (defvar sasl-read-passphrase nil)
-(defun sasl-read-passphrase (prompt &optional key)
+(defun sasl-read-passphrase (prompt)
   (if (not sasl-read-passphrase)
       (if (functionp 'read-passwd)
 	  (setq sasl-read-passphrase 'read-passwd)

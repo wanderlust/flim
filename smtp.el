@@ -368,9 +368,10 @@ of the host to connect to.  SERVICE is name of the service desired."
 	  (smtp-connection-process connection))
 	 (mechanisms
 	  (cdr (assq 'auth (smtp-connection-extensions connection))))
+	 (sasl-mechanisms
+	  (or smtp-sasl-mechanisms sasl-mechanisms))
 	 (authenticator
-	  (let ((sasl-mechanisms smtp-sasl-mechanisms))
-	    (sasl-find-authenticator mechanisms)))
+	  (sasl-find-authenticator mechanisms))
 	 instantiator
 	 mechanism
 	 sasl-response
