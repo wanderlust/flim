@@ -1,3 +1,7 @@
+2000-06-25  Kenichi OKADA <okada@opaopa.org>
+
+	* SLIM-VERION: Add code name.
+
 2000-06-24  Kenichi OKADA <okada@opaopa.org>
 
 	* mime-def.el (mime-library-product): Fix.
