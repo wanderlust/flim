@@ -236,11 +236,12 @@ FUNCTION is function to write decoded region to file.")
 (defun mime-write-decoded-region (start end filename encoding)
   "Decode and write current region encoded by ENCODING into FILENAME.
 START and END are buffer positions."
-  (list (region-beginning) (region-end)
-	(read-file-name "Write decoded region to file: ")
-	(completing-read "encoding: "
-			 mime-file-decoding-method-alist
-			 nil t "base64"))
+  (interactive
+   (list (region-beginning) (region-end)
+	 (read-file-name "Write decoded region to file: ")
+	 (completing-read "encoding: "
+			  mime-file-decoding-method-alist
+			  nil t "base64")))
   (let ((f (cdr (assoc encoding mime-file-decoding-method-alist))))
     (if f
 	(funcall f start end filename)
