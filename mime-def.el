@@ -167,8 +167,7 @@
 
 (defsubst mime-content-disposition-parameter (content-disposition parameter)
   "Return PARAMETER value of CONTENT-DISPOSITION."
-  (std11-strip-quoted-string
-   (cdr (assoc parameter (cdr content-disposition)))))
+  (cdr (assoc parameter (cdr content-disposition))))
 
 (defsubst mime-content-disposition-filename (content-disposition)
   "Return filename of CONTENT-DISPOSITION."
