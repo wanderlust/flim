@@ -36,8 +36,14 @@
 
 (defvar sasl-unique-id-function #'sasl-unique-id-function)
 
-(defmacro sasl-make-authenticator (mechanism continuations)
-  `(vector ,mechanism ,continuations))
+(defun sasl-make-authenticator (mechanism continuations)
+  (vector mechanism
+	  (mapcar
+	   (lambda (continuation)
+	     (let ((symbol (make-symbol (symbol-name continuation))))
+	       (fset symbol (symbol-function continuation))
+	       symbol))
+	   continuations)))
 
 (defmacro sasl-authenticator-mechanism-internal (authenticator)
   `(aref ,authenticator 0))
@@ -136,10 +142,6 @@ It contain at least 64 bits of entropy."
 (defconst sasl-plain-continuations
   '(sasl-plain-response))
 
-(unless (get 'sasl-plain 'sasl-authenticator)
-  (put 'sasl-plain 'sasl-authenticator
-       (sasl-make-authenticator "PLAIN" sasl-plain-continuations)))
-
 (defun sasl-plain-response (principal challenge)
   (let ((passphrase
 	 (sasl-read-passphrase
@@ -148,6 +150,9 @@ It contain at least 64 bits of entropy."
     (unwind-protect
 	(concat "\0" (sasl-principal-name-internal principal) "\0" passphrase)
       (fillarray passphrase 0))))
+
+(put 'sasl-plain 'sasl-authenticator
+     (sasl-make-authenticator "PLAIN" sasl-plain-continuations))
 
 (provide 'sasl-plain)
 

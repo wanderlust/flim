@@ -51,12 +51,8 @@
 
 (defconst sasl-digest-md5-continuations
   '(ignore				;no initial response
-    sasl-digest-md5-response-1
-    sasl-digest-md5-response-2))	;""
-
-(unless (get 'sasl-digest 'sasl-authenticator)
-  (put 'sasl-digest 'sasl-authenticator
-       (sasl-make-authenticator "DIGEST-MD5" sasl-digest-md5-continuations)))
+    sasl-digest-md5-response
+    ignore))				;""
 
 ;;; @ low level functions
 ;;;
@@ -151,7 +147,7 @@ charset algorithm cipher-opts auth-param)."
 		  '(charset qop maxbuf cipher authzid)))
     ",")))
 
-(defun sasl-digest-md5-response-1 (principal challenge)
+(defun sasl-digest-md5-response (principal challenge)
   (sasl-digest-md5-parse-digest-challenge (nth 1 challenge))
   (let ((passphrase
 	 (sasl-read-passphrase
@@ -171,7 +167,8 @@ charset algorithm cipher-opts auth-param)."
 	  (sasl-principal-server-internal principal)))
       (fillarray passphrase 0))))
 
-(defalias 'sasl-digest-md5-response-2 'ignore)
+(put 'sasl-digest 'sasl-authenticator
+     (sasl-make-authenticator "DIGEST-MD5" sasl-digest-md5-continuations))
 
 (provide 'sasl-digest)
 

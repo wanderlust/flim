@@ -34,10 +34,6 @@
   '(ignore				;no initial response
     sasl-cram-md5-response))
 
-(unless (get 'sasl-cram 'sasl-authenticator)
-  (put 'sasl-cram 'sasl-authenticator
-       (sasl-make-authenticator "CRAM-MD5" sasl-cram-md5-continuations)))
-
 (defun sasl-cram-md5-response (principal challenge)
   (let ((passphrase
 	 (sasl-read-passphrase
@@ -48,6 +44,9 @@
 		(encode-hex-string
 		 (hmac-md5 (nth 1 challenge) passphrase)))
       (fillarray passphrase 0))))
+
+(put 'sasl-cram 'sasl-authenticator
+     (sasl-make-authenticator "CRAM-MD5" sasl-cram-md5-continuations))
 
 (provide 'sasl-cram)
 
