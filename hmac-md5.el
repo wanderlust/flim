@@ -3,8 +3,6 @@
 ;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
-;;	Kenichi OKADA <okada@opaopa.org>
-;; Maintainer: Kenichi OKADA <okada@opaopa.org>
 ;; Keywords: HMAC, RFC 2104, HMAC-MD5, MD5, KEYED-MD5, CRAM-MD5
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -67,29 +65,34 @@
 
 (eval-when-compile (require 'hmac-def))
 (require 'hex-util)			; (decode-hex-string STRING)
+;; Kludge for Emacs pretest 21.0.90 - 21.0.100 !!!
+;; they have `md5' as a built-in function but do not provide 'md5.
+(eval-and-compile
+  (if (and (fboundp 'md5)
+	   (subrp (symbol-function 'md5)))
+      (provide 'md5)))
 (require 'md5)				; expects (md5 STRING)
 
-;; We cannot define this function in md5.el because recent XEmacs provides
-;; built-in md5 function and provides feature 'md5 at startup.
-(if (and (featurep 'xemacs)
-	 (fboundp 'md5)
-	 (subrp (symbol-function 'md5))
-	 (condition-case nil
-	     ;; `md5' of XEmacs 21 takes 4th arg CODING (and 5th arg NOERROR).
-	     (md5 "" nil nil 'binary)	; => "fb5d2156096fa1f254352f3cc3fada7e"
-	   (error nil)))
-    ;; XEmacs 21.
-    (defun md5-binary (string &optional start end)
-      "Return the MD5 of STRING in binary form."
-      (decode-hex-string (md5 string start end 'binary)))
-  ;; not XEmacs 21 and not DL.
-  (if (not (fboundp 'md5-binary))
-      (defun md5-binary (string)
-	"Return the MD5 of STRING in binary form."
-	(decode-hex-string (md5 string)))))
+;; To share *.elc files between Emacs w/ and w/o DL patch,
+;; this check must be done at load-time.
+(cond
+ ((fboundp 'md5-binary)
+  ;; do nothing.
+  )
+ ((condition-case nil
+       ;; `md5' of v21 takes 4th arg CODING (and 5th arg NOERROR).
+       (md5 "" nil nil 'binary)		; => "d41d8cd98f00b204e9800998ecf8427e"
+     (wrong-number-of-arguments nil))
+  (defun md5-binary (string)
+    "Return the MD5 of STRING in binary form."
+   (decode-hex-string (md5 string nil nil 'binary))))
+ (t
+  (defun md5-binary (string)
+    "Return the MD5 of STRING in binary form."
+   (decode-hex-string (md5 string)))))
 
 (define-hmac-function hmac-md5 md5-binary 64 16) ; => (hmac-md5 TEXT KEY)
-;; (define-hmac-function hmac-md5-96 md5-binary 64 16 96)
+(define-hmac-function hmac-md5-96 md5-binary 64 16 96)
 
 (provide 'hmac-md5)
 
