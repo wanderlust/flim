@@ -29,7 +29,7 @@
 
 (defconst lr-max-stack-size 500)
 
-(defun lr-push (stack sp new-cat goto-table lval)
+(defsubst lr-push (stack sp new-cat goto-table lval)
   (let* ((state     (aref stack sp))
 	 (new-state (cdr (assq new-cat (aref goto-table state))))
 	 (new-sp    (+ sp 2)))

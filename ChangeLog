@@ -1,5 +1,20 @@
 1998-08-19  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* Makefile: Add a rule for making `ew-parse.el'.
+
+	* ew-parse.scm: New file.
+
+	* lalr-el.scm: New file.
+
+	* lr-driver.el (lr-push): Now inlining.
+
+1998-08-19  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* ew-dec.el: Use 'decoded property instead of 'result for
+	decoded string.
+
+1998-08-19  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-parse.el: Use lookahead token.
 
 	* ew-data.el (ew-mark-phrase): Decode last token in phrase.

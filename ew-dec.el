@@ -75,7 +75,7 @@ instead of its argument."
     (setq frag1 (get frag-anchor 'prev-frag)
 	  tmp ())
     (while (not (eq frag1 frag-anchor))
-      (setq tmp (cons (or (get frag1 'result) (symbol-name frag1)) tmp)
+      (setq tmp (cons (or (get frag1 'decoded) (symbol-name frag1)) tmp)
 	    frag1 (get frag1 'prev-frag)))
     (apply 'concat tmp)))
 
@@ -94,7 +94,7 @@ instead of its argument."
 
 (defun ew-decode-none (anchor frag end eword-filter)
   (while (not (eq frag end))
-    (put frag 'result (funcall ew-decode-us-ascii (symbol-name frag)))
+    (put frag 'decoded (funcall ew-decode-us-ascii (symbol-name frag)))
     (setq frag (get frag 'next-frag))))
 
 (defun ew-decode-generic (anchor start end
@@ -124,22 +124,22 @@ instead of its argument."
 	    (setq ewords (ew-rcons* ewords f)
 		  frag f))
 	  (while (not (eq first frag))
-	    (put first 'result "")
+	    (put first 'decoded "")
 	    (setq first (get first 'next-frag)))
-	  (put frag 'result "")
+	  (put frag 'decoded "")
 	  (setq result (ew-rappend result
 				   (funcall decode-ewords
 					    (nreverse ewords)
 					    eword-filter)))))
        ((memq type all)
 	(setq buff (cons frag buff))
-	(put frag 'result ""))
+	(put frag 'decoded ""))
        (t
 	(error "unexpected token: %s (%s)" frag type)))
       (setq frag (get frag 'next-frag)))
     (when buff
       (setq result (ew-rappend result (funcall decode-others (nreverse buff)))))
-    (put start 'result
+    (put start 'decoded
 	 (apply 'ew-quote-concat (nreverse result)))
     ))
 

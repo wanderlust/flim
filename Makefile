@@ -19,7 +19,7 @@ GOMI	= *.elc
 FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 
-elc:
+elc: ew-parse.el
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR)
 
 install:	elc
@@ -49,3 +49,6 @@ release:
 	mv /tmp/$(PACKAGE)-$(VERSION).tar.gz /pub/GNU/elisp/flim/
 	cd /pub/GNU/elisp/semi/ ; \
 		ln -s ../flim/$(PACKAGE)-$(VERSION).tar.gz .
+
+ew-parse.el: ew-parse.scm lalr-el.scm
+	scm -f lalr-el.scm -f ew-parse.scm > states.output
