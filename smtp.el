@@ -464,10 +464,10 @@ of the host to connect to.  SERVICE is name of the service desired."
 	 response)
     (while recipients
       (smtp-send-command
-       process (format "RCPT TO:<%s>" (pop recipients))))
-    (setq response (smtp-read-response process))
-    (unless (memq (car response) '(250 251))
-      (smtp-response-error response))))
+       process (format "RCPT TO:<%s>" (pop recipients)))
+      (setq response (smtp-read-response process))
+      (unless (memq (car response) '(250 251))
+	(smtp-response-error response)))))
 
 (defun smtp-primitive-data (package)
   (let* ((connection
