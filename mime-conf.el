@@ -1,6 +1,6 @@
 ;;; mime-conf.el --- mailcap parser and MIME playback configuration
 
-;; Copyright (C) 1997,1998,1999,2000 Free Software Foundation, Inc.
+;; Copyright (C) 1997,1998,1999,2000,2004 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Created: 1997-06-27
@@ -222,7 +222,7 @@ may be:
 			    (error "'filename is not specified in situation.")
 			  (setq dest (concat dest
 					     (substring mtext p (1- i))
-					     file)
+					     (shell-quote-argument file))
 				i (1+ i)
 				p i)
 			  )))

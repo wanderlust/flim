@@ -1,3 +1,9 @@
+2004-05-24  Len Trigg  <lenbok@myrealbox.com>
+
+	* mime-conf.el (mime-format-mailcap-command): Quote a file name
+	which may contain spaces using `shell-quote-argument' in order to
+	pass it to the shell safely.
+
 2004-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* eword-encode.el (mime-encode-header-in-buffer): Don't ignore a
