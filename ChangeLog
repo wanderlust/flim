@@ -1,3 +1,8 @@
+1998-11-10  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* FLIM-ELS: require 'pccl.
+	(flim-modules): Check CCL availability by broken facility.
+
 1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-structured-field-body): New
