@@ -54,13 +54,13 @@
     (|| net-transaction-compose-||)))
 
 (defun net-transaction-compose-&& (left right)
-  "Multiplicative operator of current transaction LEFT and RIGHT."
+  "Multiplicative combinator which composes LEFT and RIGHT operations."
   `(lambda (trans)
      (let ((next (funcall #',left trans)))
        (funcall #',right next))))
 
 (defun net-transaction-compose-|| (left right)
-  "Additive operator of current transaction LEFT and RIGHT."
+  "Additive combinator which composes LEFT and RIGHT operations."
   `(lambda (trans)
      (let (next error)
        (setq error
