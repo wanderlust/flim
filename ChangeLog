@@ -1,3 +1,8 @@
+1999-02-26  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
+	1.12.4.
+
 1999-02-24  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-analyze-sticked-encoded-word): New variable.
