@@ -299,9 +299,9 @@ used as default value.
 
 <defvar name="default-mime-charset">
 <p>
-Symbol to indicate default value of <dref>MIME-charset</dref>.
+Symbol to indicate default value of <dref>MIME charset</dref>.
 <p>
-It is used when MIME-charset is not specified.
+It is used when MIME charset is not specified.
 <p>
 It is originally variable of APEL.
 </defvar>
