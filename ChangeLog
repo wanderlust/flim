@@ -1,5 +1,10 @@
 1998-09-17  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* mel-ccl.el (mel-ccl-decode-b): Cut bits over 8bit on last
+	byte.
+
+1998-09-17  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mel.el (mel-defgeneric): Remove `stems' argument.
 	(mel-stems): Exchange order between `external' and `internal'.
 	(mel-defgeneric): Obtain preference dynamicaly.

@@ -6,7 +6,7 @@
 ;; Created: 1998/9/17
 ;; Keywords: MIME, Base64, Quoted-Printable, Q-encoding
 
-;; This file is part of MEL (MIME Encoding Library).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -377,17 +377,19 @@ abcdefghijklmnopqrstuvwxyz\
 	    (write r7)
 	    (write-repeat r4))
 	   ;; error: BB=B 
-	   ((write r4)
+	   ((write (r4 & 255))
 	    (end))
 	   ;; BBB=
 	   ((r5 = r2 ,mel-ccl-decode-b-2-table)
 	    (r4 |= r5)
 	    (r4 >8= 0)
 	    (write r7)
-	    (write r4)
+	    (write (r4 & 255))
+	    (end)			; Excessive (end) is workaround for XEmacs 21.0.
+					; Without this, "AAA=" is converted to "^@^@^@".
 	    (end))
 	   ;; BB==
-	   ((write r4)
+	   ((write (r4 & 255))
 	    (end))))
        ((r4 >8= 0)
 	(write r7)
