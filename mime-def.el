@@ -402,13 +402,27 @@ specialized parameter.  (car (car ARGS)) is name of variable and (nth
 	 ))))
 
 (put 'mm-define-method 'lisp-indent-function 'defun)
-(def-edebug-spec mm-define-method
-  (&define name ((arg symbolp)
-		 [&rest arg]
-		 [&optional ["&optional" arg &rest arg]]
-		 &optional ["&rest" arg]
-		 )
-	   def-body))
+
+(eval-when-compile
+  (defmacro eval-module-depended-macro (module definition)
+    (condition-case nil
+	(progn
+	  (require (eval module))
+	  definition)
+      (error `(eval-after-load ,(symbol-name (eval module)) ',definition))
+      ))
+  )
+
+(eval-module-depended-macro
+ 'edebug
+ (def-edebug-spec mm-define-method
+   (&define name ((arg symbolp)
+		  [&rest arg]
+		  [&optional ["&optional" arg &rest arg]]
+		  &optional ["&rest" arg]
+		  )
+	    def-body))
+ )
 
 (defsubst mm-arglist-to-arguments (arglist)
   (let (dest)
