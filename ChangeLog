@@ -1,3 +1,8 @@
+2000-05-09  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtp.el (smtp-deduce-address-list): Set `case-fold-search' to `t'
+	in the working buffer.
+
 2000-03-15  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): Remove a
