@@ -1,5 +1,10 @@
 1998-09-10  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* mime-def.el (mime-library-version-string): bump up to
+	FLAM-DOODLE 1.9.3.
+
+1998-09-10  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* FLIM-ELS (flim-modules): Delete `ew-ccl'.
 
 	* ew-bq.el: Always use mel.

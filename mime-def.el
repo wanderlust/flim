@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-library-version-string
-  "FLAM-DOODLE 1.9.2 - \"真緋\" 10R6.0/11.0")
+  "FLAM-DOODLE 1.9.3 - \"纁\" 2.5YR7.0/11.0")
 
 
 ;;; @ variables
