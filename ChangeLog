@@ -1,5 +1,9 @@
 2000-11-05   Daiki Ueno  <ueno@unixuser.org>
 
+	* qmtp.el (qmtp-send-package): Don't check "K" reply per recipient.
+	(qmtp-via-smtp): Mark as obsolete.
+	(qmtp-send-buffer): New function.
+
 	* sasl.texi: New file.
 
 2000-11-05   Daiki Ueno  <ueno@unixuser.org>

@@ -24,7 +24,12 @@
 
 
 ;;; Commentary:
-;; 
+
+;; Installation:
+
+;; To send mail using QMTP instead of SMTP, do
+
+;; (fset 'smtp-via-smtp 'qmtp-via-qmtp)
 
 ;;; Code:
 
@@ -86,20 +91,30 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
 		 recipients "")))
     (process-send-region process (point-min)(point-max)))
   (goto-char qmtp-read-point)
-  (while recipients
-    (while (and (memq (process-status process) '(open run))
-		(not (re-search-forward "^[0-9]+:" nil 'noerror)))
-      (or (accept-process-output process qmtp-timeout)
-	  (error "timeout expired: %d" qmtp-timeout))
-      (goto-char qmtp-read-point))
-    (let ((response (char-after (match-end 0))))
-      (if (not (eq response ?K))
-	  (error (nth 1 (assq response qmtp-error-response-alist))))
-      (setq recipients (cdr recipients))
-      (beginning-of-line 2)
-      (setq qmtp-read-point (point)))))
+  (while (and (memq (process-status process) '(open run))
+	      (not (re-search-forward "^[0-9]+:" nil 'noerror)))
+    (unless (accept-process-output process qmtp-timeout)
+      (error "timeout expired: %d" qmtp-timeout))
+    (goto-char qmtp-read-point))
+  (let ((response (char-after (match-end 0))))
+    (unless (eq response ?K)
+      (error (nth 1 (assq response qmtp-error-response-alist))))
+    (setq recipients (cdr recipients))
+    (beginning-of-line 2)
+    (setq qmtp-read-point (point))))
 
-(defun qmtp-via-qmtp (sender recipients buffer)
+;;;###autoload
+(defun qmtp-via-smtp (sender recipients buffer)
+  (condition-case nil
+      (progn
+	(qmtp-send-buffer sender recipients buffer)
+	t)
+    (error)))
+
+(make-obsolete 'qmtp-via-smtp "It's old API.")
+
+;;;###autoload
+(defun qmtp-send-buffer (sender recipients buffer)
   (save-excursion
     (set-buffer
      (get-buffer-create
@@ -115,11 +130,7 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
 	     (setq process
 		   (funcall qmtp-open-connection-function
 			    "QMTP" (current-buffer) qmtp-server qmtp-service)))
-	    (condition-case nil
-		(progn
-		  (qmtp-send-package process sender recipients buffer)
-		  t)
-	      (error)))
+	    (qmtp-send-package process sender recipients buffer))
 	(when (and process
 		   (memq (process-status process) '(open run)))
 	  ;; QUIT
