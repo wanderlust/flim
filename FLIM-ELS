@@ -4,7 +4,8 @@
 
 ;;; Code:
 
-(setq flim-modules '(mime-def
+(setq flim-modules '(std11
+                     mime-def
 		     mel mel-dl mel-ccl mel-b mel-q mel-u mel-g
                      closure
                      natset
@@ -25,10 +26,8 @@
                      ew-scan-u
                      ew-scan-n
                      ew-dec
-		     std11
 		     eword-decode eword-encode
 		     mime mime-parse mmbuffer mmcooked
-		     ;; mime-lib
 		     mailcap
                      ))
 

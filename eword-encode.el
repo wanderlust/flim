@@ -5,7 +5,7 @@
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
 
-;; This file is part of SEMI (Spadework for Emacs MIME Interfaces).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -34,7 +34,11 @@
 ;;; @ variables
 ;;;
 
-(defvar eword-field-encoding-method-alist
+(defgroup eword-encode nil
+  "Encoded-word encoding"
+  :group 'mime)
+
+(defcustom eword-field-encoding-method-alist
   '(("X-Nsubject" . iso-2022-jp-2)
     ("Newsgroups" . nil)
     ("Message-ID" . nil)
@@ -52,7 +56,15 @@ If method is `default-mime-charset', this field will be encoded as
 variable `default-mime-charset' when it must be convert into
 network-code.
 
-If method is nil, this field will not be encoded.")
+If method is nil, this field will not be encoded."
+  :group 'eword-encode
+  :type '(repeat (cons (choice :tag "Field"
+			       (string :tag "Name")
+			       (const :tag "Default" t))
+		       (choice :tag "Method"
+			       (const :tag "MIME conversion" mime)
+			       (symbol :tag "non-MIME conversion")
+			       (const :tag "no-conversion" nil)))))
 
 (defvar eword-charset-encoding-alist
   '((us-ascii		. nil)
@@ -227,7 +239,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (reverse prev)
     ))
 
-(defun tm-eword::split-string (str &optional mode)
+(defun eword-encode-split-string (str &optional mode)
   (tm-eword::space-process
    (tm-eword::words-to-ruled-words
     (eword-encode-charset-words-to-words
@@ -324,7 +336,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (list string len rwl)
     ))
 
-(defun tm-eword::encode-rwl (column rwl)
+(defun eword-encode-rword-list (column rwl)
   (let (ret dest ps special str ew-f pew-f)
     (while rwl
       (setq ew-f (nth 2 (car rwl)))
@@ -377,7 +389,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ converter
 ;;;
 
-(defun tm-eword::phrase-to-rwl (phrase)
+(defun eword-encode-phrase-to-rword-list (phrase)
   (let (token type dest str)
     (while phrase
       (setq token (car phrase))
@@ -420,7 +432,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (tm-eword::space-process dest)
     ))
 
-(defun eword-addr-seq-to-rwl (seq)
+(defun eword-encode-addr-seq-to-rword-list (seq)
   (let (dest pname)
     (while seq
       (let* ((token (car seq))
@@ -434,7 +446,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		     (nconc
 		      dest
 		      (list (list "(" nil nil))
-		      (tm-eword::split-string (cdr token) 'comment)
+		      (eword-encode-split-string (cdr token) 'comment)
 		      (list (list ")" nil nil))
 		      ))
 	       )
@@ -462,7 +474,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
       )
     dest))
 
-(defun eword-phrase-route-addr-to-rwl (phrase-route-addr)
+(defun eword-encode-phrase-route-addr-to-rword-list (phrase-route-addr)
   (if (eq (car phrase-route-addr) 'phrase-route-addr)
       (let ((phrase (nth 1 phrase-route-addr))
 	    (route (nth 2 phrase-route-addr))
@@ -470,70 +482,94 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	(if (eq (car (car phrase)) 'spaces)
 	    (setq phrase (cdr phrase))
 	  )
-	(setq dest (tm-eword::phrase-to-rwl phrase))
+	(setq dest (eword-encode-phrase-to-rword-list phrase))
 	(if dest
 	    (setq dest (append dest '((" " nil nil))))
 	  )
 	(append
 	 dest
-	 (eword-addr-seq-to-rwl
+	 (eword-encode-addr-seq-to-rword-list
 	  (append '((specials . "<"))
 		  route
 		  '((specials . ">"))))
 	 ))))
 
-(defun eword-addr-spec-to-rwl (addr-spec)
+(defun eword-encode-addr-spec-to-rword-list (addr-spec)
   (if (eq (car addr-spec) 'addr-spec)
-      (eword-addr-seq-to-rwl (cdr addr-spec))
+      (eword-encode-addr-seq-to-rword-list (cdr addr-spec))
     ))
 
-(defun tm-eword::mailbox-to-rwl (mbox)
+(defun eword-encode-mailbox-to-rword-list (mbox)
   (let ((addr (nth 1 mbox))
 	(comment (nth 2 mbox))
 	dest)
-    (setq dest (or (eword-phrase-route-addr-to-rwl addr)
-		   (eword-addr-spec-to-rwl addr)
+    (setq dest (or (eword-encode-phrase-route-addr-to-rword-list addr)
+		   (eword-encode-addr-spec-to-rword-list addr)
 		   ))
     (if comment
 	(setq dest
 	      (append dest
 		      '((" " nil nil)
 			("(" nil nil))
-		      (tm-eword::split-string comment 'comment)
+		      (eword-encode-split-string comment 'comment)
 		      '((")" nil nil))
 		      )))
     dest))
 
-(defun tm-eword::addresses-to-rwl (addresses)
-  (let ((dest (tm-eword::mailbox-to-rwl (car addresses))))
+(defsubst eword-encode-addresses-to-rword-list (addresses)
+  (let ((dest (eword-encode-mailbox-to-rword-list (car addresses))))
     (if dest
 	(while (setq addresses (cdr addresses))
-	  (setq dest (append dest
-			     '(("," nil nil))
-			     '((" " nil nil))
-			     (tm-eword::mailbox-to-rwl (car addresses))
-			     ))
+	  (setq dest
+		(append dest
+			'(("," nil nil))
+			'((" " nil nil))
+			(eword-encode-mailbox-to-rword-list (car addresses))
+			))
 	  ))
     dest))
-
-(defun eword-encode-address-list (string &optional column)
-  (car (tm-eword::encode-rwl
-	(or column 0)
-	(tm-eword::addresses-to-rwl (std11-parse-addresses-string string))
-	)))
-
-(defun eword-encode-structured-field-body (string &optional column)
-  (car (tm-eword::encode-rwl
-	(or column 0)
-	(eword-addr-seq-to-rwl (std11-lexical-analyze string))
-	)))
 
 
 ;;; @ application interfaces
 ;;;
 
-(defun eword-encode-string (str &optional column mode)
-  (car (tm-eword::encode-rwl (or column 0) (tm-eword::split-string str mode))))
+(defcustom eword-encode-default-start-column 10
+  "Default start column if it is omitted."
+  :group 'eword-encode
+  :type 'integer)
+
+(defun eword-encode-string (string &optional column mode)
+  "Encode STRING as encoded-words, and return the result.
+Optional argument COLUMN is start-position of the field.
+Optional argument MODE allows `text', `comment', `phrase' or nil.
+Default value is `phrase'."
+  (car (eword-encode-rword-list
+	(or column eword-encode-default-start-column)
+	(eword-encode-split-string string mode))))
+
+(defun eword-encode-address-list (string &optional column)
+  "Encode header field STRING as list of address, and return the result.
+Optional argument COLUMN is start-position of the field."
+  (car (eword-encode-rword-list
+	(or column eword-encode-default-start-column)
+	(eword-encode-addresses-to-rword-list
+	 (std11-parse-addresses-string string))
+	)))
+
+(defun eword-encode-structured-field-body (string &optional column)
+  "Encode header field STRING as structured field, and return the result.
+Optional argument COLUMN is start-position of the field."
+  (car (eword-encode-rword-list
+	(or column eword-encode-default-start-column)
+	(eword-encode-addr-seq-to-rword-list (std11-lexical-analyze string))
+	)))
+
+(defun eword-encode-unstructured-field-body (string &optional column)
+  "Encode header field STRING as unstructured field, and return the result.
+Optional argument COLUMN is start-position of the field."
+  (car (eword-encode-rword-list
+	(or column eword-encode-default-start-column)
+	(eword-encode-split-string string 'text))))
 
 (defun eword-encode-field (string)
   "Encode header field STRING, and return the result.
@@ -554,21 +590,20 @@ encoded-word.  ASCII token is not encoded."
 				       From Sender
 				       Resent-Reply-To Resent-From
 				       Resent-Sender To Resent-To
-				       Cc Resent-Cc
-				       Bcc Resent-Bcc Dcc))
+				       Cc Resent-Cc Bcc Resent-Bcc
+				       Dcc))
                                (eword-encode-address-list
 				field-body (+ (length field-name) 2))
 			       )
 			      ((memq field-name-symbol
-				     '(Mime-Version User-Agent
-                                       In-Reply-To))
+				     '(In-Reply-To
+				       Mime-Version User-Agent))
                                (eword-encode-structured-field-body
 				field-body (+ (length field-name) 2))
 			       )
 			      (t
-                               (eword-encode-string field-body
-						    (1+ (length field-name))
-						    'text)
+                               (eword-encode-unstructured-field-body
+				field-body (1+ (length field-name)))
 			       ))
 			)
 		  (concat field-name ": " ret)

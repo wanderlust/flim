@@ -89,6 +89,10 @@ external decoder is called.")
  "Encode current region by base64." t)
 (autoload 'base64-internal-decode-region "mel-b"
  "Decode current region by base64." t)
+(autoload 'base64-internal-insert-encoded-file "mel-b"
+ "Encode contents of file to base64, and insert the result." t)
+(autoload 'base64-internal-write-decoded-region "mel-b"
+ "Decode and write current region encoded by base64 into FILENAME." t)
 
 (autoload 'base64-external-encode-string "mel-b"
  "Encode STRING to base64, and return the result.")
@@ -98,7 +102,6 @@ external decoder is called.")
  "Encode current region by base64." t)
 (autoload 'base64-external-decode-region "mel-b"
  "Decode current region by base64." t)
-
 (autoload 'base64-external-insert-encoded-file "mel-b"
  "Encode contents of file to base64, and insert the result." t)
 (autoload 'base64-external-write-decoded-region "mel-b"
@@ -214,24 +217,40 @@ external decoder is called.")
   (t
     (defalias 'base64-encode-string 'base64-internal-encode-string)))
 
+(defun base64-internal-external-decode-string (string)
+  "Decode STRING which is encoded in base64, and return the result.
+This function calls internal base64 decoder if size of STRING is
+smaller than `base64-internal-decoding-limit', otherwise it calls
+external base64 decoder specified by `base64-external-decoder'.  In
+this case, you must install the program (maybe mmencode included in
+metamail or XEmacs package)."
+  (interactive "r")
+  (if (and base64-internal-decoding-limit
+           (> (length string) base64-internal-decoding-limit))
+      (base64-external-decode-string string)
+    (base64-internal-decode-string string)))
+
 (cond
   ((fboundp 'base64-dl-decode-string)
     (defalias 'base64-decode-string 'base64-dl-decode-string))
   ((fboundp 'base64-ccl-decode-string)
     (defalias 'base64-decode-string 'base64-ccl-decode-string))
   (t
-    (defun base64-decode-string (string)
-      "Decode STRING which is encoded in base64, and return the result.
-This function calls internal base64 decoder if size of STRING is
-smaller than `base64-internal-decoding-limit', otherwise it calls
-external base64 decoder specified by `base64-external-decoder'.  In
+    (defalias 'base64-decode-string 'base64-internal-external-decode-string)))
+
+(defun base64-internal-external-encode-region (start end)
+  "Encode current region by base64.
+START and END are buffer positions.
+This function calls internal base64 encoder if size of region is
+smaller than `base64-internal-encoding-limit', otherwise it calls
+external base64 encoder specified by `base64-external-encoder'.  In
 this case, you must install the program (maybe mmencode included in
 metamail or XEmacs package)."
-      (interactive "r")
-      (if (and base64-internal-decoding-limit
-               (> (length string) base64-internal-decoding-limit))
-          (base64-external-decode-string string)
-        (base64-internal-decode-string string)))))
+  (interactive "r")
+  (if (and base64-internal-encoding-limit
+           (> (- end start) base64-internal-encoding-limit))
+      (base64-external-encode-region start end)
+    (base64-internal-encode-region start end)))
 
 (cond
   ((fboundp 'base64-dl-encode-region)
@@ -239,19 +258,21 @@ metamail or XEmacs package)."
   ((fboundp 'base64-ccl-encode-region)
     (defalias 'base64-encode-region 'base64-ccl-encode-region)) ; no fold
   (t
-    (defun base64-encode-region (start end)
-      "Encode current region by base64.
+    (defalias 'base64-encode-region 'base64-internal-external-encode-region))) ; LF fold
+
+(defun base64-internal-external-decode-region (start end)
+  "Decode current region by base64.
 START and END are buffer positions.
-This function calls internal base64 encoder if size of region is
-smaller than `base64-internal-encoding-limit', otherwise it calls
-external base64 encoder specified by `base64-external-encoder'.  In
+This function calls internal base64 decoder if size of region is
+smaller than `base64-internal-decoding-limit', otherwise it calls
+external base64 decoder specified by `base64-external-decoder'.  In
 this case, you must install the program (maybe mmencode included in
 metamail or XEmacs package)."
-      (interactive "r")
-      (if (and base64-internal-encoding-limit
-               (> (- end start) base64-internal-encoding-limit))
-          (base64-external-encode-region start end)
-        (base64-internal-encode-region start end))))) ; LF fold
+  (interactive "r")
+  (if (and base64-internal-decoding-limit
+           (> (- end start) base64-internal-decoding-limit))
+      (base64-external-decode-region start end)
+    (base64-internal-decode-region start end)))
 
 (cond
   ((fboundp 'base64-dl-decode-region)
@@ -259,31 +280,42 @@ metamail or XEmacs package)."
   ((fboundp 'base64-ccl-decode-region)
     (defalias 'base64-decode-region 'base64-ccl-decode-region))
   (t
-    (defun base64-decode-region (start end)
-      "Decode current region by base64.
-START and END are buffer positions.
-This function calls internal base64 decoder if size of region is
-smaller than `base64-internal-decoding-limit', otherwise it calls
-external base64 decoder specified by `base64-external-decoder'.  In
-this case, you must install the program (maybe mmencode included in
-metamail or XEmacs package)."
-      (interactive "r")
-      (if (and base64-internal-decoding-limit
-               (> (- end start) base64-internal-decoding-limit))
-          (base64-external-decode-region start end)
-        (base64-internal-decode-region start end)))))
+    (defalias 'base64-decode-region 'base64-internal-external-decode-region)))
+
+(defun base64-internal-external-insert-encoded-file (filename)
+  "Encode contents of file FILENAME to base64, and insert the result.
+It calls external base64 encoder specified by
+`base64-external-encoder'.  So you must install the program (maybe
+mmencode included in metamail or XEmacs package)."
+  (interactive (list (read-file-name "Insert encoded file: ")))
+  (if (and base64-internal-encoding-limit
+           (> (nth 7 (file-attributes filename))
+              base64-internal-encoding-limit))
+      (base64-external-insert-encoded-file filename)
+    (base64-internal-insert-encoded-file filename)))
 
 (cond
   ((fboundp 'base64-ccl-insert-encoded-file)
     (defalias 'base64-insert-encoded-file 'base64-ccl-insert-encoded-file))
   (t
-    (defalias 'base64-insert-encoded-file 'base64-external-insert-encoded-file)))
+    (defalias 'base64-insert-encoded-file 'base64-internal-external-insert-encoded-file)))
+
+(defun base64-internal-external-write-decoded-region (start end filename)
+  "Decode and write current region encoded by base64 into FILENAME.
+START and END are buffer positions."
+  (interactive
+   (list (region-beginning) (region-end)
+         (read-file-name "Write decoded region to file: ")))
+  (if (and base64-internal-decoding-limit
+           (> (- end start) base64-internal-decoding-limit))
+      (base64-external-write-decoded-region start end filename)
+    (base64-internal-write-decoded-region start end filename)))
 
 (cond
   ((fboundp 'base64-ccl-write-decoded-region)
     (defalias 'base64-write-decoded-region 'base64-ccl-write-decoded-region))
   (t
-    (defalias 'base64-write-decoded-region 'base64-external-write-decoded-region)))
+    (defalias 'base64-write-decoded-region 'base64-internal-external-write-decoded-region)))
 
 (cond
   (t

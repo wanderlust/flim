@@ -351,12 +351,11 @@ contains <var>entity</var>.
 <h2> Entity representations and implementations
 <node> mm-backend
 <p>
-Entity は抽象化されたデータ表現で、実際のデータ表現としては用途に応じて
-さまざまなものが利用できるように設計されています。
+Entity is an abstraction.  It is designed to use various data
+representations for their purposes.
 <p>
-ここで、entity がどういう種類の表現を行っているかを示すのが
-<concept>representation-type</concept> で、entity を生成する時にはこれを
-指定します。<cf node="Entity Creation">
+Each entity has <concept>representation-type</concept>.  It must be
+specified when an entity is created. <cf node="Entity Creation">
 <p>
 前節までに述べて来た entity に対する処理は、entity に対してその処理を依
 頼することによって実現されています。Entity は自分の 

@@ -1,3 +1,10 @@
+1998-09-01  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* Sync up with flim-1_9_1.
+
+	* mime-def.el (mime-library-version-string): bump up to
+	FLAM-DOODLE 1.9.2.
+
 1998-08-28  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ew-dec.el (ew-decode-field-test): Change column.
@@ -884,6 +891,119 @@
 1998-04-13  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el: Copied from AKEMI branch of SEMI.
+
+
+1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.9.1 (Tonosh.DNr) was released.*B
+
+	* mime-en.sgml (mm-backend): Translate a little.
+
+1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-default-start-column): New user
+	option.
+	(eword-encode-string): Use `eword-encode-default-start-column'.
+	(eword-encode-address-list): Likewise.
+	(eword-encode-structured-field-body): Likewise.
+	(eword-encode-unstructured-field-body): Likewise.
+
+1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode): New group.
+	(eword-field-encoding-method-alist): Now a user option (was:
+	variable).
+
+1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el: Rename `tm-eword::mailbox-to-rwl' ->
+	`eword-encode-mailbox-to-rword-list'.
+
+	* eword-encode.el: Rename `tm-eword::phrase-to-rwl' ->
+	`eword-encode-phrase-to-rword-list'.
+
+	* eword-encode.el: Rename `eword-addr-spec-to-rwl' ->
+	`eword-encode-addr-spec-to-rword-list'.
+
+	* eword-encode.el: Rename `eword-phrase-route-addr-to-rwl' ->
+	`eword-encode-phrase-route-addr-to-rword-list'.
+
+	* eword-encode.el: Rename `eword-addr-seq-to-rwl' ->
+	`eword-encode-addr-seq-to-rword-list'.
+
+	* eword-encode.el: Rename `tm-eword::split-string' ->
+	`eword-encode-split-string'.
+
+	* eword-encode.el: Rename `tm-eword::addresses-to-rwl' ->
+	`eword-encode-addresses-to-rword-list'.
+
+	* eword-encode.el: Rename `tm-eword::encode-rwl' ->
+	`eword-encode-rword-list'.
+
+	* eword-encode.el (eword-encode-unstructured-field-body): New
+	function.
+	(eword-encode-field): Use `eword-encode-unstructured-field-body'.
+
+1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-string): Add DOC-string.
+	(eword-encode-address-list): Likewise.
+	(eword-encode-structured-field-body): Likewise.
+
+	* eword-encode.el (eword-encode-field): Regard `In-Reply-To' as a
+	structured field.
+
+1998-08-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-field): Use `capitalize' instead
+ 	of `downcase' for `field-name'.
+
+	* eword-encode.el (eword-encode-structured-field-body): New
+ 	function.
+	(eword-encode-field): Use `eword-encode-structured-field-body' for
+ 	"MIME-Version" and "User-Agent" field.
+
+1998-08-26  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* mime-def.el (mm-define-method): Put `edebug-form-spec'.
+
+1998-08-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-address-list): New function.
+	(eword-encode-field): Use `eword-encode-address-list' instead of
+ 	`tm-eword::encode-address-list'; abolish
+ 	`tm-eword::encode-address-list'.
+
+	* eword-encode.el (eword-encode-field): Use `eword-encode-string'
+ 	instead of `tm-eword::encode-string'; abolish
+ 	`tm-eword::encode-string'.
+
+	* eword-encode.el: Rename `tm-eword::make-rword' ->
+ 	`make-ew-rword'; rename `tm-eword::rword-' -> `ew-rword-'.
+
+1998-08-26  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* mel-b.el (base64-insert-encoded-file): Conditionally use
+	internal converter. (cf. [tm-ja:3320])
+	(base64-write-decoded-region): Ditto.
+
+1998-08-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS (flim-modules): Don't add `mel-dl' unconditionally.
+
+1998-08-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* Delete mime-lib.el.
+
+1998-08-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmbuffer.el (write-entity): `write-region-as-CRLF' was renamed
+	to `write-region-as-raw-text-CRLF'.
+
+1998-08-07  MORIOKA Tomohiko  <morioka@yo.rim.or.jp>
+
+	* mmbuffer.el (write-entity): Use `write-region-as-CRLF' instead
+	of `write-region-as-binary'.
 
 
 1998-07-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>

@@ -205,35 +205,34 @@
   (save-excursion
     (save-restriction
       (narrow-to-region beg end)
-      (as-binary-process (apply (function call-process-region)
-				beg end (car base64-external-encoder)
-				t t nil (cdr base64-external-encoder))
-			 )
+      (as-binary-process
+       (apply (function call-process-region)
+	      beg end (car base64-external-encoder)
+	      t t nil (cdr base64-external-encoder)))
       ;; for OS/2
       ;;   regularize line break code
       (goto-char (point-min))
       (while (re-search-forward "\r$" nil t)
-	(replace-match "")
-	)
+	(replace-match ""))
       )))
 
 (defun base64-external-decode-region (beg end)
   (save-excursion
-    (as-binary-process (apply (function call-process-region)
-			      beg end (car base64-external-decoder)
-			      t t nil (cdr base64-external-decoder))
-		       )))
+    (as-binary-process
+     (apply (function call-process-region)
+	    beg end (car base64-external-decoder)
+	    t t nil (cdr base64-external-decoder)))
+    ))
 
 (defun base64-external-decode-string (string)
   (with-temp-buffer
     (insert string)
-    (as-binary-process (apply (function call-process-region)
-			      (point-min) (point-max)
-			      (car base64-external-decoder)
-			      t t nil (cdr base64-external-decoder))
-		       )
+    (as-binary-process
+     (apply (function call-process-region)
+	    (point-min) (point-max)
+	    (car base64-external-decoder)
+	    t t nil (cdr base64-external-decoder)))
     (buffer-string)))
-
 
 ;;; @ base64 encoder/decoder for file
 ;;;
@@ -245,8 +244,20 @@ It calls external base64 encoder specified by
 mmencode included in metamail or XEmacs package)."
   (interactive (list (read-file-name "Insert encoded file: ")))
   (apply (function call-process) (car base64-external-encoder)
-	 filename t nil (cdr base64-external-encoder))
+         filename t nil (cdr base64-external-encoder))
   )
+
+(defun base64-internal-insert-encoded-file (filename)
+  "Encode contents of file FILENAME to base64, and insert the result."
+  (interactive (list (read-file-name "Insert encoded file: ")))
+  (insert
+   (base64-internal-encode-string
+    (with-temp-buffer
+      (insert-file-contents-as-binary filename)
+      (buffer-string))))
+  (or (bolp)
+      (insert "\n"))
+   )
 
 (defun base64-external-write-decoded-region (start end filename)
   "Decode and write current region encoded by base64 into FILENAME.
@@ -256,13 +267,22 @@ START and END are buffer positions."
 	 (read-file-name "Write decoded region to file: ")))
   (as-binary-process
    (apply (function call-process-region)
-	  start end (car base64-external-decoder)
-	  nil nil nil
-	  (append (cdr base64-external-decoder)
-		  base64-external-decoder-option-to-specify-file
-		  (list filename))
-	  )))
+          start end (car base64-external-decoder)
+          nil nil nil
+          (append (cdr base64-external-decoder)
+                  base64-external-decoder-option-to-specify-file
+                  (list filename)))))
 
+(defun base64-internal-write-decoded-region (start end filename)
+  "Decode and write current region encoded by base64 into FILENAME.
+START and END are buffer positions."
+  (interactive
+   (list (region-beginning) (region-end)
+	 (read-file-name "Write decoded region to file: ")))
+  (let ((str (buffer-substring start end)))
+    (with-temp-buffer
+      (insert (base64-internal-decode-string str))
+      (write-region-as-binary (point-min) (point-max) filename))))
 
 ;;; @ etc
 ;;;

@@ -3,7 +3,7 @@
 #
 
 PACKAGE = flim
-VERSION = 1.9.0
+VERSION = 1.9.1
 
 TAR	= tar
 RM	= /bin/rm -f
@@ -55,7 +55,6 @@ ew-parse.el: ew-parse.scm lalr-el.scm
 
 check:
 	$(EMACS) $(FLAGS_CURDIR) -l ./TESTPAT -eval '(report)'
-
 
 # The file BENCHMARK is not a part of FLAM-DOODLE because it is so large.
 benchmark:
