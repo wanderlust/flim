@@ -217,7 +217,6 @@ If is is not found, return DEFAULT-ENCODING."
      ))
   entity)
 
-;;;###autoload
 (defun mime-parse-message (&optional default-ctl representation-type
 				     parent node-id)
   "Parse current-buffer as a MIME message.
