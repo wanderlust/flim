@@ -420,8 +420,7 @@ don't define this value."
 
 (defun smtp-deduce-address-list (smtp-text-buffer header-start header-end)
   "Get address list suitable for smtp RCPT TO:<address>."
-  (let ((case-fold-search t)
-	(simple-address-list "")
+  (let ((simple-address-list "")
 	this-line
 	this-line-end
 	addr-regexp
@@ -430,6 +429,7 @@ don't define this value."
 	(save-excursion
 	  ;;
 	  (set-buffer smtp-address-buffer)
+	  (setq case-fold-search t)
 	  (erase-buffer)
 	  (insert (save-excursion
 		    (set-buffer smtp-text-buffer)
