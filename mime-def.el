@@ -249,28 +249,16 @@
 		(cdr args)))
     `(luna-define-method ,name ,args ,@body)
     ))
+
 (put 'mm-define-method 'lisp-indent-function 'defun)
 
-(eval-when-compile
-  (defmacro eval-module-depended-macro (module definition)
-    (condition-case nil
-	(progn
-	  (require (eval module))
-	  definition)
-      (error `(eval-after-load ,(symbol-name (eval module)) ',definition))
-      ))
-  )
-
-(eval-module-depended-macro
- 'edebug
- (def-edebug-spec mm-define-method
-   (&define name ((arg symbolp)
-		  [&rest arg]
-		  [&optional ["&optional" arg &rest arg]]
-		  &optional ["&rest" arg]
-		  )
-	    def-body))
- )
+(def-edebug-spec mm-define-method
+  (&define name ((arg symbolp)
+		 [&rest arg]
+		 [&optional ["&optional" arg &rest arg]]
+		 &optional ["&rest" arg]
+		 )
+	   def-body))
 
 
 ;;; @ message structure
