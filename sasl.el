@@ -23,6 +23,9 @@
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
+;;
+
+;;; Code:
 
 (require 'poe)
 
@@ -35,15 +38,6 @@
     ("PLAIN" sasl-plain)))
 
 (defvar sasl-unique-id-function #'sasl-unique-id-function)
-
-(defun sasl-make-authenticator (mechanism continuations)
-  (vector mechanism
-	  (mapcar
-	   (lambda (continuation)
-	     (let ((symbol (make-symbol (symbol-name continuation))))
-	       (fset symbol (symbol-function continuation))
-	       symbol))
-	   continuations)))
 
 (defmacro sasl-authenticator-mechanism-internal (authenticator)
   `(aref ,authenticator 0))
@@ -66,6 +60,18 @@
 (defmacro sasl-principal-server-internal (principal)
   `(aref ,principal 3))
 
+(defun sasl-make-authenticator (mechanism continuations)
+  "Make an authenticator.
+MECHANISM is a IANA registered SASL mechanism name.
+CONTINUATIONS is list of continuation function."
+  (vector mechanism
+	  (mapcar
+	   (lambda (continuation)
+	     (let ((symbol (make-symbol (symbol-name continuation))))
+	       (fset symbol (symbol-function continuation))
+	       symbol))
+	   continuations)))
+
 (defun sasl-find-authenticator (mechanisms)
   "Retrieve an apropriate authenticator object from MECHANISMS hints."
   (let* ((sasl-mechanisms sasl-mechanisms)
@@ -82,8 +88,12 @@
 
 (defun sasl-evaluate-challenge (authenticator principal &optional challenge)
   "Evaluate the challenge and prepare an appropriate next response.
-The data type of the value and the CHALLENGE is nil or a cons cell of the form
-\(CONTINUATION STRING).  At the first time CONTINUATION should be set to nil."
+The data type of the value and optional 3rd argument CHALLENGE is nil or
+a cons cell of the form \(CONTINUATION STRING).
+At the first time CONTINUATION should be set to nil.
+
+Argument AUTHENTICATOR is the current evaluator.
+Argument PRINCIPAL is the client principal."
   (let* ((continuations
 	  (sasl-authenticator-continuations-internal authenticator))
 	 (function

@@ -25,6 +25,10 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
+
+;;; Commentary:
+;; 
+
 ;;; Code:
 
 (require 'pces)
@@ -45,14 +49,15 @@
   :group 'smtp)
 
 (defcustom smtp-server (or (getenv "SMTPSERVER") smtp-default-server)
-  "The name of the host running SMTP server.  It can also be a function
+  "The name of the host running SMTP server.
+It can also be a function
 called from `smtp-via-smtp' with arguments SENDER and RECIPIENTS."
   :type '(choice (string :tag "Name")
 		 (function :tag "Function"))
   :group 'smtp)
 
 (defcustom smtp-service "smtp"
-  "SMTP service port number. \"smtp\" or 25."
+  "SMTP service port number.  \"smtp\" or 25."
   :type '(choice (integer :tag "25" 25)
                  (string :tag "smtp" "smtp"))
   :group 'smtp)
@@ -121,18 +126,28 @@ don't define this value."
 ;;; anywhere from the hook methods (or SMTP commands).
 
 (defmacro smtp-package-sender-internal (package)
+  "Return the sender of PACKAGE, a string."
   `(aref ,package 0))
 
 (defmacro smtp-package-recipients-internal (package)
+  "Return the recipients of PACKAGE, a list of strings."
   `(aref ,package 1))
 
 (defmacro smtp-package-buffer-internal (package)
+  "Return the data of PACKAGE, a buffer."
   `(aref ,package 2))
 
 (defmacro smtp-make-package (sender recipients buffer)
+  "Create a new package structure.
+A package is a unit of SMTP message which contains a mail message,
+an envelope sender address, and one or more envelope recipient addresses.
+SENDER specifies the package sender, a string.
+RECIPIENTS is a list of recipients.
+BUFFER may be a buffer or a buffer name which contains mail message."
   `(vector ,sender ,recipients ,buffer))
 
 (defun smtp-package-buffer-size (package)
+  "Return the size of PACKAGE, an integer."
   (save-excursion
     (set-buffer (smtp-package-buffer-internal package))
     (let ((size
@@ -156,21 +171,31 @@ don't define this value."
 ;;; `process-contact' returns the process ID instead of `(HOST SERVICE)' pair.
 
 (defmacro smtp-connection-process-internal (connection)
+  "Return the subprocess-object of CONNECTION."
   `(aref ,connection 0))
 
 (defmacro smtp-connection-server-internal (connection)
+  "Return the server of CONNECTION, a string."
   `(aref ,connection 1))
 
 (defmacro smtp-connection-service-internal (connection)
+  "Return the service of CONNECTION, a string or an integer."
   `(aref ,connection 2))
 
 (defmacro smtp-connection-extensions-internal (connection)
+  "Return the SMTP extensions of CONNECTION, a list of strings."
   `(aref ,connection 3))
 
 (defmacro smtp-connection-set-extensions-internal (connection extensions)
+  "Set the SMTP extensions of CONNECTION.
+EXTENSIONS is a list of cons cells of the form \(EXTENSION . PARAMETERS).
+Where EXTENSION is a symbol and PARAMETERS is a list of strings."
   `(aset ,connection 3 ,extensions))
 
 (defmacro smtp-make-connection (process server service)
+  "Create a new connection structure.
+PROCESS is an internal subprocess-object.  SERVER is name of the host
+to connect to.  SERVICE is name of the service desired."
   `(vector ,process ,server ,service nil))
 
 (defun smtp-connection-opened (connection)
@@ -195,8 +220,7 @@ don't define this value."
        ((string-match "[^.]\\.[^.]" system-name)
 	system-name)
        (t
-	(error "Cannot generate valid FQDN. Set `smtp-fqdn' \
-or `smtp-local-domain' correctly."))))))
+	(error "Cannot generate valid FQDN"))))))
 
 (defun smtp-find-connection (buffer)
   "Find the connection delivering to BUFFER."
@@ -215,6 +239,10 @@ or `smtp-local-domain' correctly."))))))
   (autoload 'starttls-negotiate "starttls"))
 
 (defun smtp-open-connection (buffer server service)
+  "Open a SMTP connection for a service to a host.
+Return a newly allocated connection-object.
+BUFFER is the buffer to associate with the connection.  SERVER is name
+of the host to connect to.  SERVICE is name of the service desired."
   (let ((process
 	 (as-binary-process
 	  (funcall smtp-open-connection-function
@@ -230,6 +258,16 @@ or `smtp-local-domain' correctly."))))))
 
 ;;;###autoload
 (defun smtp-via-smtp (sender recipients buffer)
+  (condition-case nil
+      (progn
+	(smtp-send-buffer sender recipients buffer)
+	t)
+    (smtp-response-error)))
+
+(make-obsolete 'smtp-via-smtp "It's old API.")
+
+;;;###autoload
+(defun smtp-send-buffer (sender recipients buffer)
   (let ((server
 	 (if (functionp smtp-server)
 	     (funcall smtp-server sender recipients)
@@ -250,11 +288,7 @@ or `smtp-local-domain' correctly."))))))
 	(smtp-open-connection (current-buffer) server smtp-service))
       (make-local-variable 'smtp-read-point)
       (setq smtp-read-point (point-min))
-      (condition-case nil
-	  (progn
-	    (funcall smtp-submit-package-function package)
-	    t)
-	(smtp-response-error)))))
+      (funcall smtp-submit-package-function package))))
 
 (defun smtp-submit-package (package)
   (unwind-protect
@@ -278,7 +312,7 @@ or `smtp-local-domain' correctly."))))))
 	(smtp-close-connection connection)))))
 
 ;;; @ hook methods for `smtp-submit-package'
-;;;
+;;
 (defun smtp-primitive-greeting (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
@@ -343,15 +377,14 @@ or `smtp-local-domain' correctly."))))))
 	    (sasl-find-authenticator mechanisms)))
 	 mechanism sasl-response response)
     (unless authenticator
-      (error "No authentication mechanism available."))
+      (error "No authentication mechanism available"))
     (setq mechanism (sasl-authenticator-mechanism-internal authenticator)
 	  ;; Retrieve the initial response
 	  sasl-response (sasl-evaluate-challenge authenticator principal))
     (smtp-send-command
      process
      (if (nth 1 sasl-response)
-	 (format "AUTH %s %s" mechanism (base64-encode-string
-					 (nth 1 sasl-response) t))
+	 (format "AUTH %s %s" mechanism (base64-encode-string (nth 1 sasl-response) t))
        (format "AUTH %s" mechanism)))
     (catch 'done
       (while t
