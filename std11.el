@@ -39,11 +39,12 @@
 (defconst std11-next-field-head-regexp
   (concat "\n" std11-field-name-regexp ":"))
 
-(defun std11-field-end ()
-  "Move to end of field and return this point."
-  (if (re-search-forward std11-next-field-head-regexp nil t)
+(defun std11-field-end (&optional bound)
+  "Move to end of field and return this point.
+The optional argument BOUNDs the search; it is a buffer position."
+  (if (re-search-forward std11-next-field-head-regexp bound t)
       (goto-char (match-beginning 0))
-    (if (re-search-forward "^$" nil t)
+    (if (re-search-forward "^$" bound t)
 	(goto-char (1- (match-beginning 0)))
       (end-of-line)
       ))
