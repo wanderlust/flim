@@ -1,6 +1,7 @@
 ;;; mime-def.el --- definition module about MIME -*- coding: iso-8859-4; -*-
 
-;; Copyright (C) 1995,96,97,98,99,2000,2001,2002 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,2001,2002,2003
+;;   Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
@@ -82,7 +83,7 @@
   :type '(choice (integer :tag "Limit (bytes)")
 		 (const :tag "Don't limit" nil)))
 
-(defcustom mime-header-accept-quoted-encoded-words t
+(defcustom mime-header-accept-quoted-encoded-words nil
   "*Accept encoded-words in quoted-strings."
   :group 'mime-header
   :type 'boolean)
