@@ -124,6 +124,25 @@ external decoder is called.")
 	    )))
       )))
 
+(defun quoted-printable-internal-decode-region (beg end)
+  (save-excursion
+    (save-restriction
+      (narrow-to-region beg end)
+      (goto-char (point-min))
+      (while (re-search-forward "=\n" nil t)
+	(replace-match "")
+	)
+      (goto-char (point-min))
+      (let (b e str)
+	(while (re-search-forward quoted-printable-octet-regexp nil t)
+	  (setq b (match-beginning 0))
+	  (setq e (match-end 0))
+	  (setq str (buffer-substring b e))
+	  (delete-region b e)
+	  (insert (quoted-printable-decode-string str))
+	  ))
+      )))
+
 (cond ((boundp 'MULE)
        (define-program-coding-system
 	 nil (car quoted-printable-external-encoder) *noconv*)
