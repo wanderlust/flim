@@ -1,5 +1,10 @@
 1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* README.en (Installation): Fix typo.
+
+
+1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* FLIM: Version 1.9.2 (Shin-Tanabe) was released.
 
 	* README.en (Installation): Add `install as a XEmacs package'.
