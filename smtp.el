@@ -6,6 +6,7 @@
 ;;         Simon Leinen <simon@switch.ch> (ESMTP support)
 ;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;;         Kenichi OKADA <okada@opaopa.org> (SASL support)
+;;         Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
 ;; Keywords: SMTP, mail, SASL
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -84,6 +85,19 @@ don't define this value."
  to user (RFC1891)."
   :type 'boolean
   :group 'smtp)
+
+(defcustom smtp-authentication-type nil
+  "*SMTP authentication mechanism (RFC2554)."
+  :type 'symbol
+  :group 'smtp)
+
+(defvar smtp-authentication-user nil)
+(defvar smtp-authentication-passphrase nil)
+
+(defcustom smtp-connection-type nil
+  "*SMTP connection type."
+  :type '(choice (const nil) (const :tag "TLS" starttls))
+  :group 'smtp)
  
 (defvar smtp-read-point nil)
 
@@ -98,8 +112,7 @@ don't define this value."
      (t
       (error "Cannot generate valid FQDN. Set `smtp-local-domain' correctly.")))))
 
-(defun smtp-via-smtp (sender recipients smtp-text-buffer
-			     &optional auth user passphrase starttls)
+(defun smtp-via-smtp (sender recipients smtp-text-buffer)
   (let ((server (if (functionp smtp-server)
 		    (funcall smtp-server sender recipients)
 		  smtp-server))
@@ -115,7 +128,7 @@ don't define this value."
       (unwind-protect
 	  (catch 'done
 	    (setq process 
-		  (if starttls
+		  (if smtp-connection-type
 		      (starttls-open-stream
 		       "SMTP" (current-buffer) server smtp-service)
 		    (open-network-stream-as-binary
@@ -124,7 +137,7 @@ don't define this value."
 
 	    (set-process-filter process 'smtp-process-filter)
 
-	    (if (eq starttls 'force)
+	    (if (eq smtp-connection-type 'force)
 		(starttls-negotiate process))
 
 	    ;; Greeting
@@ -163,8 +176,8 @@ don't define this value."
 		  (setq extension-lines (cdr extension-lines)))))
 
 	    ;; STARTTLS --- begin a TLS negotiation (RFC 2595)
-	    (when (and starttls 
-		       (null (eq starttls 'force))
+	    (when (and smtp-connection-type 
+		       (null (eq smtp-connection-type 'force))
 		       (memq 'starttls extensions))
 	      (smtp-send-command process "STARTTLS")
 	      (setq response (smtp-read-response process))
@@ -175,12 +188,13 @@ don't define this value."
 	      (starttls-negotiate process))
 
 	    ;; AUTH --- SMTP Service Extension for Authentication (RFC2554)
-	    (when auth
-	      (if (null (memq (intern auth) extensions))
+	    (when smtp-authentication-type
+	      (if (null (memq (intern smtp-authentication-type) extensions))
 		  (throw 'done 
-			 (concat "AUTH mechanism " auth " not available")))
+			 (concat "AUTH mechanism "
+				 smtp-authentication-type " not available")))
 	      
-	      (cond ((string= "cram-md5" auth)
+	      (cond ((string= "cram-md5" smtp-authentication-type)
 		     (smtp-send-command process "AUTH CRAM-MD5")
 		     (setq response (smtp-read-response process))
 		     (if (or (null (car response))
@@ -191,7 +205,7 @@ don't define this value."
 		      process
 		      (base64-encode-string
 		       (sasl-cram-md5
-			user passphrase 
+			smtp-authentication-user smtp-authentication-passphrase 
 			(base64-decode-string
 			 (substring (car (cdr response)) 4)))))
 		     (setq response (smtp-read-response process))
@@ -200,12 +214,12 @@ don't define this value."
 			     (>= (car response) 400))
 			 (throw 'done (car (cdr response)))))
 
-		    ((string= "plain" auth)
-		     (let ((enc-word (copy-sequence passphrase)))
+		    ((string= "plain" smtp-authentication-type)
+		     (let ((enc-word (copy-sequence smtp-authentication-passphrase)))
 		       (smtp-send-command
 			process
 			(setq enc-word (unwind-protect
-					   (sasl-plain "" user enc-word)
+					   (sasl-plain "" smtp-authentication-user enc-word)
 					 (fillarray enc-word 0))
 			      enc-word (unwind-protect
 					   (base64-encode-string enc-word)
@@ -220,10 +234,10 @@ don't define this value."
 			     (>= (car response) 400))
 			 (throw 'done (car (cdr response)))))
 
-		    ((string= "login" auth)
+		    ((string= "login" smtp-authentication-type)
 		     (smtp-send-command
 		      process
-		      (concat "AUTH LOGIN " user))
+		      (concat "AUTH LOGIN " smtp-authentication-user))
 		     (setq response (smtp-read-response process))
 		     (if (or (null (car response))
 			     (not (integerp (car response)))
@@ -231,7 +245,7 @@ don't define this value."
 			 (throw 'done (car (cdr response))))
 		     (smtp-send-command
 		      process
-		      (base64-encode-string passphrase))
+		      (base64-encode-string smtp-authentication-passphrase))
 		     (setq response (smtp-read-response process))
 		     (if (or (null (car response))
 			     (not (integerp (car response)))
@@ -239,7 +253,8 @@ don't define this value."
 			 (throw 'done (car (cdr response)))))
 
 		    (t
-		     (throw 'done (concat "AUTH " auth " not supported")))))
+		     (throw 'done (concat "AUTH "
+					  smtp-authentication-type " not supported")))))
 
 	    ;; ONEX --- One message transaction only (sendmail extension?)
 	    (if (or (memq 'onex extensions)

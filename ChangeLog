@@ -1,3 +1,16 @@
+1999-10-22  Kenichi OKADA <okada@opaopa.org>
+
+        * smtp.el (smtp-via-smtp): Fix to use `smtp-authentication-type',
+	`smtp-authentication-user', `smtp-authentication-passphrase' and
+	`smtp-connection-type'.
+
+1999-10-22  Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
+
+        * smtp.el (smtp-authentication-type): New variable.
+        (smtp-authentication-user): New variable.
+        (smtp-authentication-passphrase): New variable.
+        (smtp-connection-type): New variable.
+
 1999-10-20  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.13.1 released.
