@@ -1,3 +1,11 @@
+1998-04-23  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-ignored-field-list): Add
+	`received'.
+	
+	* mel.el (mime-temp-directory): Use TMPDIR, TMP, or TEMP
+	environment variables.
+
 1998-04-23  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-encoded-word-prefix-regexp): New constant.

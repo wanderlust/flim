@@ -36,6 +36,9 @@
 
 (defvar mime-temp-directory (or (getenv "MIME_TMP_DIR")
 				(getenv "TM_TMP_DIR")
+				(getenv "TMPDIR")
+				(getenv "TMP")
+				(getenv "TEMP")
 				"/tmp/")
   "*Directory for temporary files.")
 
