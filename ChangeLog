@@ -1,3 +1,14 @@
+1998-06-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS (flim-modules): Add `mime-lib'.
+
+	* mime-lib.el: New module.
+
+	* mime-def.el (mime-entity): Add new slots for original-header and
+	parsed-header.
+	(mime-entity-set-original-header): New function.
+	(mime-entity-set-parsed-header): New function.
+
 1998-06-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-def.el (mime-entity-number): New function (moved from SEMI
