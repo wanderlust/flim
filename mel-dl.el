@@ -96,7 +96,7 @@ START and END are buffer positions."
   "*list of base64 decoder program name and its arguments.")
 
 (defvar base64-external-decoder-option-to-specify-file '("-o")
-  "*list of option of base64 decoder program to specify file.")
+  "*list of options of base64 decoder program to specify file.")
 
 (defun base64-insert-encoded-file (filename)
   "Encode contents of file FILENAME to base64, and insert the result.
