@@ -1,3 +1,9 @@
+2004-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* eword-encode.el (mime-encode-header-in-buffer): Don't ignore a
+	space char at the beginning of a field body in order to honor the
+	76-column rule which is described in RFC 2047 section 2.
+
 2004-04-15  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* eword-decode.el (eword-decode-encoded-text): Fix bug when
