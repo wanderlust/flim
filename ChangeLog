@@ -1,3 +1,9 @@
+1998-08-07  MORIOKA Tomohiko  <morioka@yo.rim.or.jp>
+
+	* mmbuffer.el (write-entity): Use `write-region-as-CRLF' instead
+	of `write-region-as-binary'.
+
+
 1998-07-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.9.0 (Terada) was released.
