@@ -26,15 +26,6 @@
 
 (eval-when-compile (require 'cl))
 
-(eval-when-compile (require 'static))
-
-(static-condition-case nil
-    :symbol-for-testing-whether-colon-keyword-is-available-or-not
-  (void-variable
-   (defconst :before ':before)
-   (defconst :after ':after)
-   (defconst :around ':around)))
-
 
 ;;; @ class
 ;;;
@@ -64,13 +55,6 @@ If SLOTS is specified, TYPE will be defined to have them."
 			       ',slots))
 
 (defun luna-define-class-function (type &optional parents slots)
-  (static-condition-case nil
-      :symbol-for-testing-whether-colon-keyword-is-available-or-not
-    (void-variable
-     (let (key)
-       (dolist (slot slots)
-	 (setq key (intern (format ":%s" slot)))
-	 (set key key)))))
   (let ((oa (make-vector 31 0))
 	(rest parents)
 	parent name

@@ -1,3 +1,8 @@
+2000-11-28   Daiki Ueno  <ueno@unixuser.org>
+
+	* luna.el: Don't require `static'.
+	(luna-define-class-function): Don't bind colon keywords.
+
 2000-11-21   Daiki Ueno  <ueno@unixuser.org>
 
 	* sasl.el (sasl-client-set-encoder): New function.
