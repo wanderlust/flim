@@ -202,7 +202,7 @@ It calls external quoted-printable encoder specified by
 	  (setq e (match-end 0))
 	  (setq str (buffer-substring b e))
 	  (delete-region b e)
-	  (insert (quoted-printable-decode-string str))
+	  (insert (string-as-multibyte (quoted-printable-decode-string str)))
 	  ))
       )))
 
