@@ -40,8 +40,14 @@
 (luna-define-generic transaction-error-name (trans)
   "Return error symbol of the TRANSACTION.")
 
+(luna-define-generic transaction-error (trans error)
+  "Throw an ERROR of the TRANSACTION.")
+
 (luna-define-method transaction-error-name ((trans transaction))
   (intern (format "%s-error" (luna-class-name trans))))
+
+(luna-define-method transaction-error ((trans transaction) error)
+  (throw (transaction-error-name trans) error))
 
 (defvar transaction-combinator-alist
   '((&& transaction-compose-&&)
