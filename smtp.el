@@ -34,14 +34,14 @@
 
 (eval-when-compile (require 'cl))	; push
 
-(require 'net-trans)
+(require 'tram)
 
 (eval-and-compile
-  (luna-define-class smtp-transaction (net-transaction)
+  (luna-define-class smtp-stream (tram-stream)
 		     (process
 		      extensions))
 
-  (luna-define-internal-accessors 'smtp-transaction))
+  (luna-define-internal-accessors 'smtp-stream))
 
 (defgroup smtp nil
   "SMTP protocol for sending mail."
@@ -83,7 +83,7 @@ don't define this value."
   :type 'boolean
   :group 'smtp)
 
-(defvar smtp-transaction-compose-function
+(defvar smtp-stream-compose-function
   #'smtp-default-transaction-compose-function)
 
 (defvar smtp-open-connection-function (function open-network-stream))
@@ -104,21 +104,21 @@ don't define this value."
 (defun smtp-greeting (trans)
   (let ((response
 	 (smtp-read-response
-	  (smtp-transaction-process-internal trans))))
+	  (smtp-stream-process-internal trans))))
     (or (smtp-check-response response)
-	(net-transaction-error trans 'greeting))
+	(tram-stream-error trans 'greeting))
     trans))
   
 (defun smtp-ehlo (trans)
   (smtp-send-command
-   (smtp-transaction-process-internal trans)
+   (smtp-stream-process-internal trans)
    (format "EHLO %s" (smtp-make-fqdn)))
   (let ((response
 	 (smtp-read-response 
-	  (smtp-transaction-process-internal trans))))
+	  (smtp-stream-process-internal trans))))
     (or (smtp-check-response response)
-	(net-transaction-error trans 'ehlo))
-    (smtp-transaction-set-extensions-internal
+	(tram-stream-error trans 'ehlo))
+    (smtp-stream-set-extensions-internal
      trans (mapcar
 	    (lambda (extension)
 	      (car (read-from-string (downcase extension))))
@@ -127,23 +127,23 @@ don't define this value."
 
 (defun smtp-helo (trans)
   (smtp-send-command
-   (smtp-transaction-process-internal trans)
+   (smtp-stream-process-internal trans)
    (format "HELO %s" (smtp-make-fqdn)))
   (let ((response
 	 (smtp-read-response
-	  (smtp-transaction-process-internal trans))))
+	  (smtp-stream-process-internal trans))))
     (or (smtp-check-response response)
-	(net-transaction-error trans 'helo))
+	(tram-stream-error trans 'helo))
     trans))
 
 (defun smtp-mailfrom (sender trans)
   (smtp-send-command
-   (smtp-transaction-process-internal trans)
+   (smtp-stream-process-internal trans)
    (format "MAIL FROM:<%s>%s"
 	   sender
 	   ;; SIZE --- Message Size Declaration (RFC1870)
 ;;;	   (if (memq 'size
-;;;		     (smtp-transaction-extensions-internal trans))
+;;;		     (smtp-stream-extensions-internal trans))
 ;;;	       (format " SIZE=%d"
 ;;;		       (save-excursion
 ;;;			 (set-buffer buffer)
@@ -159,21 +159,21 @@ don't define this value."
 ;;;	     "")
 	   ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
 	   (if (and (memq '8bitmime
-			  (smtp-transaction-extensions-internal trans))
+			  (smtp-stream-extensions-internal trans))
 		    smtp-use-8bitmime)
 	       " BODY=8BITMIME"
 	     "")))
   (let ((response
 	 (smtp-read-response
-	  (smtp-transaction-process-internal trans))))
+	  (smtp-stream-process-internal trans))))
     (or (smtp-check-response response)
-	(net-transaction-error trans 'mailfrom))
+	(tram-stream-error trans 'mailfrom))
     trans))
 
 (defun smtp-rcptto (recipient trans)
   (let (response)
     (smtp-send-command
-     (smtp-transaction-process-internal trans)
+     (smtp-stream-process-internal trans)
      (format
       (if smtp-notify-success
 	  "RCPT TO:<%s> NOTIFY=SUCCESS"
@@ -181,53 +181,46 @@ don't define this value."
       recipient))
     (setq response
 	  (smtp-read-response
-	   (smtp-transaction-process-internal trans)))
+	   (smtp-stream-process-internal trans)))
     (or (smtp-check-response response)
-	(net-transaction-error trans 'rcptto))
+	(tram-stream-error trans 'rcptto))
     trans))
 
 (defun smtp-data (buffer trans)
   (smtp-send-command
-   (smtp-transaction-process-internal trans)
+   (smtp-stream-process-internal trans)
    "DATA")
   (let ((response
 	 (smtp-read-response
-	  (smtp-transaction-process-internal trans))))
+	  (smtp-stream-process-internal trans))))
     (or (smtp-check-response response)
-	(net-transaction-error trans 'data))
+	(tram-stream-error trans 'data))
 
     ;; Mail contents
     (smtp-send-data 
-     (smtp-transaction-process-internal trans)
+     (smtp-stream-process-internal trans)
      buffer)
     ;; DATA end "."
     (smtp-send-command
-     (smtp-transaction-process-internal trans)
+     (smtp-stream-process-internal trans)
      ".")
     (setq response
 	  (smtp-read-response
-	   (smtp-transaction-process-internal trans)))
+	   (smtp-stream-process-internal trans)))
     (or (smtp-check-response response)
-	(net-transaction-error trans 'data))
+	(tram-stream-error trans 'data))
     trans))
 
-(defun smtp-closure-partial-apply (function &rest args)
-  `(lambda (trans) (funcall #',function ,@args trans)))
-
 (defun smtp-default-transaction-compose-function (sender recipients buffer)
-  (net-transaction-compose-&&
-   (net-transaction-compose-&&
-    (net-transaction-compose-&&
-     (net-transaction-compose-&&
-      #'smtp-greeting
-      (net-transaction-compose-|| #'smtp-ehlo #'smtp-helo))
-     (smtp-closure-partial-apply #'smtp-mailfrom sender))
-    (net-transaction-fold-left
-     (lambda (accu recipient)
-       (net-transaction-compose-&&
-	accu (smtp-closure-partial-apply #'smtp-rcptto recipient)))
-     #'identity recipients))
-   (smtp-closure-partial-apply #'smtp-data buffer)))
+  (tram-compose-transaction
+   `(&& smtp-greeting
+	(|| smtp-ehlo smtp-helo)
+	,(closure-partial-call #'smtp-mailfrom sender)
+	,@(mapcar
+	   (lambda (recipient)
+	     (closure-partial-call #'smtp-rcptto recipient))
+	   recipients)
+	,(closure-partial-call #'smtp-data buffer))))
 
 (defun smtp-via-smtp (sender recipients smtp-text-buffer)
   (let ((server (if (functionp smtp-server)
@@ -244,7 +237,7 @@ don't define this value."
       (setq smtp-read-point (point-min))
       (unwind-protect
 	  (let ((function
-		 (funcall smtp-transaction-compose-function
+		 (funcall smtp-stream-compose-function
 			  sender recipients smtp-text-buffer)))
 	    (or (functionp function)
 		(error "Unable to compose SMTP commands"))
@@ -257,10 +250,9 @@ don't define this value."
 	    (when process
 	      (set-process-filter process 'smtp-process-filter)
 	      (setq trans
-		    (luna-make-entity 'smtp-transaction
-				      :process process)
+		    (luna-make-entity 'smtp-stream :process process)
 		    error
-		    (catch (net-transaction-error-name trans)
+		    (catch (tram-stream-error-name trans)
 		      (funcall function trans)
 		      nil))
 	      (not error)))
