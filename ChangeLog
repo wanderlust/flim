@@ -1,3 +1,77 @@
+1998-09-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-text): Use
+	`encoded-text-encode-string'.
+	(tm-eword::encoded-word-length): `q-encoding-encoded-length' was
+	renamed to `Q-encoded-text-length'.
+
+	* eword-decode.el: Move `base64-token-regexp',
+	`base64-token-padding-regexp', `eword-B-encoded-text-regexp' and
+	`eword-Q-encoded-text-regexp' to mime-def.el.
+	(eword-decode-encoded-text): Use `encoded-text-decode-string'.
+
+	* mel-q.el: Define method functions of mel.
+	(mime-insert-encoded-file): Use `mel-define-method'; abolish
+	`quoted-printable-insert-encoded-file'.
+	(mime-write-decoded-region): Use `mel-define-method'; abolish
+	`quoted-printable-write-decoded-region'.
+	- Move `q-encoding-printable-char-p' and
+	`q-encoding-encoded-length' to mel.el.
+
+	* mel-b.el: Define method functions of mel.
+	(mime-insert-encoded-file): Use `mel-define-method'; abolish
+	`base64-insert-encoded-file'.
+	(mime-write-decoded-region): Use `mel-define-method'; abolish
+	`base64-write-decoded-region'.	
+	- Move `base64-encoded-length' to mel.el.
+
+	* mel-dl.el (base64-encode-region): Define directly (abolish
+	`base64-dl-encode-region').
+	(base64-decode-region): Define directly (abolish
+	`base64-dl-decode-region').  Define method functions of mel.
+	(mime-insert-encoded-file): Use `mel-define-method'; abolish
+	`base64-insert-encoded-file'; don't use external encoder.
+	(mime-write-decoded-region): Use `mel-define-method'; abolish
+	`base64-write-decoded-region'; don't use external decoder.
+	- Move `base64-encoded-length' to mel.el.
+
+	* mime.el: Move `mm-arglist-to-arguments' to mime-def.el.
+
+	* mime-def.el (base64-token-regexp): New constant (moved from
+	eword-decode.el).
+	(base64-token-padding-regexp): Likewise.
+	(B-encoded-text-regexp): New constant (moved from eword-decode.el,
+	and renamed from `eword-B-encoded-text-regexp').
+	(Q-encoded-text-regexp): New constant (moved from eword-decode.el,
+	and renamed from `eword-Q-encoded-text-regexp'.
+	(mm-arglist-to-arguments): New function (moved from mime.el).
+	(mel-define-method): New macro.
+	(mel-define-method-function): New macro.
+	(mel-define-function): New macro.
+
+	* mel.el (mel-encoding-module-alist): New variable.
+	(mel-use-module): New function.
+	(mel-find-function): New function.
+	(mel-define-service): New macro.
+	(mime-encode-region): Use `mel-find-function'; abolish variable
+	`mime-encoding-method-alist'.
+	(mime-decode-region): Use `mel-find-function'; abolish variable
+	`mime-decoding-method-alist'.
+	(mime-decode-string): Use `mel-find-function'; abolish variable
+	`mime-string-decoding-method-alist'.
+	(encoded-text-encode-string): New function.
+	(encoded-text-decode-string): New function.
+	(base64-encoded-length): New function (moved from mel-b.el and
+	mel-dl.el).
+	(Q-encoding-printable-char-p): New function (moved from mel-q.el,
+	and renamed from `q-encoding-printable-char-p').
+	(Q-encoded-text-length): New function (moved from mel-q.el, and
+	renamed from `q-encoding-encoded-length').
+	(mime-insert-encoded-file): Use `mel-find-function'; abolish
+	variable `mime-file-encoding-method-alist'.
+	(mime-write-decoded-region): Use `mel-find-function'; abolish
+	variable `mime-file-decoding-method-alist'.
+
 1998-09-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel-b.el (base64-internal-encoding-limit): modify :type.
