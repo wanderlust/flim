@@ -250,6 +250,14 @@
 "From: あ \"ja \\\"a\\\"\" <akr@jaist.ac.jp>")
 
 (decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= =?US-ASCII?Q?=2E?= <akr@jaist.ac.jp>"
+"From: \"あ.\" <akr@jaist.ac.jp>")
+
+(decode
+"From: =?US-ASCII?Q?=2E?= =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+"From: \".あ\" <akr@jaist.ac.jp>")
+
+(decode
 "From: akr@jaist.ac.jp (=?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=(=?ISO-2022-JP?B?GyRCJCQbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=)=?ISO-2022-JP?B?GyRCJCYbKEI=?=)"
@@ -690,6 +698,14 @@
 (encode
 "From: \"あ(あ)\" <akr@jaist.ac.jp>"
 "From: =?ISO-2022-JP?B?GyRCJCIbKEIoGyRCJCIbKEIp?= <akr@jaist.ac.jp>")
+
+(encode
+"From: あ\"a\" <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?GyRCJCIbKEJh?= <akr@jaist.ac.jp>")
+
+(encode
+"From: \"a\"あ <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?YRskQiQiGyhC?= <akr@jaist.ac.jp>")
 
 (encode
 "From: \"a\\\"bあc\\\\\" <akr@jaist.ac.jp>"
