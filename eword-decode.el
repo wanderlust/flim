@@ -310,7 +310,7 @@ If SEPARATOR is not nil, it is used as header separator."
 			 ;; Don't decode
 			 (insert-buffer-substring src-buf p end)
 			 )
-			((memq field-name eword-decode-structured-field-list)
+			((memq field eword-decode-structured-field-list)
 			 ;; Decode as structured field
 			 (let ((body (save-excursion
 				       (set-buffer src-buf)
