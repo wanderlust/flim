@@ -208,7 +208,91 @@ abcdefghijklmnopqrstuvwxyz\
 		     (t (` ((r0 |= (, v)) (write r0) (break))))))
 		  mel-ccl-256-to-64-table))))
 	   (repeat)))))
-    )
+  (define-ccl-program mel-ccl-decode-b
+    (` (1
+	(loop
+	 (read r0 r1 r2 r3)
+	 (r4 = r0 (, mel-ccl-decode-b-0-table))
+	 (r5 = r1 (, mel-ccl-decode-b-1-table))
+	 (r4 |= r5)
+	 (r5 = r2 (, mel-ccl-decode-b-2-table))
+	 (r4 |= r5)
+	 (r5 = r3 (, mel-ccl-decode-b-3-table))
+	 (r4 |= r5)
+	 (if (r4 & (, (lognot (1- (lsh 1 24)))))
+	     ((loop
+	       (if (r4 & (, (lsh 1 24)))
+		   ((r0 = r1) (r1 = r2) (r2 = r3) (read r3)
+		    (r4 >>= 1) (r4 &= (, (logior (lsh 7 24))))
+		    (r5 = r3 (, mel-ccl-decode-b-3-table))
+		    (r4 |= r5)
+		    (repeat))
+		 (break)))
+	      (loop
+	       (if (r4 & (, (lsh 1 25)))
+		   ((r1 = r2) (r2 = r3) (read r3)
+		    (r4 >>= 1) (r4 &= (, (logior (lsh 7 24))))
+		    (r5 = r3 (, mel-ccl-decode-b-3-table))
+		    (r4 |= r5)
+		    (repeat))
+		 (break)))
+	      (loop
+	       (if (r2 != ?=)
+		   (if (r4 & (, (lsh 1 26)))
+		       ((r2 = r3) (read r3)
+			(r4 >>= 1) (r4 &= (, (logior (lsh 7 24))))
+			(r5 = r3 (, mel-ccl-decode-b-3-table))
+			(r4 |= r5)
+			(repeat))
+		     ((r6 = 0)
+		      (break)))
+		 ((r6 = 1)
+		  (break))))
+	      (loop
+	       (if (r3 != ?=)
+		   (if (r4 & (, (lsh 1 27)))
+		       ((read r3)
+			(r4 = r3 (, mel-ccl-decode-b-3-table))
+			(repeat))
+		     (break))
+		 ((r6 |= 2)
+		  (break))))
+	      (r4 = r0 (, mel-ccl-decode-b-0-table))
+	      (r5 = r1 (, mel-ccl-decode-b-1-table))
+	      (r4 |= r5)
+	      (branch
+	       r6
+	       ;; BBBB
+	       ((r5 = r2 (, mel-ccl-decode-b-2-table))
+		(r4 |= r5)
+		(r5 = r3 (, mel-ccl-decode-b-3-table))
+		(r4 |= r5)
+		(r4 >8= 0)
+		(write r7)
+		(r4 >8= 0)
+		(write r7)
+		(write-repeat r4))
+	       ;; error: BB=B 
+	       ((write (r4 & 255))
+		(end))
+	       ;; BBB=
+	       ((r5 = r2 (, mel-ccl-decode-b-2-table))
+		(r4 |= r5)
+		(r4 >8= 0)
+		(write r7)
+		(write (r4 & 255))
+		(end)			; Excessive (end) is workaround for XEmacs 21.0.
+					; Without this, "AAA=" is converted to "^@^@^@".
+		(end))
+	       ;; BB==
+	       ((write (r4 & 255))
+		(end))))
+	   ((r4 >8= 0)
+	    (write r7)
+	    (r4 >8= 0)
+	    (write r7)
+	    (write-repeat r4)))))))
+  )
 
 (eval-when-compile
 
