@@ -375,30 +375,25 @@
 	    (write r7)
 	    (r4 >8= 0)
 	    (write r7)
-	    (r4 >8= 0)
-	    (write-repeat r7))
+	    (write-repeat r4))
 	   ;; error: BB=B 
-	   ((r4 >8= 0)
-	    (write r7)
+	   ((write r4)
 	    (end))
 	   ;; BBB=
 	   ((r5 = r2 ,ew-ccl-decode-b-2-table)
 	    (r4 |= r5)
 	    (r4 >8= 0)
 	    (write r7)
-	    (r4 >8= 0)
-	    (write r7)
+	    (write r4)
 	    (end))
 	   ;; BB==
-	   ((r4 >8= 0)
-	    (write r7)
+	   ((write r4)
 	    (end))))
        ((r4 >8= 0)
 	(write r7)
 	(r4 >8= 0)
 	(write r7)
-	(r4 >8= 0)
-	(write-repeat r7))))))
+	(write-repeat r4))))))
 
 ;; ew-ccl-encode-b works only 20.3 or later because CCL_EOF_BLOCK
 ;; is not executed on 20.2 (or former?).
@@ -1003,6 +998,17 @@
       (setq i (1- i))
       (decode-base64-string
        "AB8gISIjJCUmJygpKissLS4vMDk6Ozw9Pj9AQVpbXF1eX2Bhent8fX5/gP8=")))
+  (setq b (current-time))
+  (elp-elapsed-time a b))
+
+(let ((i 100000) (status (make-vector 9 nil)) a b)
+  (setq a (current-time))
+  (while (< 0 i)
+    (setq i (1- i))
+    (ccl-execute-on-string
+     ew-ccl-decode-b ; or ew-ccl-decode-b-2 or -3
+     status
+     "AB8gISIjJCUmJygpKissLS4vMDk6Ozw9Pj9AQVpbXF1eX2Bhent8fX5/gP8="))
   (setq b (current-time))
   (elp-elapsed-time a b))
 

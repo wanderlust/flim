@@ -1,5 +1,9 @@
 1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-bq.el (ew-ccl-decode-b): Eliminate `>8=' before `write'.
+
+1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-bq.el (ew-ccl-decode-b-0-table): Use `if' instead of `cond'
 	(ew-ccl-decode-b-1-table): Ditto.
 	(ew-ccl-decode-b-2-table): Ditto.
