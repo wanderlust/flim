@@ -31,9 +31,9 @@
 (mm-define-method open ((nil cooked) location)
   (mime-parse-buffer location 'cooked))
 
-(mm-define-method cooked-p ((entity cooked)) t)
+(mm-define-method entity-cooked-p ((entity cooked)) t)
 
-(mm-define-method write-content ((entity cooked) filename)
+(mm-define-method write-entity-content ((entity cooked) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (let ((encoding (or (mime-entity-encoding entity) "7bit")))
@@ -45,7 +45,7 @@
 				   filename encoding)
 	))))
 
-(mm-define-method write-with-header ((entity cooked) filename)
+(mm-define-method write-entity ((entity cooked) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (write-region (mime-entity-header-start-internal entity)
@@ -53,7 +53,7 @@
 		  filename)
     ))
 
-(mm-define-method write-body ((entity cooked) filename)
+(mm-define-method write-entity-body ((entity cooked) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (write-region (mime-entity-body-start-internal entity)
