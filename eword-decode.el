@@ -270,7 +270,7 @@ such as a version of Net$cape)."
 
 ;;;###autoload
 (defun mime-set-field-decoder (field &rest specs)
-  "Set decoder of FILED.
+  "Set decoder of FIELD.
 SPECS must be like `MODE1 DECODER1 MODE2 DECODER2 ...'.
 Each mode must be `nil', `plain', `wide', `summary' or `nov'.
 If mode is `nil', corresponding decoder is set up for every modes."
