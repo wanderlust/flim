@@ -471,7 +471,8 @@ don't define this value."
       (kill-buffer smtp-address-buffer))))
 
 (defun smtp-auth-cram-md5 (process)
-  (let (response)
+  (let ((secure-word (copy-sequence smtp-authentication-passphrase))
+	response)
     (smtp-send-command process "AUTH CRAM-MD5")
     (setq response (smtp-read-response process))
     (if (or (null (car response))
@@ -480,11 +481,16 @@ don't define this value."
 	(throw 'done (car (cdr response))))
     (smtp-send-command
      process
-     (base64-encode-string
-      (sasl-cram-md5
-       smtp-authentication-user smtp-authentication-passphrase 
-       (base64-decode-string
-	(substring (car (cdr response)) 4)))))
+     (setq secure-word (unwind-protect
+			   (sasl-cram-md5
+			    smtp-authentication-user secure-word
+			    (base64-decode-string
+			     (substring (car (cdr response)) 4)))
+			 (fillarray secure-word 0))
+	   secure-word (unwind-protect
+			   (base64-encode-string secure-word)
+			 (fillarray secure-word 0))))
+    (fillarray secure-word 0)
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))
@@ -492,28 +498,29 @@ don't define this value."
 	(throw 'done (car (cdr response))))))
  
 (defun smtp-auth-plain (process)
-  (let ((enc-word (copy-sequence smtp-authentication-passphrase))
+  (let ((secure-word (copy-sequence smtp-authentication-passphrase))
 	response)
     (smtp-send-command
      process
-     (setq enc-word (unwind-protect
-			(sasl-plain "" smtp-authentication-user enc-word)
-		      (fillarray enc-word 0))
-	   enc-word (unwind-protect
-			(base64-encode-string enc-word)
-		      (fillarray enc-word 0))
-	   enc-word (unwind-protect
-			(concat "AUTH PLAIN " enc-word)
-		      (fillarray enc-word 0))))
-    (fillarray enc-word 0))
-  (setq response (smtp-read-response process))
-  (if (or (null (car response))
-	  (not (integerp (car response)))
-	  (>= (car response) 400))
-      (throw 'done (car (cdr response)))))
+     (setq secure-word (unwind-protect
+			(sasl-plain "" smtp-authentication-user secure-word)
+		      (fillarray secure-word 0))
+	   secure-word (unwind-protect
+			(base64-encode-string secure-word)
+		      (fillarray secure-word 0))
+	   secure-word (unwind-protect
+			(concat "AUTH PLAIN " secure-word)
+		      (fillarray secure-word 0))))
+    (fillarray secure-word 0)
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response))))))
 
 (defun smtp-auth-login (process)
-  (let (response)
+  (let ((secure-word (copy-sequence smtp-authentication-passphrase))
+	response)
     (smtp-send-command
      process
      (concat "AUTH LOGIN " smtp-authentication-user))
@@ -524,7 +531,10 @@ don't define this value."
 	(throw 'done (car (cdr response))))
     (smtp-send-command
      process
-     (base64-encode-string smtp-authentication-passphrase))
+     (setq secure-word (unwind-protect
+			(base64-encode-string secure-word)
+		      (fillarray secure-word 0))))
+    (fillarray secure-word 0)
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))
