@@ -1,3 +1,18 @@
+1998-12-04  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* mel-b-ccl.el (base64-ccl-insert-encoded-file): Use
+	`insert-file-contents-as-specified-coding-system' instead of
+	`insert-file-contents'.
+	* mel-q-ccl.el (quoted-printable-ccl-insert-encoded-file):
+	Likewise.
+
+	* mel-b-ccl.el (base64-ccl-write-decoded-region): Use
+	`write-region-as-specified-coding-system' instead of
+	`write-region'.
+	* mel-q-ccl.el (quoted-printable-ccl-write-decoded-region):
+	Likewise.
+
+
 1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.12.1 (Nishinoky-Dò)-A released.
