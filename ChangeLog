@@ -1,34 +1,24 @@
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* mmcooked.el, mmbuffer.el (write-body): Renamed from
-	`write-entity-body'.
+	* mmcooked.el, mmbuffer.el (entity-cooked-p): Renamed from
+	`cooked-p'.
+
+	* mime.el (mm-arglist-to-arguments): New function.
+	(mm-define-generic): New macro.
+	(mime-entity-cooked-p): Use `mm-define-generic'.
+	(mime-entity-point-min): Use `mm-define-generic'.
+	(mime-insert-decoded-header): Use `mm-define-generic'.
+	(mime-entity-content): Use `mm-define-generic'.
+	(mime-write-entity-content): Use `mm-define-generic'.
+	(mime-write-entity): Use `mm-define-generic'.
+	(mime-write-entity-body): Use `mm-define-generic'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mmbuffer.el (eword-visible-field-p): Moved from mime.el.
 
 	* mime.el: Move `eword-visible-field-p' to mmbuffer.el.
 	(mime-write-entity-body): Change message to `write-body'.
-
-1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
-
-	* mmcooked.el, mmbuffer.el (write-with-header): Renamed from
-	`write-entity'.
-
-	* mime.el (mime-write-entity): Change message to
-	`write-with-header'.
-
-1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
-
-	* mmcooked.el, mmbuffer.el (write-content): Renamed from
-	`write-entity-content'.
-
-	* mime.el (mime-write-entity-content): Change message to
-	`write-content'.
-
-1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
-
-	* mmbuffer.el (get-content): Renamed from `entity-content'.
-
-	* mime.el (mime-entity-content): Change message to `get-content'.
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -46,8 +36,6 @@
 	* mime.el: Move `mime-entity-implementation-alist' to mime-def.el.
 	(mime-find-function): New implementation.
 	(mime-entity-cooked-p): Use `mime-entity-send'.
-	(mime-entity-point-min): Change message to `point-min'.
-	(mime-entity-point-max): Change message to `point-max'.
 	(mime-entity-header-start): Change message to `header-start'.
 	(mime-entity-header-end): Change message to `header-end'.
 	(mime-entity-body-start): Change message to `body-start'.
