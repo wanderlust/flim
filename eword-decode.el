@@ -4,7 +4,8 @@
 
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
 ;;         MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;; Maintainer: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;         Tanaka Akira <akr@jaist.ac.jp>
+;; Maintainer: Tanaka Akira <akr@jaist.ac.jp>
 ;; Created: 1995/10/03
 ;; Original: 1992/07/20 ENAMI Tsugutomo's `mime.el'.
 ;;	Renamed: 1993/06/03 to tiny-mime.el
@@ -12,7 +13,7 @@
 ;;	Renamed: 1997/02/22 from tm-ew-d.el
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
 
-;; This file is part of SEMI (Spadework for Emacs MIME Interfaces).
+;; This file is part of FLAM (Faithful Library About MIME).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -144,14 +145,18 @@
 ;;; @ for string
 ;;;
 
-(defvar eword-decode-sticked-encoded-word nil
+(defcustom eword-decode-sticked-encoded-word nil
   "*If non-nil, decode encoded-words sticked on atoms,
 other encoded-words, etc.
-however this behaviour violates RFC2047.")
+however this behaviour violates RFC2047."
+  :group 'eword-decode
+  :type 'boolean)
 
-(defvar eword-decode-quoted-encoded-word nil
+(defcustom eword-decode-quoted-encoded-word nil
   "*If non-nil, decode encoded-words in quoted-string
-however this behaviour violates RFC2047.")
+however this behaviour violates RFC2047."
+  :group 'eword-decode
+  :type 'boolean)
 
 (defun eword-decode-first-encoded-words (string
 					 eword-regexp
@@ -440,12 +445,12 @@ If SEPARATOR is not nil, it is used as header separator."
   (save-excursion
     (save-restriction
       (std11-narrow-to-header separator)
-      (let ((default-charset
+      (let ((default-mime-charset
 	      (if code-conversion
 		  (if (mime-charset-to-coding-system code-conversion)
 		      code-conversion
 		    default-mime-charset))))
-	(if default-charset
+	(if default-mime-charset
 	    (let (beg p end field-name len)
 	      (goto-char (point-min))
 	      (while (re-search-forward std11-field-head-regexp nil t)
@@ -460,8 +465,7 @@ If SEPARATOR is not nil, it is used as header separator."
 		       )
 		      ((memq field-name eword-decode-structured-field-list)
 		       ;; Decode as structured field
-		       (let ((body (buffer-substring p end))
-			     (default-mime-charset default-charset))
+		       (let ((body (buffer-substring p end)))
 			 (delete-region p end)
 			 (insert (eword-decode-and-fold-structured-field
 				  body (1+ len)))
@@ -471,8 +475,7 @@ If SEPARATOR is not nil, it is used as header separator."
 		       (save-restriction
 			 (narrow-to-region beg (1+ end))
 			 (goto-char p)
-			 (let ((default-mime-charset default-charset))
-			   (eword-decode-region beg (point-max) 'unfold))
+			 (eword-decode-region beg (point-max) 'unfold)
 			 (goto-char (point-max))
 			 )))))
 	  (eword-decode-region (point-min) (point-max) t)
