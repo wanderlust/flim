@@ -1,3 +1,13 @@
+1999-09-01  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Make directory
+	`smtpmail-queue-dir' if it does not exist; convert filename of
+	queued mail using `convert-standard-filename'.
+	(smtpmail-queue-index): Treat `smtpmail-queue-dir' as a directory
+	name using `file-name-as-directory'.
+	(smtpmail-queue-dir, smtpmail-queue-mail): Remove "*" from doc
+	strings.
+
 1999-08-26  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* FLIM-CFG: Emulate `add-to-list' and `data-directory' for old
