@@ -285,7 +285,7 @@ or `smtp-local-domain' correctly."))))))
     (insert output)))
 
 (put 'smtp-response-error 'error-message "SMTP response error")
-(put 'smtp-response-error 'error-conditions '(smtp-protocol-error error))
+(put 'smtp-response-error 'error-conditions '(smtp-response-error error))
 
 (defun smtp-response-error (response)
   (signal 'smtp-response-error response))
