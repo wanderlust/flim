@@ -1,3 +1,7 @@
+1998-08-16  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mime-def.el (mime-library-version-string): bump up to 1.9.1.
+
 1998-07-22  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ChangeLog: Fix typo.
