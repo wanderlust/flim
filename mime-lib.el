@@ -35,13 +35,15 @@
   (let* ((header (mime-entity-original-header entity))
 	 (field-body (cdr (assq field-name header))))
     (or field-body
-	(save-excursion
-	  (if (save-restriction
+	(progn
+	  (if (save-excursion
 		(set-buffer (mime-entity-buffer entity))
-		(narrow-to-region (mime-entity-header-start entity)
-				  (mime-entity-header-end entity))
-		(setq field-body (std11-fetch-field (symbol-name field-name)))
-		)
+		(save-restriction
+		  (narrow-to-region (mime-entity-header-start entity)
+				    (mime-entity-header-end entity))
+		  (setq field-body
+			(std11-fetch-field (symbol-name field-name)))
+		  ))
 	      (mime-entity-set-original-header
 	       entity (put-alist field-name field-body header))
 	    )
