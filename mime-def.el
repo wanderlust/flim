@@ -315,6 +315,8 @@ message/rfc822, `mime-entity' structures of them are included in
 	 ))))
 
 (put 'mm-define-method 'lisp-indent-function 'defun)
+(put 'mm-define-method 'edebug-form-spec
+     '(&define name ((arg symbolp) &rest arg) def-body))
 
 
 ;;; @ end
