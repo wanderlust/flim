@@ -152,7 +152,9 @@ If is is not found, return DEFAULT-ENCODING."
 
 (defun mime-parse-multipart (entity)
   (goto-char (point-min))
-  (let* ((content-type (mime-entity-content-type-internal entity))
+  (let* ((representation-type
+	  (mime-entity-representation-type-internal entity))
+	 (content-type (mime-entity-content-type-internal entity))
 	 (dash-boundary
 	  (concat "--" (mime-content-type-parameter content-type "boundary")))
 	 (delimiter       (concat "\n" (regexp-quote dash-boundary)))
@@ -181,7 +183,8 @@ If is is not found, return DEFAULT-ENCODING."
 	(setq ncb (match-end 0))
 	(save-restriction
 	  (narrow-to-region cb ce)
-	  (setq ret (mime-parse-message dc-ctl (cons i node-id)))
+	  (setq ret (mime-parse-message dc-ctl (cons i node-id)
+					representation-type))
 	  )
 	(setq children (cons ret children))
 	(goto-char (setq cb ncb))
@@ -190,7 +193,8 @@ If is is not found, return DEFAULT-ENCODING."
       (setq ce (point-max))
       (save-restriction
 	(narrow-to-region cb ce)
-	(setq ret (mime-parse-message dc-ctl (cons i node-id)))
+	(setq ret (mime-parse-message dc-ctl (cons i node-id)
+				      representation-type))
 	)
       (setq children (cons ret children))
       )
@@ -204,12 +208,13 @@ If is is not found, return DEFAULT-ENCODING."
      (narrow-to-region (mime-entity-body-start-internal entity)
 		       (mime-entity-body-end-internal entity))
      (list (mime-parse-message
-	    nil (cons 0 (mime-entity-node-id-internal entity))))
+	    nil (cons 0 (mime-entity-node-id-internal entity))
+	    (mime-entity-representation-type-internal entity)))
      ))
   entity)
 
 ;;;###autoload
-(defun mime-parse-message (&optional default-ctl node-id)
+(defun mime-parse-message (&optional default-ctl node-id representation-type)
   "Parse current-buffer as a MIME message.
 DEFAULT-CTL is used when an entity does not have valid Content-Type
 field.  Its format must be as same as return value of
@@ -236,10 +241,12 @@ mime-{parse|read}-Content-Type."
 			     default-ctl)
 	    primary-type (mime-content-type-primary-type content-type))
       )
-    (setq entity
-	  (make-mime-entity-internal
-	   (current-buffer) header-start header-end body-start body-end
-	   node-id content-type))
+    (setq entity (make-mime-entity-internal (or representation-type 'buffer)
+					    (current-buffer)
+					    content-type nil node-id
+					    (current-buffer)
+					    header-start header-end
+					    body-start body-end))
     (cond ((eq primary-type 'multipart)
 	   (mime-parse-multipart entity)
 	   )
@@ -256,12 +263,13 @@ mime-{parse|read}-Content-Type."
 ;;;
 
 ;;;###autoload
-(defun mime-parse-buffer (&optional buffer)
+(defun mime-parse-buffer (&optional buffer representation-type)
   "Parse BUFFER as a MIME message.
 If buffer is omitted, it parses current-buffer."
   (save-excursion
     (if buffer (set-buffer buffer))
-    (setq mime-message-structure (mime-parse-message))
+    (setq mime-message-structure
+	  (mime-parse-message nil nil representation-type))
     ))
 
 
