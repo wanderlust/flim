@@ -1,6 +1,10 @@
+2000-06-23  Kenichi OKADA <okada@opaopa.org>
+
+	* mime-def.el (mime-library-product): Up.
+
 2000-05-25  Tanaka Akira      <akr@m17n.org>
 
-        * mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
+	* mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
 
 2000-05-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
