@@ -1,6 +1,6 @@
-;;; mel-u.el: uuencode encoder/decoder for GNU Emacs
+;;; mel-u.el --- uuencode encoder/decoder.
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Created: 1995/10/25
@@ -19,14 +19,14 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; along with this program; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Code:
 
-(require 'emu)
 (require 'mime-def)
+(require 'path-util)
 
 
 (mel-define-backend "x-uue")
@@ -51,17 +51,16 @@ This function uses external uuencode encoder which is specified by
 variable `uuencode-external-encoder'."
   (interactive "*r")
   (save-excursion
-    (as-binary-process (apply (function call-process-region)
-			      start end (car uuencode-external-encoder)
-			      t t nil (cdr uuencode-external-encoder))
-		       )
+    (as-binary-process
+     (apply (function call-process-region)
+	    start end (car uuencode-external-encoder)
+	    t t nil
+	    (cdr uuencode-external-encoder)))
     ;; for OS/2
     ;;   regularize line break code
     (goto-char (point-min))
     (while (re-search-forward "\r$" nil t)
-      (replace-match "")
-      )
-    ))
+      (replace-match ""))))
 
 (defun uuencode-external-decode-region (start end)
   "Decode current region by unofficial uuencode format.
@@ -76,14 +75,14 @@ variable `uuencode-external-decoder'."
 			(if (re-search-forward "^begin [0-9]+ " nil t)
 			    (if (looking-at ".+$")
 				(buffer-substring (match-beginning 0)
-						  (match-end 0))
-			      )))))
+						  (match-end 0)))))))
 	  (default-directory temporary-file-directory))
       (if filename
 	  (as-binary-process
 	   (apply (function call-process-region)
 		  start end (car uuencode-external-decoder)
-		  t nil nil (cdr uuencode-external-decoder))
+		  t nil nil
+		  (cdr uuencode-external-decoder))
 	   (as-binary-input-file (insert-file-contents filename))
 	   ;; The previous line causes the buffer to be made read-only, I
 	   ;; do not pretend to understand the control flow leading to this
@@ -91,10 +90,7 @@ variable `uuencode-external-decoder'."
 	   ;;	Use `inhibit-read-only' to avoid to force
 	   ;;	buffer-read-only nil. - tomo.
 	   (let ((inhibit-read-only t))
-	     (delete-file filename)
-	     )
-	   ))
-      )))
+	     (delete-file filename)))))))
 
 (mel-define-method-function (mime-encode-region start end (nil "x-uue"))
 			    'uuencode-external-encode-region)
@@ -125,18 +121,16 @@ variable `uuencode-external-decoder'."
   "Insert file encoded by unofficial uuencode format.
 This function uses external uuencode encoder which is specified by
 variable `uuencode-external-encoder'."
-  (interactive (list (read-file-name "Insert encoded file: ")))
-  (call-process (car uuencode-external-encoder) filename t nil
-		(file-name-nondirectory filename))
-  )
+  (interactive "*fInsert encoded file: ")
+  (call-process (car uuencode-external-encoder)
+		filename t nil
+		(file-name-nondirectory filename)))
 
 (mel-define-method mime-write-decoded-region (start end filename
 						    (nil "x-uue"))
   "Decode and write current region encoded by uuencode into FILENAME.
 START and END are buffer positions."
-  (interactive
-   (list (region-beginning) (region-end)
-	 (read-file-name "Write decoded region to file: ")))
+  (interactive "*r\nFWrite decoded region to file: ")
   (save-excursion
     (let ((file (save-excursion
 		  (save-restriction
@@ -145,16 +139,15 @@ START and END are buffer positions."
 		    (if (re-search-forward "^begin [0-9]+ " nil t)
 			(if (looking-at ".+$")
 			    (buffer-substring (match-beginning 0)
-					      (match-end 0))
-			  )))))
+					      (match-end 0)))))))
 	  (default-directory temporary-file-directory))
       (if file
 	  (as-binary-process
 	   (apply (function call-process-region)
 		  start end (car uuencode-external-decoder)
-		  nil nil nil (cdr uuencode-external-decoder))
-	   (rename-file file filename 'overwrites)
-	   )))))
+		  nil nil nil
+		  (cdr uuencode-external-decoder))
+	   (rename-file file filename 'overwrites))))))
 
 
 ;;; @ end
@@ -164,4 +157,4 @@ START and END are buffer positions."
 
 (mel-define-backend "x-uuencode" ("x-uue"))
 
-;;; mel-u.el ends here
+;;; mel-u.el ends here.
