@@ -232,10 +232,14 @@ used.
 @end defun
 
 
-@defun mime-entity-encoding entity
+@defun mime-entity-encoding entity  &optional  default-encoding
 
 @var{entity} の content-transfer-encoding を返す。
-(cf. @ref{Content-Transfer-Encoding})
+(cf. @ref{Content-Transfer-Encoding}) @refill
+
+もし、@var{entity} に Content-Transfer-Encoding 欄が存在しない場合は、
+@var{default-encoding} を返す。これが指定されない場合は、@code{"7bit"} 
+を用いる。
 @end defun
 
 

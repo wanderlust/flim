@@ -226,10 +226,14 @@ Return file name of @var{entity}.
 @end defun
 
 
-@defun mime-entity-encoding entity
+@defun mime-entity-encoding entity  &optional  default-encoding
 
 Return content-transfer-encoding of @var{entity}.
-(cf. @ref{Content-Transfer-Encoding})
+(cf. @ref{Content-Transfer-Encoding}) @refill
+
+If the @var{entity} does not have Content-Transfer-Encoding field, this
+function returns @var{default-encoding}.  If it is nil, @code{"7bit"} is
+used as default value.
 @end defun
 
 
