@@ -1,3 +1,8 @@
+2000-01-05  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* Makefile, mime-en.sgml, mime-ja.sgml: Update for the new CVS
+	server.
+
 1999-12-20  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mel-b-el.el (base64-encode-region): Allow the optional second arg
