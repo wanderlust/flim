@@ -1,3 +1,8 @@
+2002-07-26  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtp.el (smtp-open-connection-function): Add doc.
+	(smtp-end-of-line): Doc fix.
+
 2002-07-24  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtp.el (smtp-end-of-line): New variable.
