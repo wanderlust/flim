@@ -83,6 +83,7 @@ If method is nil, this field will not be encoded."
     (cn-gb		. "B")
     (cn-gb-2312		. "B")
     (euc-kr		. "B")
+    (tis-620		. "B")
     (iso-2022-jp-2	. "B")
     (iso-2022-int-1	. "B")
     (utf-8		. "B")
