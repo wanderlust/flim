@@ -1,5 +1,15 @@
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mmcooked.el, mmbuffer.el (write-body): Renamed from
+	`write-entity-body'.
+
+	* mmbuffer.el (eword-visible-field-p): Moved from mime.el.
+
+	* mime.el: Move `eword-visible-field-p' to mmbuffer.el.
+	(mime-write-entity-body): Change message to `write-body'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmcooked.el, mmbuffer.el (write-with-header): Renamed from
 	`write-entity'.
 
