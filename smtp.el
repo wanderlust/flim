@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(require 'mail-utils) ; pick up mail-strip-quoted-names
+
 (defgroup smtp nil
   "SMTP protocol for sending mail."
   :group 'mail)
@@ -34,15 +36,20 @@
   :type '(choice (const nil) string)
   :group 'smtp)
 
-(defcustom smtp-server 
-  (or (getenv "SMTPSERVER") smtp-default-server)
+(defcustom smtp-server (or (getenv "SMTPSERVER") smtp-default-server)
   "*The name of the host running SMTP server."
   :type '(choice (const nil) string)
   :group 'smtp)
 
-(defcustom smtp-service 25
-  "*SMTP service port number. smtp or 25 ."
-  :type 'integer
+(defcustom smtp-service "smtp"
+  "*SMTP service port number. \"smtp\" or 25."
+  :type '(choice (integer :tag "25" 25)
+                 (string :tag "smtp" "smtp"))
+  :group 'smtp)
+
+(defcustom smtp-use-8bitmime t
+  "*If non-nil, use ESMTP 8BITMIME if available."
+  :type 'boolean
   :group 'smtp)
 
 (defcustom smtp-local-domain nil
@@ -52,214 +59,178 @@ don't define this value."
   :type '(choice (const nil) string)
   :group 'smtp)
 
-(defcustom smtp-debug-info nil
-  "*smtp debug info printout. messages and process buffer."
-  :type 'boolean
-  :group 'smtp)
-
 (defcustom smtp-coding-system 'binary
   "*Coding-system for SMTP output."
   :type 'coding-system
   :group 'smtp)
 
+(defvar smtp-debug-info nil)
+(defvar smtp-read-point nil)
 
-(defun smtp-fqdn ()
-  (if smtp-local-domain
-      (concat (system-name) "." smtp-local-domain)
-    (system-name)))
+(defun smtp-make-fqdn ()
+  "Return user's fully qualified domain name."
+  (let ((system-name (system-name)))
+    (cond
+     (smtp-local-domain
+      (concat system-name "." smtp-local-domain))
+     ((string-match "[^.]\\.[^.]" system-name)
+      system-name)
+     (t
+      (error "Cannot generate valid FQDN. Set `smtp-local-domain' correctly.")))))
 
-(defun smtp-via-smtp (recipient smtp-text-buffer)
-  (let ((process nil)
-	(host smtp-server)
-	(port smtp-service)
-	response-code
-	greeting
-	process-buffer
-	(supported-extensions '())
-	(coding-system-for-read smtp-coding-system)
-	(coding-system-for-write smtp-coding-system))
-    (unwind-protect
-	(catch 'done
-	  ;; get or create the trace buffer
-	  (setq process-buffer
-		(get-buffer-create
-		 (format "*trace of SMTP session to %s*" host)))
+(defun smtp-via-smtp (sender recipients smtp-text-buffer)
+  (let ((coding-system-for-read smtp-coding-system)
+	(coding-system-for-write smtp-coding-system)
+	process response extensions)
+    (save-excursion
+      (set-buffer
+       (get-buffer-create
+	(format "*trace of SMTP session to %s*" smtp-server)))
+      (erase-buffer)
+      (make-local-variable 'smtp-read-point)
+      (setq smtp-read-point (point-min))
 
-	  ;; clear the trace buffer of old output
-	  (save-excursion
-	    (set-buffer process-buffer)
-	    (erase-buffer))
+      (unwind-protect
+	  (catch 'done
+	    (setq process (open-network-stream "SMTP"
+					       (current-buffer)
+					       smtp-server smtp-service))
+	    (or process (throw 'done nil))
 
-	  ;; open the connection to the server
-	  (setq process (open-network-stream "SMTP" process-buffer host port))
-	  (and (null process) (throw 'done nil))
+	    (set-process-filter process 'smtp-process-filter)
 
-	  ;; set the send-filter
-	  (set-process-filter process 'smtp-process-filter)
-
-	  (save-excursion
-	    (set-buffer process-buffer)
-	    (make-local-variable 'smtp-read-point)
-	    (setq smtp-read-point (point-min))
-
-	    (if (or (null (car (setq greeting (smtp-read-response process))))
-		    (not (integerp (car greeting)))
-		    (>= (car greeting) 400))
-		(throw 'done nil)
-	      )
+	    ;; Greeting
+	    (setq response (smtp-read-response process))
+	    (if (or (null (car response))
+		    (not (integerp (car response)))
+		    (>= (car response) 400))
+		(throw 'done (car (cdr response))))
 
 	    ;; EHLO
-	    (smtp-send-command process (format "EHLO %s" (smtp-fqdn)))
-
-	    (if (or (null (car (setq response-code (smtp-read-response process))))
-		    (not (integerp (car response-code)))
-		    (>= (car response-code) 400))
+	    (smtp-send-command process
+			       (format "EHLO %s" (smtp-make-fqdn)))
+	    (setq response (smtp-read-response process))
+	    (if (or (null (car response))
+		    (not (integerp (car response)))
+		    (>= (car response) 400))
 		(progn
 		  ;; HELO
-		  (smtp-send-command process (format "HELO %s" (smtp-fqdn)))
-
-		  (if (or (null (car (setq response-code (smtp-read-response process))))
-			  (not (integerp (car response-code)))
-			  (>= (car response-code) 400))
-		      (throw 'done nil)))
-	      (let ((extension-lines (cdr (cdr response-code))))
+		  (smtp-send-command process
+				     (format "HELO %s" (smtp-make-fqdn)))
+		  (setq response (smtp-read-response process))
+		  (if (or (null (car response))
+			  (not (integerp (car response)))
+			  (>= (car response) 400))
+		      (throw 'done (car (cdr response)))))
+	      (let ((extension-lines (cdr (cdr response))))
 		(while extension-lines
-		  (let ((name (intern (downcase (substring (car extension-lines) 4)))))
-		    (and name
-			 (cond ((memq name '(verb xvrb 8bitmime onex xone
-						  expn size dsn etrn
-						  help xusr))
-				(setq supported-extensions
-				      (cons name supported-extensions)))
-			       (t (message "unknown extension %s"
-					   name)))))
+		  (push (intern (downcase (substring (car extension-lines) 4)))
+			extensions)
 		  (setq extension-lines (cdr extension-lines)))))
 
-	    (if (or (member 'onex supported-extensions)
-		    (member 'xone supported-extensions))
+            ;; ONEX --- One message transaction only (sendmail extension?)
+	    (if (or (memq 'onex extensions)
+		    (memq 'xone extensions))
 		(progn
-		  (smtp-send-command process (format "ONEX"))
-		  (if (or (null (car (setq response-code (smtp-read-response process))))
-			  (not (integerp (car response-code)))
-			  (>= (car response-code) 400))
-		      (throw 'done nil))))
+		  (smtp-send-command process "ONEX")
+		  (setq response (smtp-read-response process))
+		  (if (or (null (car response))
+			  (not (integerp (car response)))
+			  (>= (car response) 400))
+		      (throw 'done (car (cdr response))))))
 
+            ;; VERB --- Verbose (sendmail extension?)
 	    (if (and smtp-debug-info
-		     (or (member 'verb supported-extensions)
-			 (member 'xvrb supported-extensions)))
+		     (or (memq 'verb extensions)
+			 (memq 'xvrb extensions)))
 		(progn
-		  (smtp-send-command process (format "VERB"))
-		  (if (or (null (car (setq response-code (smtp-read-response process))))
-			  (not (integerp (car response-code)))
-			  (>= (car response-code) 400))
-		      (throw 'done nil))))
+		  (smtp-send-command process "VERB")
+		  (setq response (smtp-read-response process))
+		  (if (or (null (car response))
+			  (not (integerp (car response)))
+			  (>= (car response) 400))
+		      (throw 'done (car (cdr response))))))
 
-	    (if (member 'xusr supported-extensions)
+            ;; XUSR --- Initial (user) submission (sendmail extension?)
+	    (if (memq 'xusr extensions)
 		(progn
-		  (smtp-send-command process (format "XUSR"))
-		  (if (or (null (car (setq response-code (smtp-read-response process))))
-			  (not (integerp (car response-code)))
-			  (>= (car response-code) 400))
-		      (throw 'done nil))))
+		  (smtp-send-command process "XUSR")
+		  (setq response (smtp-read-response process))
+		  (if (or (null (car response))
+			  (not (integerp (car response)))
+			  (>= (car response) 400))
+		      (throw 'done (car (cdr response))))))
 
-	    ;; MAIL FROM: <sender>
-	    (let ((size-part
-		   (if (member 'size supported-extensions)
-		       (format " SIZE=%d"
-			       (save-excursion
-				 (set-buffer smtp-text-buffer)
-				 ;; size estimate:
-				 (+ (- (point-max) (point-min))
-				    ;; Add one byte for each change-of-line
-				    ;; because or CR-LF representation:
-				    (count-lines (point-min) (point-max))
-				    ;; For some reason, an empty line is
-				    ;; added to the message.  Maybe this
-				    ;; is a bug, but it can't hurt to add
-				    ;; those two bytes anyway:
-				    2)))
-		     ""))
-		  (body-part
-		   (if (member '8bitmime supported-extensions)
-		       ;; FIXME:
-		       ;; Code should be added here that transforms
-		       ;; the contents of the message buffer into
-		       ;; something the receiving SMTP can handle.
-		       ;; For a receiver that supports 8BITMIME, this
-		       ;; may mean converting BINARY to BASE64, or
-		       ;; adding Content-Transfer-Encoding and the
-		       ;; other MIME headers.  The code should also
-		       ;; return an indication of what encoding the
-		       ;; message buffer is now, i.e. ASCII or
-		       ;; 8BITMIME.
-		       (if nil
-			   " BODY=8BITMIME"
-			 "")
-		     "")))
-;	      (smtp-send-command process (format "MAIL FROM:%s@%s" (user-login-name) (smtp-fqdn)))
-	      (smtp-send-command process (format "MAIL FROM: <%s>%s%s"
-						     user-mail-address
-						     size-part
-						     body-part))
-
-	      (if (or (null (car (setq response-code (smtp-read-response process))))
-		      (not (integerp (car response-code)))
-		      (>= (car response-code) 400))
-		  (throw 'done nil)
-		))
-	    
-	    ;; RCPT TO: <recipient>
-	    (let ((n 0))
-	      (while (not (null (nth n recipient)))
-		(smtp-send-command process (format "RCPT TO: <%s>" (nth n recipient)))
-		(setq n (1+ n))
-
-		(setq response-code (smtp-read-response process))
-		(if (or (null (car response-code))
-			(not (integerp (car response-code)))
-			(>= (car response-code) 400))
-		    (throw 'done nil)
-		  )
-		))
-	    
+	    ;; MAIL FROM:<sender>
+	    (smtp-send-command
+	     process
+	     (format "MAIL FROM:<%s>%s%s"
+		     sender
+                     ;; SIZE --- Message Size Declaration (RFC1870)
+		     (if (memq 'size extensions)
+			 (format " SIZE=%d"
+				 (save-excursion
+				   (set-buffer smtp-text-buffer)
+				   (+ (- (point-max) (point-min))
+				      ;; Add one byte for each change-of-line
+				      ;; because or CR-LF representation:
+				      (count-lines (point-min) (point-max))
+				      ;; For some reason, an empty line is
+				      ;; added to the message.	Maybe this
+				      ;; is a bug, but it can't hurt to add
+				      ;; those two bytes anyway:
+				      2)))
+		       "")
+                     ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
+		     (if (and (memq '8bitmime extensions)
+			      smtp-use-8bitmime)
+			 " BODY=8BITMIME"
+		       "")))
+	    (setq response (smtp-read-response process))
+	    (if (or (null (car response))
+		    (not (integerp (car response)))
+		    (>= (car response) 400))
+		(throw 'done (car (cdr response))))
+	
+	    ;; RCPT TO:<recipient>
+	    (while recipients
+	      (smtp-send-command process
+				 (format "RCPT TO:<%s>" (car recipients)))
+	      (setq recipients (cdr recipients))
+	      (setq response (smtp-read-response process))
+	      (if (or (null (car response))
+		      (not (integerp (car response)))
+		      (>= (car response) 400))
+		  (throw 'done (car (cdr response)))))
+	
 	    ;; DATA
 	    (smtp-send-command process "DATA")
-
-	    (if (or (null (car (setq response-code (smtp-read-response process))))
-		    (not (integerp (car response-code)))
-		    (>= (car response-code) 400))
-		(throw 'done nil)
-	      )
+	    (setq response (smtp-read-response process))
+	    (if (or (null (car response))
+		    (not (integerp (car response)))
+		    (>= (car response) 400))
+		(throw 'done (car (cdr response))))
 
 	    ;; Mail contents
 	    (smtp-send-data process smtp-text-buffer)
 
-	    ;;DATA end "."
+	    ;; DATA end "."
 	    (smtp-send-command process ".")
+	    (setq response (smtp-read-response process))
+	    (if (or (null (car response))
+		    (not (integerp (car response)))
+		    (>= (car response) 400))
+		(throw 'done (car (cdr response))))
 
-	    (if (or (null (car (setq response-code (smtp-read-response process))))
-		    (not (integerp (car response-code)))
-		    (>= (car response-code) 400))
-		(throw 'done nil)
-	      )
+	    t)
 
-	    ;;QUIT
-;	    (smtp-send-command process "QUIT")
-;	    (and (null (car (smtp-read-response process)))
-;		 (throw 'done nil))
-	    t ))
-      (if process
-	  (save-excursion
-	    (set-buffer (process-buffer process))
-	    (smtp-send-command process "QUIT")
-	    (smtp-read-response process)
-
-;	    (if (or (null (car (setq response-code (smtp-read-response process))))
-;		    (not (integerp (car response-code)))
-;		    (>= (car response-code) 400))
-;		(throw 'done nil)
-;	      )
-	    (delete-process process))))))
+	(if (and process
+		 (eq (process-status process) 'open))
+	    (progn
+	      ;; QUIT
+	      (smtp-send-command process "QUIT")
+	      (smtp-read-response process)
+	      (delete-process process)))))))
 
 (defun smtp-process-filter (process output)
   (save-excursion
@@ -299,8 +270,8 @@ don't define this value."
 		nil
 	      (setq response-continue nil)
 	      (setq return-value
-		    (cons (string-to-int 
-			   (buffer-substring begin end)) 
+		    (cons (string-to-int
+			   (buffer-substring begin end))
 			  (nreverse response-strings)))))
 	
 	(if (looking-at "[0-9]+-")
@@ -311,42 +282,34 @@ don't define this value."
 	  (progn
 	    (setq smtp-read-point match-end)
 	    (setq response-continue nil)
-	    (setq return-value 
-		  (cons nil (nreverse response-strings)))
-	    )
-	  )))
+	    (setq return-value
+		  (cons nil (nreverse response-strings)))))))
     (setq smtp-read-point match-end)
     return-value))
 
 (defun smtp-send-command (process command)
   (goto-char (point-max))
-  (if (= (aref command 0) ?P)
-      (insert "PASS <omitted>\r\n")
-    (insert command "\r\n"))
+  (insert command "\r\n")
   (setq smtp-read-point (point))
   (process-send-string process command)
   (process-send-string process "\r\n"))
 
 (defun smtp-send-data-1 (process data)
   (goto-char (point-max))
-
   (if smtp-debug-info
       (insert data "\r\n"))
-
   (setq smtp-read-point (point))
-  ;; Escape "." at start of a line
+  ;; Escape "." at start of a line.
   (if (eq (string-to-char data) ?.)
       (process-send-string process "."))
   (process-send-string process data)
-  (process-send-string process "\r\n")
-  )
+  (process-send-string process "\r\n"))
 
 (defun smtp-send-data (process buffer)
-  (let
-      ((data-continue t)
-       (sending-data nil)
-       this-line
-       this-line-end)
+  (let ((data-continue t)
+	(sending-data nil)
+	this-line
+	this-line-end)
 
     (save-excursion
       (set-buffer buffer)
@@ -364,14 +327,10 @@ don't define this value."
 	(if (or (/= (forward-line 1) 0) (eobp))
 	    (setq data-continue nil)))
 
-      (smtp-send-data-1 process sending-data)
-      )
-    )
-  )
+      (smtp-send-data-1 process sending-data))))
 
 (defun smtp-deduce-address-list (smtp-text-buffer header-start header-end)
-  "Get address list suitable for smtp RCPT TO: <address>."
-  (require 'mail-utils)  ;; pick up mail-strip-quoted-names
+  "Get address list suitable for smtp RCPT TO:<address>."
   (let ((case-fold-search t)
 	(simple-address-list "")
 	this-line
@@ -383,29 +342,29 @@ don't define this value."
 	  ;;
 	  (set-buffer smtp-address-buffer)
 	  (erase-buffer)
-	  (insert-buffer-substring smtp-text-buffer
-				   header-start header-end)
+	  (insert (save-excursion
+		    (set-buffer smtp-text-buffer)
+		    (buffer-substring-no-properties header-start header-end)))
 	  (goto-char (point-min))
 	  ;; RESENT-* fields should stop processing of regular fields.
 	  (save-excursion
 	    (if (re-search-forward "^RESENT-TO:" header-end t)
 		(setq addr-regexp
 		      "^\\(RESENT-TO:\\|RESENT-CC:\\|RESENT-BCC:\\)")
-	      (setq addr-regexp  "^\\(TO:\\|CC:\\|BCC:\\)")))
+	      (setq addr-regexp	 "^\\(TO:\\|CC:\\|BCC:\\)")))
 
 	  (while (re-search-forward addr-regexp header-end t)
 	    (replace-match "")
 	    (setq this-line (match-beginning 0))
 	    (forward-line 1)
-	    ;; get any continuation lines
+	    ;; get any continuation lines.
 	    (while (and (looking-at "^[ \t]+") (< (point) header-end))
 	      (forward-line 1))
 	    (setq this-line-end (point-marker))
 	    (setq simple-address-list
 		  (concat simple-address-list " "
 			  (mail-strip-quoted-names
-			   (buffer-substring this-line this-line-end))))
-	    )
+			   (buffer-substring this-line this-line-end)))))
 	  (erase-buffer)
 	  (insert-string " ")
 	  (insert-string simple-address-list)
@@ -415,7 +374,7 @@ don't define this value."
 	  ;; comma   --> blank
 	  (subst-char-in-region (point-min) (point-max) ?, ?  t)
 	  ;; tab     --> blank
-	  (subst-char-in-region (point-min) (point-max)  9 ?  t)
+	  (subst-char-in-region (point-min) (point-max)	 9 ?  t)
 
 	  (goto-char (point-min))
 	  ;; tidyness in case hook is not robust when it looks at this
@@ -427,30 +386,9 @@ don't define this value."
 	      (backward-char 1)
 	      (setq recipient-address-list
 		    (cons (buffer-substring (match-beginning 1) (match-end 1))
-			  recipient-address-list))
-	      )
-	    recipient-address-list)
-	  )
-      (kill-buffer smtp-address-buffer))
-    ))
-
-(defun smtp-do-bcc (header-end)
-  "Delete BCC: and their continuation lines from the header area.
-There may be multiple BCC: lines, and each may have arbitrarily
-many continuation lines."
-  (let ((case-fold-search t))
-    (save-excursion
-      (goto-char (point-min))
-      ;; iterate over all BCC: lines
-      (while (re-search-forward "^BCC:" header-end t)
-	(delete-region (match-beginning 0) (progn (forward-line 1) (point)))
-	;; get rid of any continuation lines
-	(while (and (looking-at "^[ \t].*\n") (< (point) header-end))
-	  (replace-match ""))
-	)
-      ) ;; save-excursion
-    ) ;; let
-  )
+			  recipient-address-list)))
+	    recipient-address-list))
+      (kill-buffer smtp-address-buffer))))
 
 (provide 'smtp)
 
