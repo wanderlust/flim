@@ -482,7 +482,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		  '((specials . ">"))))
 	 ))))
 
-(defun eword-addr-spec-to-rwl (addr-spec)
+(defun eword-encode-addr-spec-to-rword-list (addr-spec)
   (if (eq (car addr-spec) 'addr-spec)
       (eword-encode-addr-seq-to-rword-list (cdr addr-spec))
     ))
@@ -492,7 +492,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	(comment (nth 2 mbox))
 	dest)
     (setq dest (or (eword-encode-phrase-route-addr-to-rword-list addr)
-		   (eword-addr-spec-to-rwl addr)
+		   (eword-encode-addr-spec-to-rword-list addr)
 		   ))
     (if comment
 	(setq dest
