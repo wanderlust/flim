@@ -1,3 +1,11 @@
+2002-07-24  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtp.el (smtp-end-of-line): New variable.
+	(smtp-read-response): Use it.
+	(smtp-send-command): Use it.
+	(smtp-send-data): Use it.
+
+
 2002-06-03  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.4 (Kashiharajing-Dþ-mae) released.-A
@@ -292,7 +300,7 @@
 2001-02-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	MIME Parameter Value decoder support.
-	
+
 	* mime-def.el (std11-quoted-pair-regexp, std11-non-qtext-char-list,
 	std11-qtext-regexp, std11-quoted-string-regexp): Removed.
 	(mime-media-type/subtype-regexp): Ditto.
@@ -316,7 +324,7 @@
 	mime-parse-Content-Transfer-Encoding): New implementation.
 	(mime-read-Content-Type, mime-read-Content-Disposition,
 	mime-read-Content-Transfer-Encoding): Ditto.
-	
+
 2001-02-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* hmac-md5.el, hmac-sha1.el: Modify comments.
@@ -787,7 +795,7 @@
 
 2000-11-12   Daiki Ueno  <ueno@unixuser.org>
 
-	* luna.el 
+	* luna.el
 	(luna-apply-generic): New function.
 	(luna-define-generic): Use `luna-apply-generic' instead of
 	`luna-send'.
@@ -1121,8 +1129,8 @@
 
 2000-05-25  Tanaka Akira      <akr@m17n.org>
 
-        * mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
-	
+	* mime-en.sgml, mime-ja.sgml: Update for CVS via SSH.
+
 2000-05-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtp.el (smtp-deduce-address-list): Set `case-fold-search' to `t'
@@ -1438,7 +1446,7 @@
 	* FLIM: Version 1.13.2 (Kasanui) released.
 
 1999-08-03  Yuuichi Teranishi <teranisi@gohome.org>
-	
+
 	* smtp.el (smtp-notify-success): New option.
 	* (smtp-via-smtp): Request return receipt (defined in RFC1891) to
 	SMTP server if `smtp-notify-success' is non-nil.
