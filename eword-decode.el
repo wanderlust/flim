@@ -300,20 +300,20 @@ If mode is `nil', corresponding decoder is set up for every modes."
   "Return field-presentation-method from NAME.
 NAME must be `plain', `wide', `summary' or `nov'."
   (cond ((eq name nil)
-	 `(or (assq 'summary mime-field-decoder-cache)
-	      '(summary))
-	 )
+	 (` (or (assq 'summary mime-field-decoder-cache)
+		'(summary))
+	    ))
 	((and (consp name)
 	      (car name)
 	      (consp (cdr name))
 	      (symbolp (car (cdr name)))
 	      (null (cdr (cdr name))))
-	 `(or (assq ,name mime-field-decoder-cache)
-	      (cons ,name nil))
-	 )
+	 (` (or (assq (, name) mime-field-decoder-cache)
+		(cons (, name) nil))
+	    ))
 	(t
-	 `(or (assq (or ,name 'summary) mime-field-decoder-cache)
-	      (cons (or ,name 'summary) nil))
+	 (` (or (assq (or (, name) 'summary) mime-field-decoder-cache)
+		(cons (or (, name) 'summary) nil)))
 	 )))
 
 (defun mime-find-field-decoder-internal (field &optional mode)
@@ -402,19 +402,19 @@ Default value of MODE is `summary'."
     (setq field (pop fields))
     (mime-set-field-decoder
      field
-     'plain	#'eword-decode-structured-field-body
-     'wide	#'eword-decode-and-fold-structured-field-body
-     'summary	#'eword-decode-and-unfold-structured-field-body
-     'nov	#'eword-decode-and-unfold-structured-field-body)
-    ))
+     'plain	(function eword-decode-structured-field-body)
+     'wide	(function eword-decode-and-fold-structured-field-body)
+     'summary	(function eword-decode-and-unfold-structured-field-body)
+     'nov	(function eword-decode-and-unfold-structured-field-body)
+     )))
 
 ;; unstructured fields (default)
 (mime-set-field-decoder
  t
- 'plain	#'eword-decode-unstructured-field-body
- 'wide	#'eword-decode-unstructured-field-body
- 'summary #'eword-decode-and-unfold-unstructured-field-body
- 'nov	#'eword-decode-unfolded-unstructured-field-body)
+ 'plain	(function eword-decode-unstructured-field-body)
+ 'wide	(function eword-decode-unstructured-field-body)
+ 'summary (function eword-decode-and-unfold-unstructured-field-body)
+ 'nov	(function eword-decode-unfolded-unstructured-field-body))
 
 ;;;###autoload
 (defun mime-decode-field-body (field-body field-name
