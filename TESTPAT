@@ -177,7 +177,7 @@
 "Subject: (=?ISO-8859-1?Q?a?= =?ISO-8859-2?Q?_b?=)"
 "Subject: (=?ISO-8859-1?Q?a?= =?ISO-8859-2?Q?_b?=)")
 
-;; Section 2: Decoding trivial inputs.
+;; Section 2: Decoding proper inputs.
 
 (decode
 "From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
@@ -432,7 +432,7 @@
 "=?ISO-2022-JP?B?GyRCJCIbKEI=?=: test"
 'permit-sticked-special)
 
-;; Section 3: Decoding melancholy inputs.
+;; Section 3: Decoding melancholic inputs.
 
 (decode
 "From:=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
@@ -618,11 +618,19 @@
 "Subject: =?ISO-2022-JP?B?GyRCNFg-dBsoQg==?="
 "Subject: =?ISO-2022-JP?B?GyRCNFg-dBsoQg==?=")
 
-;; Section 5: Encoding trivial inputs.
+;; Section 5: Encoding proper inputs.
 
 (encode
 "From: あ <akr@jaist.ac.jp>"
 "From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>")
+
+(encode
+"From: あい <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?GyRCJCIkJBsoQg==?= <akr@jaist.ac.jp>")
+
+(encode
+"From: あ い <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?GyRCJCIbKEIgGyRCJCQbKEI=?= <akr@jaist.ac.jp>")
 
 (encode
 "From: \"あ(あ)\" <akr@jaist.ac.jp>"
@@ -673,7 +681,12 @@
 '("Subject: =?ISO-8859-7?Q?=C3?= =?ISO-2022-JP?B?GyRCNFg/dBsoQg==?="
   "Subject: =?ISO-2022-JP-2?B?Gy5GG05DGyRCNFg/dBsoQg==?="))
 
-;; Section 6: Encoding melancholy inputs.
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaa(あい)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaa(=?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ =?ISO-2022-JP?B?GyRCJCQbKEI=?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>")
+
+;; Section 6: Encoding melancholic inputs.
 
 (encode
 "From: akr@jaist.ac.jp (あ(い)う)"
