@@ -593,7 +593,7 @@ as a version of Net$cape)."
   "*Max position of eword-lexical-analyze-cache.
 It is max size of eword-lexical-analyze-cache - 1.")
 
-(defcustom eword-lexical-analyzers
+(defcustom eword-lexical-analyzer
   '(eword-analyze-quoted-string
     eword-analyze-domain-literal
     eword-analyze-comment
@@ -753,7 +753,7 @@ be the result."
 	dest ret)
     (while (< start len)
       (setq ret
-	    (let ((rest eword-lexical-analyzers)
+	    (let ((rest eword-lexical-analyzer)
 		  func r)
 	      (while (and (setq func (car rest))
 			  (null
