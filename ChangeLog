@@ -1,3 +1,8 @@
+1999-01-22  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* std11.el (TopLevel): Require `custom'.
+
+
 1999-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.12.2 (Kuj-Dò)-A released.
@@ -2045,3 +2050,4 @@
  	eword-encode.el: Copied from MEL, SEMI (mime-def.el
  	eword-decode.el eword-encode.el) and APEL (std11-parse.el
  	std11.el).
+>

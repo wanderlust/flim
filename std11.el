@@ -27,6 +27,8 @@
 (or (fboundp 'buffer-substring-no-properties)
     (require 'poe))
 
+(require 'custom)
+
 
 ;;; @ fetch
 ;;;
