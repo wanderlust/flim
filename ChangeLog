@@ -1,5 +1,10 @@
 2000-04-16  Kenichi OKADA <okada@opaopa.org>
 
+	* SLIM: Version 1.13.7 released.
+	* mime-def.el (mime-library-product): Up.
+
+2000-04-16  Kenichi OKADA <okada@opaopa.org>
+
 	* sasl.el (sasl-scram-md5-client-security-info): eval-when-compile.
 
 2000-02-03  Kenichi OKADA <okada@opaopa.org>
