@@ -513,21 +513,40 @@
 		     (write "=0D")
 		     (break))
 		  (if (r6 == 73)
-		      ((r6 = 3) ; NOT COMPLETE.
-		       (r5 = 0)
-		       (write "=\r\n=0D")
-		       (break))
+                      (if (r0 == ?\r)
+                          ;; CR:r3=CR r0=CR
+                          ((r4 = 9)
+                           (read r0)
+                           ;; CR:r3=CR CR r0
+                           (if (r0 == ?\n)
+                               ;; CR:r3=CR CR LF
+                               ((r6 = 0)
+                                (r5 = 0)
+                                (write "=0D\r\n")
+                                (r4 = 10)
+                                (read r0)
+                                (break))
+                             ;; CR:r3=CR CR noLF
+                             ((r6 = 6)
+                              (r5 = 0)
+                              (write "=\r\n=0D=0D")
+                              (break))))
+                        ;; CR:r3=CR r0=noLFnorCR
+                        ((r6 = 3)
+                         (r5 = 0)
+                         (write "=\r\n=0D")
+                         (break)))
 		    ((r6 = 3)
 		     (r5 = 0)
 		     (write "=\r\n=0D")
 		     (break))))))
 	   ;; r0:r3={RAW,ENC}
-	   ((r4 = 9)
+	   ((r4 = 11)
 	    (read r1)
 	    ;; r0:r3={RAW,ENC} r1
 	    (if (r1 == ?\r)
 		;; r0:r3={RAW,ENC} r1=CR
-		((r4 = 10)
+		((r4 = 12)
 		 (read r1)
 		 ;; r0:r3={RAW,ENC} CR r1
 		 (if (r1 == ?\n)
@@ -539,7 +558,7 @@
 		       ;; r0:r3=RAW CR r1=LF
 		       ((write r0)
 			(write "\r\n")
-			(r4 = 11)
+			(r4 = 13)
 			(read r0)
 			(break))
 		       ;; r0:r3=ENC CR r1=LF
@@ -547,7 +566,7 @@
 			(write r0 ,ew-ccl-high-table)
 			(write r0 ,ew-ccl-low-table)
 			(write "\r\n")
-			(r4 = 12)
+			(r4 = 14)
 			(read r0)
 			(break))))
 		   ;; r0:r3={RAW,ENC} CR r1=noLF
@@ -613,7 +632,11 @@
 	(end)
 	;; 8: r5=noWSP CR:r3=CR r0=LF ;
 	(end)
-	;; 9: ; r0:r3={RAW,ENC}
+	;; 9: (r6=73) ; CR:r3=CR r0=CR
+        ((write "=\r\n=0D=0D") (end))
+	;; 10: (r6=73) CR:r3=CR CR LF ;
+        (end)
+	;; 11: ; r0:r3={RAW,ENC}
 	(branch
 	 r3
 	 ((write r0) (end))
@@ -621,7 +644,7 @@
 	  (write r0 ,ew-ccl-high-table)
 	  (write r0 ,ew-ccl-low-table)
 	  (end)))
-	;; 10: ; r0:r3={RAW,ENC} r1=CR
+	;; 12: ; r0:r3={RAW,ENC} r1=CR
 	(branch
 	 r3
 	 ((write "=\r\n")
@@ -633,9 +656,9 @@
 	  (write r0 ,ew-ccl-low-table)
 	  (write "=0D")
 	  (end)))
-	;; 11: r0:r3=RAW CR LF ;
+	;; 13: r0:r3=RAW CR LF ;
 	(end)
-	;; 12: r0:r3=ENC CR LF ;
+	;; 14: r0:r3=ENC CR LF ;
 	(end)
 	))
       )))
