@@ -50,8 +50,6 @@ Please eval following to use MIME features provided by FLIM:
 
 @node Entity, Content-Type, How to use, Top
 @chapter Message and Entity
-@cindex node-id
-@cindex entity-number
 @cindex mime-entity
 @cindex entity
 
@@ -65,41 +63,9 @@ The definition of RFC 2045 indicates that a MIME message is a tree.  An
 message is a tree, each node is an entity, like following figure.
 Namely MIME extends message to tree structure.@refill
 
-FLIM uses @strong{mime-entity} structure to represent information of
-entity.  In this document, it is called simply `mime-entity'.@refill
-
-前述のように、message 中の各 entity は木の節に当たりますが、この木には
-深さと同じ深さの中の順番に従って番号が付けることができます。即ち、
-@example
-
-                              ┌───┐
-                              │  nil │
-                              └─┬─┘
-              ┌─────────┼─────────┐
-            ┌┴┐              ┌┴┐              ┌┴┐
-            │０│              │１│              │２│
-            └┬┘              └┬┘              └┬┘
-              │        ┌────┼────┐        │
-          ┌─┴─┐┌─┴─┐┌─┴─┐┌─┴─┐┌─┴─┐
-          │ ０.０││ １.０││ １.１││ １.２││ ２.０│
-          └───┘└───┘└───┘└───┘└───┘
-@end example
-
-@noindent
-のように深さ n の節には長さ n の整数列の節番号が振れます。これ
-を @strong{entity-number} と呼びます。entity-number は S 式と
-しては @code{(1 2 3)} のような整数のリストとして表現されます。
-
-mime-entity では、これと同様の @strong{node-id} を用います。node-id はちょ
-うど entity-number を逆にしたリストで、entity-number 1.2.3 に対応する 
-node-id は @code{(3 2 1)} です。@refill
-
-前述のように、MIME message は entity を単位とした木構造になっているので、
-この根である message 全体も mime-entity で表現することができ、buffer
-local 変数 @code{mime-message-structure} に格納することにします。
-そして、entity-number や node-id を用いることで 
-@code{mime-message-structure} における entity の相対的な位置関係を
-扱うことができます。
+FLIM uses @strong{mime-entity} structure to represent
+information of entity.  In this document, it is called simply
+`mime-entity'.
 
 
 @menu
@@ -142,6 +108,54 @@ mime-entity. (cf. @ref{mm-backend}) Default value is @var{buffer}.
 
 @node Entity hierarchy, Entity Attributes, Entity creation, Entity
 @section Features about message tree
+@cindex node-id
+@cindex entity-number
+@cindex message
+@cindex root-entity
+
+MIME message は entity を単位とする木構造になっています。@refill
+
+この木において根となる節は message 全体を表す entity です。ここでは、こ
+れを @strong{root-entity} もしくは@strong{message} と呼びます。@refill
+
+root-entity 以外の entity は親を持ちます。また、entity は子供を持つかも
+知れません。この親子関係を考えることで entity の相対関係を扱うことができ
+ます。@refill
+
+一方、entity の message における位置を考えることもできます。@refill
+
+entity はこの木における節となりますが、この木には深さと同じ深さの中の
+順番に従って番号が付けることができます。即ち、
+@example
+
+                              ┌───┐
+                              │  nil │
+                              └─┬─┘
+              ┌─────────┼─────────┐
+            ┌┴┐              ┌┴┐              ┌┴┐
+            │０│              │１│              │２│
+            └┬┘              └┬┘              └┬┘
+              │        ┌────┼────┐        │
+          ┌─┴─┐┌─┴─┐┌─┴─┐┌─┴─┐┌─┴─┐
+          │ ０.０││ １.０││ １.１││ １.２││ ２.０│
+          └───┘└───┘└───┘└───┘└───┘
+@end example
+
+@noindent
+のように深さ n の節には長さ n の整数列の節番号が振れます。これ
+を @strong{entity-number} と呼びます。entity-number は S 式と
+しては @code{(1 2 3)} のような整数のリストとして表現されます。
+
+mime-entity では、これと同様の @strong{node-id} を用います。node-id はちょ
+うど entity-number を逆にしたリストで、entity-number 1.2.3 に対応する 
+node-id は @code{(3 2 1)} です。@refill
+
+前述のように、MIME message は entity を単位とした木構造になっているので、
+この根である message 全体も mime-entity で表現することができ、buffer
+local 変数 @code{mime-message-structure} に格納することにします。@refill
+
+@code{mime-message-structure} を起点に entity-number や node-id 
+で示される entity を取り出すことができます。
 
 @defvar mime-message-structure
 
