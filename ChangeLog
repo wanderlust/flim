@@ -1,5 +1,17 @@
 1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel-dl.el, README.en, FLIM-ELS: Rename mel-dl.el to mel-b-dl.el.
+
+	* mel.el: - Rename mel-dl.el to mel-b-dl.el.
+		  - Move `mel-define-service' to mime-def.el.
+
+	* mime-def.el (mel-define-service): New macro (moved from mel.el);
+	fixed problem in Emacs.
+	(mel-define-method): Use `mel-define-service'.
+	(mel-define-method-function): Use `mel-define-service'.
+
+1998-09-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel.el (mime-encode-region): Don't regard nil encoding as
 	"7bit".
 
