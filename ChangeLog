@@ -1,3 +1,12 @@
+1998-10-19  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-field): New function.
+	(eword-decode-header): Use `eword-decode-field'.
+
+	* mime.el (mime-read-field): Use `eword-decode-field'.
+
+	* mmgeneric.el (insert-header): Use `eword-decode-field'.
+
 1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.11.0 (Yamadagawa) was released.
