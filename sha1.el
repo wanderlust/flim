@@ -3,8 +3,6 @@
 ;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
-;;	Kenichi OKADA <okada@opaopa.org>
-;; Maintainer: Kenichi OKADA <okada@opaopa.org>
 ;; Keywords: SHA1, FIPS 180-1
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -40,38 +38,26 @@
 
 ;;; Code:
 
-(require 'hex-util)
-
-(eval-when-compile
-  (or (fboundp 'sha1-string)
-      (defun sha1-string (a))))
-
 (defvar sha1-dl-module
-  (if (and (fboundp 'sha1-string)
-	   (subrp (symbol-function 'sha1-string)))
-      nil
-    (if (fboundp 'dynamic-link)
-	(let ((path (expand-file-name "sha1.so" exec-directory)))
-	  (and (file-exists-p path)
-	       path)))))
+  (cond
+   ((and (fboundp 'sha1)
+	 (subrp (symbol-function 'sha1)))
+    nil)
+   ((fboundp 'dynamic-link)
+    ;; Should we take care of `dynamic-link-path'?
+    (let ((path (expand-file-name "sha1.so" exec-directory)))
+      (if (file-exists-p path)
+	  path
+	nil)))
+   (t
+    nil)))
 
 (cond
- (sha1-dl-module
-  ;; Emacs with DL patch.
+ ((and (stringp sha1-dl-module)
+       (file-exists-p sha1-dl-module))
   (require 'sha1-dl))
  (t
   (require 'sha1-el)))
-
-;; compatibility for another sha1.el by Keiichi Suzuki.
-(defun sha1-encode (string)
-  (decode-hex-string 
-   (sha1-string string)))
-(defun sha1-encode-binary (string)
-  (decode-hex-string
-   (sha1-string string)))
-
-(make-obsolete 'sha1-encode "It's old API.")
-(make-obsolete 'sha1-encode-binary "It's old API.")
 
 (provide 'sha1)
 
