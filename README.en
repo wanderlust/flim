@@ -22,6 +22,8 @@ What's FLIM
 			(for other emacsen)
 	mel-q.el    --- quoted-printable and Q-encoding
 		    	encoder/decoder
+	mel-ccl.el  --- base64 (B-encoding), quoted-printable and
+		    	Q-encoding encoder/decoder using CCL
 	mel-u.el    --- unofficial module for uuencode
 	mel-g.el    --- unofficial module for gzip64
 
