@@ -55,7 +55,7 @@ information of entity.  In this document, it is called simply
 <node> Entity creation
 <p>
 <defun name="mime-open-entity">
-	  <args> type location
+	  <opts> type location
 <p>
 Open an entity and return it.
 <p>
@@ -1290,11 +1290,11 @@ be interpreted as us-ascii.
 <node> Bug report
 <p>
 If you write bug-reports and/or suggestions for improvement, please
-send them to the tm Mailing List:
+send them to the EMACS-MIME Mailing List:
 
 <ul>
-<li> Japanese <mail>bug-tm-ja@chamonix.jaist.ac.jp</mail>
-<li> English <mail>bug-tm-en@chamonix.jaist.ac.jp</mail>
+<li> English <mail>emacs-mime-en@m17n.org</mail>
+<li> Japanese <mail>emacs-mime-ja@m17n.org</mail>
 </ul>
 
 <p>
@@ -1311,16 +1311,16 @@ to send backtrace is very important. <cf file="emacs" node="Bugs">
 Bug may not appear only your environment, but also in a lot of
 environment (otherwise it might not bug).  Therefor if you send mail
 to author directly, we must write a lot of mails.  So please send mail
-to address for tm bugs instead of author.
+to address for EMACS-MIME Mailing List instead of author.
 
 <p>
-Via the tm ML, you can report FLIM bugs, obtain the latest release of
-FLIM, and discuss future enhancements to FLIM.  To join the tm ML,
-send empty e-mail to:
+Via the EMACS-MIME ML, you can report FLIM bugs, obtain the latest
+release of FLIM, and discuss future enhancements to FLIM.  To join the
+EMACS-MIME ML, send an empty e-mail to:
 
 <ul>
-<li> Japanese <mail>tm-ja-help@chamonix.jaist.ac.jp</mail>
-<li> English  <mail>tm-en-help@chamonix.jaist.ac.jp</mail>
+<li> English  <mail>emacs-mime-en-ctl@m17n.org</mail>
+<li> Japanese <mail>emacs-mime-ja-ctl@m17n.org</mail>
 </ul>
 
 
