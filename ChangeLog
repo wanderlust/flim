@@ -1,3 +1,7 @@
+1999-12-12  Kenichi OKADA <okada@opaopa.org>
+
+	* sasl.el (TopLevel): Require `scram-md5'.
+
 1999-12-11  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl.el (sasl-scram-md5-client-msg-1): New function.

@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'hmac-md5)
+(require 'scram-md5)
 
 ;;; CRAM-MD5
 (defun sasl-cram-md5 (username passphrase challenge)

@@ -94,7 +94,8 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
   (unwind-protect
       (hmac-md5 salt passphrase)
     ;; immediately erase plaintext passphrase from memory.
-    (fillarray passphrase 0)))
+    ;;    (fillarray passphrase 0)))
+    ))
 
 (defun scram-md5-make-client-key (salted-pass)
   (md5-binary salted-pass))
