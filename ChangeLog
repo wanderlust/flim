@@ -1,3 +1,8 @@
+2000-05-09  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtp.el (smtp-deduce-address-list): Set `case-fold-search' to `t'
+	in the working buffer.
+
 2000-04-26  Yoshiki Hayashi  <yoshiki@xemacs.org>
 
 	* mime.el (mime-entity-body): New function.
