@@ -1,3 +1,7 @@
+1998-08-26  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* mime-def.el (mm-define-method): Put `edebug-form-spec'.
+
 1998-08-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-encode.el (eword-encode-address-list): New function.
