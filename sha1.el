@@ -1,6 +1,6 @@
 ;;; sha1.el --- SHA1 Secure Hash Algorithm.
 
-;; Copyright (C) 1999 Shuhei KOBAYASHI
+;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;;	Kenichi OKADA <okada@opaopa.org>

@@ -1,6 +1,6 @@
 ;;; sha1-el.el --- SHA1 Secure Hash Algorithm in Emacs-Lisp.
 
-;; Copyright (C) 1999 Shuhei KOBAYASHI
+;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: SHA1, FIPS 180-1
@@ -28,12 +28,27 @@
 ;; 180-1 (Federal Information Processing Standards Publication 180-1),
 ;; "Announcing the Standard for SECURE HASH STANDARD".
 ;; <URL:http://www.itl.nist.gov/div897/pubs/fip180-1.htm>
-;; EXCEPTION:
-;;  * Two optimizations taken from GnuPG/cipher/sha1.c.
+;; (EXCEPTION; two optimizations taken from GnuPG/cipher/sha1.c)
+;;
+;; Test cases from FIPS PUB 180-1.
+;;
+;; (sha1 "abc")
+;; => a9993e364706816aba3e25717850c26c9cd0d89d
+;;
+;; (sha1 "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")
+;; => 84983e441c3bd26ebaae4aa1f95129e5e54670f1
+;;
+;; (sha1 (make-string 1000000 ?a))
+;; => 34aa973cd4c4daa4f61eeb2bdbad27316534016f
 ;;
 ;; BUGS:
 ;;  * It is assumed that length of input string is less than 2^29 bytes.
 ;;  * It is caller's responsibility to make string (or region) unibyte.
+;;
+;; TODO:
+;;  * Rewrite from scratch!
+;;    This version is much faster than Keiichi Suzuki's another sha1.el,
+;;    but it is too dirty.
 
 ;;; Code:
 

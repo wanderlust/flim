@@ -1,6 +1,6 @@
 ;;; hmac-md5.el --- Compute HMAC-MD5.
 
-;; Copyright (C) 1999 Shuhei KOBAYASHI
+;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;;	Kenichi OKADA <okada@opaopa.org>
@@ -46,6 +46,7 @@
 ;; (encode-hex-string
 ;;  (hmac-md5 "Test With Truncation" (make-string 16 ?\x0c)))
 ;;  => "56461ef2342edc00f9bab995690efd4c"
+;;
 ;; (encode-hex-string
 ;;  (hmac-md5-96 "Test With Truncation" (make-string 16 ?\x0c)))
 ;;  => "56461ef2342edc00f9bab995"
