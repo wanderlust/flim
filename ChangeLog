@@ -1,3 +1,7 @@
+2001-03-09  Akihiro Arisawa  <ari@atesoft.advantest.co.jp>
+
+	* mime.el (mime-find-root-entity): Find root recursively.
+
 2000-12-27  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mime-conf.el (mime-mailcap-file): Turn to non user option.
