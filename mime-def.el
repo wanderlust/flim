@@ -186,10 +186,9 @@
 				     header-start header-end
 				     body-start body-end
 				     &optional node-id
-				     content-type encoding children)
+				     content-type children)
   (vector buffer header-start header-end body-start body-end
-	  node-id content-type nil encoding nil
-	  children nil))
+	  node-id content-type nil nil nil children nil))
 
 (defsubst mime-entity-buffer-internal (entity)              (aref entity  0))
 (defsubst mime-entity-header-start-internal (entity)        (aref entity  1))
@@ -206,6 +205,8 @@
 
 (defsubst mime-entity-set-content-disposition-internal (entity disposition)
   (aset entity  7 disposition))
+(defsubst mime-entity-set-encoding-internal (entity encoding)
+  (aset entity  8 encoding))
 (defsubst mime-entity-set-original-header-internal (entity header)
   (aset entity  9 header))
 (defsubst mime-entity-set-children-internal (entity children)
