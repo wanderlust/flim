@@ -1,5 +1,10 @@
 1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-en.sgml (Content-Transfer-Encoding parser): Translate.
+
+
+1998-10-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* FLIM: Version 1.11.0 (Yamadagawa) was released.
 
 1998-10-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>

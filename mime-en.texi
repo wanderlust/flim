@@ -627,14 +627,15 @@ Return value of @var{parameter} of @var{content-type}.
 
 @defun mime-parse-Content-Type string
 
-Parse @var{string} as a field-body of Content-Type field.
+Parse @var{string} as a field-body of Content-Type field, and return the
+result as mime-content-type (@ref{mime-content-type}) structure.
 @end defun
 
 
 @defun mime-read-Content-Type
 
-Parse Content-Type field of the current buffer, and return the
-result.@refill
+Parse Content-Type field of the current buffer, and return the result as
+mime-content-type (@ref{mime-content-type}) structure.@refill
 
 Return @code{nil} if Content-Type field is not found.
 @end defun
