@@ -252,7 +252,7 @@ It contain at least 64 bits of entropy."
 
 ;;; ANONYMOUS (RFC2245)
 (defconst sasl-anonymous-steps
-  '(identity				;no initial response
+  '(ignore				;no initial response
     sasl-anonymous-response))
 
 (defun sasl-anonymous-response (client step)
