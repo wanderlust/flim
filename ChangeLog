@@ -1,3 +1,13 @@
+2001-11-18  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el (smtp-send-by-myself): New variable.
+	(smtp-use-starttls-ignore-error): New variable.
+	(smtp-find-mx): New function.
+	(smtp-dig): New function.
+	(smtp-find-server): New function.
+	(smtp-send-buffer-by-myself): New funcion.
+	(smtp-send-buffer): Change for `smtp-send-buffer-by-myself'.
+
 2001-11-03  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* hmac-md5.el: Removed kludge for Emacs 21 prerelease versions.
