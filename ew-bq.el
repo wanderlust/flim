@@ -69,13 +69,28 @@
     ew-ccl-256-table)))
 
 (defconst ew-ccl-u-raw
-  (append "!@#$%&'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~" ()))
+  (append
+   "0123456789"
+   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+   "abcdefghijklmnopqrstuvwxyz"
+   "!@#$%&'()*+,-./:;<>@[\\]^`{|}~"
+   ()))
 
 (defconst ew-ccl-c-raw
-  (append "!@#$%&'*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^`abcdefghijklmnopqrstuvwxyz{|}~" ()))
+  (append
+   "0123456789"
+   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+   "abcdefghijklmnopqrstuvwxyz"
+   "!@#$%&'*+,-./:;<>@[]^`{|}~"
+   ()))
 
 (defconst ew-ccl-p-raw
-  (append "!*+-/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" ()))
+  (append
+   "0123456789"
+   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+   "abcdefghijklmnopqrstuvwxyz"
+   "!*+-/"
+   ()))
 
 (defconst ew-ccl-256-to-64-table
   '(nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
@@ -100,6 +115,24 @@
     ?Q ?R ?S ?T ?U ?V ?W ?X ?Y ?Z ?a ?b ?c ?d ?e ?f
     ?g ?h ?i ?j ?k ?l ?m ?n ?o ?p ?q ?r ?s ?t ?u ?v
     ?w ?x ?y ?z ?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?+ ?/))
+
+(defconst ew-ccl-qp-table
+  [enc enc enc enc enc enc enc enc enc wsp enc enc enc cr  enc enc
+   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
+   wsp raw raw raw raw raw raw raw raw raw raw raw raw raw raw raw
+   raw raw raw raw raw raw raw raw raw raw raw raw raw enc raw raw
+   raw raw raw raw raw raw raw raw raw raw raw raw raw raw raw raw
+   raw raw raw raw raw raw raw raw raw raw raw raw raw raw raw raw
+   raw raw raw raw raw raw raw raw raw raw raw raw raw raw raw raw
+   raw raw raw raw raw raw raw raw raw raw raw raw raw raw raw enc
+   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
+   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
+   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
+   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
+   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
+   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
+   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
+   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc])
 
 )
 
@@ -384,6 +417,227 @@
 		       (nth (lsh r0 2) ew-ccl-64-to-256-table))
 		     ew-ccl-16-table)))
 	(write "=\r\n")))
+      )))
+
+;; ew-ccl-encode-quoted-printable does not works on 20.2 by same reason of ew-ccl-encode-b
+(define-ccl-program ew-ccl-encode-quoted-printable
+  (eval-when-compile
+    `(4
+      ((r6 = 0) ; column
+       (r5 = 0) ; previous character is white space
+       (r4 = 0)
+       (read r0)
+       (loop ; r6 <= 75
+	(loop
+	 (loop
+	  (branch
+	   r0
+	   ,@(mapcar
+	      (lambda (r0)
+		(let ((tmp (aref ew-ccl-qp-table r0)))
+		  (cond
+		   ((eq tmp 'raw) '((r3 = 0) (break))) ; RAW
+		   ((eq tmp 'enc) '((r3 = 1) (break))) ; ENC
+		   ((eq tmp 'wsp) '((r3 = 2) (break))) ; WSP
+		   ((eq tmp 'cr) '((r3 = 3) (break))) ; CR
+		   )))
+	      ew-ccl-256-table)))
+	 (branch
+	  r3
+	  ;; r0:r3=RAW
+	  (if (r6 < 75)
+	      ((r6 += 1)
+	       (r5 = 0)
+	       (r4 = 1)
+	       (write-read-repeat r0))
+	    (break))
+	  ;; r0:r3=ENC
+	  ((r5 = 0)
+	   (if (r6 < 73)
+	       ((r6 += 3)
+		(write "=")
+		(write r0 ,ew-ccl-high-table)
+		(r4 = 2)
+		(write-read-repeat r0 ,ew-ccl-low-table))
+	     (if (r6 > 73)
+		 ((r6 = 3)
+		  (write "=\r\n=")
+		  (write r0 ,ew-ccl-high-table)
+		  (r4 = 3)
+		  (write-read-repeat r0 ,ew-ccl-low-table))
+	       (break))))
+	  ;; r0:r3=WSP
+	  ((r5 = 1)
+	   (if (r6 < 75)
+	       ((r6 += 1)
+		(r4 = 4)
+		(write-read-repeat r0))
+	     ((r6 = 1)
+	      (write "=\r\n")
+	      (r4 = 5)
+	      (write-read-repeat r0))))
+	  ;; r0:r3=CR
+	  ((if ((r6 > 73) & r5)
+	       ((r6 = 0)
+		(r5 = 0)
+		(write "=\r\n")))
+	   (break))))
+	;; r0:r3={RAW,ENC,CR}
+	(loop
+	 (if (r0 == ?\r)
+	     ;; r0=\r:r3=CR
+	     ((r4 = 6)
+	      (read r0)
+	      ;; CR:r3=CR r0
+	      (if (r0 == ?\n)
+		  ;; CR:r3=CR r0=LF
+		  (if r5
+		      ;; r5=WSP ; CR:r3=CR r0=LF
+		      ((r6 = 0)
+		       (r5 = 0)
+		       (write "=\r\n\r\n")
+		       (r4 = 7)
+		       (read r0)
+		       (break))
+		    ;; r5=noWSP ; CR:r3=CR r0=LF
+		    ((r6 = 0)
+		     (r5 = 0)
+		     (write "\r\n")
+		     (r4 = 8)
+		     (read r0)
+		     (break)))
+		;; CR:r3=CR r0=noLF
+		(if (r6 < 73)
+		    ((r6 += 3)
+		     (r5 = 0)
+		     (write "=0D")
+		     (break))
+		  (if (r6 == 73)
+		      ((r6 = 3) ; NOT COMPLETE.
+		       (r5 = 0)
+		       (write "=\r\n=0D")
+		       (break))
+		    ((r6 = 3)
+		     (r5 = 0)
+		     (write "=\r\n=0D")
+		     (break))))))
+	   ;; r0:r3={RAW,ENC}
+	   ((r4 = 9)
+	    (read r1)
+	    ;; r0:r3={RAW,ENC} r1
+	    (if (r1 == ?\r)
+		;; r0:r3={RAW,ENC} r1=CR
+		((r4 = 10)
+		 (read r1)
+		 ;; r0:r3={RAW,ENC} CR r1
+		 (if (r1 == ?\n)
+		     ;; r0:r3={RAW,ENC} CR r1=LF
+		     ((r6 = 0)
+		      (r5 = 0)
+		      (branch
+		       r3
+		       ;; r0:r3=RAW CR r1=LF
+		       ((write r0)
+			(write "\r\n")
+			(r4 = 11)
+			(read r0)
+			(break))
+		       ;; r0:r3=ENC CR r1=LF
+		       ((write ?=)
+			(write r0 ,ew-ccl-high-table)
+			(write r0 ,ew-ccl-low-table)
+			(write "\r\n")
+			(r4 = 12)
+			(read r0)
+			(break))))
+		   ;; r0:r3={RAW,ENC} CR r1=noLF
+		   ((branch
+		     r3
+		     ;; r0:r3=RAW CR r1:noLF
+		     ((r6 = 4)
+		      (r5 = 0)
+		      (write "=\r\n")
+		      (write r0)
+		      (write "=0D")
+		      (r0 = r1)
+		      (break))
+		     ;; r0:r3=ENC CR r1:noLF
+		     ((r6 = 6)
+		      (r5 = 0)
+		      (write "=\r\n=")
+		      (write r0 ,ew-ccl-high-table)
+		      (write r0 ,ew-ccl-low-table)
+		      (write "=0D")
+		      (r0 = r1)
+		      (break))))
+		   ))
+	      ;; r0:r3={RAW,ENC} r1:noCR
+	      ((branch
+		r3
+		;; r0:r3=RAW r1:noCR
+		((r6 = 1)
+		 (r5 = 0)
+		 (write "=\r\n")
+		 (write r0)
+		 (r0 = r1)
+		 (break))
+		;; r0:r3=ENC r1:noCR
+		((r6 = 3)
+		 (r5 = 0)
+		 (write "=\r\n=")
+		 (write r0 ,ew-ccl-high-table)
+		 (write r0 ,ew-ccl-low-table)
+		 (r0 = r1)
+		 (break))))))))
+	(repeat)))
+      (;(write "[EOF:") (write r4 ,ew-ccl-high-table) (write r4 ,ew-ccl-low-table) (write "]")
+       (branch
+	r4
+	;; 0: (start) ;
+	(end)
+	;; 1: RAW ;
+	(end)
+	;; 2: r0:r3=ENC ;
+	(end)
+	;; 3: SOFTBREAK r0:r3=ENC ;
+	(end)
+	;; 4: r0:r3=WSP ;
+	((write "=\r\n") (end))
+	;; 5: SOFTBREAK r0:r3=WSP ;
+	((write "=\r\n") (end))
+	;; 6: ; r0=\r:r3=CR
+	(if (r6 <= 73)
+	    ((write "=0D") (end))
+	   ((write "=\r\n=0D") (end)))
+	;; 7: r5=WSP SOFTBREAK CR:r3=CR r0=LF ;
+	(end)
+	;; 8: r5=noWSP CR:r3=CR r0=LF ;
+	(end)
+	;; 9: ; r0:r3={RAW,ENC}
+	(branch
+	 r3
+	 ((write r0) (end))
+	 ((write "=")
+	  (write r0 ,ew-ccl-high-table)
+	  (write r0 ,ew-ccl-low-table)
+	  (end)))
+	;; 10: ; r0:r3={RAW,ENC} r1=CR
+	(branch
+	 r3
+	 ((write "=\r\n")
+	  (write r0)
+	  (write "=0D")
+	  (end))
+	 ((write "=\r\n=")
+	  (write r0 ,ew-ccl-high-table)
+	  (write r0 ,ew-ccl-low-table)
+	  (write "=0D")
+	  (end)))
+	;; 11: r0:r3=RAW CR LF ;
+	(end)
+	;; 12: r0:r3=ENC CR LF ;
+	(end)
+	))
       )))
 
 ;;;
