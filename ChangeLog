@@ -1,3 +1,10 @@
+1999-05-24  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmbuffer.el (mime-parse-multipart): Refer body-start instead of
+	header-end.
+
+	* mmcooked.el (mime-insert-header): Fix typo.
+
 1999-05-23  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mmcooked.el (mime-insert-header): Use
