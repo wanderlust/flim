@@ -126,7 +126,7 @@ local 変数 @code{mime-message-structure} に格納することにします。
 @node Message parser, Entity hierarchy, Entity, Entity
 @section Message の解析器
 
-@defun mime-parse-message &optional  default-ctl default-encoding node-id
+@defun mime-parse-message &optional  default-ctl node-id
 
 現在の buffer を message として構文解析し、その結果の mime-entity を返す。
 @end defun
