@@ -150,7 +150,6 @@ external decoder is called.")
       )))
 
 (defun base64-internal-decode-string (string)
-  "Decode STRING which is encoded in base64, and return the result."
   (let ((len (length string))
 	(i 0)
 	dest)
@@ -187,8 +186,6 @@ external decoder is called.")
 				    (base64-decode-unit a b c d))))
 		    ))))))))))
     dest))
-
-(defalias 'base64-decode-string 'base64-internal-decode-string)
 
 
 ;;; @ base64 encoder/decoder for region
@@ -237,6 +234,16 @@ external decoder is called.")
 			      t t nil (cdr base64-external-decoder))
 		       )))
 
+(defun base64-external-decode-string (string)
+  (with-temp-buffer
+    (insert string)
+    (as-binary-process (apply (function call-process-region)
+			      beg end (car base64-external-decoder)
+			      t t nil (cdr base64-external-decoder))
+		       )
+    (buffer-string)))
+
+
 (defun base64-encode-region (start end)
   "Encode current region by base64.
 START and END are buffer positions.
@@ -265,6 +272,20 @@ metamail or XEmacs package)."
 	   (> (- end start) base64-internal-decoding-limit))
       (base64-external-decode-region start end)
     (base64-internal-decode-region start end)
+    ))
+
+(defun base64-decode-string (string)
+  "Decode STRING which is encoded in base64, and return the result.
+This function calls internal base64 decoder if size of STRING is
+smaller than `base64-internal-decoding-limit', otherwise it calls
+external base64 decoder specified by `base64-external-decoder'.  In
+this case, you must install the program (maybe mmencode included in
+metamail or XEmacs package)."
+  (interactive "r")
+  (if (and base64-internal-decoding-limit
+	   (> (length string) base64-internal-decoding-limit))
+      (base64-external-decode-string string)
+    (base64-internal-decode-string string)
     ))
 
 
