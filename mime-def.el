@@ -35,7 +35,7 @@
 (eval-when-compile (require 'cl))	; list*
 
 (eval-and-compile
-  (defconst mime-library-product ["CLIME" (1 13 1) "安堵"]
+  (defconst mime-library-product ["CLIME" (1 13 2) "額田部"]
     "Product name, version number and code name of MIME-library package.")
   )
 
