@@ -912,7 +912,7 @@ data を指すことがある。
 <concept>primary-type</concept> と <concept>subtype</concept> からなる。
 <dref>RFC 2046</dref> で定義されている。
 <p>
-type は標準では
+primary-type は標準では
 
 <ul>
 <li><concept>text</concept>
