@@ -2,6 +2,11 @@
 
 	* FLIM: Version 1.2.0 (J-Dþjò) was released.-A
 
+	* README.en (What's FLIM): Delete description about
+ 	std11-parse.el; add description about mailcap.el.
+
+1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* eword-decode.el (eword-decode-encoded-word-error-handler): New
 	variable.
 	(eword-decode-encoded-word-default-error-handler): New function.
