@@ -1,5 +1,13 @@
 1999-12-02  Kenichi OKADA <okada@opaopa.org>
 
+	* smtp.el (smtp-send-command): Add new optional argument
+	to delete insecure words in a trace buffer.
+	(smtp-auth-cram-md5): Update.
+	(smtp-auth-plain): Update.
+	(smtp-auth-login): Update.
+
+1999-12-02  Kenichi OKADA <okada@opaopa.org>
+
 	* smtp.el (smtp-via-smtp): Comment out vain commands.
 
 1999-12-02  Kenichi OKADA <okada@opaopa.org>

@@ -368,9 +368,11 @@ don't define this value."
     (setq smtp-read-point match-end)
     return-value))
 
-(defun smtp-send-command (process command)
+(defun smtp-send-command (process command &optional secure)
   (goto-char (point-max))
-  (insert command "\r\n")
+  (if secure
+      (insert "Here is insecure words.\r\n")
+    (insert command "\r\n"))
   (setq smtp-read-point (point))
   (process-send-string process command)
   (process-send-string process "\r\n"))
@@ -490,7 +492,7 @@ don't define this value."
 			 (fillarray secure-word 0))
 	   secure-word (unwind-protect
 			   (base64-encode-string secure-word)
-			 (fillarray secure-word 0))))
+			 (fillarray secure-word 0))) t)
     (fillarray secure-word 0)
     (setq response (smtp-read-response process))
     (if (or (null (car response))
@@ -511,7 +513,7 @@ don't define this value."
 			 (fillarray secure-word 0))
 	   secure-word (unwind-protect
 			   (concat "AUTH PLAIN " secure-word)
-			 (fillarray secure-word 0))))
+			 (fillarray secure-word 0))) t)
     (fillarray secure-word 0)
     (setq response (smtp-read-response process))
     (if (or (null (car response))
@@ -534,7 +536,7 @@ don't define this value."
      process
      (setq secure-word (unwind-protect
 			   (base64-encode-string secure-word)
-			 (fillarray secure-word 0))))
+			 (fillarray secure-word 0))) t)
     (fillarray secure-word 0)
     (setq response (smtp-read-response process))
     (if (or (null (car response))
