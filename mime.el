@@ -63,25 +63,14 @@ current-buffer, and return it.")
 ;;; @ Entity Representation and Implementation
 ;;;
 
-(defvar mime-entity-implementation-alist nil)
-
 (defsubst mime-find-function (service type)
   (let ((imps (cdr (assq type mime-entity-implementation-alist))))
     (if imps
-	(let ((func (cdr (assq service imps))))
-	  (unless func
-	    (setq func (intern (format "mm%s-%s" type service)))
-	    (set-alist 'mime-entity-implementation-alist
-		       type (put-alist service func imps))
-	    )
-	  func)
-      (let ((prefix (format "mm%s" type)))
-	(require (intern prefix))
-	(let ((func (intern (format "%s-%s" prefix service))))
-	  (set-alist 'mime-entity-implementation-alist
-		     type
-		     (list (cons service func)))
-	  func)))))
+	(cdr (assq service imps))
+      (require (intern (format "mm%s" type)))
+      (cdr (assq service
+		 (cdr (assq type mime-entity-implementation-alist))))
+      )))
 
 (defsubst mime-entity-function (entity service)
   (mime-find-function service
@@ -98,13 +87,11 @@ current-buffer, and return it.")
 TYPE is representation-type.
 LOCATION is location of entity.  Specification of it is depended on
 representation-type."
-  (funcall (mime-find-function 'open-entity type) location)
-  )
+  (funcall (mime-find-function 'open-entity type) location))
 
 (defun mime-entity-cooked-p (entity)
   "Return non-nil if contents of ENTITY has been already code-converted."
-  (funcall (mime-entity-function entity 'cooked-p))
-  )
+  (mime-entity-send entity 'cooked-p))
 
 
 ;;; @ Entity as node of message
@@ -161,26 +148,26 @@ ENTITY is used."
       (mime-entity-send entity 'entity-buffer)))
 
 (defun mime-entity-point-min (entity)
-  (mime-entity-send entity 'entity-point-min))
+  (mime-entity-send entity 'point-min))
 
 (defun mime-entity-point-max (entity)
-  (mime-entity-send entity 'entity-point-max))
+  (mime-entity-send entity 'point-max))
 
 (defun mime-entity-header-start (entity)
   (or (mime-entity-header-start-internal entity)
-      (mime-entity-send entity 'entity-header-start)))
+      (mime-entity-send entity 'header-start)))
 
 (defun mime-entity-header-end (entity)
   (or (mime-entity-header-end-internal entity)
-      (mime-entity-send entity 'entity-header-end)))
+      (mime-entity-send entity 'header-end)))
 
 (defun mime-entity-body-start (entity)
   (or (mime-entity-body-start-internal entity)
-      (mime-entity-send entity 'entity-body-start)))
+      (mime-entity-send entity 'body-start)))
 
 (defun mime-entity-body-end (entity)
   (or (mime-entity-body-end-internal entity)
-      (mime-entity-send entity 'entity-body-end)))
+      (mime-entity-send entity 'body-end)))
 
 
 ;;; @ Entity Header
