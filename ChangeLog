@@ -1,3 +1,15 @@
+1999-07-24  MORIOKA Tomohiko  <tomo@etl.go.jp>
+
+	* mmbuffer.el (mime-entity-children): Deleted [moved to
+	mime-def.el].
+
+	* mime-def.el: Add autoload settings for
+	`mime-entity-content-type', `mime-parse-multipart' and
+	`mime-parse-encapsulated' [to avoid warning].
+	(mime-entity-children): New method of `mime-entity' [moved from
+	mmbuffer.el].
+
+
 1999-07-22  MORIOKA Tomohiko  <tomo@etl.go.jp>
 
 	* FLIM: Version 1.13.1 (Tawaramoto) released.
