@@ -144,7 +144,16 @@ the program (maybe mmencode included in metamail or XEmacs package)."
     ))
 
 
-(defun quoted-printable-insert-encoded-file (filename)
+(mel-define-method-function
+ (mime-encode-string string (nil "quoted-printable"))
+ 'quoted-printable-encode-string)
+
+(mel-define-method-function
+ (mime-encode-region start end (nil "quoted-printable"))
+ 'quoted-printable-encode-region)
+
+(mel-define-method mime-insert-encoded-file (filename
+					     (nil "quoted-printable"))
   "Encode contents of file FILENAME to quoted-printable, and insert the result.
 It calls external quoted-printable encoder specified by
 `quoted-printable-external-encoder'.  So you must install the program
@@ -230,10 +239,20 @@ the program (maybe mmencode included in metamail or XEmacs package)."
     (buffer-string)))
 
 
+(mel-define-method-function
+ (mime-decode-string string (nil "quoted-printable"))
+ 'quoted-printable-decode-string)
+
+(mel-define-method-function
+ (mime-decode-region start end (nil "quoted-printable"))
+ 'quoted-printable-decode-region)
+
+
 (defvar quoted-printable-external-decoder-option-to-specify-file '("-o")
   "*list of options of quoted-printable decoder program to specify file.")
 
-(defun quoted-printable-write-decoded-region (start end filename)
+(mel-define-method mime-write-decoded-region (start end filename
+						    (nil "quoted-printable"))
   "Decode and write current region encoded by quoted-printable into FILENAME.
 START and END are buffer positions."
   (interactive
@@ -303,31 +322,14 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 			)))
 	       string "")))
 
+(mel-define-method-function (encoded-text-encode-string string (nil "Q"))
+			    'q-encoding-encode-string)
 
-;;; @@ etc
-;;;
-
-(defun q-encoding-printable-char-p (chr mode)
-  (and (not (memq chr '(?= ?? ?_)))
-       (<= ?\   chr)(<= chr ?~)
-       (cond ((eq mode 'text) t)
-	     ((eq mode 'comment)
-	      (not (memq chr '(?\( ?\) ?\\)))
-	      )
-	     (t
-	      (string-match "[A-Za-z0-9!*+/=_---]" (char-to-string chr))
-	      ))))
-
-(defun q-encoding-encoded-length (string &optional mode)
-  (let ((l 0)(i 0)(len (length string)) chr)
-    (while (< i len)
-      (setq chr (elt string i))
-      (if (q-encoding-printable-char-p chr mode)
-	  (setq l (+ l 1))
-	(setq l (+ l 3))
-	)
-      (setq i (+ i 1)) )
-    l))
+(mel-define-method encoded-text-decode-string (string (nil "Q"))
+  (if (and (string-match Q-encoded-text-regexp string)
+	   (string= string (match-string 0 string)))
+      (q-encoding-decode-string string)
+    (error "Invalid encoded-text %s" string)))
 
 
 ;;; @ end
