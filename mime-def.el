@@ -474,6 +474,12 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
 	 (intern ,class ,(intern (format "%s-obarray" name))))
        )))
 
+(defvar base64-dl-module
+  (and (fboundp 'dynamic-link)
+       (let ((path (expand-file-name "base64.so" exec-directory)))
+	 (and (file-exists-p path)
+	      path))))
+
 
 ;;; @ end
 ;;;

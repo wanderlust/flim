@@ -79,12 +79,6 @@ Content-Transfer-Encoding for it."
 ;;; @ setting for modules
 ;;;
 
-(defvar base64-dl-module
-  (and (fboundp 'dynamic-link)
-       (let ((path (expand-file-name "base64.so" exec-directory)))
-	 (and (file-exists-p path)
-	      path))))
-
 (defvar mel-ccl-module
   (and (featurep 'mule)
        (module-installed-p 'mel-ccl)))

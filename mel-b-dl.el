@@ -28,9 +28,6 @@
 (require 'mime-def)
 
 (eval-and-compile
-  (defvar base64-dl-module
-    (expand-file-name "base64.so" exec-directory))
-
   (defvar base64-dl-handle
     (and (file-exists-p base64-dl-module)
 	 (dynamic-link base64-dl-module)))
