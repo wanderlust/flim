@@ -6,13 +6,17 @@
 
 (setq flim-modules '(std11
 		     mime-def
-		     mel mel-b mel-q mel-u mel-g
+		     mel mel-b mel-b-el mel-q mel-u mel-g
 		     eword-decode eword-encode
 		     mime mime-parse mmbuffer mmcooked
 		     mailcap))
 
+(if (featurep 'mule)
+    (setq flim-modules (append '(mel-b-ccl mel-ccl) flim-modules))
+  )
+
 (if (fboundp 'dynamic-link)
-    (setq flim-modules (cons 'mel-dl flim-modules))
+    (setq flim-modules (cons 'mel-b-dl flim-modules))
   )
 
 ;;; FLIM-ELS ends here
