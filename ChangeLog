@@ -1,3 +1,22 @@
+2000-06-23  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmexternal.el (initialize-instance): New method.
+	(mime-entity-name): Fixed.
+	(mmexternal-require-buffer): New function.
+	(mime-insert-entity): New implementation.
+	(mime-write-entity): Likewise.
+	(mime-entity-body): New method.
+	(mime-insert-entity-body): New method.
+	(mime-write-entity-body): New implementation.
+	(mime-entity-content): Likewise.
+	(mime-insert-entity-content): Likewise.
+	(mime-write-entity-content): Likewise.
+	(mime-entity-fetch-field): Likewise.
+	(mime-insert-header): Likewise.
+
+	* mmbuffer.el (initialize-instance): Store buffer instead of name
+	of buffer to `buffer' slot.
+
 2000-06-21  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mmgeneric.el (mime-entity-children): Deleted.
