@@ -1,6 +1,6 @@
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.1 (J-Dþjò) was released.-A
+	* FLIM: Version 1.2.0 (J-Dþjò) was released.-A
 
 	* eword-decode.el (eword-decode-encoded-word-error-handler): New
 	variable.
