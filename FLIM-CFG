@@ -16,9 +16,15 @@
       (add-to-list 'load-path (expand-file-name "apel" LISPDIR))
       ))
 
+(defvar VERSION_SPECIFIC_LISPDIR nil)
+
+(if VERSION_SPECIFIC_LISPDIR
+    (add-to-list 'load-path VERSION_SPECIFIC_LISPDIR))
+
 (require 'install)
 
 (add-latest-path "custom")
+
 (add-path default-directory)
 
 (or (fboundp 'write-region-as-binary)

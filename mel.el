@@ -25,7 +25,6 @@
 
 ;;; Code:
 
-(require 'emu)
 (require 'mime-def)
 
 (defcustom mime-encoding-list
@@ -81,7 +80,10 @@ Content-Transfer-Encoding for it."
 
 (defvar mel-ccl-module
   (and (featurep 'mule)
-       (module-installed-p 'mel-ccl)))
+       (progn
+	 (require 'path-util)
+	 (module-installed-p 'mel-ccl)
+	 )))
 
 (mel-use-module 'mel-b '("base64" "B"))
 (mel-use-module 'mel-q '("quoted-printable" "Q"))

@@ -1,3 +1,27 @@
+1998-10-12  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* README.en: Add explanation about `VERSION_SPECIFIC_LISPDIR'.
+
+	* Makefile (install): Add new arg `VERSION_SPECIFIC_LISPDIR'.
+	(elc): Likewise.
+
+	* FLIM-MK (config-flim): Refer to `VERSION_SPECIFIC_LISPDIR'.
+
+	* FLIM-CFG (VERSION_SPECIFIC_LISPDIR): New variable.
+
+1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el (mel-ccl-module): Require path-util when the running
+	emacs has MULE.
+
+	* mel.el: Don't require emu.
+
+1998-10-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS: Don't install mel-ccl in anything older than XEmacs 21
+	with MULE.
+
+
 1998-10-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel-ccl.el (base64-ccl-write-decoded-region): bind
