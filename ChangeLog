@@ -1,6 +1,17 @@
-1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+1998-04-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky,Dr(Bto) was released.
+	* eword-decode.el (eword-decode-sticked-encoded-word): Use
+ 	'defcustom.
+
+1998-04-21  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* VERSION.FLAM: New file.
+
+1998-04-17  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* Sync up with flim-1_0_0 to flim-1_0_1.
+
+1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
@@ -19,6 +30,10 @@
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel.el (base64-dl-module): Must check base64.so actually exists.
+
+1998-04-13  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el: Copied from AKEMI branch of SEMI.
 
 
 1998-04-13  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
