@@ -9,19 +9,20 @@ What's FLIM
 
     std11.el	--- STD 11 (RFC 822) parser and utility
 
-    mime-def.el --- Definitions about MIME format
+    mime.el	--- MIME library
 
-    MEL: MIME encoder/decoder
-	mel.el    --- main module
-	mel-dl.el --- base64 (b-encoding) encoder/decoder
-		      (for Emacs 20 with dynamic loading support)
-	mel-b.el  --- base64 (b-encoding) encoder/decoder
-		      (for other emacsen)
-	mel-q.el  --- quoted-printable and q-encoding encoder/decoder
-	mel-u.el  --- unofficial module for uuencode
-	mel-g.el  --- unofficial module for gzip64
+        mime-def.el --- Definitions about MIME format
 
-    eword: encoded-word encoder/decoder
+    	mime-parse.el --- MIME parser
+
+    	mel.el --- MIME encoder/decoder
+	    mel-dl.el --- base64 (b-encoding) encoder/decoder
+			  (for Emacs 20 with dynamic loading support)
+	    mel-b.el  --- base64 (b-encoding) encoder/decoder
+			  (for other emacsen)
+	    mel-q.el  --- quoted-printable and q-encoding encoder/decoder
+	    mel-u.el  --- unofficial module for uuencode
+	    mel-g.el  --- unofficial module for gzip64
 
 	eword-decode.el --- encoded-word decoder
 	eword-encode.el --- encoded-word encoder

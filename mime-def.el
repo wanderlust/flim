@@ -24,13 +24,15 @@
 
 ;;; Code:
 
-(defconst mime-library-version-string "Chao 1.4.0 - \"J,D~(Bj,Dr(B\"")
+(defconst mime-library-version-string "Chao 1.6.0 - \"Kuj,Dr(B\"")
 
 
 ;;; @ variables
 ;;;
 
 (require 'custom)
+
+(eval-when-compile (require 'cl))
 
 (defgroup mime nil
   "Emacs MIME Interfaces"
@@ -49,6 +51,11 @@
   "*Directory for temporary files."
   :group 'mime
   :type 'directory)
+
+(defcustom mime-uuencode-encoding-name-list '("x-uue" "x-uuencode")
+  "*List of encoding names for uuencode format."
+  :group 'mime
+  :type '(repeat string))
 
 
 ;;; @ required functions
@@ -93,8 +100,7 @@
 (defconst std11-quoted-string-regexp
   (concat "\""
 	  (regexp-*
-	   (regexp-or std11-qtext-regexp std11-quoted-pair-regexp)
-	   )
+	   (regexp-or std11-qtext-regexp std11-quoted-pair-regexp))
 	  "\""))
 
 
@@ -119,7 +125,61 @@
 	  "][" quoted-printable-hex-chars "]"))
 
 
-;;; @ MIME-entity
+;;; @ Content-Type
+;;;
+
+(defsubst make-mime-content-type (type subtype &optional parameters)
+  (list* (cons 'type type)
+	 (cons 'subtype subtype)
+	 (nreverse parameters))
+  )
+
+(defsubst mime-content-type-primary-type (content-type)
+  "Return primary-type of CONTENT-TYPE."
+  (cdr (car content-type)))
+
+(defsubst mime-content-type-subtype (content-type)
+  "Return primary-type of CONTENT-TYPE."
+  (cdr (cadr content-type)))
+
+(defsubst mime-content-type-parameters (content-type)
+  "Return primary-type of CONTENT-TYPE."
+  (cddr content-type))
+
+(defsubst mime-content-type-parameter (content-type parameter)
+  "Return PARAMETER value of CONTENT-TYPE."
+  (cdr (assoc parameter (mime-content-type-parameters content-type))))
+
+
+(defsubst mime-type/subtype-string (type &optional subtype)
+  "Return type/subtype string from TYPE and SUBTYPE."
+  (if type
+      (if subtype
+	  (format "%s/%s" type subtype)
+	(format "%s" type))))
+
+
+;;; @ Content-Disposition
+;;;
+
+(defsubst mime-content-disposition-type (content-disposition)
+  "Return disposition-type of CONTENT-DISPOSITION."
+  (cdr (car content-disposition)))
+
+(defsubst mime-content-disposition-parameters (content-disposition)
+  "Return disposition-parameters of CONTENT-DISPOSITION."
+  (cdr content-disposition))
+
+(defsubst mime-content-disposition-parameter (content-disposition parameter)
+  "Return PARAMETER value of CONTENT-DISPOSITION."
+  (cdr (assoc parameter (cdr content-disposition))))
+
+(defsubst mime-content-disposition-filename (content-disposition)
+  "Return filename of CONTENT-DISPOSITION."
+  (mime-content-disposition-parameter content-disposition "filename"))
+
+
+;;; @ MIME entity
 ;;;
 
 (defsubst make-mime-entity (buffer
@@ -152,16 +212,46 @@
 (defsubst mime-entity-number (entity)
   (reverse (mime-entity-node-id entity)))
 
+(defalias 'mime-entity-point-min 'mime-entity-header-start)
+(defalias 'mime-entity-point-max 'mime-entity-body-end)
 
-;;; @ utility
+(defsubst mime-entity-media-type (entity)
+  (mime-content-type-primary-type (mime-entity-content-type entity)))
+(defsubst mime-entity-media-subtype (entity)
+  (mime-content-type-subtype (mime-entity-content-type entity)))
+(defsubst mime-entity-parameters (entity)
+  (mime-content-type-parameters (mime-entity-content-type entity)))
+
+(defsubst mime-entity-type/subtype (entity-info)
+  (mime-type/subtype-string (mime-entity-media-type entity-info)
+			    (mime-entity-media-subtype entity-info)))
+
+
+;;; @ message structure
 ;;;
 
-(defsubst mime-type/subtype-string (type &optional subtype)
-  "Return type/subtype string from TYPE and SUBTYPE."
-  (if type
-      (if subtype
-	  (format "%s/%s" type subtype)
-	(format "%s" type))))
+(defvar mime-message-structure nil
+  "Information about structure of message.
+Please use reference function `mime-entity-SLOT' to get value of SLOT.
+
+Following is a list of slots of the structure:
+
+buffer			buffer includes this entity (buffer).
+node-id			node-id (list of integers)
+header-start		minimum point of header in raw-buffer
+header-end		maximum point of header in raw-buffer
+body-start		minimum point of body in raw-buffer
+body-end		maximum point of body in raw-buffer
+content-type		content-type (content-type)
+content-disposition	content-disposition (content-disposition)
+encoding		Content-Transfer-Encoding (string or nil)
+children		entities included in this entity (list of entity)
+
+If an entity includes other entities in its body, such as multipart or
+message/rfc822, `mime-entity' structures of them are included in
+`children', so the `mime-entity' structure become a tree.")
+
+(make-variable-buffer-local 'mime-message-structure)
 
 
 ;;; @ end

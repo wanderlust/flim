@@ -2,7 +2,7 @@
 # Makefile for FLIM.
 #
 
-VERSION = 1.3.0
+VERSION = 1.6.0
 
 TAR	= tar
 RM	= /bin/rm -f
