@@ -158,14 +158,6 @@
 		       (mime-buffer-entity-body-end-internal entity))
      (mime-entity-encoding entity))))
 
-;;; redefine to speed up
-
-(mm-define-method entity-point-min ((entity buffer))
-  (mime-buffer-entity-header-start-internal entity))
-
-(mm-define-method entity-point-max ((entity buffer))
-  (mime-buffer-entity-body-end-internal entity))
-
 (luna-define-method mime-entity-fetch-field :around
   ((entity mime-buffer-entity) field-name)
   (or (luna-call-next-method)
