@@ -103,18 +103,19 @@ external decoder is called.")
 		(base64-num-to-char (ash (logand a 3) 4))) "==")
        ))))
 
-(defun base64-decode-1 (pack)
-  (let ((a (base64-char-to-num (car pack)))
-	(b (base64-char-to-num (nth 1 pack)))
-	(c (nth 2 pack))
-	(d (nth 3 pack)))
-    (concat (char-to-string (logior (ash a 2) (ash b -4)))
-	    (if (and c (setq c (base64-char-to-num c)))
-		(concat (char-to-string
-			 (logior (ash (logand b 15) 4) (ash c -2)))
-			(if (and d (setq d (base64-char-to-num d)))
-			    (char-to-string (logior (ash (logand c 3) 6) d))
-			  ))))))
+(defun base64-decode-unit (a b &optional c d)
+  (condition-case err
+      (concat
+       (char-to-string (logior (ash (base64-char-to-num a) 2)
+			       (ash (setq b (base64-char-to-num b)) -4)))
+       (if (and c (setq c (base64-char-to-num c)))
+	   (concat (char-to-string
+		    (logior (ash (logand b 15) 4) (ash c -2)))
+		   (if (and d (setq d (base64-char-to-num d)))
+		       (char-to-string (logior (ash (logand c 3) 6) d))
+		     ))))
+    (error (message (nth 1 err))
+	   "")))
 
 
 ;;; @@ base64 encoder/decoder for string
@@ -150,9 +151,42 @@ external decoder is called.")
 
 (defun base64-decode-string (string)
   "Decode STRING which is encoded in base64, and return the result."
-  (mapconcat (function base64-decode-1)
-	     (pack-sequence string 4)
-	     ""))
+  (let ((len (length string))
+	(i 0)
+	dest)
+    (while (< i len)
+      (let ((a (aref string i)))
+	(setq i (1+ i))
+	(unless (eq a ?\n)
+	  (let ((b (aref string i)))
+	    (setq i (1+ i))
+	    (cond
+	     ((eq b ?\n)
+	      ;; invalid
+	      )
+	     ((>= i len)
+	      (setq dest (concat dest (base64-decode-unit a b) ))
+	      )
+	     (t
+	      (let ((c (aref string i)))
+		(setq i (1+ i))
+		(cond
+		 ((eq c ?\n)
+		  (setq dest (concat dest (base64-decode-unit a b)))
+		  )
+		 ((>= i len)
+		  (setq dest (concat dest (base64-decode-unit a b c)))
+		  )
+		 (t
+		  (let ((d (aref string i)))
+		    (setq i (1+ i))
+		    (setq dest
+			  (concat dest
+				  (if (eq c ?\n)
+				      (base64-decode-unit a b c)
+				    (base64-decode-unit a b c d))))
+		    ))))))))))
+    dest))
 
 
 ;;; @ base64 encoder/decoder for region
@@ -173,31 +207,10 @@ external decoder is called.")
 
 (defun base64-internal-decode-region (beg end)
   (save-excursion
-    (save-restriction
-      (narrow-to-region beg end)
-      (goto-char (point-min))
-      (while (looking-at ".*\n")
-	(condition-case err
-	    (replace-match
-	     (base64-decode-string
-	      (buffer-substring (match-beginning 0) (1- (match-end 0))))
-	     t t)
-	  (error
-	   (prog1
-	       (message (nth 1 err))
-	     (replace-match "")))))
-      (if (looking-at ".*$")
-	  (condition-case err
-	      (replace-match
-	       (base64-decode-string
-		(buffer-substring (match-beginning 0) (match-end 0)))
-	       t t)
-	    (error
-	     (prog1
-		 (message (nth 1 err))
-	       (replace-match "")))
-	    ))
-      )))
+    (let ((str (buffer-substring beg end)))
+      (delete-region beg end)
+      (goto-char beg)
+      (insert (base64-decode-string str)))))
 
 (defun base64-external-encode-region (beg end)
   (save-excursion
