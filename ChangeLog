@@ -1,5 +1,10 @@
 1998-08-20  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-var.el (ew-dynamic-options): The result is now integer instead
+	of list of booleans.
+
+1998-08-20  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* Makefile: Output parse table to ew-parse.out instead of
 	states.output.
 

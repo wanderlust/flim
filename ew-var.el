@@ -68,10 +68,10 @@
 ;;; utilities for variables.
 
 (defun ew-dynamic-options ()
-  (list
-   ew-decode-sticked-encoded-word
-   ew-decode-quoted-encoded-word
-   ew-ignore-75bytes-limit
-   ew-ignore-76bytes-limit
-   ew-permit-sticked-comment
-   ew-permit-sticked-special))
+  (logior
+   (if ew-decode-sticked-encoded-word 1 0)
+   (if ew-decode-quoted-encoded-word 2 0)
+   (if ew-ignore-75bytes-limit 4 0)
+   (if ew-ignore-76bytes-limit 8 0)
+   (if ew-permit-sticked-comment 16 0)
+   (if ew-permit-sticked-special 32 0)))
