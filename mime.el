@@ -1,8 +1,10 @@
 ;;; mime.el --- MIME library module
 
 ;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1999 Electrotechnical Laboratory, JAPAN.
+;; Licensed to the Free Software Foundation.
 
-;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: MIME, multimedia, mail, news
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
