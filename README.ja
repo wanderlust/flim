@@ -3,50 +3,52 @@
 FLIM とは？
 ===========
 
-  FLIM はメッセージ表現と符号化に関する基礎的な機能を提供するライブラ
-  リーです。以下のモジュールから構成されています:
+  FLIM は Internet message に関する様々な表現形式や符号化に関する基礎
+  的な機能を提供するための汎用部品です。FLIM は以下のモジュールから構
+  成されています:
 
-    std11.el	--- STD 11 (RFC 822) の解析器とユーティリティー
+    std11.el	--- STD 11 (RFC 822) 形式に基づく解析処理等
 
-    mime.el	--- MIME ライブラリー
+    mime.el	--- MIME-entity に関する諸機能の提供
 
-      mime-def.el --- MIME の様式に関する定義
+      mime-def.el --- MIME 形式に関する定義
 
       mime-parse.el --- MIME 解析器
 
       mel.el --- MIME 符号器/復号器
 	mel-b-dl.el --- base64 (B-encoding) 符号器/復号器
-			(Emacs 20 の動的読み込み機能付き用)
-	mel-b.el    --- base64 (B-encoding) 符号器/復号器
-			(他の emacs 環境用)
+			(dynamic loading 機能付き Emacs 20 用)
+	mel-b-ccl.el --- base64 (B-encoding) encoder/decoder (using CCL)
+	mel-b-el.el --- base64 (B-encoding) 符号器/復号器
+			(他の emacsen 用)
+	mel-q-ccl.el --- quoted-printable and Q-encoding
+			 encoder/decoder (using CCL)
 	mel-q.el    --- quoted-printable と Q-encoding
 		    	符号器/復号器
-	mel-ccl.el  --- CCL を使った base64 (B-encoding),
-		    	quoted-printable と Q-encoding の符号器/復号器
-	mel-u.el    --- uuencode のための非公式モジュール
-	mel-g.el    --- gzip64 のための非公式モジュール
+	mel-u.el    --- uuencode のための非公式 backend
+	mel-g.el    --- gzip64 のための非公式 backend
 
       eword-decode.el --- encoded-word 復号器
       eword-encode.el --- encoded-word 符号器
 
-    mailcap.el	--- mailcap 解析器とユーティリティー
+    mailcap.el	--- mailcap の解析処理等
 
 
-インストール
-============
+導入 (install)
+==============
 
-(0) インストールする前に、APEL パッケージ (9.6 以降)
-    をインストールしてください。APEL パッケージは以下のところで取得で
-    きます:
+(0) 導入 (install) する前に、APEL (9.12 以降) を導入してください。APEL 
+    は以下のところで取得できます:
 
 	ftp://ftp.jaist.ac.jp/pub/GNU/elisp/apel/
 
-(1-a) 展開した場所で実行
+(1-a) 展開した場所への導入
 
-  他のディレクトリーにインストールしたくないなら、以下のことだけをやっ
-  てください:
+  展開した場所とは異なる場所に導入したくないなら、
 
 	% make
+
+  だけを実行してください。
 
   emacs のコマンド名を指定することができます。例えば、
 
@@ -56,9 +58,11 @@ FLIM とは？
 
 (b) make install
 
-  他のディレクトリーにインストールしたいなら、以下のことをしてください:
+  展開した場所とは異なる場所に導入したいなら、
 
 	% make install
+
+  を実行してください。
 
   emacs のコマンド名を指定することができます。例えば、
 
@@ -66,8 +70,8 @@ FLIM とは？
 
   `EMACS=...' が省略されると、Emacs=emacs が使われます。
 
-  Emacs Lisp プログラムとシェルスクリプトのためのディレクトリー木の接
-  頭辞 (prefix) を指定することができます。例えば、
+  Emacs Lisp プログラムのためのディレクトリー木の接頭辞 (prefix) を指
+  定することができます。例えば、
 
 	% make install PREFIX=~/
 
@@ -90,49 +94,52 @@ FLIM とは？
   です。
 
   emu モジュール (APEL パッケージに入っています) が標準でないディレク
-  トリーにインストールされている場合は、それらのある場所を指定する必要
-  があります。例えば、:
+  トリーに導入されている場合は、それらのある場所を指定する必要
+  があります。例えば：
 
     % make install VERSION_SPECIFIC_LISPDIR=~/elisp
 
-  どのファイルが emu モジュールか apel モジュールの一部なのか、それら
-  がどこにインストールされるかを知りたいときは、次のようなコマンドを入
+  どのファイルが emu モジュールか APEL モジュールの一部なのか、それら
+  がどこに導入されるかを知りたいときは、次のようなコマンドを入
   力することができます。
 
     % make what-where LISPDIR=~/elisp VERSION_SPECIFIC_LISPDIR=~/elisp
 
-  ファイル FLIM-CFG を編集することで他の選択自由な設定を指定することが
-  できます。その中のコメントを読んでください。
+  また、FLIM-CFG ファイルを編集することで他の選択可能な設定を指定する
+  ことができます。その詳細に関しては FLIM-CFG ファイルの注釈 (comment) 
+  を読んでください。
 
-(1-c) XEmacs のパッケージとしてインストールする
+(1-c) XEmacs のパッケージとして導入する
 
-  XEmacs のパッケージディレクトリーにインストールする場合は、以下のこ
-  とをしてください:
+  XEmacs のパッケージ・ディレクトリーに導入する場合は、
 
 	% make install-package
 
-  emacs のコマンド名を指定することができます。例えば、
+  を実行してください。
+
+  XEmacs のコマンド名を指定することができます。例：
 
 	% make install-package XEMACS=xemacs-21
 
   `XEMACS=...' が省略されると、XEMACS=xemacs が使用されます。
 
-  パッケージのディレクトリーを指定することができます。例えば:
+  パッケージ・ディレクトリーを指定することができます。例：
 
 	% make install PACKAGEDIR=~/.xemacs
 
-  `PACKAGEDIR=...' が省略されると、存在するパッケージディレクトリーの
-  最初のものが使われます。
+  `PACKAGEDIR=...' が省略されると、存在するパッケージ・ディレクトリー
+  の最初のものが使われます。
 
-  XEmacs のパッケージシステムは XEmacs 21.0 かそれ以降を要求することに
-  注意してください。
+  ［注意］XEmacs のパッケージ・システムは XEmacs 21.0 かそれ以降が必要
+	  です。
+
 
 load-path (Emacs と MULE 用)
 =============================
 
-  Emacs か Mule を使っているなら、FLIM のディレクトリーを
-  load-path に追加してください。初期設定でインストールしたなら、次のよ
-  うに subdirs.el を書くことができます。例:
+  Emacs か Mule を使っているなら、FLIM のディレクトリーを load-path に
+  追加してください。初期設定のまま導入したなら、次のように subdirs.el 
+  を書くことができます。例:
 
   --------------------------------------------------------------------
   (normal-top-level-add-to-load-path '("apel" "flim"))
@@ -140,8 +147,9 @@ load-path (Emacs と MULE 用)
 
   XEmacs を使っているなら、load-path を設定する必要はありません。
 
+
 バグ報告
-===========
+========
 
   バグ報告や改善の提案を書いたときは、是非 tm メーリングリストに送って
   ください:

@@ -1,5 +1,12 @@
 1999-02-18  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* Sync up to flim-1_12_5 from flim-1_12_1.
+
+	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
+	1.12.2.
+
+1999-02-18  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mel-b-ccl.el (mel-ccl-encode-base64-generic): Shift timing for
 	linebreak.
 
@@ -45,7 +52,7 @@
 	* Sync up to flim-1_12_1 from flim-1_11_3.
 
 	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
-	1.12.0.
+	1.12.1.
 
 1999-01-04  Tanaka Akira      <akr@jaist.ac.jp>
 
@@ -1315,6 +1322,283 @@
 1998-04-13  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el: Copied from AKEMI branch of SEMI.
+
+
+1999-01-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.12.5 (Hirahata) released.
+
+	* mime-ja.sgml, mime-en.sgml: Sync with FLIM API 1.12.
+
+1999-01-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* NEWS (New optional argument of `std11-field-end'): New
+	subsection.
+
+	* std11.el (std11-field-end): Add new optional argument `bound'.
+
+
+1999-01-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.12.4 (Tsutsui) released.
+
+1999-01-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* README.en: Sync with latest FLIM.
+
+	* README.ja: fixed.
+
+1999-01-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmbuffer.el, mmgeneric.el (insert-entity-content): New method.
+
+	* mime.el (mime-insert-entity-content): New generic function.
+
+1999-01-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* NEWS (New function `mime-find-entity-from-content-id'): New
+	subsection.
+	(New function `mime-parse-msg-id'): New subsection.
+	(New function `mime-uri-parse-cid'): New subsection.
+
+1999-01-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-find-entity-from-content-id): New function.
+	(mime-field-parser-alist): Use `mime-parse-msg-id' instead of
+	`std11-parse-msg-id' to parse `Message-Id', `Recent-Message-Id'
+	and `Content-Id' field.
+
+	* mime-parse.el (mime-parse-msg-id): New function.
+	(mime-uri-parse-cid): New function.
+
+
+1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama)-A released.
+
+1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* NEWS (Function `std11-parse-in-reply-to'): New subsection.
+	(New function `std11-parse-msg-id-string'): Likewise.
+	(New function `std11-parse-msg-ids-string'): Likewise.
+	(New generic function `mime-insert-entity'): Likewise.
+
+1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-field-parser-alist): Change to set parser for
+	tokens instead of parser for string.
+	(mime-read-field): Use `eword-lexical-analyze' before parsing.
+
+	* eword-encode.el (eword-encode-in-reply-to): Use
+	`std11-parse-msg-ids-string' instead of `std11-parse-in-reply-to'
+	and `std11-lexical-analyze'.
+
+	* std11.el (std11-parse-msg-ids): Renamed from
+	`std11-parse-in-reply-to'; define `std11-parse-in-reply-to' as
+	obsolete alias.
+	(std11-parse-msg-id-string): New function.
+	(std11-parse-msg-ids-string): New function.
+
+1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-field-parser-alist): New variable.
+	(mime-read-field): Refer `mime-field-parser-alist'.
+
+1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmbuffer.el, mmgeneric.el (insert-entity): New method.
+
+	* mime.el (mime-insert-entity): New generic function.
+
+1999-01-22  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* std11.el (TopLevel): Require `custom'.
+
+
+1999-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.12.2 (Kuj-Dò)-A released.
+
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-parse.el (mime-lexical-analyzer): New user option.
+	(mime-analyze-tspecial): New function.
+	(mime-analyze-token): New function.
+	(mime-parse-Content-Transfer-Encoding): Use
+	`std11-lexical-analyze' with `mime-lexical-analyzer'.
+
+	* mime-def.el (mime-tspecial-char-list): Renamed from
+	`mime-tspecials'; changed from string to list.
+	(mime-token-regexp): Use `eval-when-compile'.
+
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-lexical-analyzer): Modify DOC-string
+	about interface change.
+	(eword-analyze-comment): Renamed from `eword-parse-comment';
+	change second argument `from' to required argument; abolish alias
+	`eword-analyze-comment' of `eword-parse-comment'.
+
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* NEWS (User option `eword-lexical-analyzers' ->
+	`eword-lexical-analyzer'): New subsection.
+
+	* eword-decode.el (eword-lexical-analyzer): Renamed from user
+	option `eword-lexical-analyzers'.
+
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* NEWS (New user option `std11-lexical-analyzer'): New subsection.
+
+	* std11.el (std11-lexical-analyzer): Renamed from user option
+	`std11-lexical-analyzers'.
+
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* std11.el (std11-lexical-analyze): Change interface to add new
+	optional argument `analyzers'.
+
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* std11.el (std11-lexical-analyzers): New user option.
+	(std11-lexical-analyze): New implementation; refer
+	`std11-lexical-analyzers'.
+
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* NEWS (Change interface of lexical-analyzers): New subsection.
+
+1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-encoded-word-regexp): Must define when
+	this module is compiled.
+	(eword-decode-structured-field-body): Add new optional argument
+	`start'.
+	(eword-decode-and-unfold-structured-field-body): Likewise.
+	(eword-decode-and-fold-structured-field-body): Likewise.
+	(eword-analyze-quoted-string): Add new argument `start'; return
+	`(<parsed result> . <end position>)' instead of `(<parsed result>
+	. <rest string>)'.
+	(std11-analyze-domain-literal): Likewise.
+	(eword-analyze-domain-literal): Likewise.
+	(eword-analyze-comment): Changed to alias of
+	`eword-parse-comment'.
+	(eword-analyze-spaces): Add new argument `start'; return `(<parsed
+	result> . <end position>)' instead of `(<parsed result> . <rest
+	string>)'.
+	(std11-analyze-domain-literal): Likewise.
+	(eword-analyze-special): Likewise.
+	(eword-analyze-encoded-word): Likewise.
+	(eword-analyze-atom): Likewise.
+	(eword-lexical-analyze-internal): Add new argument `start'.
+	(eword-lexical-analyze): Change interface to add new optional
+	argument `start'.
+	(eword-extract-address-components): Add new optional argument
+	`start'.
+
+	* std11.el (std11-atom-regexp): Modify to match non-top atom.
+	(std11-analyze-spaces): Add new argument `start'; return `(<parsed
+	result> . <end position>)' instead of `(<parsed result> . <rest
+	string>)'.
+	(std11-analyze-special): Likewise.
+	(std11-analyze-atom): Likewise.
+	(std11-analyze-quoted-string): Likewise.
+	(std11-analyze-domain-literal): Likewise.
+	(std11-analyze-comment): Likewise.
+	(std11-lexical-analyze): Add new optional argument `start'.
+
+1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* std11.el (std11-fetch-field): Add autoload cookie.
+	(std11-narrow-to-header): Likewise.
+	(std11-field-body): Likewise.
+	(std11-unfold-string): Likewise.
+	(std11-lexical-analyze): Add DOC-string; add autoload cookie.
+
+	* std11.el (std11-space-char-list): Renamed from
+	`std11-space-chars'; changed from string to list.
+
+1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* std11.el (std11-fetch-field): Don't define as inline function.
+	(std11-field-body): Enclose `std11-narrow-to-header' and
+	`std11-fetch-field' by `inline'.
+
+1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* std11.el (std11-special-char-list): Evaluate when it is
+	compiled.
+	(std11-atom-regexp): Use `eval-when-compile'.
+
+1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* std11.el (std11-space-chars): Must evaluate when it is compiled.
+	(std11-analyze-spaces): Don't use `std11-spaces-regexp'; abolist
+	constant `std11-spaces-regexp'.
+
+	* mime-parse.el (mime-disposition-type-regexp): Must evaluate when
+	it is compiled.
+
+	* mime-parse.el: Don't require emu.
+
+	* mime-parse.el (mime-parse-Content-Disposition): Use
+	`eval-when-compile'.
+
+	* mime-parse.el (mime-parse-Content-Transfer-Encoding): New
+	implementation.
+
+1998-12-22  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* README.en (Installation): Modify for APEL 9.12.
+	* README.ja (Installation): Likewise.
+
+1998-12-14  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* mel-b-ccl.el (base64-ccl-insert-encoded-file): Call
+	`insert-file-contents-as-coding-system' with CODING-SYSTEM as the
+	1st arg.
+	* mel-q-ccl.el (quoted-printable-ccl-insert-encoded-file):
+	Likewise.
+
+	* mel-b-ccl.el (base64-ccl-write-decoded-region): Call
+	`write-region-as-coding-system' with CODING-SYSTEM as the 1st arg.
+	* mel-q-ccl.el (quoted-printable-ccl-write-decoded-region):
+	Likewise.
+
+1998-12-14  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* mel-b-ccl.el (base64-ccl-insert-encoded-file): Use
+	`insert-file-contents-as-coding-system' (renamed from
+	`insert-file-contents-as-specified-coding-system').
+	* mel-q-ccl.el (quoted-printable-ccl-insert-encoded-file):
+	Likewise.
+
+	* mel-b-ccl.el (base64-ccl-write-decoded-region): Use
+	`write-region-as-coding-system' (renamed from
+	`write-region-as-specified-coding-system').
+	* mel-q-ccl.el (quoted-printable-ccl-write-decoded-region):
+	Likewise.
+
+1998-12-08  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* smtp.el (smtp-coding-system): Abolished.
+	(smtp-via-smtp): Use `open-network-stream-as-binary' instead of
+	`open-network-stream'.
+
+1998-12-04  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* mel-b-ccl.el (base64-ccl-insert-encoded-file): Use
+	`insert-file-contents-as-specified-coding-system' instead of
+	`insert-file-contents'.
+	* mel-q-ccl.el (quoted-printable-ccl-insert-encoded-file):
+	Likewise.
+
+	* mel-b-ccl.el (base64-ccl-write-decoded-region): Use
+	`write-region-as-specified-coding-system' instead of
+	`write-region'.
+	* mel-q-ccl.el (quoted-printable-ccl-write-decoded-region):
+	Likewise.
 
 
 1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -3178,3 +3462,4 @@
  	eword-encode.el: Copied from MEL, SEMI (mime-def.el
  	eword-decode.el eword-encode.el) and APEL (std11-parse.el
  	std11.el).
+>

@@ -31,16 +31,19 @@
 1.11.0	Yamadagawa		$(B;3ED@n(B
 1.11.1	Takanohara		$(B9b$N86(B
 1.11.2	Heij-Dò-A			$(BJ?>k(B
-1.11.3	Saidaiji		$(B@>Bg;{(B
+1.11.3	Saidaiji		$(B@>Bg;{(B		; = $(B6aE4(B $(BF`NI@~(B
 ;;-------------------------------------------------------------------------
 ;;	Kinki Nippon Railway	$(B6a5&F|K\E4F;(B	http://www.kintetsu.co.jp/
 ;;	Ky-Dòto-A Line		$(B3`86@~(B
 ;;-------------------------------------------------------------------------
-	(Saidaiji)		($(B@>Bg;{(B)
------	Amagatsuji		$(BFt%vDT(B
------	Nishinoky-Dò-A		$(B@>$N5~(B
------	Kuj-Dò-A			$(B6e>r(B
------	Kintetsu-K-Dòriyama-A	$(B6aE474;3(B
+	(Saidaiji)		($(B@>Bg;{(B)	; $(B!{J?>k5\@W!"@>Bg;{(B
+1.12.0	Amagatsuji		$(BFt%vDT(B		; $(B!{?b?NE79DNM(B
+1.12.1	Nishinoky-Dò-A		$(B@>$N5~(B		; $(B!{Eb>7Ds;{!"Lt;U;{(B
+1.12.2	Kuj-Dò-A			$(B6e>r(B
+1.12.3	Kintetsu-K-Dòriyama-A	$(B6aE474;3(B	; $(B!{74;3>k@W!"(B
+						;   $(B%"%Z%k!"%]!<!"CcHx$N2H(B
+1.12.4	Tsutsui			$(BE{0f(B
+1.12.5	Hirahata		$(BJ?C<(B		; = $(B6aE4(B $(BE7M}@~(B
 
 
 [Chao Version names]
@@ -66,3 +69,11 @@
 1.11.3	Kitayama		$(BKL;3(B
 1.11.4	Matugasaki		$(B>>%v:j(B
 1.11.5	Kokusaikaikan		$(B9q:]2q4[(B
+
+;;-------------------------------------------------------------------------
+;;	West Japan Railway	$(B@>F|K\N95RE4F;(B	http://www.westjr.co.jp/
+;;	Nara Line	 	$(BF`NI@~(B
+;;-------------------------------------------------------------------------
+1.12.0	[JR] Ky-Dòto-A		$(B5~ET(B		; <=> $(B6aE4(B, $(B5~ET;T8rDL6I(B
+1.12.1	T-Dòfukuji-A		$(BElJ!;{(B		; <=> $(B5~:e(B
+1.12.2	Inari			$(B0p2Y(B

@@ -1,19 +1,19 @@
 \input texinfo.tex
 @c Generated automatically from mime-en.sgml by sinfo 3.7.
 @setfilename mime-en.info
-@settitle{FLIM 1.10 Manual about MIME Features}
+@settitle{FLIM 1.12 Reference Manual about MIME Features}
 @titlepage
-@title FLIM 1.10 Manual about MIME Features
+@title FLIM 1.12 Reference Manual about MIME Features
 @author MORIOKA Tomohiko <morioka@@jaist.ac.jp>
-@subtitle 1998/07/01
+@subtitle 1999-01-27
 @end titlepage
 @node Top, Introduction, (dir), (dir)
-@top FLIM 1.10 Manual about MIME Features
+@top FLIM 1.12 Reference Manual about MIME Features
 
 @ifinfo
 
-This file documents MIME features of FLIM, a Internet message
-parsing/encoding library for GNU Emacs.
+This file documents MIME features of FLIM, a fundamental library to
+process Internet Messages for GNU Emacsen.
 @end ifinfo
 
 @menu
@@ -72,10 +72,12 @@ information of entity.  In this document, it is called simply
 @menu
 * Entity creation::             Functions to create mime-entity
 * Entity hierarchy::            Features about message tree
+* Entity Search::               Find Entity
 * Entity Attributes::           Functions about attributes of mime-entity
 * Entity-header::               Information of entity header
 * entity formatting::           Text presentation of entity
 * Entity-content::              Contents of Entity
+* Entity-network-representation::  Network representation of Entity
 * Entity buffer::               Entity as buffer representation
 * mm-backend::                  Entity representations and implementations
 @end menu
@@ -103,13 +105,12 @@ mime-entity.@refill
 If @var{buffer} is omitted, current buffer is used.@refill
 
 @var{type} is representation-type of created
-mime-entity. (cf. @ref{mm-backend})
- Default value is @var{buffer}.
+mime-entity. (cf. @ref{mm-backend}) Default value is @var{buffer}.
 @end defun
 
 
 
-@node Entity hierarchy, Entity Attributes, Entity creation, Entity
+@node Entity hierarchy, Entity Search, Entity creation, Entity
 @section Features about message tree
 @cindex node-id
 @cindex entity-number
@@ -198,6 +199,10 @@ Return entity-number of @var{entity}.
 @end defun
 
 
+
+@node Entity Search, Entity Attributes, Entity hierarchy, Entity
+@section Find Entity
+
 @defun mime-find-entity-from-number entity-number  &optional  message
 
 Return entity from @var{entity-number} in @var{message}.@refill
@@ -216,8 +221,17 @@ used.
 @end defun
 
 
+@defun mime-find-entity-from-content-id cid  &optional  message
 
-@node Entity Attributes, Entity-header, Entity hierarchy, Entity
+Return entity from @var{cid} in @var{message}.@refill
+
+If @var{message} is not specified, @code{mime-message-structure} is
+used.
+@end defun
+
+
+
+@node Entity Attributes, Entity-header, Entity Search, Entity
 @section Functions about attributes of mime-entity
 
 @defun mime-entity-content-type entity
@@ -339,7 +353,7 @@ It is originally variable of APEL.
 
 
 
-@node Entity-content, Entity buffer, entity formatting, Entity
+@node Entity-content, Entity-network-representation, entity formatting, Entity
 @section Contents of Entity
 
 @defun mime-entity-content entity
@@ -348,9 +362,25 @@ Return content of @var{entity} as byte sequence.
 @end defun
 
 
+@defun mime-insert-entity-content entity
+
+Insert content of @var{entity} at point.
+@end defun
+
+
 @defun mime-write-entity-content entity filename
 
 Write content of @var{entity} into @var{filename}.
+@end defun
+
+
+
+@node Entity-network-representation, Entity buffer, Entity-content, Entity
+@section Network representation of Entity
+
+@defun mime-insert-entity entity
+
+Insert header and body of @var{entity} at point.
 @end defun
 
 
@@ -367,7 +397,7 @@ Write body of @var{entity} into @var{filename}.
 
 
 
-@node Entity buffer, mm-backend, Entity-content, Entity
+@node Entity buffer, mm-backend, Entity-network-representation, Entity
 @section Entity as buffer representation
 
 @defun mime-entity-buffer entity
@@ -1537,7 +1567,7 @@ CVS $B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
 @node History,  , CVS, Appendix
 @section History of FLIM
 
-FLIM $B$N(B code $B$N:G8E$NItJ,$O(B $B1]JB(B $B;LCR(B $B;a$,=q$$$?(B @file{mime.el}$B$K5/8;$7(B
+FLIM $B$N(B code $B$N:G8E$NItJ,$O(B $B1]JB(B $B;LCR(B $B;a$,=q$$$?(B @file{mime.el} $B$K5/8;$7(B
 $B$^$9!#$3$N>.$5$J(B program $B$O(B Nemacs $B$GF0:n$9$k(B iso-2022-jp $B$N(B B-encoding 
 $B@lMQ$N(B encoded-word $B$NI|9f2=%W%m%0%i%`$G$7$?!#(B@refill
 
@@ -1581,7 +1611,7 @@ tm $B$G$O8e$K!"<i2,(B $BCNI'(B $B$K$h$C$F(B @file{tiny-mime.el} $B$N:F<BA
 
 $B8e$K!"(BAPEL $B$+$i(B @file{std11.el} $B$,0\$5$l!"$^$?!"(B@file{mailcap.el},
 @file{eword-decode.el} $B$*$h$S(B @file{eword-encode.el} $B$,(B SEMI $B$+$i0\$5$l!"(B
-package $B$NL>A0$,(B FLIM$B$H$J$j$^$9!#(B@refill
+package $B$NL>A0$,(B FLIM $B$H$J$j$^$9!#(B@refill
 
 $B$3$ND>A0$+$iEDCf(B $BE/(B $B;a$,$h$j(B RFC $B$KCi<B$J<BAu$r=q$-;O$a!"$3$l$O!"8=:_!"(B
 FLIM $B$N;^$G$"$k(B ``FLIM-FLAM'' $B$H$J$C$F$$$^$9!#(B

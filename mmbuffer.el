@@ -1,6 +1,6 @@
 ;;; mmbuffer.el --- MIME entity module for binary buffer
 
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: MIME, multimedia, mail, news
@@ -86,6 +86,13 @@
 		       (mime-entity-body-end-internal entity))
      (mime-entity-encoding entity))))
 
+(mm-define-method insert-entity-content ((entity buffer))
+  (insert (with-current-buffer (mime-entity-buffer-internal entity)
+	    (mime-decode-string
+	     (buffer-substring (mime-entity-body-start-internal entity)
+			       (mime-entity-body-end-internal entity))
+	     (mime-entity-encoding entity)))))
+
 (mm-define-method write-entity-content ((entity buffer) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
@@ -94,6 +101,12 @@
 			       filename
 			       (or (mime-entity-encoding entity) "7bit"))
     ))
+
+(mm-define-method insert-entity ((entity buffer))
+  (insert-buffer-substring (mime-entity-buffer-internal entity)
+			   (mime-entity-header-start-internal entity)
+			   (mime-entity-body-end-internal entity))
+  )
 
 (mm-define-method write-entity ((entity buffer) filename)
   (save-excursion

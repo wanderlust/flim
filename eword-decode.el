@@ -4,16 +4,16 @@
 
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
 ;;         MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;;         Tanaka Akira <akr@jaist.ac.jp>
-;; Maintainer: Tanaka Akira <akr@jaist.ac.jp>
+;;         TANAKA Akira <akr@jaist.ac.jp>
 ;; Created: 1995/10/03
 ;; Original: 1992/07/20 ENAMI Tsugutomo's `mime.el'.
-;;	Renamed: 1993/06/03 to tiny-mime.el
-;;	Renamed: 1995/10/03 from tiny-mime.el (split off encoder)
-;;	Renamed: 1997/02/22 from tm-ew-d.el
+;;	Renamed: 1993/06/03 to tiny-mime.el by MORIOKA Tomohiko
+;;	Renamed: 1995/10/03 to tm-ew-d.el (split off encoder)
+;;               by MORIOKA Tomohiko
+;;	Renamed: 1997/02/22 from tm-ew-d.el by MORIOKA Tomohiko
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
 
-;; This file is part of FLAM (Faithful Library About MIME).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -36,41 +36,11 @@
 (require 'mel)
 (require 'mime-def)
 
-(require 'ew-dec)
-(require 'ew-line)
-
 (eval-when-compile (require 'cl))
 
 (defgroup eword-decode nil
   "Encoded-word decoding"
   :group 'mime)
-
-;;; TEST
-
-(defvar rotate-memo nil)
-(defmacro rotate-memo (var val)
-  `(when rotate-memo
-     (unless (boundp ',var) (setq ,var ()))
-     (setq ,var (cons ,val ,var))
-     (let ((tmp (last ,var (- (length ,var) 100))))
-       (when tmp (setcdr tmp nil)))
-     ,var))
-
-;;; @ variables
-;;;
-
-(defcustom eword-decode-sticked-encoded-word nil
-  "*If non-nil, decode encoded-words sticked on atoms,
-other encoded-words, etc.
-however this behaviour violates RFC2047."
-  :group 'eword-decode
-  :type 'boolean)
-
-(defcustom eword-decode-quoted-encoded-word nil
-  "*If non-nil, decode encoded-words in quoted-string
-however this behaviour violates RFC2047."
-  :group 'eword-decode
-  :type 'boolean)
 
 (defcustom eword-max-size-to-decode 1000
   "*Max size to decode header field."
@@ -82,229 +52,29 @@ however this behaviour violates RFC2047."
 ;;; @ MIME encoded-word definition
 ;;;
 
-(defconst eword-encoded-word-prefix-regexp
-  (concat (regexp-quote "=?")
-	  "\\(" mime-charset-regexp "\\)"
-	  (regexp-quote "?")
-	  "\\(B\\|Q\\)"
-	  (regexp-quote "?")))
-(defconst eword-encoded-word-suffix-regexp
-  (regexp-quote "?="))
+(eval-and-compile
+  (defconst eword-encoded-text-regexp "[!->@-~]+")
 
-(defconst eword-encoded-text-in-unstructured-regexp "[!->@-~]+")
-(defconst eword-encoded-word-in-unstructured-regexp
-  (concat eword-encoded-word-prefix-regexp
-	  "\\(" eword-encoded-text-in-unstructured-regexp "\\)"
-	  eword-encoded-word-suffix-regexp))
-(defconst eword-after-encoded-word-in-unstructured-regexp "\\([ \t]\\|$\\)")
-
-(defconst eword-encoded-text-in-phrase-regexp "[-A-Za-z0-9!*+/=_]+")
-(defconst eword-encoded-word-in-phrase-regexp
-  (concat eword-encoded-word-prefix-regexp
-	  "\\(" eword-encoded-text-in-phrase-regexp "\\)"
-	  eword-encoded-word-suffix-regexp))
-(defconst eword-after-encoded-word-in-phrase-regexp "\\([ \t]\\|$\\)")
-
-(defconst eword-encoded-text-in-comment-regexp "[]!-'*->@-[^-~]+")
-(defconst eword-encoded-word-in-comment-regexp
-  (concat eword-encoded-word-prefix-regexp
-	  "\\(" eword-encoded-text-in-comment-regexp "\\)"
-	  eword-encoded-word-suffix-regexp))
-(defconst eword-after-encoded-word-in-comment-regexp "\\([ \t()\\\\]\\|$\\)")
-
-(defconst eword-encoded-text-in-quoted-string-regexp "[]!#->@-[^-~]+")
-(defconst eword-encoded-word-in-quoted-string-regexp
-  (concat eword-encoded-word-prefix-regexp
-	  "\\(" eword-encoded-text-in-quoted-string-regexp "\\)"
-	  eword-encoded-word-suffix-regexp))
-(defconst eword-after-encoded-word-in-quoted-string-regexp "\\([ \t\"\\\\]\\|$\\)")
-
-; obsolete
-(defconst eword-encoded-text-regexp eword-encoded-text-in-unstructured-regexp)
-(defconst eword-encoded-word-regexp eword-encoded-word-in-unstructured-regexp)
-
-
-;;; @ internal utilities
-;;;
-
-(defun eword-decode-first-encoded-words (string
-					 eword-regexp
-					 after-regexp
-					 &optional must-unfold)
-  "Decode MIME encoded-words in beginning of STRING.
-
-EWORD-REGEXP is the regexp that matches a encoded-word.
-Usual value is
-eword-encoded-word-in-unstructured-regexp, 
-eword-encoded-text-in-phrase-regexp,
-eword-encoded-word-in-comment-regexp or
-eword-encoded-word-in-quoted-string-regexp.
-
-AFTER-REGEXP is the regexp that matches a after encoded-word.
-Usual value is
-eword-after-encoded-word-in-unstructured-regexp, 
-eword-after-encoded-text-in-phrase-regexp,
-eword-after-encoded-word-in-comment-regexp or
-eword-after-encoded-word-in-quoted-string-regexp.
-
-If beginning of STRING matches EWORD-REGEXP with AFTER-REGEXP,
-returns a cons cell of decoded string(sequence of characters) and 
-the rest(sequence of octets).
-
-If beginning of STRING does not matches EWORD-REGEXP and AFTER-REGEXP,
-returns nil.
-
-If an encoded-word is broken or your emacs implementation can not
-decode the charset included in it, it is returned in decoded part
-as encoded-word form.
-
-If MUST-UNFOLD is non-nil, it unfolds and eliminates line-breaks even
-if there are in decoded encoded-words (generated by bad manner MUA
-such as a version of Net$cape)."
-  (if eword-decode-sticked-encoded-word (setq after-regexp ""))
-  (let* ((between-ewords-regexp
-  	   (if eword-decode-sticked-encoded-word
-	     "\\(\n?[ \t]\\)*"
-	     "\\(\n?[ \t]\\)+"))
-	 (between-ewords-eword-after-regexp
-	   (concat "\\`\\(" between-ewords-regexp "\\)"
-		      "\\(" eword-regexp "\\)"
-		      after-regexp))
-	 (eword-after-regexp
-	   (concat "\\`\\(" eword-regexp "\\)" after-regexp))
-  	 (src string)	; sequence of octets.
-  	 (dst ""))	; sequence of characters.
-    (if (string-match eword-after-regexp src)
-      (let* (p
-      	     (q (match-end 1))
-      	     (ew (substring src 0 q))
-      	     (dw (eword-decode-encoded-word ew must-unfold)))
-        (setq dst (concat dst dw)
-	      src (substring src q))
-	(if (not (string= ew dw))
-	  (progn
-	    (while
-	      (and
-	        (string-match between-ewords-eword-after-regexp src)
-		(progn
-		  (setq p (match-end 1)
-		  	q (match-end 3)
-		        ew (substring src p q)
-		        dw (eword-decode-encoded-word ew must-unfold))
-		  (if (string= ew dw)
-		    (progn
-		      (setq dst (concat dst (substring src 0 q))
-			    src (substring src q))
-		      nil)
-		    t)))
-	      (setq dst (concat dst dw)
-	            src (substring src q)))))
-	(cons dst src))
-      nil)))
-
-(defun eword-decode-entire-string (string
-				   eword-regexp
-				   after-regexp
-				   safe-regexp
-				   escape ; ?\\ or nil.
-				   delimiters ; list of chars.
-                                   chars-must-be-quote
-				   must-unfold
-				   code-conversion)
-  (if (and code-conversion
-	   (not (mime-charset-to-coding-system code-conversion)))
-      (setq code-conversion default-mime-charset))
-  (let ((equal-safe-regexp (concat "\\`=?" safe-regexp))
-  	(dst "")
-	(buf "")
-  	(src string)
-	(ew-enable t))
-    (while (< 0 (length src))
-      (let ((ch (aref src 0))
-      	    (decoded (and
-	    		ew-enable
-			(eword-decode-first-encoded-words src
-			  eword-regexp after-regexp must-unfold))))
-	(if (and (not (string= buf ""))
-		 (or decoded (memq ch delimiters)))
-	  (setq dst (concat dst
-	  	      (std11-wrap-as-quoted-pairs
-		        (decode-mime-charset-string buf code-conversion)
-			chars-must-be-quote))
-		buf ""))
-	(cond
-	  (decoded
-	    (setq dst (concat dst
-	    		(std11-wrap-as-quoted-pairs
-			  (car decoded)
-			  chars-must-be-quote))
-		  src (cdr decoded)))
-	  ((memq ch delimiters)
-	    (setq dst (concat dst (list ch))
-		  src (substring src 1)
-		  ew-enable t))
-	  ((eq ch escape)
-	    (setq buf (concat buf (list (aref src 1)))
-		  src (substring src 2)
-		  ew-enable t))
-	  ((string-match "\\`[ \t\n]+" src)
-	    (setq buf (concat buf (substring src 0 (match-end 0)))
-		  src (substring src (match-end 0))
-		  ew-enable t))
-	  ((and (string-match equal-safe-regexp src)
-	  	(< 0 (match-end 0)))
-	    (setq buf (concat buf (substring src 0 (match-end 0)))
-		  src (substring src (match-end 0))
-		  ew-enable eword-decode-sticked-encoded-word))
-	  (t (error "something wrong")))))
-    (if (not (string= buf ""))
-      (setq dst (concat dst
-      		  (std11-wrap-as-quoted-pairs
-		    (decode-mime-charset-string buf code-conversion)
-		    chars-must-be-quote))))
-    dst))
+  (defconst eword-encoded-word-regexp
+    (eval-when-compile
+      (concat (regexp-quote "=?")
+	      "\\("
+	      mime-charset-regexp
+	      "\\)"
+	      (regexp-quote "?")
+	      "\\(B\\|Q\\)"
+	      (regexp-quote "?")
+	      "\\("
+	      eword-encoded-text-regexp
+	      "\\)"
+	      (regexp-quote "?="))))
+  )
 
 
 ;;; @ for string
 ;;;
 
-(defun eword-decode-unstructured (string code-conversion &optional must-unfold)
-  (eword-decode-entire-string
-    string
-    eword-encoded-word-in-unstructured-regexp
-    eword-after-encoded-word-in-unstructured-regexp
-    "[^ \t\n=]*"
-    nil
-    nil
-    nil
-    must-unfold
-    code-conversion))
-
-(defun eword-decode-comment (string code-conversion &optional must-unfold)
-  (eword-decode-entire-string
-    string
-    eword-encoded-word-in-comment-regexp
-    eword-after-encoded-word-in-comment-regexp
-    "[^ \t\n()\\\\=]*"
-    ?\\
-    '(?\( ?\))
-    '(?\( ?\) ?\\ ?\r ?\n)
-    must-unfold
-    code-conversion))
-
-(defun eword-decode-quoted-string (string code-conversion &optional must-unfold)
-  (eword-decode-entire-string
-    string
-    eword-encoded-word-in-quoted-string-regexp
-    eword-after-encoded-word-in-quoted-string-regexp
-    "[^ \t\n\"\\\\=]*"
-    ?\\
-    '(?\")
-    '(?\" ?\\ ?\r ?\n)
-    must-unfold
-    code-conversion))
-
-(defun eword-decode-string (string &optional must-unfold code-conversion)
+(defun eword-decode-string (string &optional must-unfold)
   "Decode MIME encoded-words in STRING.
 
 STRING is unfolded before decoding.
@@ -314,28 +84,50 @@ decode the charset included in it, it is not decoded.
 
 If MUST-UNFOLD is non-nil, it unfolds and eliminates line-breaks even
 if there are in decoded encoded-words (generated by bad manner MUA
-such as a version of Net$cape).
-
-If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
-mime-charset, it decodes non-ASCII bit patterns as the mime-charset.
-Otherwise it decodes non-ASCII bit patterns as the
-default-mime-charset."
-  (eword-decode-unstructured
-    (std11-unfold-string string)
-    code-conversion
-    must-unfold))
+such as a version of Net$cape)."
+  (setq string (std11-unfold-string string))
+  (let ((dest "")(ew nil)
+	beg end)
+    (while (and (string-match eword-encoded-word-regexp string)
+		(setq beg (match-beginning 0)
+		      end (match-end 0))
+		)
+      (if (> beg 0)
+	  (if (not
+	       (and (eq ew t)
+		    (string-match "^[ \t]+$" (substring string 0 beg))
+		    ))
+	      (setq dest (concat dest (substring string 0 beg)))
+	    )
+	)
+      (setq dest
+	    (concat dest
+		    (eword-decode-encoded-word
+		     (substring string beg end) must-unfold)
+		    ))
+      (setq string (substring string end))
+      (setq ew t)
+      )
+    (concat dest string)
+    ))
 
 (defun eword-decode-structured-field-body (string
-                                           &optional 
-                                           start-column max-column)
-  (let* ((ew-decode-field-default-syntax '(ew-scan-unibyte-std11))
-         (decoded (ew-decode-field "" (ew-lf-crlf-to-crlf string))))
-    (ew-crlf-to-lf decoded)))
+					   &optional start-column max-column
+					   start)
+  (let ((tokens (eword-lexical-analyze string start 'must-unfold))
+	(result "")
+	token)
+    (while tokens
+      (setq token (car tokens))
+      (setq result (concat result (eword-decode-token token)))
+      (setq tokens (cdr tokens)))
+    result))
 
 (defun eword-decode-and-unfold-structured-field-body (string
 						      &optional
 						      start-column
-						      max-column)
+						      max-column
+						      start)
   "Decode and unfold STRING as structured field body.
 It decodes non us-ascii characters in FULL-NAME encoded as
 encoded-words or invalid \"raw\" string.  \"Raw\" non us-ascii
@@ -343,72 +135,110 @@ characters are regarded as variable `default-mime-charset'.
 
 If an encoded-word is broken or your emacs implementation can not
 decode the charset included in it, it is not decoded."
-  (let* ((decoded (ew-decode-field "" (ew-lf-crlf-to-crlf string))))
-    (ew-crlf-to-lf (ew-crlf-unfold decoded))))
+  (let ((tokens (eword-lexical-analyze string start 'must-unfold))
+	(result ""))
+    (while tokens
+      (let* ((token (car tokens))
+	     (type (car token)))
+	(setq tokens (cdr tokens))
+	(setq result
+	      (if (eq type 'spaces)
+		  (concat result " ")
+		(concat result (eword-decode-token token))
+		))))
+    result))
 
 (defun eword-decode-and-fold-structured-field-body (string
 						    start-column
-						    &optional max-column)
-  (or max-column
-      (setq max-column fill-column))
-  (let* ((field-name (make-string (1- start-column) ?X))
-	 (field-body (ew-lf-crlf-to-crlf string))
-	 (ew-decode-field-default-syntax '(ew-scan-unibyte-std11))
-	 (decoded (ew-decode-field field-name field-body)))
-    (unless (equal field-body decoded)
-      (setq decoded (ew-crlf-refold decoded start-column max-column)))
-    (ew-crlf-to-lf decoded)))
+						    &optional max-column
+						    start)
+  (if (and eword-max-size-to-decode
+	   (> (length string) eword-max-size-to-decode))
+      string
+    (or max-column
+	(setq max-column fill-column))
+    (let ((c start-column)
+	  (tokens (eword-lexical-analyze string start 'must-unfold))
+	  (result "")
+	  token)
+      (while (and (setq token (car tokens))
+		  (setq tokens (cdr tokens)))
+	(let* ((type (car token)))
+	  (if (eq type 'spaces)
+	      (let* ((next-token (car tokens))
+		     (next-str (eword-decode-token next-token))
+		     (next-len (string-width next-str))
+		     (next-c (+ c next-len 1)))
+		(if (< next-c max-column)
+		    (setq result (concat result " " next-str)
+			  c next-c)
+		  (setq result (concat result "\n " next-str)
+			c (1+ next-len)))
+		(setq tokens (cdr tokens))
+		)
+	    (let* ((str (eword-decode-token token)))
+	      (setq result (concat result str)
+		    c (+ c (string-width str)))
+	      ))))
+      (if token
+	  (concat result (eword-decode-token token))
+	result))))
 
 (defun eword-decode-unstructured-field-body (string &optional start-column
 						    max-column)
-  (let ((decoded (ew-decode-field "" (ew-lf-crlf-to-crlf string))))
-    (ew-crlf-to-lf decoded)))
+  (eword-decode-string
+   (decode-mime-charset-string string default-mime-charset)))
 
 (defun eword-decode-and-unfold-unstructured-field-body (string
 							&optional start-column
 							max-column)
-  (let ((decoded (ew-decode-field "" (ew-lf-crlf-to-crlf string))))
-    (ew-crlf-to-lf (ew-crlf-unfold decoded))))
+  (eword-decode-string
+   (decode-mime-charset-string (std11-unfold-string string)
+			       default-mime-charset)
+   'must-unfold))
 
 (defun eword-decode-unfolded-unstructured-field-body (string
 						      &optional start-column
 						      max-column)
-  (let ((decoded (ew-decode-field "" (ew-lf-crlf-to-crlf string))))
-    (ew-crlf-to-lf decoded)))
+  (eword-decode-string
+   (decode-mime-charset-string string default-mime-charset)
+   'must-unfold))
 
 
 ;;; @ for region
 ;;;
 
-(defun eword-decode-region (start end &optional unfolding must-unfold
-						code-conversion)
+(defun eword-decode-region (start end &optional unfolding must-unfold)
   "Decode MIME encoded-words in region between START and END.
 
 If UNFOLDING is not nil, it unfolds before decoding.
 
 If MUST-UNFOLD is non-nil, it unfolds and eliminates line-breaks even
 if there are in decoded encoded-words (generated by bad manner MUA
-such as a version of Net$cape).
-
-If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
-mime-charset, it decodes non-ASCII bit patterns as the mime-charset.
-Otherwise it decodes non-ASCII bit patterns as the
-default-mime-charset."
+such as a version of Net$cape)."
   (interactive "*r")
-  (rotate-memo args-eword-decode-region
-	       (list start end (buffer-substring start end) unfolding must-unfold code-conversion))
   (save-excursion
     (save-restriction
       (narrow-to-region start end)
       (if unfolding
 	  (eword-decode-unfold)
 	)
-      (let ((str (eword-decode-unstructured
-		   (buffer-substring (point-min) (point-max))
-		   code-conversion
-		   must-unfold)))
-	(delete-region (point-min) (point-max))
-	(insert str)))))
+      (goto-char (point-min))
+      (while (re-search-forward (concat "\\(" eword-encoded-word-regexp "\\)"
+                                        "\\(\n?[ \t]\\)+"
+                                        "\\(" eword-encoded-word-regexp "\\)")
+                                nil t)
+	(replace-match "\\1\\6")
+        (goto-char (point-min))
+	)
+      (while (re-search-forward eword-encoded-word-regexp nil t)
+	(insert (eword-decode-encoded-word
+		 (prog1
+		     (buffer-substring (match-beginning 0) (match-end 0))
+		   (delete-region (match-beginning 0) (match-end 0))
+		   ) must-unfold))
+	)
+      )))
 
 (defun eword-decode-unfold ()
   (goto-char (point-min))
@@ -427,6 +257,7 @@ default-mime-charset."
 	    ))
       )))
 
+
 ;;; @ for message header
 ;;;
 
@@ -436,6 +267,70 @@ default-mime-charset."
 
 (defvar mime-update-field-decoder-cache 'ew-mime-update-field-decoder-cache
   "*Field decoder cache update function.")
+
+(defun ew-mime-update-field-decoder-cache (field mode)
+  (require 'ew-dec)
+  (let ((fun (cond
+              ((eq mode 'plain)
+               (lexical-let ((field-name (symbol-name field)))
+                 (lambda (field-body &optional start-column max-column must-unfold)
+                   (setq field-body (ew-lf-to-crlf field-body))
+                   (let ((res (ew-crlf-to-lf
+                               (ew-decode-field field-name field-body))))
+                     (add-text-properties
+                      0 (length res)
+                      (list 'original-field-name field-name
+                            'original-field-body field-body)
+                      res)
+                     res))))
+              ((eq mode 'wide)
+               (lexical-let ((field-name (symbol-name field)))
+                 (lambda (field-body &optional start-column max-column must-unfold)
+                   (setq field-body (ew-lf-to-crlf field-body))
+		   (let* ((res (ew-decode-field field-name field-body))
+			  (res (if (string= res field-body)
+				   res
+				 (ew-crlf-refold res
+						 (length field-name)
+						 (or max-column fill-column))))
+			  (res (ew-crlf-to-lf res)))
+                     (add-text-properties
+                      0 (length res)
+                      (list 'original-field-name field-name
+                            'original-field-body field-body)
+                      res)
+                     res))))
+              ((eq mode 'summary)
+               (lexical-let ((field-name (symbol-name field)))
+                 (lambda (field-body &optional start-column max-column must-unfold)
+                   (setq field-body (ew-lf-to-crlf field-body))
+                   (let ((res (ew-crlf-to-lf
+                               (ew-crlf-unfold
+                                (ew-decode-field field-name field-body)))))
+                     (add-text-properties
+                      0 (length res)
+                      (list 'original-field-name field-name
+                            'original-field-body field-body)
+                      res)
+                     res))))
+              ((eq mode 'nov)
+               (lexical-let ((field-name (symbol-name field)))
+                 (lambda (field-body &optional start-column max-column must-unfold)
+                   (setq field-body (ew-lf-to-crlf field-body))
+                   (require 'ew-var)
+                   (let ((ew-ignore-76bytes-limit t))
+                     (let ((res (ew-crlf-to-lf
+                                 (ew-crlf-unfold
+                                  (ew-decode-field field-name field-body)))))
+                       (add-text-properties
+                        0 (length res)
+                        (list 'original-field-name field-name
+                              'original-field-body field-body)
+                        res)
+                       res)))))
+              (t
+               nil))))
+    (mime-update-field-decoder-cache field mode fun)))
 
 ;;;###autoload
 (defun mime-set-field-decoder (field &rest specs)
@@ -586,72 +481,8 @@ Default value of MODE is `summary'."
  'nov	#'eword-decode-unfolded-unstructured-field-body)
 
 ;;;###autoload
-(defun ew-mime-update-field-decoder-cache (field mode)
-  (let ((fun (cond
-              ((eq mode 'plain)
-               (lexical-let ((field-name (symbol-name field)))
-                 (lambda (field-body &optional start-column max-column must-unfold)
-                   (setq field-body (ew-lf-to-crlf field-body))
-                   (let ((res (ew-crlf-to-lf
-                               (ew-decode-field field-name field-body))))
-                     (add-text-properties
-                      0 (length res)
-                      (list 'original-field-name field-name
-                            'original-field-body field-body)
-                      res)
-                     res))))
-              ((eq mode 'wide)
-               (lexical-let ((field-name (symbol-name field)))
-                 (lambda (field-body &optional start-column max-column must-unfold)
-                   (setq field-body (ew-lf-to-crlf field-body))
-		   (let* ((res (ew-decode-field field-name field-body))
-			  (res (if (string= res field-body)
-				   res
-				 (ew-crlf-refold res
-						 (length field-name)
-						 (or max-column fill-column))))
-			  (res (ew-crlf-to-lf res)))
-                     (add-text-properties
-                      0 (length res)
-                      (list 'original-field-name field-name
-                            'original-field-body field-body)
-                      res)
-                     res))))
-              ((eq mode 'summary)
-               (lexical-let ((field-name (symbol-name field)))
-                 (lambda (field-body &optional start-column max-column must-unfold)
-                   (setq field-body (ew-lf-to-crlf field-body))
-                   (let ((res (ew-crlf-to-lf
-                               (ew-crlf-unfold
-                                (ew-decode-field field-name field-body)))))
-                     (add-text-properties
-                      0 (length res)
-                      (list 'original-field-name field-name
-                            'original-field-body field-body)
-                      res)
-                     res))))
-              ((eq mode 'nov)
-               (lexical-let ((field-name (symbol-name field)))
-                 (lambda (field-body &optional start-column max-column must-unfold)
-                   (setq field-body (ew-lf-to-crlf field-body))
-                   (require 'ew-var)
-                   (let ((ew-ignore-76bytes-limit t))
-                     (let ((res (ew-crlf-to-lf
-                                 (ew-crlf-unfold
-                                  (ew-decode-field field-name field-body)))))
-                       (add-text-properties
-                        0 (length res)
-                        (list 'original-field-name field-name
-                              'original-field-body field-body)
-                        res)
-                       res)))))
-              (t
-               nil))))
-    (mime-update-field-decoder-cache field mode fun)))
-
-;;;###autoload
 (defun mime-decode-field-body (field-body field-name
-					  &optional mode max-column)
+                                          &optional mode max-column)
   "Decode FIELD-BODY as FIELD-NAME in MODE, and return the result.
 Optional argument MODE must be `plain', `wide', `summary' or `nov'.
 Default mode is `summary'.
@@ -703,8 +534,7 @@ default-mime-charset."
 		    default-mime-charset))))
 	(if default-charset
 	    (let ((mode-obj (mime-find-field-presentation-method 'wide))
-		  beg p end len field-decoder
-                  field-name field-body)
+		  beg p end field-name len field-decoder)
 	      (goto-char (point-min))
 	      (while (re-search-forward std11-field-head-regexp nil t)
 		(setq beg (match-beginning 0)
@@ -714,17 +544,17 @@ default-mime-charset."
 		      field-decoder (inline
 				      (mime-find-field-decoder-internal
 				       (intern (capitalize field-name))
-                                       mode-obj)))
+				       mode-obj)))
 		(when field-decoder
-		  (setq end (std11-field-end)
-			field-body (buffer-substring p end))
-		  (let ((default-mime-charset default-charset))
+		  (setq end (std11-field-end))
+		  (let ((body (buffer-substring p end))
+			(default-mime-charset default-charset))
 		    (delete-region p end)
-		    (insert (funcall field-decoder field-body (1+ len)))
+		    (insert (funcall field-decoder body (1+ len)))
+		    (add-text-properties beg (min (1+ (point)) (point-max))
+					 (list 'original-field-name field-name
+					       'original-field-body field-body))
 		    ))
-                (add-text-properties beg (min (1+ (point)) (point-max))
-                                     (list 'original-field-name field-name
-                                           'original-field-body field-body))
 		))
 	  (eword-decode-region (point-min) (point-max) t)
 	  )))))
@@ -839,7 +669,7 @@ as a version of Net$cape)."
   "*Max position of eword-lexical-analyze-cache.
 It is max size of eword-lexical-analyze-cache - 1.")
 
-(defcustom eword-lexical-analyzers
+(defcustom eword-lexical-analyzer
   '(eword-analyze-quoted-string
     eword-analyze-domain-literal
     eword-analyze-comment
@@ -848,8 +678,9 @@ It is max size of eword-lexical-analyze-cache - 1.")
     eword-analyze-encoded-word
     eword-analyze-atom)
   "*List of functions to return result of lexical analyze.
-Each function must have two arguments: STRING and MUST-UNFOLD.
+Each function must have three arguments: STRING, START and MUST-UNFOLD.
 STRING is the target string to be analyzed.
+START is start position of STRING to analyze.
 If MUST-UNFOLD is not nil, each function must unfold and eliminate
 bare-CR and bare-LF from the result even if they are included in
 content of the encoded-word.
@@ -862,134 +693,222 @@ be the result."
   :group 'eword-decode
   :type '(repeat function))
 
-(defun eword-analyze-quoted-string (string &optional must-unfold)
-  (let ((p (std11-check-enclosure string ?\" ?\")))
+(defun eword-analyze-quoted-string-without-encoded-word (string start &optional must-unfold)
+  (let ((p (std11-check-enclosure string ?\" ?\" nil start)))
     (if p
-        (cons (cons 'quoted-string
-                    (if eword-decode-quoted-encoded-word
-                        (eword-decode-quoted-string
-                          (substring string 0 p)
-                          default-mime-charset)
-                      (std11-wrap-as-quoted-string
-                       (decode-mime-charset-string
-                        (std11-strip-quoted-pair (substring string 1 (1- p)))
-                        default-mime-charset))))
-              (substring string p)))
-    ))
+	(cons (cons 'quoted-string
+		    (decode-mime-charset-string
+		     (std11-strip-quoted-pair
+		      (substring string (1+ start) (1- p)))
+		     default-mime-charset))
+	      ;;(substring string p))
+	      p)
+      )))
 
-(defun eword-analyze-domain-literal (string &optional must-unfold)
-  (std11-analyze-domain-literal string))
+(defun eword-analyze-quoted-string-with-encoded-word (string start &optional must-unfold)
+  (let ((p (std11-check-enclosure string ?\" ?\" nil start)))
+    (if p
+	(cons (cons 'quoted-string
+		    (let ((str
+			   (std11-strip-quoted-pair
+			    (substring string (1+ start) (1- p)))))
+		      (if (string-match eword-encoded-word-regexp str)
+			  (eword-decode-encoded-word str)
+			(decode-mime-charset-string str default-mime-charset)
+			)))
+	      p)
+      )))
 
-(defun eword-analyze-comment (string &optional must-unfold)
-  (let ((len (length string)))
-    (if (and (< 0 len) (eq (aref string 0) ?\())
-	(let ((p 0))
-	  (while (and p (< p len) (eq (aref string p) ?\())
-	    (setq p (std11-check-enclosure string ?\( ?\) t p)))
-	  (setq p (or p len))
-	  (cons (cons 'comment
-		      (eword-decode-comment
-		        (std11-unfold-string (substring string 0 p))
-			default-mime-charset))
-		(substring string p)))
-      nil)))
+(defvar eword-analyze-quoted-encoded-word nil)
+(defun eword-analyze-quoted-string (string start &optional must-unfold)
+  (if eword-analyze-quoted-encoded-word
+      (eword-analyze-quoted-string-with-encoded-word string start must-unfold)
+    (eword-analyze-quoted-string-without-encoded-word string start must-unfold)))
 
+(defun eword-analyze-domain-literal (string start &optional must-unfold)
+  (std11-analyze-domain-literal string start))
 
-(defun eword-analyze-spaces (string &optional must-unfold)
-  (std11-analyze-spaces string))
+(defun eword-analyze-comment (string from &optional must-unfold)
+  (let ((len (length string))
+	(i (or from 0))
+	dest last-str
+	chr ret)
+    (when (and (> len i)
+	       (eq (aref string i) ?\())
+      (setq i (1+ i)
+	    from i)
+      (catch 'tag
+	(while (< i len)
+	  (setq chr (aref string i))
+	  (cond ((eq chr ?\\)
+		 (setq i (1+ i))
+		 (if (>= i len)
+		     (throw 'tag nil)
+		   )
+		 (setq last-str (concat last-str
+					(substring string from (1- i))
+					(char-to-string (aref string i)))
+		       i (1+ i)
+		       from i)
+		 )
+		((eq chr ?\))
+		 (setq ret (concat last-str
+				   (substring string from i)))
+		 (throw 'tag (cons
+			      (cons 'comment
+				    (nreverse
+				     (if (string= ret "")
+					 dest
+				       (cons
+					(eword-decode-string
+					 (decode-mime-charset-string
+					  ret default-mime-charset)
+					 must-unfold)
+					dest)
+				       )))
+			      (1+ i)))
+		 )
+		((eq chr ?\()
+		 (if (setq ret (eword-analyze-comment string i must-unfold))
+		     (setq last-str
+			   (concat last-str
+				   (substring string from i))
+			   dest
+			   (if (string= last-str "")
+			       (cons (car ret) dest)
+			     (list* (car ret)
+				    (eword-decode-string
+				     (decode-mime-charset-string
+				      last-str default-mime-charset)
+				     must-unfold)
+				    dest)
+			     )
+			   i (cdr ret)
+			   from i
+			   last-str "")
+		   (throw 'tag nil)
+		   ))
+		(t
+		 (setq i (1+ i))
+		 ))
+	  )))))
 
-(defun eword-analyze-special (string &optional must-unfold)
-  (std11-analyze-special string))
+(defun eword-analyze-spaces (string start &optional must-unfold)
+  (std11-analyze-spaces string start))
 
-(defun eword-analyze-encoded-word (string &optional must-unfold)
-  (let ((decoded (eword-decode-first-encoded-words
-                  string
-                  eword-encoded-word-in-phrase-regexp
-                  eword-after-encoded-word-in-phrase-regexp
-                  must-unfold)))
-    (if decoded
-        (let ((s (car decoded)))
-          (while (or (string-match std11-atom-regexp s)
-                     (string-match std11-spaces-regexp s))
-            (setq s (substring s (match-end 0))))
-          (if (= (length s) 0)
-              (cons (cons 'atom (car decoded)) (cdr decoded))
-            (cons (cons 'quoted-string
-                        (std11-wrap-as-quoted-string (car decoded)))
-                  (cdr decoded)))))))
+(defun eword-analyze-special (string start &optional must-unfold)
+  (std11-analyze-special string start))
 
-(defun eword-analyze-atom (string &optional must-unfold)
-  (if (string-match std11-atom-regexp (string-as-unibyte string))
+(defun eword-analyze-encoded-word (string start &optional must-unfold)
+  (if (and (string-match eword-encoded-word-regexp string start)
+	   (= (match-beginning 0) start))
+      (let ((end (match-end 0))
+	    (dest (eword-decode-encoded-word (match-string 0 string)
+					     must-unfold))
+	    )
+	;;(setq string (substring string end))
+	(setq start end)
+	(while (and (string-match (eval-when-compile
+				    (concat "[ \t\n]*\\("
+					    eword-encoded-word-regexp
+					    "\\)"))
+				  string start)
+		    (= (match-beginning 0) start))
+	  (setq end (match-end 0))
+	  (setq dest
+		(concat dest
+			(eword-decode-encoded-word (match-string 1 string)
+						   must-unfold))
+		;;string (substring string end))
+		start end)
+	  )
+	(cons (cons 'atom dest) ;;string)
+	      end)
+	)))
+
+(defun eword-analyze-atom (string start &optional must-unfold)
+  (if (and (string-match std11-atom-regexp string start)
+	   (= (match-beginning 0) start))
       (let ((end (match-end 0)))
-	(if (and eword-decode-sticked-encoded-word
-		 (string-match eword-encoded-word-in-phrase-regexp
-		 	       (substring string 0 end))
-		 (< 0 (match-beginning 0)))
-	    (setq end (match-beginning 0)))
 	(cons (cons 'atom (decode-mime-charset-string
-			   (substring string 0 end)
+			   (substring string start end)
 			   default-mime-charset))
-	      (substring string end)
-	      ))))
+	      ;;(substring string end)
+	      end)
+	)))
 
-(defun eword-lexical-analyze-internal (string must-unfold)
-  (let ((last 'eword-analyze-spaces)
-        dest ret)
-    (while (not (string-equal string ""))
+(defun eword-lexical-analyze-internal (string start must-unfold)
+  (let ((len (length string))
+	dest ret)
+    (while (< start len)
       (setq ret
-            (let ((rest eword-lexical-analyzers)
-                  func r)
-              (while (and (setq func (car rest))
-                          (or
-                           (and
-                            (not eword-decode-sticked-encoded-word)
-                            (not (eq last 'eword-analyze-spaces))
-                            (eq func 'eword-analyze-encoded-word))
-                           (null (setq r (funcall func string must-unfold))))
-                          )
-                (setq rest (cdr rest)))
-              (setq last func)
-              (or r `((error . ,string) . ""))
-              ))
-      (setq dest (cons (car ret) dest))
-      (setq string (cdr ret))
+	    (let ((rest eword-lexical-analyzer)
+		  func r)
+	      (while (and (setq func (car rest))
+			  (null
+			   (setq r (funcall func string start must-unfold)))
+			  )
+		(setq rest (cdr rest)))
+	      (or r
+		  (list (cons 'error (substring string start)) (1+ len)))
+	      ))
+      (setq dest (cons (car ret) dest)
+	    start (cdr ret))
       )
     (nreverse dest)
     ))
 
-(defun eword-lexical-analyze (string &optional must-unfold)
+(defun eword-lexical-analyze (string &optional start must-unfold)
   "Return lexical analyzed list corresponding STRING.
 It is like std11-lexical-analyze, but it decodes non us-ascii
 characters encoded as encoded-words or invalid \"raw\" format.
 \"Raw\" non us-ascii characters are regarded as variable
 `default-mime-charset'."
-  (let* ((str (copy-sequence string))
-  	 (key (cons str (cons default-mime-charset must-unfold)))
-	 ret)
-    (set-text-properties 0 (length str) nil str)
+  (let ((key (substring string (or start 0)))
+	ret cell)
+    (set-text-properties 0 (length key) nil key)
     (if (setq ret (assoc key eword-lexical-analyze-cache))
 	(cdr ret)
-      (setq ret (eword-lexical-analyze-internal str must-unfold))
+      (setq ret (eword-lexical-analyze-internal key 0 must-unfold))
       (setq eword-lexical-analyze-cache
 	    (cons (cons key ret)
-		  (last eword-lexical-analyze-cache
-			eword-lexical-analyze-cache-max)))
+		  eword-lexical-analyze-cache))
+      (if (cdr (setq cell (nthcdr eword-lexical-analyze-cache-max
+				  eword-lexical-analyze-cache)))
+	  (setcdr cell nil))
       ret)))
 
 (defun eword-decode-token (token)
-  (cdr token))
+  (let ((type (car token))
+	(value (cdr token)))
+    (cond ((eq type 'quoted-string)
+	   (std11-wrap-as-quoted-string value))
+	  ((eq type 'comment)
+	   (let ((dest ""))
+	     (while value
+	       (setq dest (concat dest
+				  (if (stringp (car value))
+				      (std11-wrap-as-quoted-pairs
+				       (car value) '(?( ?)))
+				    (eword-decode-token (car value))
+				    ))
+		     value (cdr value))
+	       )
+	     (concat "(" dest ")")
+	     ))
+	  (t value))))
 
-(defun eword-extract-address-components (string)
+(defun eword-extract-address-components (string &optional start)
   "Extract full name and canonical address from STRING.
 Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).
 If no name can be extracted, FULL-NAME will be nil.
 It decodes non us-ascii characters in FULL-NAME encoded as
 encoded-words or invalid \"raw\" string.  \"Raw\" non us-ascii
 characters are regarded as variable `default-mime-charset'."
-  (rotate-memo args-eword-extract-address-components (list string))
   (let* ((structure (car (std11-parse-address
 			  (eword-lexical-analyze
-			   (std11-unfold-string string) 'must-unfold))))
+			   (std11-unfold-string string) start
+			   'must-unfold))))
          (phrase  (std11-full-name-string structure))
          (address (std11-address-string structure))
          )

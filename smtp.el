@@ -60,11 +60,6 @@ don't define this value."
   :type '(choice (const nil) string)
   :group 'smtp)
 
-(defcustom smtp-coding-system 'binary
-  "*Coding-system for SMTP output."
-  :type 'coding-system
-  :group 'smtp)
-
 (defvar smtp-debug-info nil)
 (defvar smtp-read-point nil)
 
@@ -80,9 +75,7 @@ don't define this value."
       (error "Cannot generate valid FQDN. Set `smtp-local-domain' correctly.")))))
 
 (defun smtp-via-smtp (sender recipients smtp-text-buffer)
-  (let ((coding-system-for-read smtp-coding-system)
-	(coding-system-for-write smtp-coding-system)
-	process response extensions)
+  (let (process response extensions)
     (save-excursion
       (set-buffer
        (get-buffer-create
@@ -93,9 +86,8 @@ don't define this value."
 
       (unwind-protect
 	  (catch 'done
-	    (setq process (open-network-stream "SMTP"
-					       (current-buffer)
-					       smtp-server smtp-service))
+	    (setq process (open-network-stream-as-binary
+			   "SMTP" (current-buffer) smtp-server smtp-service))
 	    (or process (throw 'done nil))
 
 	    (set-process-filter process 'smtp-process-filter)

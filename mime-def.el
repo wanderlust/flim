@@ -1,6 +1,6 @@
 ;;; mime-def.el --- definition module about MIME
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: definition, MIME, multimedia, mail, news
@@ -27,7 +27,7 @@
 (require 'mcharset)
 
 (eval-and-compile
-  (defconst mime-library-product ["FLAM-DOODLE" (1 12 1) "ベンガラ 7.5R4.0/7.0"]
+  (defconst mime-library-product ["FLAM-DOODLE" (1 12 2) "代赭 10R4.5/8.0"]
     "Product name, version number and code name of MIME-library package.")
   )
 
@@ -99,8 +99,11 @@
 ;;; @ about MIME
 ;;;
 
-(defconst mime-tspecials "][()<>@,\;:\\\"/?=")
-(defconst mime-token-regexp (concat "[^" mime-tspecials "\000-\040]+"))
+(defconst mime-tspecial-char-list
+  '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=))
+(defconst mime-token-regexp
+  (eval-when-compile
+    (concat "[^" mime-tspecial-char-list "\000-\040]+")))
 (defconst mime-charset-regexp mime-token-regexp)
 
 (defconst mime-media-type/subtype-regexp
