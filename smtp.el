@@ -105,10 +105,10 @@ don't define this value."
   (let ((response
 	 (smtp-read-response
 	  (smtp-stream-process-internal trans))))
-    (or (smtp-check-response response)
+    (or (= (car response) 220)
 	(tram-stream-error trans 'greeting))
     trans))
-  
+
 (defun smtp-ehlo (trans)
   (smtp-send-command
    (smtp-stream-process-internal trans)
@@ -116,7 +116,7 @@ don't define this value."
   (let ((response
 	 (smtp-read-response 
 	  (smtp-stream-process-internal trans))))
-    (or (smtp-check-response response)
+    (or (= (car response) 250)
 	(tram-stream-error trans 'ehlo))
     (smtp-stream-set-extensions-internal
      trans (mapcar
@@ -132,7 +132,7 @@ don't define this value."
   (let ((response
 	 (smtp-read-response
 	  (smtp-stream-process-internal trans))))
-    (or (smtp-check-response response)
+    (or (= (car response) 250)
 	(tram-stream-error trans 'helo))
     trans))
 
@@ -166,7 +166,7 @@ don't define this value."
   (let ((response
 	 (smtp-read-response
 	  (smtp-stream-process-internal trans))))
-    (or (smtp-check-response response)
+    (or (= (car response) 250)
 	(tram-stream-error trans 'mailfrom))
     trans))
 
@@ -182,7 +182,7 @@ don't define this value."
     (setq response
 	  (smtp-read-response
 	   (smtp-stream-process-internal trans)))
-    (or (smtp-check-response response)
+    (or (memq (car response) '(250 251))
 	(tram-stream-error trans 'rcptto))
     trans))
 
@@ -193,7 +193,7 @@ don't define this value."
   (let ((response
 	 (smtp-read-response
 	  (smtp-stream-process-internal trans))))
-    (or (smtp-check-response response)
+    (or (= (car response) 354)
 	(tram-stream-error trans 'data))
 
     ;; Mail contents
@@ -207,7 +207,7 @@ don't define this value."
     (setq response
 	  (smtp-read-response
 	   (smtp-stream-process-internal trans)))
-    (or (smtp-check-response response)
+    (or (= (car response) 250)
 	(tram-stream-error trans 'data))
     trans))
 
@@ -289,9 +289,6 @@ don't define this value."
 	(push (read (point-marker)) response))
       (setq smtp-read-point match-end))
     response))
-
-(defun smtp-check-response (response)
-  (memq (/ (car response) 100) '(2 3)));; XXX
 
 (defun smtp-send-command (process command)
   (goto-char (point-max))
