@@ -11,11 +11,50 @@
 	 (sasl-find-mechanism (list (car mechanisms)))))
       (setq mechanisms (cdr mechanisms)))))
 
-(luna-define-method test-sasl-digest-md5-build-response-value ((case test-sasl))
-  (require 'sasl-digest)
-  (lunit-assert
-   (string=
-    (sasl-digest-md5-build-response-value
-     "chris" "elwood.innosoft.com" "secret" "OA9BSXrbuRhWay" "OA9BSuZWMSpW8m" 1
-     (sasl-digest-md5-digest-uri "acap" "elwood.innosoft.com"))
-    "username=\"chris\",realm=\"elwood.innosoft.com\",nonce=\"OA9BSXrbuRhWay\",nc=00000001,cnonce=\"OA9BSuZWMSpW8m\",digest-uri=\"acap/elwood.innosoft.com\",response=6084c6db3fede7352c551284490fd0fc,")))
+(luna-define-method test-sasl-digest-md5-imap ((case test-sasl))
+  (let* ((sasl-mechanisms '("DIGEST-MD5"))
+	 (mechanism
+	  (sasl-find-mechanism '("DIGEST-MD5")))
+	 (client
+	  (sasl-make-client mechanism "chris" "imap" "elwood.innosoft.com"))
+	 (sasl-read-passphrase
+	  #'(lambda (prompt)
+	      "secret"))
+	 step
+	 response)
+    (sasl-client-set-property client 'realm "elwood.innosoft.com")
+    (sasl-client-set-property client 'cnonce "OA6MHXh6VqTrRk")
+    (setq step (sasl-next-step client nil))
+    (sasl-step-set-data
+     step "realm=\"elwood.innosoft.com\",nonce=\"OA6MG9tEQGm2hh\",\
+qop=\"auth\",algorithm=md5-sess,charset=utf-8")
+    (setq step (sasl-next-step client step))
+    (sasl-step-data step)
+    (setq response (sasl-digest-md5-parse-string (sasl-step-data step)))
+    (lunit-assert
+     (string=
+      (plist-get response 'response) "d388dad90d4bbd760a152321f2143af7"))))
+
+(luna-define-method test-sasl-digest-md5-acap ((case test-sasl))
+  (let* ((sasl-mechanisms '("DIGEST-MD5"))
+	 (mechanism
+	  (sasl-find-mechanism '("DIGEST-MD5")))
+	 (client
+	  (sasl-make-client mechanism "chris" "acap" "elwood.innosoft.com"))
+	 (sasl-read-passphrase
+	  #'(lambda (prompt)
+	      "secret"))
+	 step
+	 response)
+    (sasl-client-set-property client 'realm "elwood.innosoft.com")
+    (sasl-client-set-property client 'cnonce "OA9BSuZWMSpW8m")
+    (setq step (sasl-next-step client nil))
+    (sasl-step-set-data
+     step "realm=\"elwood.innosoft.com\",nonce=\"OA9BSXrbuRhWay\",qop=\"auth\",\
+algorithm=md5-sess,charset=utf-8")
+    (setq step (sasl-next-step client step))
+    (sasl-step-data step)
+    (setq response (sasl-digest-md5-parse-string (sasl-step-data step)))
+    (lunit-assert
+     (string=
+      (plist-get response 'response) "6084c6db3fede7352c551284490fd0fc"))))
