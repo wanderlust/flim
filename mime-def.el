@@ -32,6 +32,8 @@
 
 (require 'custom)
 
+(eval-when-compile (require 'cl))
+
 (defgroup mime nil
   "Emacs MIME Interfaces"
   :group 'news
@@ -93,8 +95,7 @@
 (defconst std11-quoted-string-regexp
   (concat "\""
 	  (regexp-*
-	   (regexp-or std11-qtext-regexp std11-quoted-pair-regexp)
-	   )
+	   (regexp-or std11-qtext-regexp std11-quoted-pair-regexp))
 	  "\""))
 
 
