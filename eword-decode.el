@@ -333,21 +333,18 @@ as a version of Net$cape)."
                  (error "Invalid encoding %s" encoding)
                  )))
               )
-	  (if dest
-	      (progn
-		(setq dest (decode-coding-string dest cs))
-		(if must-unfold
-		    (mapconcat (function
-				(lambda (chr)
-				  (cond
-                                   ((eq chr ?\n) "")
-                                   ((eq chr ?\t) " ")
-                                   (t (char-to-string chr)))
-				  ))
-			       (std11-unfold-string dest)
-			       "")
-		  dest)
-		))))))
+	  (when dest
+	    (setq dest (decode-mime-charset-string dest charset))
+	    (if must-unfold
+		(mapconcat (function
+			    (lambda (chr)
+			      (cond ((eq chr ?\n) "")
+				    ((eq chr ?\t) " ")
+				    (t (char-to-string chr)))
+			      ))
+			   (std11-unfold-string dest)
+			   "")
+	      dest))))))
 
 
 ;;; @ lexical analyze
