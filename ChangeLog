@@ -1,3 +1,54 @@
+1999-08-18  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime.el (mime-entity-send): Use <(` ...)>, <(, ...)> and <(,@
+	...)> instead of <`...>, <,...> and <,@...>.
+
+	* mime-parse.el (mime-parse-Content-Type): Use
+	`eval-when-compile'.
+
+	* mime-def.el (mime-product-name): Use <(` ...)> and <(, ...)>
+	instead of <`...> and <,...>.
+	(mime-product-version): Likewise.
+	(mime-product-code-name): Likewise.
+	(mime-library-version): Use <(function ...)> instead of <#'...>.
+	(mm-expand-class-name): Use <(` ...)> and <(, ...)> instead of
+	<`...> and <,...>.
+	(mm-define-backend): Likewise.
+	(mm-define-method): Use <(` ...)>, <(, ...)> and <(,@ ...)>
+	instead of <`...>, <,...> and <,@...>.
+	(mel-define-service): Likewise.
+	(mel-define-backend): Use <(` ...)> and <(, ...)> instead of
+	<`...> and <,...>.
+	(mel-define-method-function): Likewise.
+	(mel-define-function): Likewise.
+
+	* mel.el (mime-encoding-alist): Use <(function ...)> instead of
+	<#'...>.
+
+	* luna.el (luna-find-class): Use <(` ...)> and <(, ...)> instead
+	of <`...> and <,...>.
+	(luna-set-class): Likewise.
+	(luna-class-obarray): Likewise.
+	(luna-class-parents): Likewise.
+	(luna-class-number-of-slots): Likewise.
+	(luna-define-class): Likewise.
+	(luna-class-slot-index): Likewise.
+	(luna-slot-index): Likewise.
+	(luna-define-method): Use <(` ...)>, <(, ...)> and <(,@ ...)>
+	instead of <`...>, <,...> and <,@...>.
+	(luna-find-functions): Use <(` ...)> and <(, ...)> instead of
+	<`...> and <,...>.
+	(luna-class-name): Likewise.
+	(luna-set-class-name): Likewise.
+	(luna-get-obarray): Likewise.
+	(luna-set-obarray): Likewise.
+	(luna-make-entity): Use <(function ...)> instead of <#'...>.
+
+	* eword-decode.el (mime-find-field-presentation-method): Use <(`
+	...)> and <(, ...)> instead of <`...> and <,...>.
+	- Use <(function ...)> instead of <#'...>.
+
+
 1999-08-17  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM: Version 1.13.2 (Kasanui) released.
