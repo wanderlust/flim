@@ -1,3 +1,8 @@
+1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el: Abolish function `eliminate-top-spaces' because it
+	is not used in FLIM.
+
 1998-11-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-encode.el (eword-encode-mailbox-to-rword-list): Fix
