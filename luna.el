@@ -189,10 +189,7 @@ The optional 5th BODY is the body of the method."
 				 (cdr args)))
 		      (,@ definition))))
 	     (sym (luna-class-find-or-make-member
-		   (luna-find-class '(, class)) '(, name)))
-	     (cache (get '(, name) 'luna-method-cache)))
-	 (if cache
-	     (unintern '(, class) cache))
+		   (luna-find-class '(, class)) '(, name))))
 	 (fset sym func)
 	 (put sym 'luna-method-qualifier (, method-qualifier))))))
 
