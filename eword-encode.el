@@ -5,7 +5,7 @@
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
 
-;; This file is part of SEMI (Spadework for Emacs MIME Interfaces).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -554,13 +554,14 @@ encoded-word.  ASCII token is not encoded."
 				       From Sender
 				       Resent-Reply-To Resent-From
 				       Resent-Sender To Resent-To
-				       Cc Resent-Cc
-				       Bcc Resent-Bcc Dcc))
+				       Cc Resent-Cc Bcc Resent-Bcc
+				       Dcc))
                                (eword-encode-address-list
 				field-body (+ (length field-name) 2))
 			       )
 			      ((memq field-name-symbol
-				     '(Mime-Version User-Agent))
+				     '(In-Reply-To
+				       Mime-Version User-Agent))
                                (eword-encode-structured-field-body
 				field-body (+ (length field-name) 2))
 			       )
