@@ -499,8 +499,7 @@ and return parsed it.
   [Suggest]
 
 
-[Function] [Function] eword-decode-header (&optional code-conversion
-						     separator)
+[Function] eword-decode-header (&optional code-conversion separator)
   As same as `mime-decode-header-in-buffer', q.v.
 
   Note that
