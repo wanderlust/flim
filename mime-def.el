@@ -24,9 +24,8 @@
 
 ;;; Code:
 
-(defconst mime-spadework-module-version
-  '("FLIM" "Ky-Dòto"-A 1 0 1))
-
+(defconst mime-spadework-module-version-string
+  "FLIM 1.0.1 - \"Ky-Dòto\"-A ")
 
 (require 'custom)
 
