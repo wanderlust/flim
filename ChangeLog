@@ -15,7 +15,7 @@
 	Add autoload cookie.
 	(mime-parse-parameters-from-list): Make obsolete.
 	(mime-parse-parameters): Return results as a plist.
-	(mime-parse-Content-Type, mime-read-Content-Type): Move type check
+	(mime-parse-Content-Type, mime-read-Content-Type): Moved type check
 	to the caller side.
 	(mime-parse-Content-Disposition, mime-read-Content-Disposition):
 	Ditto.
