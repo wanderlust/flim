@@ -147,22 +147,24 @@ charset algorithm cipher-opts auth-param)."
 		  '(charset qop maxbuf cipher authzid)))
     ",")))
 
-(defun sasl-digest-md5-response (principal challenge)
+(defun sasl-digest-md5-response (instantiator challenge)
   (sasl-digest-md5-parse-digest-challenge (nth 1 challenge))
   (let ((passphrase
 	 (sasl-read-passphrase
-	  (format "DIGEST-MD5 passphrase for %s: " (sasl-principal-name principal)))))
+	  (format "DIGEST-MD5 passphrase for %s: "
+		  (sasl-instantiator-name instantiator)))))
     (unwind-protect
 	(sasl-digest-md5-build-response-value
-	 (sasl-principal-name principal)
-	 (or (sasl-principal-realm principal)
+	 (sasl-instantiator-name instantiator)
+	 (or (sasl-instantiator-property instantiator 'realm)
 	     (sasl-digest-md5-challenge 'realm))	;need to check
 	 passphrase
 	 (sasl-digest-md5-challenge 'nonce)
 	 (sasl-digest-md5-cnonce)
 	 sasl-digest-md5-nonce-count
 	 (sasl-digest-md5-digest-uri
-	  (sasl-principal-service principal) (sasl-principal-server principal)))
+	  (sasl-instantiator-service instantiator)
+	  (sasl-instantiator-server instantiator)))
       (fillarray passphrase 0))))
 
 (put 'sasl-digest 'sasl-authenticator

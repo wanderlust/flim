@@ -94,12 +94,12 @@ don't define this value."
   :type 'boolean
   :group 'smtp-extensions)
 
-(defcustom smtp-sasl-principal-name (user-login-name)
+(defcustom smtp-sasl-user-name (user-login-name)
   "Identification to be used for authorization."
   :type 'string
   :group 'smtp-extensions)
 
-(defcustom smtp-sasl-principal-realm smtp-local-domain
+(defcustom smtp-sasl-user-realm smtp-local-domain
   "Realm name to be used for authorization."
   :type 'string
   :group 'smtp-extensions)
@@ -312,7 +312,8 @@ of the host to connect to.  SERVICE is name of the service desired."
 	(smtp-close-connection connection)))))
 
 ;;; @ hook methods for `smtp-submit-package'
-;;
+;;;
+
 (defun smtp-primitive-greeting (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
@@ -355,7 +356,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	(smtp-response-error response))))
 
 (eval-and-compile
-  (autoload 'sasl-make-principal "sasl")
+  (autoload 'sasl-make-instantiator "sasl")
   (autoload 'sasl-find-authenticator "sasl")
   (autoload 'sasl-authenticator-mechanism "sasl")
   (autoload 'sasl-evaluate-challenge "sasl"))
@@ -367,20 +368,24 @@ of the host to connect to.  SERVICE is name of the service desired."
 	  (smtp-connection-process connection))
 	 (mechanisms
 	  (cdr (assq 'auth (smtp-connection-extensions connection))))
-	 (principal
-	  (sasl-make-principal
-	   smtp-sasl-principal-name
-	   "smtp" (smtp-connection-server connection)
-	   smtp-sasl-principal-realm))
 	 (authenticator
 	  (let ((sasl-mechanisms smtp-sasl-mechanisms))
 	    (sasl-find-authenticator mechanisms)))
-	 mechanism sasl-response response)
+	 instantiator
+	 mechanism
+	 sasl-response
+	 response)
     (unless authenticator
       (error "No authentication mechanism available"))
+    (setq instantiator
+	  (sasl-make-instantiator
+	   smtp-sasl-user-name "smtp" (smtp-connection-server connection)))
+    (if smtp-sasl-user-realm
+	(sasl-instantiator-set-properties
+	 instantiator (list 'realm smtp-sasl-user-realm)))
     (setq mechanism (sasl-authenticator-mechanism authenticator)
 	  ;; Retrieve the initial response
-	  sasl-response (sasl-evaluate-challenge authenticator principal))
+	  sasl-response (sasl-evaluate-challenge authenticator instantiator))
     (smtp-send-command
      process
      (if (nth 1 sasl-response)
@@ -392,7 +397,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	(when (= (car response) 235)
 	  ;; The authentication process is finished.
 	  (setq sasl-response
-		(sasl-evaluate-challenge authenticator principal sasl-response))
+		(sasl-evaluate-challenge authenticator instantiator sasl-response))
 	  (if (null sasl-response)
 	      (throw 'done nil))
 	  (smtp-response-error response)) ;Bogus server?
@@ -401,7 +406,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	(setcar (cdr sasl-response) (base64-decode-string (nth 1 response)))
 	(setq sasl-response
 	      (sasl-evaluate-challenge
-	       authenticator principal sasl-response))
+	       authenticator instantiator sasl-response))
 	(smtp-send-command
 	 process (if (nth 1 sasl-response)
 		     (base64-encode-string (nth 1 sasl-response) t)

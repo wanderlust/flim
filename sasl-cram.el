@@ -34,12 +34,13 @@
   '(ignore				;no initial response
     sasl-cram-md5-response))
 
-(defun sasl-cram-md5-response (principal challenge)
+(defun sasl-cram-md5-response (instantiator challenge)
   (let ((passphrase
 	 (sasl-read-passphrase
-	  (format "CRAM-MD5 passphrase for %s: " (sasl-principal-name principal)))))
+	  (format "CRAM-MD5 passphrase for %s: "
+		  (sasl-instantiator-name instantiator)))))
     (unwind-protect
-	(concat (sasl-principal-name principal) " "
+	(concat (sasl-instantiator-name instantiator) " "
 		(encode-hex-string
 		 (hmac-md5 (nth 1 challenge) passphrase)))
       (fillarray passphrase 0))))

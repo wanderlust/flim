@@ -1,5 +1,18 @@
 2000-11-02   Daiki Ueno  <ueno@unixuser.org>
 
+	* sasl.el: Rename `sasl-*principal*' to `sasl-*instantiator*'.
+	(sasl-make-instantiator): Abolish optional 4th argument.
+	(sasl-instantiator-set-properties): New function.
+	(sasl-instantiator-put-property): New function.
+	(sasl-instantiator-property): New function.
+	(sasl-instantiator-properties): New function.
+
+	* smtp.el (smtp-sasl-user-name): Rename from
+	`smtp-sasl-principal-user'.
+	(smtp-sasl-user-realm): Rename from `smtp-sasl-principal-realm'.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
 	* sasl.el (sasl-mechanisms): Add `LOGIN' and `ANONYMOUS'.
 	(sasl-mechanism-alist): Likewise.
 	(sasl-error): Define.

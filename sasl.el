@@ -41,32 +41,53 @@
 
 (defvar sasl-unique-id-function #'sasl-unique-id-function)
 
-(defmacro sasl-authenticator-mechanism (authenticator)
-  `(aref ,authenticator 0))
-
-(defmacro sasl-authenticator-continuations (authenticator)
-  `(aref ,authenticator 1))
-
-(defmacro sasl-make-principal (name service server &optional realm)
-  `(vector ,name ,realm ,service ,server))
-
-(defmacro sasl-principal-name (principal)
-  `(aref ,principal 0))
-
-(defmacro sasl-principal-realm (principal)
-  `(aref ,principal 1))
-
-(defmacro sasl-principal-service (principal)
-  `(aref ,principal 2))
-
-(defmacro sasl-principal-server (principal)
-  `(aref ,principal 3))
-
 (put 'sasl-error 'error-message "SASL error")
 (put 'sasl-error 'error-conditions '(sasl-error error))
 
 (defun sasl-error (datum)
   (signal 'sasl-error (list datum)))
+
+;;; @ SASL instantiator
+;;;
+
+(defmacro sasl-make-instantiator (name service server)
+  "Return a newly allocated SASL instantiator.
+NAME is name of the authorization.  SERVICE is name of the service desired.
+SERVER is the fully qualified host name of the server to authenticate to."
+  (let ((props (make-symbol "sasl-instantiator-properties")))
+    `(vector ,name ,service ,server ',props)))
+
+(defmacro sasl-instantiator-name (instantiator)
+  "Return the authorization name of INSTANTIATOR, a string."
+  `(aref ,instantiator 0))
+
+(defmacro sasl-instantiator-service (instantiator)
+  "Return the service name of INSTANTIATOR, a string."
+  `(aref ,instantiator 1))
+
+(defmacro sasl-instantiator-server (instantiator)
+  "Return the server name of INSTANTIATOR, a string."
+  `(aref ,instantiator 2))
+
+(defmacro sasl-instantiator-set-properties (instantiator plist)
+  "Destructively set the properties of INSTANTIATOR.
+The second argument PLIST is the new property list."
+  `(setplist (aref ,instantiator 3) ,plist))
+
+(defmacro sasl-instantiator-put-property (instantiator property value)
+  "Add the given property/value to INSTANTIATOR."
+  `(put (aref ,instantiator 3) ,property ,value))
+
+(defmacro sasl-instantiator-property (instantiator property)
+  "Return the value of the PROPERTY of INSTANTIATOR."
+  `(get (aref ,instantiator 3) ,property))
+
+(defmacro sasl-instantiator-properties (instantiator)
+  "Return the properties of INSTANTIATOR."
+  `(symbol-plist (aref ,instantiator 3)))
+
+;;; @ SASL authenticator
+;;;
 
 (defun sasl-make-authenticator (mechanism continuations)
   "Make an authenticator.
@@ -79,6 +100,14 @@ CONTINUATIONS is list of continuation function."
 	       (fset symbol (symbol-function continuation))
 	       symbol))
 	   continuations)))
+
+(defmacro sasl-authenticator-mechanism (authenticator)
+  "Return name of the mechanism AUTHENTICATOR supports, a string."
+  `(aref ,authenticator 0))
+
+(defmacro sasl-authenticator-continuations (authenticator)
+  "Return continuation steps of AUTHENTICATOR, a list of functions."
+  `(aref ,authenticator 1))
 
 (defun sasl-find-authenticator (mechanisms)
   "Retrieve an apropriate authenticator object from MECHANISMS hints."
@@ -94,14 +123,14 @@ CONTINUATIONS is list of continuation function."
       (require mechanism)
       (get mechanism 'sasl-authenticator))))
 
-(defun sasl-evaluate-challenge (authenticator principal &optional challenge)
+(defun sasl-evaluate-challenge (authenticator instantiator &optional challenge)
   "Evaluate the challenge and prepare an appropriate next response.
 The data type of the value and optional 3rd argument CHALLENGE is nil or
 a cons cell of the form \(CONTINUATION STRING).
 At the first time CONTINUATION should be set to nil.
 
 Argument AUTHENTICATOR is the current evaluator.
-Argument PRINCIPAL is the client principal."
+Argument INSTANTIATOR is the instantiator instantiator."
   (let* ((continuations
 	  (sasl-authenticator-continuations authenticator))
 	 (function
@@ -109,7 +138,7 @@ Argument PRINCIPAL is the client principal."
 	      (nth 1 (memq (car challenge) continuations))
 	    (car continuations))))
     (if function
-	(list function (funcall function principal challenge)))))
+	(list function (funcall function instantiator challenge)))))
 
 (defvar sasl-read-passphrase nil)
 (defun sasl-read-passphrase (prompt &optional key)
@@ -160,12 +189,20 @@ It contain at least 64 bits of entropy."
 (defconst sasl-plain-continuations
   '(sasl-plain-response))
 
-(defun sasl-plain-response (principal challenge)
+(defun sasl-plain-response (instantiator challenge)
   (let ((passphrase
 	 (sasl-read-passphrase
-	  (format "PLAIN passphrase for %s: " (sasl-principal-name principal)))))
+	  (format "PLAIN passphrase for %s: "
+		  (sasl-instantiator-name instantiator))))
+	(authentication-name
+	 (sasl-instantiator-property
+	  instantiator 'authentication-name))
+	(name (sasl-instantiator-name instantiator)))
     (unwind-protect
-	(concat "\0" (sasl-principal-name principal) "\0" passphrase)
+	(if (and authentication-name
+		 (not (string= authentication-name name)))
+	    (concat authentication-name "\0" name "\0" passphrase)
+	  (concat "\0" name "\0" passphrase))
       (fillarray passphrase 0))))
 
 (put 'sasl-plain 'sasl-authenticator
@@ -179,16 +216,16 @@ It contain at least 64 bits of entropy."
     sasl-login-response-1
     sasl-login-response-2))
 
-(defun sasl-login-response-1 (principal challenge)
+(defun sasl-login-response-1 (instantiator challenge)
   (unless (string= (nth 1 challenge) "Username:")
     (sasl-error (format "Unexpected response: %s" (nth 1 challenge))))
-  (sasl-principal-name principal))
+  (sasl-instantiator-name instantiator))
 
-(defun sasl-login-response-2 (principal challenge)
+(defun sasl-login-response-2 (instantiator challenge)
   (unless (string= (nth 1 challenge) "Password:")
     (sasl-error (format "Unexpected response: %s" (nth 1 challenge))))
   (sasl-read-passphrase
-   (format "LOGIN passphrase for %s: " (sasl-principal-name principal))))
+   (format "LOGIN passphrase for %s: " (sasl-instantiator-name instantiator))))
 
 (put 'sasl-login 'sasl-authenticator
      (sasl-make-authenticator "LOGIN" sasl-login-continuations))
@@ -200,8 +237,10 @@ It contain at least 64 bits of entropy."
   '(identity				;no initial response
     sasl-anonymous-response))
 
-(defun sasl-anonymous-response (principal challenge)
-  (concat (sasl-principal-name principal)))
+(defun sasl-anonymous-response (instantiator challenge)
+  (or (sasl-instantiator-property
+       instantiator 'trace)
+      (sasl-instantiator-name instantiator)))
 
 (put 'sasl-anonymous 'sasl-authenticator
      (sasl-make-authenticator "ANONYMOUS" sasl-anonymous-continuations))
