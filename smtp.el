@@ -104,8 +104,7 @@ don't define this value."
     (login smtp-auth-login)
     (anonymous smtp-auth-anonymous)
     (scram-md5 smtp-auth-scram-md5)
-    (digest-md5 smtp-auth-digest-md5)
-    ))
+    (digest-md5 smtp-auth-digest-md5)))
 
 (defcustom smtp-connection-type nil
   "*SMTP connection type."
@@ -666,9 +665,6 @@ don't define this value."
 	    (not (integerp (car response)))
 	    (>= (car response) 400))
 	(throw 'done (car (cdr response))))
-    (sasl-digest-md5-parse-digest-challenge
-     (base64-decode-string
-      (substring (car (cdr response)) 4)))
     (if (string-match "^\\([^@]*\\)@\\([^@]*\\)"
 		      smtp-authenticate-user)
 	(setq user (match-string 1 smtp-authenticate-user)
@@ -678,6 +674,8 @@ don't define this value."
     (smtp-send-command process
 		       (base64-encode-string
 			(sasl-digest-md5-digest-response
+			 (base64-decode-string
+			  (substring (car (cdr response)) 4))
 			 user
 			 smtp-authenticate-passphrase
 			 "smtp" smtp-server realm)

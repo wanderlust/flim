@@ -1,5 +1,10 @@
 2000-01-21  Kenichi OKADA <okada@opaopa.org>
 
+	* sasl.el (TopLevel): Delete function `sasl-digest-md5-parse-digest-challenge'.
+	* smtp.el (smtp-auth-digest-md5): Don't use `sasl-digest-md5-parse-digest-challenge'.
+
+2000-01-21  Kenichi OKADA <okada@opaopa.org>
+
 	* scram-md5.el (sasl-scram-md5-client-security-info): Eval when compile.
 
 2000-01-21  Kenichi OKADA <okada@opaopa.org>

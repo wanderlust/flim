@@ -48,7 +48,6 @@
 (require 'unique-id)
 
 (defvar digest-md5-challenge nil)
-;(defvar digest-md5-nonce-count 1)
 
 (defvar digest-md5-parse-digest-challenge-syntax-table
   (let ((table (make-syntax-table)))
