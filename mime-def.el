@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(defconst mime-spadework-module-version-string
+(defconst mime-library-version-string
   "FLIM-FLAM 1.9.0 - \"銀朱\" 5.0R4.5/13.0")
 
 
