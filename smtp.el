@@ -528,9 +528,16 @@ don't define this value."
 (defun smtp-auth-login (process)
   (let ((secure-word (copy-sequence smtp-authentication-passphrase))
 	response)
+    (smtp-send-command process "AUTH LOGIN")
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response))))
     (smtp-send-command
      process
-     (concat "AUTH LOGIN " smtp-authentication-user))
+     (base64-encode-string
+      smtp-authentication-user))
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))

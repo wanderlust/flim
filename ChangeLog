@@ -1,6 +1,6 @@
 1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
-	* SLIM-TIPS: Update.
+	* smtp.el (smtp-aut-login): Update to new api.
 
 1999-12-14   Daiki Ueno  <ueno@ueda.info.waseda.ac.jp>
 
@@ -34,7 +34,7 @@
 
 	* sasl.el (sasl-scram-md5-make-salted-pass): New function.
 	* smtp.el (smtp-auth-scram-md5): Use `sasl-scram-md5-make-salted-pass'
-	instead of `scram-md5-make-salted-pass' and `scram-md5-parse-server-msg-1'.	
+	instead of `scram-md5-make-salted-pass' and `scram-md5-parse-server-msg-1'.
 
 1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
