@@ -197,6 +197,17 @@ If is is not found, return DEFAULT-ENCODING."
     (mime-entity-set-children entity (nreverse children))
     entity))
 
+(defun mime-parse-encapsulated (entity)
+  (mime-entity-set-children
+   entity
+   (save-restriction
+     (narrow-to-region (mime-entity-body-start entity)
+		       (mime-entity-body-end entity))
+     (list (mime-parse-message
+	    nil nil (cons 0 (mime-entity-node-id entity))))
+     ))
+  entity)
+
 ;;;###autoload
 (defun mime-parse-message (&optional default-ctl default-encoding node-id)
   "Parse current-buffer as a MIME message.
@@ -249,14 +260,9 @@ mime-{parse|read}-Content-Type."
 		(memq (mime-content-type-subtype content-type)
 		      '(rfc822 news external-body)
 		      ))
-	   (mime-entity-set-children entity
-				     (save-restriction
-				       (narrow-to-region body-start body-end)
-				       (list (mime-parse-message
-					      nil nil (cons 0 node-id)))
-				       ))
-	   ))
-    entity))
+	   (mime-parse-encapsulated entity)
+	   )
+	  (t entity))))
 
 
 ;;; @ for buffer
