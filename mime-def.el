@@ -318,7 +318,7 @@ message/rfc822, `mime-entity' structures of them are included in
 (defvar mime-entity-implementation-alist nil)
 
 (defmacro mm-define-backend (type &optional parents)
-  "Define mm-backend TYPE.
+  "Define TYPE as a mm-backend.
 If PARENTS is specified, TYPE inherits PARENTS.
 Each parent must be backend name (symbol)."
   (if parents
@@ -372,22 +372,66 @@ specialized parameter.  (car (car ARGS)) is name of variable and (nth
 ;;; @ for mel-backend
 ;;;
 
+(defvar mel-service-list nil)
+
 (defmacro mel-define-service (name &optional args &rest rest)
   "Define NAME as a service for Content-Transfer-Encodings.
 If ARGS is specified, NAME is defined as a generic function for the
 service."
-  (if args
-      `(progn
-	 (defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
-	 (defun ,name ,args
-	   ,@rest
-	   (funcall (mel-find-function ',name ,(car (last args)))
-		    ,@(mm-arglist-to-arguments (butlast args)))
-	   ))
-    `(defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
-    ))
+  `(progn
+     (add-to-list 'mel-service-list ',name)
+     (defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
+     ,@(if args
+	   `((defun ,name ,args
+	       ,@rest
+	       (funcall (mel-find-function ',name ,(car (last args)))
+			,@(mm-arglist-to-arguments (butlast args)))
+	       )))
+     ))
 
 (put 'mel-define-service 'lisp-indent-function 'defun)
+
+
+(defvar mel-encoding-module-alist nil)
+
+(defsubst mel-find-function-from-obarray (ob-array encoding)
+  (let* ((f (intern-soft encoding ob-array)))
+    (or f
+	(let ((rest (cdr (assoc encoding mel-encoding-module-alist))))
+	  (while (and rest
+		      (progn
+			(require (car rest))
+			(null (setq f (intern-soft encoding ob-array)))
+			))
+	    (setq rest (cdr rest))
+	    )
+	  f))))
+
+(defsubst mel-copy-method (service src-backend dst-backend)
+  (let* ((oa (symbol-value (intern (format "%s-obarray" service))))
+	 (f (mel-find-function-from-obarray oa src-backend))
+	 sym)
+    (when f
+      (setq sym (intern dst-backend oa))
+      (or (fboundp sym)
+	  (fset sym (symbol-function f))
+	  ))))
+       
+(defsubst mel-copy-backend (src-backend dst-backend)
+  (let ((services mel-service-list))
+    (while services
+      (mel-copy-method (car services) src-backend dst-backend)
+      (setq services (cdr services)))))
+
+(defmacro mel-define-backend (type &optional parents)
+  "Define TYPE as a mel-backend.
+If PARENTS is specified, TYPE inherits PARENTS.
+Each parent must be backend name (string)."
+  (cons 'progn
+	(mapcar (lambda (parent)
+		  `(mel-copy-backend ,parent ,type)
+		  )
+		parents)))
 
 (defmacro mel-define-method (name args &rest body)
   "Define NAME as a method function of (nth 1 (car (last ARGS))) backend.
