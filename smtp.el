@@ -59,6 +59,12 @@ called from `smtp-via-smtp' with arguments SENDER and RECIPIENTS."
 		 (function :tag "Function"))
   :group 'smtp)
 
+(defcustom smtp-send-by-myself nil
+  "If non-nil, smtp.el send a mail by myself without smtp-server.
+This option requires \"dig.el\"."
+  :type 'boolean
+  :group 'smtp)
+
 (defcustom smtp-service "smtp"
   "SMTP service port number.  \"smtp\" or 25."
   :type '(choice (integer :tag "25" 25)
@@ -89,6 +95,11 @@ don't define this value."
 
 (defcustom smtp-use-starttls nil
   "If non-nil, use STARTTLS (RFC2595) if available."
+  :type 'boolean
+  :group 'smtp-extensions)
+
+(defcustom smtp-use-starttls-ignore-error nil
+  "If non-nil, do not use STARTTLS if STARTTLS is not available."
   :type 'boolean
   :group 'smtp-extensions)
 
@@ -270,6 +281,53 @@ of the host to connect to.  SERVICE is name of the service desired."
 		  smtp-connection-alist))
       connection)))
 
+(eval-and-compile
+  (autoload 'dig-invoke "dig")
+  (autoload 'dig-extract-rr "dig"))
+
+(defun smtp-find-mx (domain &optional doerror)
+  (let (server)
+    ;; dig.el resolves only primally MX.
+    (cond ((setq server (smtp-dig domain "MX"))
+	   (progn (string-match " \\([^ ]*\\)$" server)
+		  (match-string 1 server)))
+	  ((smtp-dig domain "A")
+	    domain)
+	  (t
+	   (if doerror
+		(error (format "SMTP cannot resolve %s" domain)))))))
+
+(defun smtp-dig (domain type)
+  (let (dig-buf)
+    (set-buffer
+     (setq dig-buf (dig-invoke domain type)))
+    (prog1
+	(dig-extract-rr domain type)
+      (kill-buffer dig-buf))))
+
+(defun smtp-find-server (recipients)
+  (save-excursion
+    (let ((rec
+	   (mapcar
+	    (function
+	     (lambda (recipient)
+	       (let (server)
+		 (if (and (string-match "@\\([^\t\n ]*\\)" recipient)
+			  (setq server
+				(smtp-find-mx
+				 (match-string 1 recipient))))
+		     (cons server (list recipient))
+		   (error (format "cannot find server for %s." recipient))))))
+	    recipients))
+	  ret rets rlist)
+      (while (setq rets (pop rec))
+	(if (setq ret (assoc (car rets) rec))
+	    (setcdr ret
+		    (append (cdr ret) (cdr rets)))
+	  (setq rlist
+		(append rlist (list rets)))))
+      rlist)))
+
 ;;;###autoload
 (defun smtp-via-smtp (sender recipients buffer)
   "Like `smtp-send-buffer', but sucks in any errors."
@@ -287,27 +345,29 @@ of the host to connect to.  SERVICE is name of the service desired."
 SENDER is an envelope sender address.
 RECIPIENTS is a list of envelope recipient addresses.
 BUFFER may be a buffer or a buffer name which contains mail message."
-  (let ((server
-	 (if (functionp smtp-server)
-	     (funcall smtp-server sender recipients)
-	   smtp-server))
-	(package
-	 (smtp-make-package sender recipients buffer))
-	(smtp-open-connection-function
-	 (if smtp-use-starttls
-	     (function starttls-open-stream)
-	   smtp-open-connection-function)))
-    (save-excursion
-      (set-buffer
-       (get-buffer-create
-	(format "*trace of SMTP session to %s*" server)))
-      (erase-buffer)
-      (buffer-disable-undo (current-buffer))
-      (unless (smtp-find-connection (current-buffer))
-	(smtp-open-connection (current-buffer) server smtp-service))
-      (make-local-variable 'smtp-read-point)
-      (setq smtp-read-point (point-min))
-      (funcall smtp-submit-package-function package))))
+  (if smtp-send-by-myself
+      (smtp-send-buffer-by-myself sender recipients buffer)
+    (let ((server
+	   (if (functionp smtp-server)
+	       (funcall smtp-server sender recipients)
+	     smtp-server))
+	  (package
+	   (smtp-make-package sender recipients buffer))
+	  (smtp-open-connection-function
+	   (if smtp-use-starttls
+	       (function starttls-open-stream)
+	     smtp-open-connection-function)))
+      (save-excursion
+	(set-buffer
+	 (get-buffer-create
+	  (format "*trace of SMTP session to %s*" server)))
+	(erase-buffer)
+	(buffer-disable-undo (current-buffer))
+	(unless (smtp-find-connection (current-buffer))
+	  (smtp-open-connection (current-buffer) server smtp-service))
+	(make-local-variable 'smtp-read-point)
+	(setq smtp-read-point (point-min))
+	(funcall smtp-submit-package-function package)))))
 
 (defun smtp-submit-package (package)
   (unwind-protect
@@ -318,9 +378,14 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	  (smtp-response-error
 	   (smtp-primitive-helo package)))
 	(if smtp-use-starttls
-	    (progn
-	      (smtp-primitive-starttls package)
-	      (smtp-primitive-ehlo package)))
+	    (if (assq 'starttls
+		      (smtp-connection-extensions-internal
+		       (smtp-find-connection (current-buffer))))
+		(progn
+		  (smtp-primitive-starttls package)
+		  (smtp-primitive-ehlo package))
+	      (unless smtp-use-starttls-ignore-error
+		(error "STARTTLS is not supported on this server"))))
 	(if smtp-use-sasl
 	    (smtp-primitive-auth package))
 	(smtp-primitive-mailfrom package)
@@ -330,6 +395,42 @@ BUFFER may be a buffer or a buffer name which contains mail message."
       (when (smtp-connection-opened connection)
 	(smtp-primitive-quit package)
 	(smtp-close-connection connection)))))
+
+(defun smtp-send-buffer-by-myself (sender recipients buffer)
+  "Send a message by myself.
+SENDER is an envelope sender address.
+RECIPIENTS is a list of envelope recipient addresses.
+BUFFER may be a buffer or a buffer name which contains mail message."
+  (let ((servers
+	 (smtp-find-server recipients))
+	(smtp-open-connection-function
+	 (if smtp-use-starttls
+	     (function starttls-open-stream)
+	   smtp-open-connection-function))
+	server package)
+      (while (car servers)
+	(setq server (caar servers))
+	(setq recipients (cdar servers))
+	(if (not (and server recipients))
+	    ;; MAILER-DAEMON is required. :)
+	    (error (format "Cannot send <%s>"
+			   (mapconcat 'concat recipients ">,<"))))
+	(setq package
+	      (smtp-make-package sender recipients buffer))
+	(save-excursion
+	  (set-buffer
+	   (get-buffer-create
+	    (format "*trace of SMTP session to %s*" server)))
+	  (erase-buffer)
+	  (buffer-disable-undo)
+	  (unless (smtp-find-connection (current-buffer))
+	    (smtp-open-connection (current-buffer) server smtp-service))
+	  (make-local-variable 'smtp-read-point)
+	  (setq smtp-read-point (point-min))
+	  (let ((smtp-use-sasl nil)
+		(smtp-use-starttls-ignore-error t))
+	    (funcall smtp-submit-package-function package)))
+      (setq servers (cdr servers)))))
 
 ;;; @ hook methods for `smtp-submit-package'
 ;;;
