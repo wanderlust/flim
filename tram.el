@@ -118,9 +118,7 @@
 		   (tram-compose-transaction (pop tram-transaction))
 		 (pop tram-transaction))
 	       tram-transaction))
-	(if (and (listp accu) (eq (car accu) 'lambda))
-	    (byte-compile accu)
-	  accu)))))
+	accu))))
 
 (provide 'tram)
 

@@ -83,7 +83,7 @@ don't define this value."
   :type 'boolean
   :group 'smtp)
 
-(defvar smtp-stream-compose-function
+(defvar smtp-transaction-compose-function
   #'smtp-default-transaction-compose-function)
 
 (defvar smtp-open-connection-function (function open-network-stream))
@@ -237,10 +237,12 @@ don't define this value."
       (setq smtp-read-point (point-min))
       (unwind-protect
 	  (let ((function
-		 (funcall smtp-stream-compose-function
+		 (funcall smtp-transaction-compose-function
 			  sender recipients smtp-text-buffer)))
 	    (or (functionp function)
 		(error "Unable to compose SMTP commands"))
+	    (if (eq (car-safe function) 'lambda)
+		(setq function (byte-compile function)))
 	    (as-binary-process
 	     (setq process
 		   (funcall smtp-open-connection-function
