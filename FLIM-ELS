@@ -8,6 +8,8 @@
 		     mime-def
 		     mel mel-dl mel-b mel-q mel-u mel-g
 		     eword-decode eword-encode
+		     mime mime-parse mmbuffer mmcooked
+		     ;; mime-lib
 		     mailcap))
 
 (if (fboundp 'dynamic-link)

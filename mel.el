@@ -28,8 +28,6 @@
 
 (require 'emu)
 
-(defconst mel-version "7.5")
-
 
 ;;; @ variable
 ;;;
@@ -181,6 +179,38 @@ region by its value."
     (if f
 	(funcall f start end)
       )))
+
+
+;;; @ string
+;;;
+
+;;;###autoload
+(defvar mime-string-decoding-method-alist
+  '(("base64"           . base64-decode-string)
+    ("quoted-printable" . quoted-printable-decode-string)
+    ("7bit"		. identity)
+    ("8bit"		. identity)
+    ("binary"		. identity)
+    )
+  "Alist of encoding vs. corresponding method to decode string.
+Each element looks like (STRING . FUNCTION).
+STRING is content-transfer-encoding.
+FUNCTION is string decoder.")
+
+;;;###autoload
+(defun mime-decode-string (string encoding)
+  "Decode STRING using ENCODING.
+ENCODING must be string.  If ENCODING is found in
+`mime-string-decoding-method-alist' as its key, this function decodes
+the STRING by its value."
+  (let ((f (cdr (assoc encoding mime-string-decoding-method-alist))))
+    (if f
+	(funcall f string)
+      (with-temp-buffer
+	(insert string)
+	(mime-decode-region (point-min)(point-max) encoding)
+	(buffer-string)
+	))))
 
 
 ;;; @ file

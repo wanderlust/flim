@@ -369,17 +369,17 @@ default-mime-charset."
 ;;;
 
 (defcustom eword-decode-ignored-field-list
-  '(newsgroups path lines nntp-posting-host received message-id date)
+  '(Newsgroups Path Lines Nntp-Posting-Host Received Message-Id Date)
   "*List of field-names to be ignored when decoding.
 Each field name must be symbol."
   :group 'eword-decode
   :type '(repeat symbol))
 
 (defcustom eword-decode-structured-field-list
-  '(reply-to resent-reply-to from resent-from sender resent-sender
-	     to resent-to cc resent-cc bcc resent-bcc dcc
-	     mime-version content-type content-transfer-encoding
-	     content-disposition)
+  '(Reply-To Resent-Reply-To From Resent-From Sender Resent-Sender
+	     To Resent-To Cc Resent-Cc Bcc Resent-Bcc Dcc
+	     Mime-Version Content-Type Content-Transfer-Encoding
+	     Content-Disposition)
   "*List of field-names to decode as structured field.
 Each field name must be symbol."
   :group 'eword-decode
@@ -407,7 +407,7 @@ If SEPARATOR is not nil, it is used as header separator."
 		    p (match-end 0)
 		    field-name (buffer-substring beg (1- p))
 		    len (string-width field-name)
-		    field-name (intern (downcase field-name))
+		    field-name (intern (capitalize field-name))
 		    end (std11-field-end))
 	      (cond ((memq field-name eword-decode-ignored-field-list)
 		     ;; Don't decode
@@ -527,21 +527,18 @@ as a version of Net$cape)."
                  (error "Invalid encoding %s" encoding)
                  )))
               )
-	  (if dest
-	      (progn
-		(setq dest (decode-coding-string dest cs))
-		(if must-unfold
-		    (mapconcat (function
-				(lambda (chr)
-				  (cond
-                                   ((eq chr ?\n) "")
-                                   ((eq chr ?\t) " ")
-                                   (t (char-to-string chr)))
-				  ))
-			       (std11-unfold-string dest)
-			       "")
-		  dest)
-		))))))
+	  (when dest
+	    (setq dest (decode-mime-charset-string dest charset))
+	    (if must-unfold
+		(mapconcat (function
+			    (lambda (chr)
+			      (cond ((eq chr ?\n) "")
+				    ((eq chr ?\t) " ")
+				    (t (char-to-string chr)))
+			      ))
+			   (std11-unfold-string dest)
+			   "")
+	      dest))))))
 
 
 ;;; @ lexical analyze

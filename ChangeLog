@@ -1,3 +1,7 @@
+1998-07-06  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* Sync up with flim-1_3_0 to flim-1_8_1.
+
 1998-06-08  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_2_1 to flim-1_3_0.
@@ -118,6 +122,496 @@
 
 	* Sync up with flim-1_0_0 to flim-1_0_1.
 
+1998-07-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.8.1 (Kutsukawa) was released.
+
+1998-07-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-en.sgml, mime-ja.sgml (Entity Attributes): Add description
+	about `default-encoding' of `mime-entity-encoding'.
+
+	* mime-en.texi, mime-en.sgml: New files.
+
+	* mime-ja.sgml (media-type): Fix typo.
+
+	* mime-ja.sgml (Glossary): Fix order.
+
+	* mime-ja.sgml (Entity Attributes): Use <code> tag for nil.
+
+	* mime-ja.sgml (Entity Attributes): Fix typo.
+
+1998-07-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-entity-encoding): Add new optional argument
+	`default-encoding'; set default encoding if
+	Content-Transfer-Encoding field is not found.
+
+1998-07-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmbuffer.el (mmbuffer-write-entity): Use
+	`mime-entity-buffer-internal', `mmbuffer-entity-point-min' and
+	`mmbuffer-entity-point-max'.
+	(mmbuffer-write-entity-body): Use `mime-entity-buffer-internal',
+	`mime-entity-body-start-internal' and
+	`mime-entity-body-end-internal'.
+	(mmbuffer-insert-decoded-header): Use
+	`mime-entity-buffer-internal', `mime-entity-header-start-internal'
+	and `mime-entity-header-end-internal'.
+
+
+1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.8.0 (-DÒkubo)-A was released.
+
+	* README.en: Delete `How to use'.
+
+1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml (Entity creation): Add reference for `mm-backend'
+	in description of `mime-open-entity'.
+
+	* mime-ja.sgml (mm-backend): New section.
+
+1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml (Entity-header): Modify description about
+	`mime-insert-decoded-header'.
+
+	* mmcooked.el (mmcooked-insert-decoded-header): New function.
+
+	* mmbuffer.el (mmbuffer-insert-decoded-header): New function.
+
+	* mime.el (mime-insert-decoded-header): Use implementation of
+	mm-backend; abolish optional argument `code-conversion'.
+
+1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-encoded-text): Use
+	`decode-mime-charset-string'.
+
+1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmcooked.el (mmcooked-write-entity-body): New function.
+
+	* mmbuffer.el (mmbuffer-write-entity-body): New function.
+
+	* mime.el (mime-write-entity-body): Use implementation of
+	mm-backend.
+
+1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmcooked.el (mmcooked-write-entity): New function.
+
+	* mmbuffer.el (mmbuffer-write-entity): New function.
+
+	* mime.el (mime-write-entity): Use implementation of mm-backend.
+
+1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmcooked.el (mmcooked-entity-content): New alias for
+	`mmbuffer-entity-content'.
+	(mmcooked-write-entity-content): New function.
+
+	* mmbuffer.el (mmbuffer-entity-content): New function.
+	(mmbuffer-write-entity-content): New function.
+
+	* mime.el (mime-entity-send): New function.
+	(mime-entity-buffer): Use `mime-entity-send'.
+	(mime-entity-point-min): Likewise.
+	(mime-entity-point-max): Likewise.
+	(mime-entity-header-start): Likewise.
+	(mime-entity-header-end): Likewise.
+	(mime-entity-body-start): Likewise.
+	(mime-entity-body-end): Likewise.
+	(mime-fetch-field): Likewise.
+	(mime-entity-content): Use implementation of mm-backend.
+	(mime-write-entity-content): Likewise.
+
+
+1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.7.0 (Iseda) was released.
+
+	* mime-ja.sgml (Entity creation): Add description of
+	`mime-open-entity'.
+	(Entity Attributes): Add description of `mime-entity-cooked-p'.
+	(Entity-content): Add description of `mime-write-entity-content',
+	`mime-write-entity' and `mime-write-entity-body'.
+
+1998-06-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-write-entity-content): New function.
+
+1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-write-entity-body): New function.
+
+	* mime.el (mime-write-entity): New function.
+
+1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-parse.el (mime-parse-multipart): Change media-type of
+	entity to application/octet-stream if the first delimiter is not
+	found.
+
+1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS (flim-modules): Add `mmbuffer' and `mmcooked'.
+
+	* mmcooked.el: New file.
+
+	* mmbuffer.el: New file.
+
+	* mime.el (mime-entity-implementation-alist): New variable.
+	(mime-find-function): New function.
+	(mime-open-entity): New function.
+	(mime-entity-function): New function.
+	(mime-entity-cooked-p): New function.
+	(mime-entity-buffer): Use backend-module.
+	(mime-entity-point-min): Likewise.
+	(mime-entity-point-max): Likewise.
+	(mime-entity-header-start): Likewise.
+	(mime-entity-header-end): Likewise.
+	(mime-entity-body-start): Likewise.
+	(mime-entity-body-end): Likewise.
+	(mime-fetch-field): Likewise.
+
+	* mime-parse.el (mime-parse-message): New optional argument
+	`representation-type'.
+	(mime-parse-buffer): Likewise.
+
+	* mime-def.el: Change format of mime-entity-internal to add
+	`representation-type' and `location'.
+
+
+1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-Chao: Version 1.7.0 (Goj-Dò)-A was released.
+
+1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml: Modify for FLIM 1.7.
+
+	* mime.el (mime-entity-number): Add DOC.
+
+1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-entity-encoding): New implementation.
+
+	* mime-parse.el (mime-parse-message): Abolish argument `encoding'.
+
+	* mime-def.el (make-mime-entity-internal): Abolish argument
+	`encoding'.
+	(mime-entity-set-encoding-internal): New function.
+
+1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-entity-content-disposition): New implementation.
+
+	* mime-parse.el (mime-parse-message): Don't parse
+	Content-Disposition.
+
+	* mime-def.el (make-mime-entity-internal): Delete argument
+	`content-disposition'.
+	(mime-entity-set-content-disposition-internal): New function.
+
+1998-06-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el: Move function `eword-visible-field-p' and
+	`mime-insert-decoded-header' to mime.el.
+
+	* mime-parse.el: Use internal functions of mime-entity.
+
+	* mime.el (mime-entity-children): Moved from mime-def.el; use
+	`mime-entity-children-internal'.
+	(mime-entity-node-id): Moved from mime-def.el; use
+	`mime-entity-node-id-internal'.
+	(mime-entity-number): Moved from mime-def.el; use
+	`mime-entity-node-id-internal'.
+	(mime-entity-buffer): Moved from mime-def.el; use
+	`mime-entity-buffer-internal'.
+	(mime-entity-point-min): Moved from mime-def.el; use
+	`mime-entity-header-start-internal'.
+	(mime-entity-point-max): Moved from mime-def.el; use
+	`mime-entity-body-end-internal'.
+	(mime-entity-header-start): Moved from mime-def.el; use
+	`mime-entity-header-start-internal'.
+	(mime-entity-header-end): Moved from mime-def.el; use
+	`mime-entity-header-end-internal'.
+	(mime-entity-content-type): Moved from mime-def.el; use
+	`mime-entity-content-type-internal'.
+	(mime-entity-content-disposition): Moved from mime-def.el; use
+	`mime-entity-content-disposition-internal'.
+	(mime-entity-encoding): Moved from mime-def.el; use
+	`mime-entity-encoding-internal'.
+	(mime-fetch-field): Use `mime-entity-original-header-internal' and
+	`mime-entity-set-original-header-internal'.
+	(mime-read-field): Use `mime-entity-parsed-header-internal' and
+	`mime-entity-set-parsed-header-internal'.
+	(eword-visible-field-p): Moved from eword-decode.el.
+	(mime-insert-decoded-header): Moved from eword-decode.el.
+	(mime-entity-body-start): Moved from mime-def.el; use
+	`mime-entity-body-start-internal'.
+	(mime-entity-body-end): Moved from mime-def.el; use
+	`mime-entity-body-end-internal'.
+	(mime-entity-media-type): Moved from mime-def.el.
+	(mime-entity-media-subtype): Moved from mime-def.el.
+	(mime-entity-parameters): Moved from mime-def.el.
+	(mime-entity-type/subtype): Moved from mime-def.el.
+
+	* mime-def.el (make-mime-entity-internal): Renamed from
+	`make-mime-entity'.
+	(mime-entity-buffer-internal): New function.
+	(mime-entity-header-start-internal): New function.
+	(mime-entity-header-end-internal): New function.
+	(mime-entity-body-start-internal): New function.
+	(mime-entity-body-end-internal): New function.
+	(mime-entity-node-id-internal): New function.
+	(mime-entity-content-type-internal): New function.
+	(mime-entity-content-disposition-internal): New function.
+	(mime-entity-encoding-internal): New function.
+	(mime-entity-original-header-internal): New function.
+	(mime-entity-children-internal): New function.
+	(mime-entity-parsed-header-internal): New function.
+	(mime-entity-set-original-header-internal): Renamed from
+	`mime-entity-set-original-header'.
+	(mime-entity-set-children-internal): Renamed from
+	`mime-entity-set-children'.
+	(mime-entity-set-parsed-header-internal): Renamed from
+	`mime-entity-set-parsed-header'.  Move `mime-entity-SLOT'
+	functions to mime.el.
+
+1998-06-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml (CVS): Fix typo.
+
+1998-06-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-parse.el (mime-parse-encapsulated): New function.
+	(mime-parse-message): Use `mime-parse-encapsulated'.
+
+1998-06-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el (mime-entity-set-children): New function.
+
+	* mime-parse.el (mime-parse-multipart): Change interface.
+	(mime-parse-message): Use `mime-entity-set-children'.
+
+1998-06-24  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* mime.el (mime-read-field): Fix typo.
+
+
+1998-06-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.6.0 (Ogura) was released.
+
+	* mime-ja.sgml (Entity Attributes): New section.
+
+	* mime-ja.sgml (Entity as node in message): Add description of
+	`mime-find-entity-from-number' and
+	`mime-find-entity-from-node-id'.
+
+	* mime.el (mime-find-entity-from-number): New function.
+	(mime-find-entity-from-node-id): New function.
+	(mime-entity-parent): New function (moved from SEMI MIME-View).
+	(mime-entity-uu-filename): New function (moved from SEMI
+	MIME-View).
+	(mime-entity-filename): New function (moved from SEMI MIME-View).
+
+	* mime-def.el (mime-uuencode-encoding-name-list): New variable.
+
+1998-06-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml: Modify for FLIM 1.6.
+
+	* mime.el (mime-fetch-field): New function; abolish
+	`mime-entity-fetch-field'.
+	(mime-read-field): New function; abolish `mime-entity-read-field'.
+
+1998-06-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml, mime-ja.texi: New files.
+
+1998-06-22  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* mime-parse.el (mime-parse-message): Would error if empty body.
+
+
+1998-06-22  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.5.0 (Mukaijima) was released.
+
+1998-06-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* README.en (What's FLIM): Modify for mime.el.
+
+	* FLIM-ELS (flim-modules): Add `mime'.
+
+	* mime-lib.el: Move every definitions to mime.el.
+
+	* mime.el: New module (renamed from mime-lib.el).
+
+1998-06-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-lib.el: Add autoload setting for eword-encode.el.
+
+	* mime-lib.el (mime-entity-content): New function.
+
+1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el: Abolish constant `mel-version'.
+
+	* mel.el (mime-string-decoding-method-alist): New variable.
+	(mime-decode-string): New function.
+
+1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64-external-decode-string): New function.
+	(base64-decode-string): New function.
+
+1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-q.el (quoted-printable-decode-string): New implementation.
+
+1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-q.el (quoted-printable-internal-decode-region): New
+	implementation.
+
+1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-q.el (q-encoding-decode-string): Use
+	`quoted-printable-hex-char-to-num'.
+
+	* mel-q.el (quoted-printable-hex-char-to-num): New function.
+	(quoted-printable-decode-string): Use
+	`quoted-printable-hex-char-to-num'.
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el, mime-parse.el: Move `mime-message-structure' from
+	mime-parse.el to mime-def.el.
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-lib.el, mime-parse.el: Move `mime-root-entity-p' from
+	mime-parse.el to mime-lib.el.
+
+	* mime-lib.el: Add autoload setting for mime-parse.el.
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-parse.el, mime-def.el: Move `mime-entity-point-min',
+	`mime-entity-point-max', `mime-entity-media-type',
+	`mime-entity-media-subtype', `mime-entity-parameters' and
+	`mime-entity-type/subtype' from mime-parse.el to mime-def.el.
+
+	* mime-parse.el, mime-def.el: Move `mime-content-disposition'
+	reference functions from mime-parse.el to mime-def.el.
+
+	* mime-parse.el, mime-def.el: Move structure `mime-content-type'
+	from mime-parse.el to mime-def.el.
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64-internal-decode-string): Renamed from
+	`base64-decode-string'.
+	(base64-decode-string): New alias for
+	`base64-internal-decode-string'.
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64-decode-unit): New function; abolish
+	`base64-decode-1'.
+	(base64-decode-string): New implementation.
+	(base64-internal-decode-region): New implementation.
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-parse.el (mime-message-structure): New variable.
+	(mime-parse-buffer): New function.
+
+1998-06-19  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* mime-def.el: Require 'cl when it is compiled.
+
+	* mime-lib.el (mime-entity-read-field): Fix typo.
+	Use `eword-decode-ignored-field-list'.
+
+	* mime-parse.el (mime-parse-multipart): Fix typo.
+	(mime-parse-message): Parse message/external-body.
+
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae)-A was released.
+
+1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (mime-insert-decoded-header): Fix typo.
+
+
+1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.4.0 (Kintetsu-Tanbabashi) was released.
+
+1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* README.en (What's FLIM): Add description about mime-lib.el and
+	mime-parse.el.
+
+1998-06-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-parse.el: Require 'cl when it is compiled.
+
+	* eword-decode.el (eword-visible-field-p): New function.
+	(mime-insert-decoded-header): Use `eword-visible-field-p'.
+
+1998-06-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el (mime-library-version-string): Renamed from
+	`mime-spadework-module-version-string'.
+
+	* mime-parse.el: New file; moved from SEMI layer.
+
+	* FLIM-ELS (flim-modules): Add `mime-parse'.
+
+1998-06-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS (flim-modules): Add `mime-lib'.
+
+	* mime-lib.el: New module.
+
+	* mime-def.el (mime-entity): Add new slots for original-header and
+	parsed-header.
+	(mime-entity-set-original-header): New function.
+	(mime-entity-set-parsed-header): New function.
+
+1998-06-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el (mime-entity-number): New function (moved from SEMI
+	layer).
+
+1998-06-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el: Move definition of structure `mime-entity' from
+	SEMI layer.
+
+1998-06-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-ignored-field-list): Capitalize
+	default value.
+	(eword-decode-structured-field-list): Capitalize default value.
+	(eword-decode-header): Regularize field name by `capitalize'.
+	(mime-insert-decoded-header): New function.
+
+1998-06-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mailcap.el (mailcap-file): Use `defcustom'.
+
+
 1998-06-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.3.0 (Fushimi) was released.

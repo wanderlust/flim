@@ -158,33 +158,11 @@ It calls external quoted-printable encoder specified by
 ;;; @ Quoted-Printable decoder
 ;;;
 
-(defun quoted-printable-decode-string (string)
-  "Decode STRING which is encoded in quoted-printable, and return the result."
-  (let (q h l)
-    (mapconcat (function
-		(lambda (chr)
-		  (cond ((eq chr ?=)
-			 (setq q t)
-			 "")
-			(q (setq h
-				 (cond ((<= ?a chr) (+ (- chr ?a) 10))
-				       ((<= ?A chr) (+ (- chr ?A) 10))
-				       ((<= ?0 chr) (- chr ?0))
-				       ))
-			   (setq q nil)
-			   "")
-			(h (setq l (cond ((<= ?a chr) (+ (- chr ?a) 10))
-					 ((<= ?A chr) (+ (- chr ?A) 10))
-					 ((<= ?0 chr) (- chr ?0))
-					 ))
-			   (prog1
-			       (char-to-string (logior (ash h 4) l))
-			     (setq h nil)
-			     )
-			   )
-			(t (char-to-string chr))
-			)))
-	       string "")))
+(defsubst quoted-printable-hex-char-to-num (chr)
+  (cond ((<= ?a chr) (+ (- chr ?a) 10))
+	((<= ?A chr) (+ (- chr ?A) 10))
+	((<= ?0 chr) (- chr ?0))
+	))
 
 (defun quoted-printable-internal-decode-region (start end)
   (save-excursion
@@ -195,16 +173,26 @@ It calls external quoted-printable encoder specified by
 	(replace-match "")
 	)
       (goto-char (point-min))
-      (let (b e str)
-	(while (re-search-forward quoted-printable-octet-regexp nil t)
-	  (setq b (match-beginning 0))
-	  (setq e (match-end 0))
-	  (setq str (buffer-substring b e))
-	  (delete-region b e)
-	  (insert (string-as-multibyte (quoted-printable-decode-string str)))
-	  ))
-      )))
-
+      (while (search-forward "=" nil t)
+	(let ((beg (match-beginning 0)))
+	  (cond ((looking-at "\n")
+		 (delete-region beg (match-end 0))
+		 )
+		((looking-at
+		  `,(concat "[" quoted-printable-hex-chars
+			    "][" quoted-printable-hex-chars "]"))
+		 (let* ((end (match-end 0))
+			(hex (buffer-substring (match-beginning 0) end)))
+		   (delete-region beg end)
+		   (insert
+		    (logior
+		     (ash (quoted-printable-hex-char-to-num (aref hex 0)) 4)
+		     (quoted-printable-hex-char-to-num (aref hex 1))))
+		   ))
+		(t
+		 ;; invalid
+		 ))
+	  )))))
 
 (defvar quoted-printable-external-decoder '("mmencode" "-q" "-u")
   "*list of quoted-printable decoder program name and its arguments.")
@@ -237,6 +225,13 @@ the program (maybe mmencode included in metamail or XEmacs package)."
       (quoted-printable-external-decode-region start end)
     (quoted-printable-internal-decode-region start end)
     ))
+
+(defun quoted-printable-decode-string (string)
+  "Decode STRING which is encoded in quoted-printable, and return the result."
+  (with-temp-buffer
+    (insert string)
+    (quoted-printable-decode-region (point-min)(point-max))
+    (buffer-string)))
 
 
 (defvar quoted-printable-external-decoder-option-to-specify-file '("-o")
@@ -299,16 +294,10 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 			((eq chr ?=)
 			 (setq q t)
 			 "")
-			(q (setq h (cond ((<= ?a chr) (+ (- chr ?a) 10))
-					 ((<= ?A chr) (+ (- chr ?A) 10))
-					 ((<= ?0 chr) (- chr ?0))
-					 ))
+			(q (setq h (quoted-printable-hex-char-to-num chr))
 			   (setq q nil)
 			   "")
-			(h (setq l (cond ((<= ?a chr) (+ (- chr ?a) 10))
-					 ((<= ?A chr) (+ (- chr ?A) 10))
-					 ((<= ?0 chr) (- chr ?0))
-					 ))
+			(h (setq l (quoted-printable-hex-char-to-num chr))
 			   (prog1
 			       (char-to-string (logior (ash h 4) l))
 			     (setq h nil)
