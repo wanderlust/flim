@@ -31,7 +31,7 @@
     (error "Please install latest APEL."))
 
 
-(defconst mel-version "7.2")
+(defconst mel-version "7.3")
 
 
 ;;; @ variable
