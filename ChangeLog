@@ -1,5 +1,10 @@
 2001-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
+	* mime-parse.el (mime-decode-parameter-value): Don't use
+	`int-char'.
+
+2001-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
 	* mime.el (mime-entity-read-field): Would capitalize twice.
 
 	* mmbuffer.el (mime-entity-fetch-field): Ditto.
