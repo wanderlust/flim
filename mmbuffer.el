@@ -359,12 +359,31 @@
   (mime-buffer-entity-buffer-internal entity)
   )
 
+(luna-define-method mime-entity-body-end-point ((entity mime-buffer-entity))
+  (mime-buffer-entity-body-end-internal entity)
+  )
+
 (luna-define-method mime-entity-point-min ((entity mime-buffer-entity))
   (mime-buffer-entity-header-start-internal entity)
   )
 
 (luna-define-method mime-entity-point-max ((entity mime-buffer-entity))
   (mime-buffer-entity-body-end-internal entity)
+  )
+
+(luna-define-method mime-goto-header-start-point ((entity mime-buffer-entity))
+  (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (goto-char (mime-buffer-entity-header-start-internal entity))
+  )
+
+(luna-define-method mime-goto-body-start-point ((entity mime-buffer-entity))
+  (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (goto-char (mime-buffer-entity-body-start-internal entity))
+  )
+
+(luna-define-method mime-goto-body-end-point ((entity mime-buffer-entity))
+  (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (goto-char (mime-buffer-entity-body-end-internal entity))
   )
 
 
