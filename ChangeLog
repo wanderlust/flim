@@ -1,5 +1,12 @@
 1999-10-23  Kenichi OKADA <okada@opaopa.org>
 
+	* smtp.el (smtp-auth-cram-md5): New function.
+	(smtp-auth-plain): New function.
+	(smtp-auth-login): New function.
+	(smtp-authentication-method-alist): New variable.
+
+1999-10-23  Kenichi OKADA <okada@opaopa.org>
+
 	* hex-util.el: New file.
 	* hmac-util.el: Remove.
 	* hmac-md5.el: Update.

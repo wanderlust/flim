@@ -7,6 +7,7 @@
 ;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;;         Kenichi OKADA <okada@opaopa.org> (SASL support)
 ;;         Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
+;; Maintainer: Kenichi OKADA <okada@opaopa.org>
 ;; Keywords: SMTP, mail, SASL
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -93,6 +94,12 @@ don't define this value."
 
 (defvar smtp-authentication-user nil)
 (defvar smtp-authentication-passphrase nil)
+
+(defvar smtp-authentication-method-alist
+  '((cram-md5 smtp-auth-cram-md5)
+    (plain smtp-auth-plain)
+    (login smtp-auth-login)
+    ))
 
 (defcustom smtp-connection-type nil
   "*SMTP connection type."
@@ -189,72 +196,13 @@ don't define this value."
 
 	    ;; AUTH --- SMTP Service Extension for Authentication (RFC2554)
 	    (when smtp-authentication-type
-	      (if (null (memq (intern smtp-authentication-type) extensions))
-		  (throw 'done 
-			 (concat "AUTH mechanism "
-				 smtp-authentication-type " not available")))
-	      
-	      (cond ((string= "cram-md5" smtp-authentication-type)
-		     (smtp-send-command process "AUTH CRAM-MD5")
-		     (setq response (smtp-read-response process))
-		     (if (or (null (car response))
-			     (not (integerp (car response)))
-			     (>= (car response) 400))
-			 (throw 'done (car (cdr response))))
-		     (smtp-send-command
-		      process
-		      (base64-encode-string
-		       (sasl-cram-md5
-			smtp-authentication-user smtp-authentication-passphrase 
-			(base64-decode-string
-			 (substring (car (cdr response)) 4)))))
-		     (setq response (smtp-read-response process))
-		     (if (or (null (car response))
-			     (not (integerp (car response)))
-			     (>= (car response) 400))
-			 (throw 'done (car (cdr response)))))
-
-		    ((string= "plain" smtp-authentication-type)
-		     (let ((enc-word (copy-sequence smtp-authentication-passphrase)))
-		       (smtp-send-command
-			process
-			(setq enc-word (unwind-protect
-					   (sasl-plain "" smtp-authentication-user enc-word)
-					 (fillarray enc-word 0))
-			      enc-word (unwind-protect
-					   (base64-encode-string enc-word)
-					 (fillarray enc-word 0))
-			      enc-word (unwind-protect
-					   (concat "AUTH PLAIN " enc-word)
-					 (fillarray enc-word 0))))
-		       (fillarray enc-word 0))
-		     (setq response (smtp-read-response process))
-		     (if (or (null (car response))
-			     (not (integerp (car response)))
-			     (>= (car response) 400))
-			 (throw 'done (car (cdr response)))))
-
-		    ((string= "login" smtp-authentication-type)
-		     (smtp-send-command
-		      process
-		      (concat "AUTH LOGIN " smtp-authentication-user))
-		     (setq response (smtp-read-response process))
-		     (if (or (null (car response))
-			     (not (integerp (car response)))
-			     (>= (car response) 400))
-			 (throw 'done (car (cdr response))))
-		     (smtp-send-command
-		      process
-		      (base64-encode-string smtp-authentication-passphrase))
-		     (setq response (smtp-read-response process))
-		     (if (or (null (car response))
-			     (not (integerp (car response)))
-			     (>= (car response) 400))
-			 (throw 'done (car (cdr response)))))
-
-		    (t
-		     (throw 'done (concat "AUTH "
-					  smtp-authentication-type " not supported")))))
+	      (let ((auth (intern smtp-authentication-type)) method)
+		(if (and 
+		     (memq auth extensions)
+		     (setq method (nth 1 (assq auth smtp-authentication-method-alist))))
+		    (funcall method process)
+		  (throw 'smtp-error
+			 (format "AUTH mechanism %s not available" auth)))))
 
 	    ;; ONEX --- One message transaction only (sendmail extension?)
 	    (if (or (memq 'onex extensions)
@@ -522,6 +470,67 @@ don't define this value."
 	    recipient-address-list))
       (kill-buffer smtp-address-buffer))))
 
+(defun smtp-auth-cram-md5 (process)
+  (let (response)
+    (smtp-send-command process "AUTH CRAM-MD5")
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response))))
+    (smtp-send-command
+     process
+     (base64-encode-string
+      (sasl-cram-md5
+       smtp-authentication-user smtp-authentication-passphrase 
+       (base64-decode-string
+	(substring (car (cdr response)) 4)))))
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response))))))
+ 
+(defun smtp-auth-plain (process)
+  (let ((enc-word (copy-sequence smtp-authentication-passphrase))
+	response)
+    (smtp-send-command
+     process
+     (setq enc-word (unwind-protect
+			(sasl-plain "" smtp-authentication-user enc-word)
+		      (fillarray enc-word 0))
+	   enc-word (unwind-protect
+			(base64-encode-string enc-word)
+		      (fillarray enc-word 0))
+	   enc-word (unwind-protect
+			(concat "AUTH PLAIN " enc-word)
+		      (fillarray enc-word 0))))
+    (fillarray enc-word 0))
+  (setq response (smtp-read-response process))
+  (if (or (null (car response))
+	  (not (integerp (car response)))
+	  (>= (car response) 400))
+      (throw 'done (car (cdr response)))))
+
+(defun smtp-auth-login (process)
+  (let (response)
+    (smtp-send-command
+     process
+     (concat "AUTH LOGIN " smtp-authentication-user))
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response))))
+    (smtp-send-command
+     process
+     (base64-encode-string smtp-authentication-passphrase))
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response))))))
+ 
 (provide 'smtp)
 
 ;;; smtp.el ends here
