@@ -1,3 +1,7 @@
+1999-08-23  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* CLIME: Version 1.13.2 (Nukatabe) released.
+
 1999-08-19  TSUMURA Tomoaki   <tsumura@kuis.kyoto-u.ac.jp>
 
 	* mel-b-el.el (base64-num-to-char): Use <(` ...)> and <(, ...)>
