@@ -48,7 +48,8 @@
 If PARENTS is specified, TYPE inherits PARENTS.
 Each parent must be name of luna-class (symbol).
 If SLOTS is specified, TYPE will be defined to have them."
-  `(luna-define-class-function ',type ',parents ',slots))
+  `(luna-define-class-function ',type ',(append parents '(standard-object))
+			       ',slots))
 
 (defun luna-define-class-function (type &optional parents slots)
   (let ((oa (make-vector 31 0))
@@ -111,45 +112,89 @@ If SLOTS is specified, TYPE will be defined to have them."
   "Store VALUE into SLOT of ENTITY."
   (aset entity (luna-slot-index entity slot) value))
 
-(defmacro luna-define-method (name args &rest body)
-  "Define NAME as a method function of (nth 1 (car ARGS)) backend.
+(defmacro luna-define-method (name &rest definition)
+  "Define NAME as a method function of a class.
 
-ARGS is like an argument list of lambda, but (car ARGS) must be
-specialized parameter.  (car (car ARGS)) is name of variable and (nth
-1 (car ARGS)) is name of backend."
-  (let* ((specializer (car args))
-	 (class (nth 1 specializer))
-	 (self (car specializer)))
+Usage of this macro follows:
+
+  (luna-define-method NAME [METHOD-QUALIFIER] ARGLIST [DOCSTRING] BODY...) 
+
+NAME is the name of method.
+
+Optional argument METHOD-QUALIFIER must be :after.  If it is :after,
+the method is called after a method of parent class is finished.
+ARGLIST is like an argument list of lambda, but (car ARGLIST) must be
+specialized parameter.  (car (car ARGLIST)) is name of variable and
+\(nth 1 (car ARGLIST)) is name of class.
+
+Optional argument DOCSTRING is the documentation of method.
+
+BODY is the body of method."
+  (let ((method-qualifier (pop definition))
+	args specializer class self)
+    (if (eq method-qualifier :after)
+	(setq args (pop definition))
+      (setq args method-qualifier
+	    method-qualifier nil)
+      )
+    (setq specializer (car args)
+	  class (nth 1 specializer)
+	  self (car specializer))
     `(let ((func (lambda ,(if self
 			      (cons self (cdr args))
 			    (cdr args))
-		   ,@body)))
-       (fset (luna-class-find-or-make-member (luna-find-class ',class) ',name)
-	     func))))
+		   ,@definition))
+	   (sym (luna-class-find-or-make-member
+		 (luna-find-class ',class) ',name)))
+       (fset sym func)
+       (put sym 'luna-method-qualifier ,method-qualifier)
+       )))
 
 (put 'luna-define-method 'lisp-indent-function 'defun)
 
-(defun luna-class-find-function (class service)
+(def-edebug-spec luna-define-method
+  (&define name [&optional ":after"]
+	   ((arg symbolp)
+	    [&rest arg]
+	    [&optional ["&optional" arg &rest arg]]
+	    &optional ["&rest" arg]
+	    )
+	   def-body))
+
+(defun luna-class-find-parents-functions (class service)
+  (let ((parents (luna-class-parents class))
+	ret)
+    (while (and parents
+		(null
+		 (setq ret (luna-class-find-functions
+			    (luna-find-class (pop parents))
+			    service)))))
+    ret))
+
+(defun luna-class-find-functions (class service)
   (let ((sym (luna-class-find-member class service)))
     (if (fboundp sym)
-	(symbol-function sym)
-      (let ((parents (luna-class-parents class))
-	    ret)
-	(while (and parents
-		    (null
-		     (setq ret (luna-class-find-function
-				(luna-find-class (pop parents))
-				service)))))
-	ret))))
+	(if (eq (get sym 'luna-method-qualifier) :after)
+	    (nconc (luna-class-find-parents-functions class service)
+		   (list (symbol-function sym)))
+	  (list (symbol-function sym))
+	  )
+      (luna-class-find-parents-functions class service)
+      )))
 
-(defmacro luna-find-function (entity service)
-  `(luna-class-find-function (luna-find-class (luna-class-name ,entity))
-			     ,service))
+(defmacro luna-find-functions (entity service)
+  `(luna-class-find-functions (luna-find-class (luna-class-name ,entity))
+			      ,service))
 
 (defsubst luna-send (entity message &rest args)
   "Send MESSAGE to ENTITY with ARGS, and return the result."
-  (apply (luna-find-function entity message)
-	 args))
+  (let ((functions (luna-find-functions entity message))
+	ret)
+    (while functions
+      (setq ret (apply (car functions) args)
+	    functions (cdr functions))
+      )
+    ret))
 
 (defmacro luna-class-name (entity)
   "Return class-name of the ENTITY."
@@ -169,19 +214,11 @@ specialized parameter.  (car (car ARGS)) is name of variable and (nth
 If INIT-ARGS is specified, it is used as initial values of the slots.
 It must be plist and each slot name must have prefix `:'."
   (let* ((c (get type 'luna-class))
-	 (v (make-vector (luna-class-number-of-slots c) nil))
-	 (oa (luna-class-obarray c))
-	 s i)
+	 (v (make-vector (luna-class-number-of-slots c) nil)))
     (luna-set-class-name v type)
     (luna-set-obarray v (make-vector 7 0))
-    (while init-args
-      (setq s (intern-soft (substring (symbol-name (pop init-args)) 1) oa)
-	    i (pop init-args))
-      (if s
-	  (aset v (get s 'luna-slot-index) i)
-	))
-    (luna-send v 'initialize-instance v)
-    v))
+    (apply #'luna-send v 'initialize-instance v init-args)
+    ))
 
 (defsubst luna-arglist-to-arguments (arglist)
   (let (dest)
@@ -243,7 +280,22 @@ ARGS is argument of and DOC is DOC-string."
 		 ))
 	     )))
      (luna-class-obarray entity-class))))
-  
+
+(luna-define-class-function 'standard-object)
+
+(luna-define-method initialize-instance ((entity standard-object)
+					 &rest init-args)
+  (let* ((c (luna-find-class (luna-class-name entity)))
+	 (oa (luna-class-obarray c))
+	 s i)
+    (while init-args
+      (setq s (intern-soft (substring (symbol-name (pop init-args)) 1) oa)
+	    i (pop init-args))
+      (if s
+	  (aset entity (get s 'luna-slot-index) i)
+	))
+    entity))
+
 
 ;;; @ end
 ;;;
