@@ -1,6 +1,6 @@
 ;;; mime-def.el --- definition module about MIME
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: definition, MIME, multimedia, mail, news
@@ -99,8 +99,11 @@
 ;;; @ about MIME
 ;;;
 
-(defconst mime-tspecials "][()<>@,\;:\\\"/?=")
-(defconst mime-token-regexp (concat "[^" mime-tspecials "\000-\040]+"))
+(defconst mime-tspecial-char-list
+  '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=))
+(defconst mime-token-regexp
+  (eval-when-compile
+    (concat "[^" mime-tspecial-char-list "\000-\040]+")))
 (defconst mime-charset-regexp mime-token-regexp)
 
 (defconst mime-media-type/subtype-regexp
