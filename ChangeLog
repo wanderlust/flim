@@ -1,3 +1,10 @@
+1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mmbuffer.el (initialize-instance): Don't initialize slots if
+	they are initialized.
+	(mime-parse-multipart): Run in body-buffer of an entity.
+	(mime-entity-body-start-point): New method.
+
 1999-05-25  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* README.ja (install): Fixed
