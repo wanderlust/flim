@@ -1,3 +1,30 @@
+1998-04-17  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* Sync up with flim-1_0_0 to flim-1_0_1.
+
+1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.0.1 (Ky,Dr(Bto) was released.
+
+	* mime-def.el (mime-spadework-module-version-string): New
+ 	constant.
+
+	* eword-encode.el: Abolish constant 'eword-encode-version.
+
+	* eword-decode.el: Abolish constant 'eword-decode-version.
+
+1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-divide-into-charset-words): Use
+	'char-length or 'char-next-index instead of 'char-bytes.
+	(tm-eword::encode-string-1): Use 'char-next-index instead of
+	'char-bytes.
+
+1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el (base64-dl-module): Must check base64.so actually exists.
+
+
 1998-04-13  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* eword-decode.el: Copied from AKEMI branch of SEMI.

@@ -31,12 +31,6 @@
 (require 'eword-decode)
 
 
-;;; @ version
-;;;
-
-(defconst eword-encode-version "1.2")
-
-
 ;;; @ variables
 ;;;
 
@@ -119,13 +113,12 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (while (> len 0)
       (let* ((chr (sref string 0))
 	     (charset (eword-encode-char-type chr))
-	     (i (char-bytes chr))
-	     )
+	     (i (char-length chr)))
 	(while (and (< i len)
 		    (setq chr (sref string i))
 		    (eq charset (eword-encode-char-type chr))
 		    )
-	  (setq i (+ i (char-bytes chr)))
+	  (setq i (char-next-index chr i))
 	  )
 	(setq dest (cons (cons charset (substring string 0 i)) dest)
 	      string (substring string i)
@@ -302,7 +295,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		    (str "") nstr)
 	       (while (and (< p len)
 			   (progn
-			     (setq np (+ p (char-bytes (sref string p))))
+			     (setq np (char-next-index (sref string p) p))
 			     (setq nstr (substring string 0 np))
 			     (setq ret (tm-eword::encoded-word-length
 					(cons nstr (cdr rword))
