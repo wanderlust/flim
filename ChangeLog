@@ -1,5 +1,10 @@
 1999-02-08  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): Fix previous
+	change.
+
+1999-02-08  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): Write white
 	space after checking following sequence.
 

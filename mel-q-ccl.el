@@ -624,9 +624,18 @@ abcdefghijklmnopqrstuvwxyz\
         (write "=0D")
         (end))
        ;; ; r0:r3=WSP r1=CR
-       ((write ,(if output-crlf "=\r\n=" "=\n="))
-	(write r0)
-	(write "=0D")))
+       (if (r6 <= 72)
+	   ((write r0)
+	    (write "=0D")
+	    (end))
+	 (if (r6 <= 74)
+	     ((write r0)
+	      (write ,(if output-crlf "=\r\n=0D" "=\n=0D"))
+	      (end))
+	   ((write ,(if output-crlf "=\r\n" "=\n"))
+	    (write r0)
+	    (write "=0D")
+	    (end)))))
       ;; 13: r0:r3=RAW CR LF ;
       ;; 13: r0:r3=RAW CRLF ;
       (end)
