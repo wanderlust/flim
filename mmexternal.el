@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(require 'mmgeneric)
 (require 'mime)
 (require 'pces)
 
