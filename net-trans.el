@@ -1,4 +1,4 @@
-;;; net-trans.el --- basic transaction framework for internet protocols.
+;;; net-trans.el --- basic transaction framework for internet protocols
 
 ;; Copyright (C) 2000 Daiki Ueno
 
@@ -33,73 +33,74 @@
 (eval-when-compile (require 'cl))
 
 (eval-and-compile
-  (luna-define-class transaction ())
+  (luna-define-class net-transaction ())
 
-  (luna-define-internal-accessors 'transaction))
+  (luna-define-internal-accessors 'net-transaction))
 
-(luna-define-generic transaction-error-name (trans)
+(luna-define-generic net-transaction-error-name (trans)
   "Return error symbol of the TRANSACTION.")
 
-(luna-define-generic transaction-error (trans error)
+(luna-define-generic net-transaction-error (trans error)
   "Throw an ERROR of the TRANSACTION.")
 
-(luna-define-method transaction-error-name ((trans transaction))
+(luna-define-method net-transaction-error-name ((trans net-transaction))
   (intern (format "%s-error" (luna-class-name trans))))
 
-(luna-define-method transaction-error ((trans transaction) error)
-  (throw (transaction-error-name trans) error))
+(luna-define-method net-transaction-error ((trans net-transaction) error)
+  (throw (net-transaction-error-name trans) error))
 
-(defvar transaction-combinator-alist
-  '((&& transaction-compose-&&)
-    (|| transaction-compose-||)))
+(defvar net-transaction-combinator-alist
+  '((&& net-transaction-compose-&&)
+    (|| net-transaction-compose-||)))
 
-(defun transaction-compose-&& (left right)
+(defun net-transaction-compose-&& (left right)
   "Multiplicative operator of current transaction LEFT and RIGHT."
-  `(lambda (transaction)
-     (let ((next (funcall #',left transaction)))
+  `(lambda (trans)
+     (let ((next (funcall #',left trans)))
        (funcall #',right next))))
 
-(defun transaction-compose-|| (left right)
+(defun net-transaction-compose-|| (left right)
   "Additive operator of current transaction LEFT and RIGHT."
-  `(lambda (transaction)
+  `(lambda (trans)
      (let (next error)
        (setq error
-	     (catch (transaction-error-name transaction)
-	       (setq next (funcall #',left transaction))
+	     (catch (net-transaction-error-name trans)
+	       (setq next (funcall #',left trans))
 	       nil))
        (if error
-	   (funcall #',right transaction)
+	   (funcall #',right trans)
 	 next))))
 
-(defun transaction-compose-fold-left (function accu sequence)
+(defun net-transaction-compose-fold-left (function accu sequence)
+  "Apply FUNCTION to ACCU while folding SEQUENCE left to right."
   (if (null sequence)
       accu
-    (transaction-compose-fold-left
+    (net-transaction-compose-fold-left
      function (funcall function accu (car sequence))
      (cdr sequence))))
 
-(defun transaction-compose-commands (commands)
-  "Compose COMMANDS."
+(defun net-transaction-compose-commands (commands)
+  "Compose transaction-function from COMMANDS."
   (let ((combinator
-	 (assq (pop commands) transaction-combinator-alist))
+	 (assq (pop commands) net-transaction-combinator-alist))
 	(accu
 	 (if (listp (car commands))
-	     (transaction-compose-commands (pop commands))
+	     (net-transaction-compose-commands (pop commands))
 	   (pop commands))))
     (if (null combinator)
 	(error "Unknown operator")
       (setq accu
-	    (transaction-compose-fold-left
+	    (net-transaction-compose-fold-left
 	     `(lambda (accu c)
 		(funcall
 		 #',(nth 1 combinator) accu
 		 (if (listp c)
-		     (transaction-compose-commands c)
+		     (net-transaction-compose-commands c)
 		   c)))
 	     accu commands))
-      (if (byte-code-function-p accu)
-	  accu
-	(byte-compile accu)))))
+      (if (and (listp accu) (eq (car accu) 'lambda))
+	  (byte-compile accu)
+	accu))))
 
 (provide 'net-trans)
 
