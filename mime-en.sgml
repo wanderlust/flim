@@ -603,7 +603,7 @@ FLIM $B$G$O(B Content-Transfer-Encoding $BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$
 $B6!$5$l$^$9!#(B
 
 
-<h2> Parser for Content-Transfer-Encoding field
+<h2> Parser
 <node> Content-Transfer-Encoding parser
 <p>
 <defun name="mime-parse-Content-Transfer-Encoding">
