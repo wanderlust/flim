@@ -1,5 +1,14 @@
 2000-03-02  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* mmgeneric.el (mime-visible-field-p): Moved from mmbuffer.el.
+	(mime-insert-header-from-buffer): Moved from mmbuffer.el.
+
+	* mmexternal.el, mmdbuffer.el, mmbuffer.el (mime-visible-field-p):
+	Moved to mmgeneric.el.
+	(mime-insert-header-from-buffer): Moved to mmgeneric.el.
+
+2000-03-02  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* FLIM-ELS (flim-modules): Add `mmgeneric'.
 
 	* mmgeneric.el: New file.
