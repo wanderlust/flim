@@ -1,5 +1,18 @@
 2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
+	* mime.el (mime-entity-media-type): Add DOC.
+	(mime-entity-media-subtype): Add DOC.
+	(mime-entity-parameters): Add DOC.
+	(mime-entity-type/subtype): Add DOC.
+
+	* FLIM-API.en: Add some usages.
+	(mime-entity-media-type): New description.
+	(mime-entity-media-subtype): Likewise.
+	(mime-entity-type/subtype): Likewise.
+	(mime-entity-parameters): Likewise.
+
+2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
 	* eword-encode.el (eword-encode-text): Specify `mode' of
 	`encoded-text-encode-string'.
 
