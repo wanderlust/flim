@@ -78,13 +78,13 @@ This function ensures that none of these modifications will take place."
   "Like `start-process', q.v., but don't code conversion."
   (let ((coding-system-for-read 'binary)
 	(coding-system-for-write 'binary))
-    (apply '#start-process name buffer program program-args)))
+    (apply #'start-process name buffer program program-args)))
 
 (defun binary-start-process-shell-command (name buffer &rest args)
   "Like `start-process-shell-command', q.v., but don't code conversion."
   (let ((coding-system-for-read 'binary)
 	(coding-system-for-write 'binary))
-    (apply '#start-process-shell-command name buffer args)))
+    (apply #'start-process-shell-command name buffer args)))
 
 
 (defun raw-text-insert-file-contents (filename
