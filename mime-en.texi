@@ -126,19 +126,16 @@ on representation-type.
 @end defun
 
 
-@defun mime-parse-message &optional  default-ctl node-id
-
-Parse current buffer as message, and return the result as mime-entity.
-@end defun
-
-
-@defun mime-parse-buffer &optional  buffer
+@defun mime-parse-buffer &optional  buffer representation-type
 
 Parse @var{buffer} as message, and set the result to buffer local
 variable @code{mime-message-structure} of @var{buffer} as
 mime-entity.@refill
 
-If @var{buffer} is omitted, current buffer is used.
+If @var{buffer} is omitted, current buffer is used.@refill
+
+@var{representation-type} is representation-type of created mime-entity.
+Default value is @var{buffer}.
 @end defun
 
 
