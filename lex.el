@@ -6,90 +6,13 @@
 (put 'lex-scan-multibyte 'lisp-indent-function 3)
 (put 'lex-scan-unibyte 'lisp-indent-function 3)
 
-;;; automata generation
+;;;
 
-(defun lex-automata (rx)
-  (let* ((rx (rx-simplify rx))
-	 (stack (list rx))		; list of rx
-	 (table (list (rx-cons* rx 0 (lex-make-box (list 'd1 'd2)))))
-					; list of (rx id . box-for-reverse-links)
-	 (states ())			; list of (id act trans . box-for-reverse-links)
-					;   where trans = list of (pc id . box-for-reverse-links)
-	 (next-id 1)
-	 tbl-ent box id pcs act pc trans  rx-stepped p)
-    (while (consp stack)
-      (setq rx (car stack)
-	    stack (cdr stack)
-	    tbl-ent (assoc rx table)
-	    id (cadr tbl-ent)
-	    box (cddr tbl-ent)
-	    pcs (rx-head-pcs rx)
-	    act (rx-head-act rx)
-	    trans ())
-      (while (consp pcs)
-	(setq pc (car pcs)
-	      pcs (cdr pcs)
-	      rx-stepped (rx-step rx pc)
-	      p (assoc rx-stepped table))
-	(if p
-	    (progn
-	      (setq trans (cons (cons pc (cdr p)) trans))
-	      (lex-add-box (cddr p) id))
-	  (setq p (rx-cons* rx-stepped next-id (lex-make-box (list id)))
-		trans (cons (cons pc (cdr p)) trans)
-		table (cons p table)
-		next-id (1+ next-id)
-		stack (cons rx-stepped stack))))
-      (setq states
-	    (cons (rx-cons* id act trans box)
-		  states)))
-    states))
-
-;;; automata coding
-
-(defvar lex-pc-var (make-symbol "pc"))
-(defvar lex-act-var (make-symbol "act"))
-(defvar lex-escape-tag (make-symbol "esc"))
-
-(defun lex-gen-machine (states cs acts read-macro save-macro)
-  `(let (,lex-pc-var ,lex-act-var)
-     (catch ',lex-escape-tag
-       (automata
-	,lex-pc-var 0
-	,@(mapcar
-	   (lambda (s) (lex-gen-state s cs read-macro save-macro))
-	   states)))
-     (automata-branch
-      ,lex-act-var ,(apply 'natset-single (mapcar 'car acts)) automata-never-fail
-      ,@(mapcar
-	 (lambda (act) `(,(natset-single (car act)) nil ,@(cdr act)))
-	 acts))))
-
-(defun lex-gen-state (s cs read-macro save-macro)
-  (let ((id (nth 0 s))
-	(act (nth 1 s))
-	(trans (nth 2 s)))
-    `(,id
-      (progn
-	,@(if act
-	      `((lex-match ,(cdr act)) (,save-macro))
-	    ())
-	,@(if (consp trans) `((,read-macro ,lex-pc-var))))
-      (lex-fail)
-      ,@(mapcar
-	 (lambda (tr) `(,(let ((l (member (car tr) cs)))
-			   (if (null (cdr l))
-			       (natset-seg (car l))
-			     (natset-seg (car l) (1- (cadr l)))))
-			,(cadr tr)))
-	 trans))))
-
-;;; internal macros
-
-(defmacro lex-match (id)
-  `(setq ,lex-act-var ',id))
-(defmacro lex-fail ()
-  `(throw ',lex-escape-tag nil))
+(eval-and-compile
+(defvar lex-use-ccl (fboundp 'ccl-execute-on-string))
+(when lex-use-ccl
+  (require 'ccl))
+)
 
 ;;; user interface macro
 
@@ -163,6 +86,168 @@
 	    ,lex-scan-unibyte-mch-var)
        ,(lex-gen-machine (lex-automata (car tmp)) (cdr tmp) acts 'lex-scan-unibyte-read 'lex-scan-unibyte-save))))
 
+;;; automata generation
+
+(defun lex-automata (rx)
+  (let* ((rx (rx-simplify rx))
+	 (stack (list rx))		; list of rx
+	 (table (list (rx-cons* rx 0 (lex-make-box (list 'd1 'd2)))))
+					; list of (rx id . box-for-reverse-links)
+	 (states ())			; list of (id act trans . box-for-reverse-links)
+					;   where trans = list of (pc id . box-for-reverse-links)
+	 (next-id 1)
+	 tbl-ent box id pcs act pc trans  rx-stepped p)
+    (while (consp stack)
+      (setq rx (car stack)
+	    stack (cdr stack)
+	    tbl-ent (assoc rx table)
+	    id (cadr tbl-ent)
+	    box (cddr tbl-ent)
+	    pcs (rx-head-pcs rx)
+	    act (rx-head-act rx)
+	    trans ())
+      (while (consp pcs)
+	(setq pc (car pcs)
+	      pcs (cdr pcs)
+	      rx-stepped (rx-step rx pc)
+	      p (assoc rx-stepped table))
+	(if p
+	    (progn
+	      (setq trans (cons (cons pc (cdr p)) trans))
+	      (lex-add-box (cddr p) id))
+	  (setq p (rx-cons* rx-stepped next-id (lex-make-box (list id)))
+		trans (cons (cons pc (cdr p)) trans)
+		table (cons p table)
+		next-id (1+ next-id)
+		stack (cons rx-stepped stack))))
+      (setq states
+	    (cons (rx-cons* id act trans box)
+		  states)))
+    states))
+
+;;; automata coding
+
+(defvar lex-pc-var (make-symbol "pc"))
+(defvar lex-act-var (make-symbol "act"))
+(defvar lex-escape-tag (make-symbol "esc"))
+
+(defun lex-gen-machine (states cs acts read-macro save-macro)
+  `(let (,lex-pc-var ,lex-act-var)
+     ,(if (and lex-use-ccl
+	       (eq read-macro 'lex-scan-unibyte-read)
+	       (eq save-macro 'lex-scan-unibyte-save))
+	  (lex-gen-ccl-unibyte-automata states cs)
+	(lex-gen-automata states cs read-macro save-macro))
+     ,(lex-gen-action acts)))
+
+(defun lex-gen-automata (states cs read-macro save-macro)
+  `(catch ',lex-escape-tag
+     (automata
+      ,lex-pc-var 0
+      ,@(mapcar
+	 (lambda (s) (lex-gen-state s cs read-macro save-macro))
+	 states))))
+
+(defun lex-gen-state (s cs read-macro save-macro)
+  (let ((id (nth 0 s))
+	(act (nth 1 s))
+	(trans (nth 2 s)))
+    `(,id
+      (progn
+	,@(if act
+	      `((lex-match ,(cdr act)) (,save-macro))
+	    ())
+	,@(if (consp trans) `((,read-macro ,lex-pc-var))))
+      (lex-fail)
+      ,@(mapcar
+	 (lambda (tr) `(,(let ((l (member (car tr) cs)))
+			   (if (null (cdr l))
+			       (natset-seg (car l))
+			     (natset-seg (car l) (1- (cadr l)))))
+			,(cadr tr)))
+	 trans))))
+
+(defun lex-gen-action (acts)
+  `(automata-branch
+    ,lex-act-var ,(apply 'natset-single (mapcar 'car acts)) automata-never-fail
+    ,@(mapcar
+       (lambda (act) `(,(natset-single (car act)) nil ,@(cdr act)))
+       acts)))
+
+;;; CCL version automata generation
+
+(defun lex-gen-ccl-unibyte-automata (states cs)
+  ;; read-macro is lex-scan-unibyte-read
+  ;; save-macro is lex-scan-unibyte-save
+  `(let ((status [nil nil nil nil nil nil nil nil nil]))
+     (aset status 0 nil)                       ; r0: pc
+     (aset status 1 0)                         ; r1: state
+     (aset status 2 ,lex-scan-unibyte-ptr-var) ; r2: ptr
+     (aset status 3 ,lex-scan-unibyte-ptr-var) ; r3: start
+     (aset status 4 ,lex-scan-unibyte-end-var) ; r4: end
+     (aset status 5 nil)                       ; r5: mch
+     (aset status 6 0)                         ; r6: act
+     (aset status 7 nil)                       ; r7
+     (aset status 8 nil)                       ; ic
+     (ccl-execute-on-string
+      (eval-when-compile
+	(ccl-compile
+	 ',(lex-gen-ccl-unibyte-automata-program states cs)))
+      status
+      ,lex-scan-unibyte-str-var)
+     (setq ,lex-scan-unibyte-ptr-var (aref status 2))
+     (when (< 0 (aref status 6))
+       (setq ,lex-act-var (aref status 6)
+	     ,lex-scan-unibyte-mch-var (aref status 5)))))
+
+(defun lex-gen-ccl-unibyte-automata-program (states cs)
+  `(0
+    ((loop
+      (if (r3 > 0)
+	  ((r3 -= 1)
+	   (read r0)
+	   (repeat))
+	(break)))
+     (loop
+      (branch r1
+        ,@(mapcar
+	   (lambda (s) (lex-gen-ccl-unibyte-automata-state 
+			(nth 0 s) (cdr (nth 1 s)) (nth 2 s)
+			cs))
+	   (sort states
+		 (lambda (a b) (< (car a) (car b))))))))))
+
+(defun lex-gen-ccl-unibyte-automata-state (id act trans cs)
+  `(,@(when act
+	`((r5 = r2)
+	  (r6 = ,act)))
+    ,@(if (consp trans)
+	  `((if (r4 <= r2)
+		(end)
+	      ((read r0)
+	       (r2 += 1)
+	       ,(apply
+		 'natset-gen-ccl-branch
+		 'r0
+		 '(end)
+		 (mapcar
+		  (lambda (tr) (cons
+				(let ((l (member (car tr) cs)))
+				  (if (null (cdr l))
+				      (natset-seg (car l))
+				    (natset-seg (car l) (1- (cadr l)))))
+				`(r1 = ,(cadr tr))))
+		  trans))
+	       (repeat))))
+	'((end)))))
+
+;;; internal macros
+
+(defmacro lex-match (id)
+  `(setq ,lex-act-var ',id))
+(defmacro lex-fail ()
+  `(throw ',lex-escape-tag nil))
+
 ;;; utilities
 
 (defun lex-make-box (val)
@@ -193,4 +278,33 @@
    "aaa" 0 3
    (?a 'a))
 
+(let* ((str "abcdef\ndeefx\r\n jfdks\r")
+       (p 15))
+  (cons
+   (lex-scan-unibyte str p nil
+     (()
+      'error)
+     (((* [^ "\r\n"])
+       (* (+ ?\r) [^ "\r\n"] (* [^ "\r"]))
+       (* ?\r)
+       (?\r ?\n [" \t"]))
+      'line-fold)
+     (((* [^ "\r\n"])
+       (* (+ ?\r) [^ "\r\n"] (* [^ "\r"]))
+       (* ?\r)
+       (?\r ?\n))
+      'line-crlf)
+     (((* [^ "\r\n"])
+       (* (+ ?\r) [^ "\r\n"] (* [^ "\r"]))
+       (* ?\r))
+      'line))
+   p))
+
+(ew-crlf-line-convert "abcdef\ndeefx\r\n jfdks\r"
+  (lambda (a) (format "[L:%s]" a))
+  (lambda (a) (format "[F:%s]" a))
+  (lambda (a) (format "[N:%s]" a)))
+
+
 )
+

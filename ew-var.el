@@ -53,16 +53,19 @@
 
 ;;; constants.
 
-(defconst ew-token-regexp "[-!#-'*+0-9A-Z^-~]+")
-(defconst ew-encoded-text-regexp "[!->@-~]+")
+(eval-and-compile
+  (defconst ew-token-regexp "[-!#-'*+0-9A-Z^-~]+")
+  (defconst ew-encoded-text-regexp "[!->@-~]+")
+)
 (defconst ew-encoded-word-regexp
-  (concat (regexp-quote "=?")
-          "\\(" ew-token-regexp "\\)"
-          (regexp-quote "?")
-          "\\(" ew-token-regexp "\\)"
-          (regexp-quote "?")
-          "\\(" ew-encoded-text-regexp "\\)"
-          (regexp-quote "?=")))
+  (eval-when-compile
+    (concat (regexp-quote "=?")
+            "\\(" ew-token-regexp "\\)"
+            (regexp-quote "?")
+            "\\(" ew-token-regexp "\\)"
+            (regexp-quote "?")
+            "\\(" ew-encoded-text-regexp "\\)"
+            (regexp-quote "?="))))
 
 ;;; utilities for variables.
 

@@ -12,10 +12,10 @@
 ;;separate-sticked-comment          ; violate the policy preserving absence of space
 ;;separate-sticked-special          ; violate the policy preserving absence of space
 ;;zero-characters-encoded-word-hack ; violate common sense (very tricky)
-;;embedded-encoded-word		   ; violate character sequence semantics
+;;embedded-encoded-word		    ; violate character sequence semantics
 ;;separate-sticked-tokens-for-fold  ; violate the policy preserving absence of space
 ;;encode-long-ascii-string-for-fold ; violate the policy preserving US-ASCII string
-;;divide-atom-for-fold		   ; violate tne policy preserving absence of space
+;;divide-atom-for-fold		    ; violate tne policy preserving absence of space
 
 ;;; test driver
 
@@ -157,8 +157,8 @@
 
 (decode
 "From: Nathaniel Borenstein <nsb@thumper.bellcore.com>\r
-	(=?iso-8859-8?b?7eXs+SDv4SDp7Oj08A==?=)"
-"From: Nathaniel Borenstein <nsb@thumper.bellcore.com>	(.HNmNeNlNy NoNa NiNlNhNtNp)")*B
+\t(=?iso-8859-8?b?7eXs+SDv4SDp7Oj08A==?=)"
+"From: Nathaniel Borenstein <nsb@thumper.bellcore.com>\t(.HNmNeNlNy NoNa NiNlNhNtNp)")*B
 
 (decode
 "From: foo@bar.baz (=?ISO-8859-1?Q?a?=)"
@@ -178,7 +178,7 @@
 
 (decode
 "From: foo@bar.baz (=?ISO-8859-1?Q?a?=\r
-	=?ISO-8859-1?Q?b?=)"
+\t=?ISO-8859-1?Q?b?=)"
 "From: foo@bar.baz (ab)")
 
 (decode
@@ -207,8 +207,8 @@
 
 (decode
 "Subject: (=?ISO-8859-1?Q?a?=\r
-	=?ISO-8859-1?Q?b?=)"
-"Subject: (=?ISO-8859-1?Q?a?=	=?ISO-8859-1?Q?b?=)")
+\t=?ISO-8859-1?Q?b?=)"
+"Subject: (=?ISO-8859-1?Q?a?=\t=?ISO-8859-1?Q?b?=)")
 
 (decode
 "Subject: (=?ISO-8859-1?Q?a_b?=)"
@@ -237,7 +237,7 @@
 
 (decode
 "From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
-	=?ISO-2022-JP?B?GyRCJCQbKEI=?=\r
+\t=?ISO-2022-JP?B?GyRCJCQbKEI=?=\r
  <akr@jaist.ac.jp>"
 "From: $B$"$$(B <akr@jaist.ac.jp>")
 
@@ -1226,7 +1226,7 @@
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=\r
-	=?Unknown-Charset?B?gqA=?="
+\t=?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
 'embedded-encoded-word)
 
@@ -1288,8 +1288,8 @@
 "From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?= )")
 
 (decode
-"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?=	)"
-"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?=	)")
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?=\t)"
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?=\t)")
 
 (decode
 "From: akr@jaist.ac.jp (\\\r\\\n)"
@@ -1311,15 +1311,15 @@
 
 (decode
 "From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A=09?=)"
-"From: akr@jaist.ac.jp (\\	)")
+"From: akr@jaist.ac.jp (\\\t)")
 
 (decode
 "From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?= )"
 "From: akr@jaist.ac.jp (\\ )")
 
 (decode
-"From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?=	)"
-"From: akr@jaist.ac.jp (\\	)")
+"From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?=\t)"
+"From: akr@jaist.ac.jp (\\\t)")
 
 (decode
 "From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?=\r

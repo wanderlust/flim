@@ -6,21 +6,24 @@
 (provide 'ew-unit)
 
 (defconst ew-anchored-encoded-word-regexp
-  (concat "\\`" ew-encoded-word-regexp "\\'"))
+  (eval-when-compile
+    (require 'ew-var)
+    (concat "\\`" ew-encoded-word-regexp "\\'")))
 
 (defconst ew-b-regexp
-  (concat "\\`\\("
-	  "[A-Za-z0-9+/]"
-	  "[A-Za-z0-9+/]"
-	  "[A-Za-z0-9+/]"
-	  "[A-Za-z0-9+/]"
-	  "\\)*"
-	  "[A-Za-z0-9+/]"
-	  "[A-Za-z0-9+/]"
-	  "\\(==\\|"
-	  "[A-Za-z0-9+/]"
-	  "[A-Za-z0-9+/=]"
-	  "\\)\\'"))
+  (eval-when-compile
+    (concat "\\`\\("
+            "[A-Za-z0-9+/]"
+            "[A-Za-z0-9+/]"
+            "[A-Za-z0-9+/]"
+            "[A-Za-z0-9+/]"
+            "\\)*"
+            "[A-Za-z0-9+/]"
+            "[A-Za-z0-9+/]"
+            "\\(==\\|"
+            "[A-Za-z0-9+/]"
+            "[A-Za-z0-9+/=]"
+            "\\)\\'")))
 
 (defconst ew-q-regexp "\\`\\([^=?]\\|=[0-9A-Fa-f][0-9A-Fa-f]\\)*\\'")
 

@@ -18,19 +18,23 @@
 ;; B : token.
 ;; C : encoded-text.
 
-(defconst ew-quoting-char ?+)
+(eval-and-compile
+  (defconst ew-quoting-char ?+))
 (defconst ew-quoting-chars-regexp
-  (concat (regexp-quote (char-to-string ew-quoting-char)) "*"))
+  (eval-when-compile
+    (concat (regexp-quote (char-to-string ew-quoting-char)) "*")))
 
 (defconst ew-type2-regexp
-  (concat (regexp-quote "=?")
-          "\\(" ew-token-regexp "\\)"
-          (regexp-quote "?")
-          "\\(" ew-token-regexp "\\)"
-          (regexp-quote "?")
-          "\\(" ew-encoded-text-regexp "\\)"
-          (regexp-quote "?")
-	  "\\'"))
+  (eval-when-compile
+    (require 'ew-var)
+    (concat (regexp-quote "=?")
+            "\\(" ew-token-regexp "\\)"
+            (regexp-quote "?")
+            "\\(" ew-token-regexp "\\)"
+            (regexp-quote "?")
+            "\\(" ew-encoded-text-regexp "\\)"
+            (regexp-quote "?")
+            "\\'")))
 
 ;;;
 

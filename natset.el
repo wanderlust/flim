@@ -187,6 +187,60 @@ It is impossible to set VALID to empty set because empty set is represented as n
    ((= (car ns) 0) (natset-gen-pred-exp-internal (cdr ns) var nil 0))
    (t (natset-gen-pred-exp-internal ns var t 0))))
 
+(defun natset-gen-ccl-branch (reg fail &rest clauses)
+  (let* ((natsets (mapcar 'car clauses)))
+    (let ((range (apply 'natset-union natsets)) tmp)
+      (unless (natset-empty-p range)
+	(setq natsets (cons (natset-negate range)
+			    natsets)
+	      clauses (cons (cons (car natsets)
+				  fail)
+			    clauses)))
+      (setq range (natset-full)
+	    tmp natsets)
+      (while tmp
+	(setcar tmp
+		(natset-intersection
+		 (car tmp)
+		 range))
+	(setq range (natset-sub range (car tmp))
+	      tmp (cdr tmp))))
+    (let ((b (natset-enum
+	      (natset-sub
+	       (apply
+		'natset-union
+		(mapcar
+		 'natset-boundary-set
+		 natsets))
+	       (natset-single 0)))))
+      (natset-gen-ccl-branch-internal reg 0 b clauses))))
+
+(defun natset-gen-ccl-branch-internal (reg s b clauses)
+  (cond
+   ((null b)
+    (cdr (natset-assoc s clauses)))
+   ((null (cdr b))
+    `(if (,reg < ,(car b))
+	 ,(cdr (natset-assoc s clauses))
+       ,(cdr (natset-assoc (car b) clauses))))
+   (t
+    (let* ((div (natset-divide (length b)))
+	   (l (append b ()))
+	   (g (nthcdr (1- div) l))
+	   (m (cadr g)))
+      (setq g (prog1 (cddr g) (setcdr g ())))
+      `(if (,reg < ,m)
+	   ,(natset-gen-ccl-branch-internal reg s l clauses)
+	 ,(natset-gen-ccl-branch-internal reg m g clauses))))))
+
+(defun natset-assoc (key alist)
+  (catch 'return
+    (while alist
+      (when (natset-has-p (caar alist) key)
+	(throw 'return (car alist)))
+      (setq alist (cdr alist)))
+    nil))
+
 ;;; internal primitive
 
 (defun natset-union2 (ns1 ns2)

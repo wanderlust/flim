@@ -1,3 +1,29 @@
+1998-08-22  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* TESTPAT: Use `\t' instead of raw TAB character.
+
+	* ew-line.el (ew-crlf-line-generic): Accept bare LF before first CR
+	occurence.
+
+	* ew-quote.el: Evaluate constants on byte-compile time.
+
+	* ew-unit.el: Ditto.
+
+	* ew-var.el: Ditto.
+
+	* lex.el: CCL support.
+	(lex-use-ccl): New variable.
+	(lex-gen-machine): Use `lex-gen-automata' and `lex-gen-action'.
+	(lex-gen-automata): New function.
+	(lex-gen-action): New function.
+	(lex-gen-ccl-unibyte-automata): New function.
+	(lex-gen-ccl-unibyte-automata-program): New function.
+	(lex-gen-ccl-unibyte-automata-state): New function.
+
+	* natset.el (natset-gen-ccl-branch): New function.
+	(natset-gen-ccl-branch-internal): New function.
+	(natset-assoc): New function.
+
 1998-08-21  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* TESTPAT: Specify coding-system.
