@@ -328,7 +328,8 @@ If buffer is omitted, it parses current-buffer."
   (save-excursion
     (if buffer (set-buffer buffer))
     (setq mime-message-structure
-	  (mime-parse-message (or representation-type 'buffer) nil))
+	  (mime-parse-message (or representation-type
+				  'mime-buffer-entity) nil))
     ))
 
 
