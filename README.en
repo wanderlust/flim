@@ -128,6 +128,23 @@ Installation
   Notice that XEmacs package system requires XEmacs 21.0 or later.
 
 
+Old Emacsen
+===========
+
+  If you are using Emacs v18 (e.g. Nemacs 3.3.2), you will need to
+  upgrade the byte-compiler to the version 2.07.  It is currently
+  contained in up-to-date SKK in the CVS repository or the snapshots:
+
+	http://openlab.ring.gr.jp/skk/maintrunk/
+
+  And it is also available separately from:
+
+	ftp://ftp.sra.co.jp/pub/gnu/jp/bytecomp/bytecomp-2.07.tar.Z
+
+  There are detailed installation manuals in the packages, please look
+  at them closely.
+
+
 load-path (for Emacs or MULE)
 =============================
 
