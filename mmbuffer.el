@@ -73,6 +73,13 @@
 			    (mime-entity-point-max entity) filename)
     ))
 
+(defun mmbuffer-write-entity-body (entity filename)
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (write-region-as-binary (mime-entity-body-start entity)
+			    (mime-entity-body-end entity) filename)
+    ))
+
 
 ;;; @ end
 ;;;
