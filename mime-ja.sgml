@@ -303,7 +303,7 @@ list $B$G!"$=$l$>$l!"I=<($7$?$/$J$$(B field $BL>$HI=<($7$?$$MsL>$rI=8=$7$?$b$
 <p>
 point $B$NA0$K(B <var>entity</var> $B$r(B text entity $B$H$7$FA^F~$7$^$9!#(B
 <p>
-<var>entity</var> $B$NFbMF$O(B <dref>MIMe charset</dref> $B$H$7$FI|9f2=$5$l(B
+<var>entity</var> $B$NFbMF$O(B <dref>MIME charset</dref> $B$H$7$FI|9f2=$5$l(B
 $B$^$9!#(B<var>entity</var> $B$N(B Content-Type field $B$K(B charset paramter $B$,L5(B
 $B$$$H!"(B<code>default-mime-charset</code> $B$,=i4|CM$H$7$F;H$o$l$^$9!#(B
 </defun>
@@ -329,7 +329,7 @@ MIME charset.
 <defun name="mime-insert-entity-content">
 	    <args> entity
 <p>
-pointo $B$N0LCV$K(B <var>entity</var> $B$NFbMF$rA^F~$7$^$9!#(B
+point $B$N0LCV$K(B <var>entity</var> $B$NFbMF$rA^F~$7$^$9!#(B
 </defun>
 
 <defun name="mime-write-entity-content">
@@ -1292,8 +1292,8 @@ Internet message $B$K$*$1$kI8=`$N(B<a node="Coded character set">$BId9f2=J8(
 FLIM $B$N%P%0$r8+$D$1$?$i!"0J2<$N(B address $B$K(B mail $B$rAw$C$F$/$@$5$$!'(B
 
 <ul>
-<li> $BF|K\8l(B <mail>bug-tm-ja@chamonix.jaist.ac.jp</mail>
-<li> $B1Q8l(B <mail>bug-tm-en@chamonix.jaist.ac.jp</mail>
+<li> $B1Q8l(B <mail>emacs-mime-en@m17n.org</mail>
+<li> $BF|K\8l(B <mail>emacs-mime-ja@m17n.org</mail>
 </ul>
 
 <p>
@@ -1312,12 +1312,12 @@ file="emacs" node="Bugs">
 $B$F$/$@$5$$!#(B
 
 <p>
-tm ML $B$G$O(B FLIM $B$N%P%0>pJs$N8r49$d:G?7HG$NG[I[!"(BFLIM $B$N2~NI$K4X$9$k5D(B
-$BO@$r9T$J$C$F$$$^$9!#(Btm ML $B$K;22C$7$?$$J}$O(B
+EMACS-MIME ML $B$G$O(B FLIM $B$N%P%0>pJs$N8r49$d:G?7HG$NG[I[!"(BFLIM $B$N2~NI$K(B
+$B4X$9$k5DO@$r9T$J$C$F$$$^$9!#(BEMACS-MIME ML $B$K;22C$7$?$$J}$O(B
 
 <ul>
-<li> $BF|K\8l(B <mail>tm-ja-help@chamonix.jaist.ac.jp</mail>
-<li> $B1Q8l(B <mail>tm-en-help@chamonix.jaist.ac.jp</mail>
+<li> $B1Q8l(B <mail>emacs-mime-en-ctl@m17n.org</mail>
+<li> $BF|K\8l(B <mail>emacs-mime-ja-ctl@m17n.org</mail>
 </ul>
 
 <noindent>
