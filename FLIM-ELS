@@ -21,6 +21,11 @@
   (setq flim-modules (cons 'mel-b-el flim-modules))
   )
 
+(if (or (< emacs-major-version 19)
+	(and (eq emacs-major-version 19) (< emacs-minor-version 16)))
+    (setq flim-modules (cons 'time-stamp flim-modules))
+  )
+
 (require 'pccl)
 (unless-broken ccl-usable
   (setq flim-modules (cons 'mel-b-ccl (cons 'mel-q-ccl flim-modules))))
