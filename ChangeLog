@@ -1,3 +1,9 @@
+1998-10-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime.el (mime-insert-text-content): New generic function.
+
+	* mmcooked.el, mmgeneric.el (insert-text-content): New method.
+
 1998-10-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11.el (std11-unfold-string): New implementation.
