@@ -8,6 +8,8 @@
 (defvar ew-ignore-76bytes-limit nil)
 (defvar ew-permit-sticked-comment nil)
 (defvar ew-permit-sticked-special nil)
+
+(defvar ew-remove-bare-crlf nil)
 (defvar ew-default-mime-charset 'x-ctext)
 
 ;;;
@@ -73,4 +75,6 @@
     (if ew-ignore-75bytes-limit 4 0)
     (if ew-ignore-76bytes-limit 8 0)
     (if ew-permit-sticked-comment 16 0)
-    (if ew-permit-sticked-special 32 0))))
+    (if ew-permit-sticked-special 32 0)
+    (if ew-remove-bare-crlf 64 0)
+    )))

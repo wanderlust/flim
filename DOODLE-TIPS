@@ -15,14 +15,14 @@ field name information.
    (lambda (string)
      (if (fboundp 'ew-decode-field)
          (let ((ew-ignore-76bytes-limit t))
-           (ew-cut-cr-lf (ew-decode-field "Subject" (ew-lf-to-crlf string))))
+           (ew-cut-cr-lf (ew-decode-field "Subject" (ew-lf-crlf-to-crlf string))))
        (eword-decode-and-unfold-structured-field string))))
 
 (setq gnus-structured-field-decoder
    (lambda (string)
      (if (fboundp 'ew-decode-field)
          (let ((ew-ignore-76bytes-limit t))
-           (ew-cut-cr-lf (ew-decode-field "From" (ew-lf-to-crlf string) 'ew-cut-cr-lf)))
+           (ew-cut-cr-lf (ew-decode-field "From" (ew-lf-crlf-to-crlf string))))
        (eword-decode-unstructured-field-body (std11-unfold-string string) 'must-unfold))))
 
 * Ignore warnings about args-eword-* when byte-compiling.

@@ -35,7 +35,7 @@
 (defun ew-b-check (encoding encoded-text) (string-match ew-b-regexp encoded-text))
 (defun ew-q-check (encoding encoded-text) (string-match ew-q-regexp encoded-text))
 
-(defun ew-eword-p (str)
+(defsubst ew-eword-p (str)
   (let ((len (length str)))
     (and
      (<= 3 len)
@@ -44,7 +44,7 @@
      (eq (aref str (- len 2)) ??)
      (eq (aref str (1- len)) ?=))))
 
-(defun ew-decode-eword (str &optional eword-filter1 eword-filter2)
+(defun ew-decode-eword (str)
   (if (string-match ew-anchored-encoded-word-regexp str)
       (let ((charset (match-string 1 str))
 	    (encoding (match-string 2 str))
@@ -56,12 +56,7 @@
 		 (setq cdec (ew-char-decoder charset)))
 	    (if (or (null (setq bcheck (ew-byte-checker encoding)))
 		    (funcall bcheck encoding encoded-text))
-		(progn
-		  (setq tmp (closure-call cdec (funcall bdec encoded-text)))
-		  (when eword-filter1 (setq tmp (closure-call eword-filter1 tmp)))
-		  (setq tmp (ew-quote tmp))
-		  (when eword-filter2 (setq tmp (closure-call eword-filter2 tmp)))
-		  tmp)
+		(ew-quote (closure-call cdec (funcall bdec encoded-text)))
 	      (ew-quote str))
 	  (ew-quote-eword charset encoding encoded-text)))
     (ew-quote str)))

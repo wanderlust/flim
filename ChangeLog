@@ -1,5 +1,40 @@
 1998-08-21  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* TESTPAT: Change quoted-encoded-word to embedded-encoeded-word.
+
+	* closure.el (closure-make): Closure structure changed.
+	(closure-partial-call): New function.
+	(closure-call): Support new structure.
+
+	* ew-dec.el (ew-decode-field): Abolish argument `eword-filter'.
+	(ew-decode-none): Ditto.
+	(ew-decode-generic): Ditto.
+	(ew-decode-unstructured-ewords): Ditto.
+	(ew-decode-unstructured): Ditto.
+	(ew-decode-phrase-ewords): Ditto.
+	(ew-decode-phrase): Ditto.
+	(ew-decode-comment-ewords): Ditto.
+	(ew-decode-comment): Ditto.
+	(ew-analyze-field-to-decode): New function.
+	(ew-decode-analyzed-field): New function.
+	(ew-decode-field-no-cache): Use `ew-analyze-field-to-decode' and
+	`ew-decode-analyzed-field'.
+	(ew-decode-us-ascii): Now inlining function.
+	(ew-rotate): New macro.
+
+	* ew-quote.el (ew-encode-crlf): Support `ew-remove-bare-crlf' option.
+
+	* ew-unit.el (ew-eword-p): Now inlining function.
+	(ew-decode-eword): Abolish arguments `eword-filter1' and
+	`eword-filter2'.
+
+	* ew-var.el (ew-remove-bare-crlf): New variable.
+	(ew-dynamic-options): Add `ew-remove-bare-crlf'.
+
+	* eword-decode.el: Remove third argument for `ew-decode-field'.
+
+1998-08-21  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-dec.el (ew-decode-us-ascii): New function.
 	(ew-decode-none): Use the function `ew-decode-us-ascii' instead of 
 	the variable `ew-decode-us-ascii'.

@@ -11,7 +11,7 @@
 ;;separate-sticked-comment          ; violate the policy preserving absence of space
 ;;separate-sticked-special          ; violate the policy preserving absence of space
 ;;zero-characters-encoded-word-hack ; violate common sense (very tricky)
-;;quoted-encoded-word		   ; violate character sequence semantics
+;;embedded-encoded-word		   ; violate character sequence semantics
 ;;separate-sticked-tokens-for-fold  ; violate the policy preserving absence of space
 ;;encode-long-ascii-string-for-fold ; violate the policy preserving US-ASCII string
 ;;divide-atom-for-fold		   ; violate tne policy preserving absence of space
@@ -64,7 +64,9 @@
 (require 'ew-line)
 
 (defun decode-test (src dsts &rest opts)
-  (let ((ew-decode-quoted-encoded-word nil)
+  (setq ew-decode-field-cache-buf nil)
+  (let ((ew-decode-sticked-encoded-word nil)
+	(ew-decode-quoted-encoded-word nil)
 	(ew-ignore-75bytes-limit (memq 'ignore-75bytes-limit opts))
 	(ew-ignore-76bytes-limit (memq 'ignore-76bytes-limit opts))
 	(ew-permit-sticked-comment (memq 'permit-sticked-comment opts))
@@ -406,13 +408,11 @@
 
 (decode
 "Subject: =?Shift_JIS?B?gqA=?="
-"Subject: あ"
-'quoted-encoded-word)
+"Subject: あ")
 
 (decode
 "Subject: =?EUC-JP?B?pKI=?="
-"Subject: あ"
-'quoted-encoded-word)
+"Subject: あ")
 
 (decode
 "Subject: = =?ISO-2022-JP?B?GyRCJCIbKEI=?="
@@ -587,12 +587,7 @@
 
 (decode
 "Subject:=?ISO-2022-JP?B?GyRCJCIbKEI=?="
-"Subject:=?ISO-2022-JP?B?GyRCJCIbKEI=?=")
-
-(decode
-"Subject:=?ISO-2022-JP?B?GyRCJCIbKEI=?="
-"Subject:あ"
-'permit-sticked-special)
+"Subject:あ")
 
 ;;; Section 4: Decoding invalid inputs.
 
@@ -1100,9 +1095,9 @@
  =?ISO-2022-JP?B?GyRCJCgbKEI=?= <foo@bar>"
 'separate-sticked-special)
 
-;;; Section 7: Using quoted-encoded-words.
+;;; Section 7: Using embedded-encoded-words.
 ;;
-;; quoted-encoded-word 表現
+;; embedded-encoded-word 表現
 ;; 
 ;; RFC2047 のデコーダは潜在的に(デコード結果でなく) encoded-word そのものを
 ;; 出力しなければならないことがある。
@@ -1121,7 +1116,7 @@
 ;;
 ;;  =?US-ASCII?Q?=3D=3FUS-ASCII=3FQ=3Ftext=3F=3D?=
 ;;
-;; デコーダが単なる文字列を出力する場合、単純にやると encoded-word そのものと
+;; デコーダが単なる文字列を出力する場合、単純には encoded-word そのものと
 ;; encoded-word のようにみえる文字列を区別できない。
 ;; ここでは文字列中でそれらを確実に区別して表現する方法を示す。
 ;;
@@ -1132,11 +1127,18 @@
 ;;  マッチする部分は charset の先頭に + がいくつ付いているかで内容の
 ;;  解釈を変える。
 ;;
-;;  偶数の場合(0, 2, 4, ...): charset の先頭の + の数を半分にした文字列
-;;  奇数の場合(1, 3, 5, ...): charset の先頭の + の数を半分(小数点以下
-;;   切捨て)にして、それを encoded-word と思ってデコードした文字列。
+;;  3を法として0と等しい場合(0, 3, 6, ...): charset の先頭の + の数を
+;;    1/3 にした文字列
+;;  3を法として1と等しい場合(1, 4, 7, ...): charset の先頭の + の数を
+;;    1/3 (小数点以下切捨て)にして、それを encoded-word と思ってデ
+;;    コードした文字列。
+;;  3を法として2と等しい場合(2, 5, 8, ...): charset の先頭の + の数を
+;;    1/3 (小数点以下切捨て)にして、最後の = を取り除いた文字列
 ;;
-;; NOTE: + を quoted-encoded-word 表現の quote 文字と呼ぶ。
+;;  =?c?e?t?=?c?e?t?=... というように、パターンの先頭の = と 末尾の = 
+;;  重なる場合、奇数番目のものに対して上記のルールを適用する。
+;;
+;; NOTE: + を embedded-encoded-word 表現の quote 文字と呼ぶ。
 ;;
 ;; NOTE: 現時点(1998/07/19)で IANA には + を含む charset は
 ;;  登録されていないので、それらの charset を使った
@@ -1145,15 +1147,23 @@
 ;;  =?US-ASCII?Q?abcdef?= というencoded-word : =?+US-ASCII?Q?abcdef?=
 ;;
 ;;  =?US-ASCII?Q?abcdef?= という文字列	    : =?US-ASCII?Q?abcdef?=
-;;  =?+US-ASCII?Q?abcdef?= という文字列	    : =?++US-ASCII?Q?abcdef?=
-;;  =?++US-ASCII?Q?abcdef?= という文字列     : =?++++US-ASCII?Q?abcdef?=
-;;  =?+++US-ASCII?Q?abcdef?= という文字列    : =?++++++US-ASCII?Q?abcdef?=
+;;  =?+US-ASCII?Q?abcdef?= という文字列	    : =?+++US-ASCII?Q?abcdef?=
+;;  =?++US-ASCII?Q?abcdef?= という文字列     : =?++++++US-ASCII?Q?abcdef?=
+;;  =?+++US-ASCII?Q?abcdef?= という文字列    : =?+++++++++US-ASCII?Q?abcdef?=
 ;;  =?US-ASCII+?Q?abcdef?= という文字列      : =?US-ASCII+?Q?abcdef?=
 ;;  =?U+S-ASCII?Q?abcdef?= という文字列      : =?U+S-ASCII?Q?abcdef?=
 ;;
-;; NOTE: encoded-word に見える文字列で + が倍増されるのは charset の
+;;  =?US-ASCII?Q?abcdef? という文字列	    : =?++US-ASCII?Q?abcdef?=
+;;  =?+US-ASCII?Q?abcdef? という文字列	    : =?+++++US-ASCII?Q?abcdef?=
+;;  =?++US-ASCII?Q?abcdef? という文字列     : =?++++++++US-ASCII?Q?abcdef?=
+;;  =?+++US-ASCII?Q?abcdef? という文字列    : =?+++++++++++US-ASCII?Q?abcdef?=
+;;
+;; NOTE: encoded-word に見える文字列で + が 3倍増されるのは charset の
 ;;  先頭だけであり、encoding や encoded-text はたとえ + が入っていても
 ;;  変化しない。また、charset 中でも 先頭以外の + は変化しない。
+;;
+;; NOTE: charset と encoding には = は含まれないので 1文字以上重なるこ
+;;  とはない。
 ;;
 ;; rule 3: 文字列全体の内容は、rule 1 と rule 2 で解釈した各部分の
 ;;   文字列を単純に連結した文字列とする。
@@ -1161,98 +1171,167 @@
 ;; NOTE: RFC2047 では encoded-word が空白で区切られなければならないとか、
 ;;  encoded-word は 75bytes 以下でなければならないとか、
 ;;  encoded-word が含まれる行は 76bytes 以下でなければならないなどという
-;;  規約があるが、quoted-encoded-word 表現ではそれらは採用しない。
+;;  規約があるが、embedded-encoded-word 表現ではそれらは採用しない。
 ;;  単純に encoded-word 内部の文法だけを利用する。
 ;;  (本質的には異なる文法を採用することも可能であるが、RFC2047 に敬意を
 ;;  表して encoded-word の文法を採用する。)
 ;;
-;; NOTE: quoted-encoded-word 表現した文字列の連結は安全ではない。
-;;  =?+US-ASCII?Q?ab と cd?= という quoted-encoded-word 表現した文字列は
+;; NOTE: embedded-encoded-word 表現した文字列の連結は安全ではない。
+;;  =?+US-ASCII?Q?ab と cd?= という embedded-encoded-word 表現した文字列は
 ;;  それぞれその文字列そのものを表現するが、それらを連結した文字列
 ;;  =?+US-ASCII?Q?abcd?= は abcd という文字列を表現することになり、
 ;;  それぞれの内容の連結とはならない。
 ;;
-;;  これはとくに Non ASCII 拡張 RFC822 の中に quoted-encoded-word 表現を
+;;  これはとくに Non ASCII 拡張 RFC822 の中に embedded-encoded-word 表現を
 ;;  埋め込むときに気を付けなければならない。(埋め込んだ結果は正しい
-;;  quoted-encoded-word 表現とはならないかも知れない。)
+;;  embedded-encoded-word 表現とはならないかも知れない。)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?="
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?G?H4sIACqUszUAA8tIzcnJBwCGphA2BQAAAA==?="
 "Subject: =?+US-ASCII?G?H4sIACqUszUAA8tIzcnJBwCGphA2BQAAAA==?="
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?Unknown-Encoding?H4sIAGOUszUAAwtyczYyMDEHAEpvqpIHAAAA?="
 "Subject: =?+US-ASCII?Unknown-Encoding?H4sIAGOUszUAAwtyczYyMDEHAEpvqpIHAAAA?="
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?ISO-2022-JP?G?H4sIAGiTszUAA5NWcVIBAhMtaQ0nAGLSaeEMAAAA?=\r
  =?ISO-2022-JP?G?H4sIAH6TszUAA5NWcVIxV3FTyVbxldZwAgAuIikKDgAAAA==?="
 "Subject: =?+ISO-2022-JP?G?H4sIAGiTszUAA5NWcVIBAhMtaQ0nAGLSaeEMAAAA?==?+ISO-2022-JP?G?H4sIAH6TszUAA5NWcVIxV3FTyVbxldZwAgAuIikKDgAAAA==?="
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?= =?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=  =?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=\r
  =?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=\r
 	=?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: a=?Unknown-Charset?B?gqA=?="
 "Subject: a=?Unknown-Charset?B?gqA=?="
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=b"
 "Subject: =?Unknown-Charset?B?gqA=?=b"
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: a=?Unknown-Charset?B?gqA=?=b"
 "Subject: a=?Unknown-Charset?B?gqA=?=b"
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: a =?Unknown-Charset?B?gqA=?= b"
 "Subject: a =?+Unknown-Charset?B?gqA=?= b"
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?ISO-2022-JP?B?DQoNCg==?="
 "Subject: =?+US-ASCII?Q?=0D=0A=0D=0A?="
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?Q?a=0D=0A_b?="
 "Subject: a b"
-'quoted-encoded-word)
+'embedded-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?Q?a=0D=0Ab?="
 "Subject: a=?+US-ASCII?Q?=0D=0A?=b"
-'quoted-encoded-word)
+'embedded-encoded-word)
+
+;;; Section 8: CR and LF.
+
+(decode
+"From: akr@jaist.ac.jp (\r\\\n)"
+"From: akr@jaist.ac.jp (\r\\\n)")
+
+(decode
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?= =?US-ASCII?Q?a?=)"
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?= a)")
+
+(decode
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A_?=)"
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A_?=)")
+
+(decode
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A=09?=)"
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A=09?=)")
+
+(decode
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?= )"
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?= )")
+
+(decode
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?=	)"
+"From: akr@jaist.ac.jp (\r=?US-ASCII?Q?=0A?=	)")
+
+(decode
+"From: akr@jaist.ac.jp (\\\r\\\n)"
+"From: akr@jaist.ac.jp (\\\r\\\n)")
+
+(decode
+"From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?= =?US-ASCII?Q?a?=)"
+"From: akr@jaist.ac.jp (=?+US-ASCII?Q?=0D=0A?=a)"
+'embedded-encoded-word)
+
+(decode
+"From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0Aa?=)"
+"From: akr@jaist.ac.jp (=?+US-ASCII?Q?=0D=0A?=a)"
+'embedded-encoded-word)
+
+(decode
+"From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A_?=)"
+"From: akr@jaist.ac.jp (\\ )")
+
+(decode
+"From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A=09?=)"
+"From: akr@jaist.ac.jp (\\	)")
+
+(decode
+"From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?= )"
+"From: akr@jaist.ac.jp (\\ )")
+
+(decode
+"From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?=	)"
+"From: akr@jaist.ac.jp (\\	)")
+
+(decode
+"From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?=\r
+ =?US-ASCII?Q?=0D=0A?= =?US-ASCII?Q?a?=)"
+"From: akr@jaist.ac.jp (=?+US-ASCII?Q?=0D=0A=0D=0A?=a)"
+'embedded-encoded-word)
+
+(decode
+"From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?=\r
+ =?US-ASCII?Q?=0D?=\\\n =?US-ASCII?Q?a?=)"
+"From: akr@jaist.ac.jp (=?+US-ASCII?Q?=0D=0A?=\r\\
+ a)"
+'embedded-encoded-word)
 
 ;;;end-test
 
