@@ -1,5 +1,9 @@
 2000-01-21  Kenichi OKADA <okada@opaopa.org>
 
+	* SLIM: Version 1.13.6 released.
+
+2000-01-21  Kenichi OKADA <okada@opaopa.org>
+
 	* smtp.el (TopLevel): Eval `sasl' when compile.
 
 2000-01-21  Kenichi OKADA <okada@opaopa.org>
