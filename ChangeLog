@@ -1,5 +1,9 @@
 1998-09-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-en.sgml (Entity hierarchy): Translate.
+
+1998-09-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime-en.sgml, mime-ja.sgml (Entity): Rearrangement.
 
 
