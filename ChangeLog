@@ -1,5 +1,11 @@
 2000-11-12   Daiki Ueno  <ueno@unixuser.org>
 
+	* luna.el (luna-define-method): Clear method cache.
+	(luna-apply-generic): New function.
+	(luna-define-generic): Use `luna-apply-generic' instead of `luna-send'.
+
+2000-11-12   Daiki Ueno  <ueno@unixuser.org>
+
 	* smtp.el (smtp-primitive-data): Use `beginning-of-line' instead of
 	`forward-char'.
 	(smtp-read-response): Don't bind `case-fold-search'.

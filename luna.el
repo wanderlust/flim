@@ -84,19 +84,15 @@ If SLOTS is specified, TYPE will be defined to have them."
 		    (setq name (symbol-name sym))
 		    (unless (intern-soft name oa)
 		      (put (intern name oa) 'luna-slot-index (+ j b))
-		      (setq i (1+ i))
-		      )))
-		(luna-class-obarray (luna-find-class parent)))
-      )
+		      (setq i (1+ i)))))
+		(luna-class-obarray (luna-find-class parent))))
     (setq rest slots)
     (while rest
       (setq name (symbol-name (pop rest)))
       (unless (intern-soft name oa)
 	(put (intern name oa) 'luna-slot-index i)
-	(setq i (1+ i))
-	))
-    (luna-set-class type (vector 'class oa parents i))
-    ))
+	(setq i (1+ i))))
+    (luna-set-class type (vector 'class oa parents i))))
 
 (defun luna-class-find-member (class member-name)
   (or (stringp member-name)
@@ -143,8 +139,7 @@ BODY is the body of method."
     (if (memq method-qualifier '(:before :after :around))
 	(setq args (pop definition))
       (setq args method-qualifier
-	    method-qualifier nil)
-      )
+	    method-qualifier nil))
     (setq specializer (car args)
 	  class (nth 1 specializer)
 	  self (car specializer))
@@ -153,10 +148,12 @@ BODY is the body of method."
 			    (cdr args))
 		   ,@definition))
 	   (sym (luna-class-find-or-make-member
-		 (luna-find-class ',class) ',name)))
+		 (luna-find-class ',class) ',name))
+	   (cache (get ',name 'luna-method-cache)))
+       (if cache
+	   (unintern ',class cache))
        (fset sym func)
-       (put sym 'luna-method-qualifier ,method-qualifier)
-       )))
+       (put sym 'luna-method-qualifier ,method-qualifier))))
 
 (put 'luna-define-method 'lisp-indent-function 'defun)
 
@@ -165,8 +162,7 @@ BODY is the body of method."
 	   ((arg symbolp)
 	    [&rest arg]
 	    [&optional ["&optional" arg &rest arg]]
-	    &optional ["&rest" arg]
-	    )
+	    &optional ["&rest" arg])
 	   def-body))
 
 (defun luna-class-find-parents-functions (class service)
@@ -184,20 +180,15 @@ BODY is the body of method."
     (if (fboundp sym)
 	(cond ((eq (get sym 'luna-method-qualifier) :before)
 	       (cons (symbol-function sym)
-		     (luna-class-find-parents-functions class service))
-	       )
+		     (luna-class-find-parents-functions class service)))
 	      ((eq (get sym 'luna-method-qualifier) :after)
 	       (nconc (luna-class-find-parents-functions class service)
-		      (list (symbol-function sym)))
-	       )
+		      (list (symbol-function sym))))
 	      ((eq (get sym 'luna-method-qualifier) :around)
-	       (cons sym (luna-class-find-parents-functions class service))
-	       )
+	       (cons sym (luna-class-find-parents-functions class service)))
 	      (t
-	       (list (symbol-function sym))
-	       ))
-      (luna-class-find-parents-functions class service)
-      )))
+	       (list (symbol-function sym))))
+      (luna-class-find-parents-functions class service))))
 
 
 ;;; @ instance (entity)
@@ -252,8 +243,7 @@ LUNA-CURRENT-METHOD-ARGUMENTS is arguments of the MESSAGE."
 
 (eval-when-compile
   (defvar luna-next-methods nil)
-  (defvar luna-current-method-arguments nil)
-  )
+  (defvar luna-current-method-arguments nil))
 
 (defun luna-call-next-method ()
   "Call the next method in a method with :around qualifier."
@@ -279,20 +269,31 @@ It must be plist and each slot name must have prefix `:'."
 	 (v (make-vector (luna-class-number-of-slots c) nil)))
     (luna-set-class-name v type)
     (luna-set-obarray v (make-vector 7 0))
-    (apply #'luna-send v 'initialize-instance v init-args)
-    ))
+    (apply #'luna-send v 'initialize-instance v init-args)))
 
 
 ;;; @ interface (generic function)
 ;;;
+
+(defun luna-apply-generic (entity message &rest luna-current-method-arguments)
+  (let* ((class (luna-class-name entity))
+	 (cache (get message 'luna-method-cache))
+	 (sym (intern-soft (symbol-name class) cache))
+	 luna-next-methods)
+    (if sym
+	(setq luna-next-methods (symbol-value sym))
+      (setq luna-next-methods
+	    (luna-find-functions entity message))
+      (set (intern (symbol-name class) cache)
+	   luna-next-methods))
+    (luna-call-next-method)))
 
 (defsubst luna-arglist-to-arguments (arglist)
   (let (dest)
     (while arglist
       (let ((arg (car arglist)))
 	(or (memq arg '(&optional &rest))
-	    (setq dest (cons arg dest)))
-	)
+	    (setq dest (cons arg dest))))
       (setq arglist (cdr arglist)))
     (nreverse dest)))
 
@@ -300,15 +301,17 @@ It must be plist and each slot name must have prefix `:'."
   "Define generic-function NAME.
 ARGS is argument of and DOC is DOC-string."
   (if doc
-      `(defun ,(intern (symbol-name name)) ,args
-	 ,doc
-	 (luna-send ,(car args) ',name
-		    ,@(luna-arglist-to-arguments args))
-	 )
-    `(defun ,(intern (symbol-name name)) ,args
-       (luna-send ,(car args) ',name
-		  ,@(luna-arglist-to-arguments args))
-       )))
+      `(progn
+	 (defun ,(intern (symbol-name name)) ,args
+	   ,doc
+	   (luna-apply-generic ,(car args) ',name
+			       ,@(luna-arglist-to-arguments args)))
+	 (put ',name 'luna-method-cache (make-vector 31 0)))
+    `(progn
+       (defun ,(intern (symbol-name name)) ,args
+	 (luna-apply-generic ,(car args) ',name
+			     ,@(luna-arglist-to-arguments args)))
+       (put ',name 'luna-method-cache (make-vector 31 0)))))
 
 (put 'luna-define-generic 'lisp-indent-function 'defun)
 
@@ -329,8 +332,7 @@ ARGS is argument of and DOC is DOC-string."
 	       (setq parent-class (luna-find-class (car parents)))
 	       (if (luna-class-slot-index parent-class slot)
 		   (throw 'derived nil))
-	       (setq parents (cdr parents))
-	       )
+	       (setq parents (cdr parents)))
 	     (eval
 	      `(progn
 		 (defmacro ,(intern (format "%s-%s-internal"
@@ -338,17 +340,14 @@ ARGS is argument of and DOC is DOC-string."
 		   (entity)
 		   (list 'aref entity
 			 ,(luna-class-slot-index entity-class
-						 (intern (symbol-name slot)))
-			 ))
+						 (intern (symbol-name slot)))))
 		 (defmacro ,(intern (format "%s-set-%s-internal"
 					    class-name slot))
 		   (entity value)
 		   (list 'aset entity
 			 ,(luna-class-slot-index
 			   entity-class (intern (symbol-name slot)))
-			 value))
-		 ))
-	     )))
+			 value)))))))
      (luna-class-obarray entity-class))))
 
 
@@ -366,8 +365,7 @@ ARGS is argument of and DOC is DOC-string."
       (setq s (intern-soft (substring (symbol-name (pop init-args)) 1) oa)
 	    i (pop init-args))
       (if s
-	  (aset entity (get s 'luna-slot-index) i)
-	))
+	  (aset entity (get s 'luna-slot-index) i)))
     entity))
 
 
