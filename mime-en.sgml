@@ -1,6 +1,6 @@
 <!doctype sinfo system>
 <head>
-<title>FLIM 1.8 Manual about MIME Features
+<title>FLIM 1.9 Manual about MIME Features
 <author>MORIOKA Tomohiko <mail>morioka@jaist.ac.jp</mail>
 <date>1998/07/01
 
@@ -98,20 +98,17 @@ Open an entity and return it.
 depended on representation-type.
 </defun>
 
-<defun name="mime-parse-message">
-	  <opts> default-ctl node-id
-<p>
-Parse current buffer as message, and return the result as mime-entity.
-</defun>
-
 <defun name="mime-parse-buffer">
-	  <opts> buffer
+	  <opts> buffer type
 <p>
 Parse <var>buffer</var> as message, and set the result to buffer local
 variable <code>mime-message-structure</code> of <var>buffer</var> as
 mime-entity.
 <p>
 If <var>buffer</var> is omitted, current buffer is used.
+<p>
+<var>type</var> is representation-type of created mime-entity. <cf
+node="mm-backend"> Default value is <var>buffer</var>.
 </defun>
 
 

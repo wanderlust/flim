@@ -1,6 +1,6 @@
 <!doctype sinfo system>
 <head>
-<title>FLIM 1.8 MIME 機能説明書
+<title>FLIM 1.9 MIME 機能説明書
 <author>守岡 知彦 <mail>morioka@jaist.ac.jp</mail>
 <date>1998/07/01
 
@@ -102,20 +102,17 @@ Open an entity and return it.
 depended on representation-type.
 </defun>
 
-<defun name="mime-parse-message">
-	  <opts> default-ctl node-id
-<p>
-現在の buffer を message として構文解析し、その結果の mime-entity を返
-す。
-</defun>
-
 <defun name="mime-parse-buffer">
-	  <opts> buffer
+	  <opts> buffer type
 <p>
 <var>buffer</var> を message として構文解析し、その結果の mime-entity 
 を <var>buffer</var> の<code>mime-message-structure</code> に格納する。
 <p>
 <var>buffer</var> が省略された場合、現在の buffer を構文解析する。
+<p>
+<var>type</var> が指定された場合、その値を生成される mime-entity の表
+象型として用いる。省略された場合は <var>buffer</var> となる。<cf
+node="mm-backend">
 </defun>
 
 

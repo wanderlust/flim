@@ -184,8 +184,8 @@ If is is not found, return DEFAULT-ENCODING."
 	      (setq ncb (match-end 0))
 	      (save-restriction
 		(narrow-to-region cb ce)
-		(setq ret (mime-parse-message dc-ctl (cons i node-id)
-					      representation-type))
+		(setq ret (mime-parse-message representation-type dc-ctl
+					      entity (cons i node-id)))
 		)
 	      (setq children (cons ret children))
 	      (goto-char (setq cb ncb))
@@ -194,16 +194,16 @@ If is is not found, return DEFAULT-ENCODING."
 	    (setq ce (point-max))
 	    (save-restriction
 	      (narrow-to-region cb ce)
-	      (setq ret (mime-parse-message dc-ctl (cons i node-id)
-					    representation-type))
+	      (setq ret (mime-parse-message representation-type dc-ctl
+					    entity (cons i node-id)))
 	      )
 	    (setq children (cons ret children))
 	    (mime-entity-set-children-internal entity (nreverse children))
 	    )
 	(mime-entity-set-content-type-internal
-	 entity (make-mime-content-type 'application 'octet-stream))
-	)))
-  entity)
+	 entity (make-mime-content-type 'message 'x-broken))
+	nil)
+      )))
 
 (defun mime-parse-encapsulated (entity)
   (mime-entity-set-children-internal
@@ -212,22 +212,17 @@ If is is not found, return DEFAULT-ENCODING."
      (narrow-to-region (mime-entity-body-start-internal entity)
 		       (mime-entity-body-end-internal entity))
      (list (mime-parse-message
-	    nil (cons 0 (mime-entity-node-id-internal entity))
-	    (mime-entity-representation-type-internal entity)))
-     ))
-  entity)
+	    (mime-entity-representation-type-internal entity) nil
+	    entity (cons 0 (mime-entity-node-id-internal entity))))
+     )))
 
-;;;###autoload
-(defun mime-parse-message (&optional default-ctl node-id representation-type)
-  "Parse current-buffer as a MIME message.
-DEFAULT-CTL is used when an entity does not have valid Content-Type
-field.  Its format must be as same as return value of
-mime-{parse|read}-Content-Type."
+(defun mime-parse-message (representation-type &optional default-ctl 
+					       parent node-id)
   (let ((header-start (point-min))
 	header-end
 	body-start
 	(body-end (point-max))
-	content-type primary-type entity)
+	content-type)
     (goto-char header-start)
     (if (re-search-forward "^$" nil t)
 	(setq header-end (match-end 0)
@@ -242,25 +237,15 @@ mime-{parse|read}-Content-Type."
 			       (if str
 				   (mime-parse-Content-Type str)
 				 ))
-			     default-ctl)
-	    primary-type (mime-content-type-primary-type content-type))
+			     default-ctl))
       )
-    (setq entity (make-mime-entity-internal (or representation-type 'buffer)
-					    (current-buffer)
-					    content-type nil node-id
-					    (current-buffer)
-					    header-start header-end
-					    body-start body-end))
-    (cond ((eq primary-type 'multipart)
-	   (mime-parse-multipart entity)
-	   )
-	  ((and (eq primary-type 'message)
-		(memq (mime-content-type-subtype content-type)
-		      '(rfc822 news external-body)
-		      ))
-	   (mime-parse-encapsulated entity)
-	   )
-	  (t entity))))
+    (make-mime-entity-internal representation-type
+			       (current-buffer)
+			       content-type nil parent node-id
+			       (current-buffer)
+			       header-start header-end
+			       body-start body-end)
+    ))
 
 
 ;;; @ for buffer
@@ -273,7 +258,7 @@ If buffer is omitted, it parses current-buffer."
   (save-excursion
     (if buffer (set-buffer buffer))
     (setq mime-message-structure
-	  (mime-parse-message nil nil representation-type))
+	  (mime-parse-message (or representation-type 'buffer) nil))
     ))
 
 

@@ -53,9 +53,6 @@ and return parsed it.")
   "Read field-body of Content-Transfer-Encoding field from
 current-buffer, and return it.")
 
-(autoload 'mime-parse-message "mime-parse"
-  "Parse current-buffer as a MIME message.")
-
 (autoload 'mime-parse-buffer "mime-parse"
   "Parse BUFFER as a MIME message.")
 
@@ -63,25 +60,14 @@ current-buffer, and return it.")
 ;;; @ Entity Representation and Implementation
 ;;;
 
-(defvar mime-entity-implementation-alist nil)
-
 (defsubst mime-find-function (service type)
   (let ((imps (cdr (assq type mime-entity-implementation-alist))))
     (if imps
-	(let ((func (cdr (assq service imps))))
-	  (unless func
-	    (setq func (intern (format "mm%s-%s" type service)))
-	    (set-alist 'mime-entity-implementation-alist
-		       type (put-alist service func imps))
-	    )
-	  func)
-      (let ((prefix (format "mm%s" type)))
-	(require (intern prefix))
-	(let ((func (intern (format "%s-%s" prefix service))))
-	  (set-alist 'mime-entity-implementation-alist
-		     type
-		     (list (cons service func)))
-	  func)))))
+	(cdr (assq service imps))
+      (require (intern (format "mm%s" type)))
+      (cdr (assq service
+		 (cdr (assq type mime-entity-implementation-alist))))
+      )))
 
 (defsubst mime-entity-function (entity service)
   (mime-find-function service
@@ -93,24 +79,49 @@ current-buffer, and return it.")
 	 entity
 	 args))
 
+(defsubst mm-arglist-to-arguments (arglist)
+  (let (dest)
+    (while arglist
+      (let ((arg (car arglist)))
+	(or (memq arg '(&optional &rest))
+	    (setq dest (cons arg dest)))
+	)
+      (setq arglist (cdr arglist)))
+    (nreverse dest)))
+
+(defmacro mm-define-generic (name args &optional doc)
+  (if doc
+      `(defun ,(intern (format "mime-%s" name)) ,args
+	 ,doc
+	 (mime-entity-send ,(car args) ',name
+			   ,@(mm-arglist-to-arguments (cdr args)))
+	 )
+    `(defun ,(intern (format "mime-%s" name)) ,args
+       (mime-entity-send ,(car args) ',name
+			 ,@(mm-arglist-to-arguments (cdr args)))
+       )))
+
+(put 'mm-define-generic 'lisp-indent-function 'defun)
+
 (defun mime-open-entity (type location)
   "Open an entity and return it.
 TYPE is representation-type.
 LOCATION is location of entity.  Specification of it is depended on
 representation-type."
-  (funcall (mime-find-function 'open-entity type) location)
-  )
+  (let ((entity (make-mime-entity-internal type location)))
+    (mime-entity-send entity 'initialize-instance)
+    entity))
 
-(defun mime-entity-cooked-p (entity)
-  "Return non-nil if contents of ENTITY has been already code-converted."
-  (funcall (mime-entity-function entity 'cooked-p))
-  )
+(mm-define-generic entity-cooked-p (entity)
+  "Return non-nil if contents of ENTITY has been already code-converted.")
 
 
 ;;; @ Entity as node of message
 ;;;
 
-(defalias 'mime-entity-children	'mime-entity-children-internal)
+(defun mime-entity-children (entity)
+  (or (mime-entity-children-internal entity)
+      (mime-entity-send entity 'entity-children)))
 
 (defalias 'mime-entity-node-id 'mime-entity-node-id-internal)
 
@@ -139,18 +150,15 @@ If MESSAGE is not specified, `mime-message-structure' is used."
 
 (defun mime-entity-parent (entity &optional message)
   "Return mother entity of ENTITY.
-If MESSAGE is not specified, `mime-message-structure' in the buffer of
-ENTITY is used."
-  (mime-find-entity-from-node-id
-   (cdr (mime-entity-node-id entity))
-   (or message
-       (save-excursion
-	 (set-buffer (mime-entity-buffer entity))
-	 mime-message-structure))))
+If MESSAGE is specified, it is regarded as root entity."
+  (if (equal entity message)
+      nil
+    (mime-entity-parent-internal entity)))
 
-(defun mime-root-entity-p (entity)
-  "Return t if ENTITY is root-entity (message)."
-  (null (mime-entity-node-id entity)))
+(defun mime-root-entity-p (entity &optional message)
+  "Return t if ENTITY is root-entity (message).
+If MESSAGE is specified, it is regarded as root entity."
+  (null (mime-entity-parent entity message)))
 
 
 ;;; @ Entity Buffer
@@ -160,11 +168,11 @@ ENTITY is used."
   (or (mime-entity-buffer-internal entity)
       (mime-entity-send entity 'entity-buffer)))
 
-(defun mime-entity-point-min (entity)
-  (mime-entity-send entity 'entity-point-min))
+(mm-define-generic entity-point-min (entity)
+  "Return the start point of ENTITY in the buffer which contains ENTITY.")
 
-(defun mime-entity-point-max (entity)
-  (mime-entity-send entity 'entity-point-max))
+(mm-define-generic entity-point-max (entity)
+  "Return the end point of ENTITY in the buffer which contains ENTITY.")
 
 (defun mime-entity-header-start (entity)
   (or (mime-entity-header-start-internal entity)
@@ -270,30 +278,9 @@ ENTITY is used."
 		    entity (put-alist field-name field header))
 		   field)))))))
 
-(defun eword-visible-field-p (field-name visible-fields invisible-fields)
-  (or (catch 'found
-	(while visible-fields
-	  (let ((regexp (car visible-fields)))
-	    (if (string-match regexp field-name)
-		(throw 'found t)
-	      ))
-	  (setq visible-fields (cdr visible-fields))
-	  ))
-      (catch 'found
-	(while invisible-fields
-	  (let ((regexp (car invisible-fields)))
-	    (if (string-match regexp field-name)
-		(throw 'found nil)
-	      ))
-	  (setq invisible-fields (cdr invisible-fields))
-	  )
-	t)))
-
-(defun mime-insert-decoded-header (entity &optional invisible-fields
+(mm-define-generic insert-decoded-header (entity &optional invisible-fields
 					  visible-fields)
-  "Insert before point a decoded header of ENTITY."
-  (mime-entity-send entity 'insert-decoded-header
-		    invisible-fields visible-fields))
+  "Insert before point a decoded header of ENTITY.")
 
 
 ;;; @ Entity Attributes
@@ -336,20 +323,17 @@ ENTITY is used."
 ;;; @ Entity Content
 ;;;
 
-(defun mime-entity-content (entity)
-  (mime-entity-send entity 'entity-content))
+(mm-define-generic entity-content (entity)
+  "Return content of ENTITY as byte sequence (string).")
 
-(defun mime-write-entity-content (entity filename)
-  "Write content of ENTITY into FILENAME."
-  (mime-entity-send entity 'write-entity-content filename))
+(mm-define-generic write-entity-content (entity filename)
+  "Write content of ENTITY into FILENAME.")
 
-(defun mime-write-entity (entity filename)
-  "Write ENTITY into FILENAME."
-  (mime-entity-send entity 'write-entity filename))
+(mm-define-generic write-entity (entity filename)
+  "Write header and body of ENTITY into FILENAME.")
 
-(defun mime-write-entity-body (entity filename)
-  "Write body of ENTITY into FILENAME."
-  (mime-entity-send entity 'write-entity-body filename))
+(mm-define-generic write-entity-body (entity filename)
+  "Write body of ENTITY into FILENAME.")
 
 
 ;;; @ end
