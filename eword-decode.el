@@ -4,8 +4,7 @@
 
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
 ;;         MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;;         Tanaka Akira <akr@jaist.ac.jp>
-;; Maintainer: Tanaka Akira <akr@jaist.ac.jp>
+;; Maintainer: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Created: 1995/10/03
 ;; Original: 1992/07/20 ENAMI Tsugutomo's `mime.el'.
 ;;	Renamed: 1993/06/03 to tiny-mime.el
@@ -13,7 +12,7 @@
 ;;	Renamed: 1997/02/22 from tm-ew-d.el
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
 
-;; This file is part of FLAM (Faithful Library About MIME).
+;; This file is part of SEMI (Spadework for Emacs MIME Interfaces).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -145,18 +144,14 @@
 ;;; @ for string
 ;;;
 
-(defcustom eword-decode-sticked-encoded-word nil
+(defvar eword-decode-sticked-encoded-word nil
   "*If non-nil, decode encoded-words sticked on atoms,
 other encoded-words, etc.
-however this behaviour violates RFC2047."
-  :group 'eword-decode
-  :type 'boolean)
+however this behaviour violates RFC2047.")
 
-(defcustom eword-decode-quoted-encoded-word nil
+(defvar eword-decode-quoted-encoded-word nil
   "*If non-nil, decode encoded-words in quoted-string
-however this behaviour violates RFC2047."
-  :group 'eword-decode
-  :type 'boolean)
+however this behaviour violates RFC2047.")
 
 (defun eword-decode-first-encoded-words (string
 					 eword-regexp
