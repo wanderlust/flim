@@ -1,3 +1,27 @@
+2001-02-28  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-plist,
+	mime-decode-parameter-alist, mime-decode-parameters):
+	Add doc string.
+
+2001-02-28  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Decode MIME charset
+	in multibyte buffer. [cf. <emacs-mime-ja:00817>]
+	(mime-decode-parameter-plist): Downcase attributes.
+	[cf. <emacs-mime-ja:00816>]
+	(mime-decode-parameters): Alias for `mime-decode-parameter-plist'
+	instead of `mime-decode-parameter-alist'.
+	Add autoload cookie.
+	(mime-parse-parameters-from-list): Make obsolete.
+	(mime-parse-parameters): Return results as a plist.
+	(mime-parse-Content-Type, mime-read-Content-Type): Move type check
+	to the caller side.
+	(mime-parse-Content-Disposition, mime-read-Content-Disposition):
+	Ditto.
+	(mime-parse-Content-Transfer-Encoding,
+	mime-read-Content-Transfer-Encoding): Ditto.
+
 2001-02-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	MIME Parameter Value decoder support.
