@@ -278,7 +278,7 @@ TESTS holds a number of instances of `lunit-test'."
 		(null (get symbol 'luna-method-qualifier)))
 	   (push (lunit-make-test-case class symbol) tests)))
      (luna-class-obarray (luna-find-class class)))
-    (apply #'lunit-make-test-suite tests)))
+    (apply (function lunit-make-test-suite) tests)))
 
 (defun lunit (test)
   "Run TEST and display the result."
