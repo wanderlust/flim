@@ -58,7 +58,7 @@ current-buffer, and return it.")
 (autoload 'mime-uri-parse-cid "mime-parse"
   "Parse STRING as cid URI.")
 
-(autoload 'mime-parse-buffer "mime-parse"
+(autoload 'mime-parse-buffer "mmbuffer"
   "Parse BUFFER as a MIME message.")
 
 )
@@ -66,50 +66,18 @@ current-buffer, and return it.")
 ;;; @ Entity Representation and Implementation
 ;;;
 
-(defsubst mime-find-function (service type)
-  (let ((imps (cdr (assq type mime-entity-implementation-alist))))
-    (if imps
-	(cdr (assq service imps))
-      (require (intern (format "mm%s" type)))
-      (cdr (assq service
-		 (cdr (assq type mime-entity-implementation-alist))))
-      )))
-
-(defsubst mime-entity-function (entity service)
-  (mime-find-function service
-		      (mime-entity-representation-type-internal entity)))
-
-(defsubst mime-entity-send (entity message &rest args)
-  "Send MESSAGE to ENTITY with ARGS, and return the result."
-  (apply (mime-find-function
-	  message (mime-entity-representation-type-internal entity))
-	 entity
-	 args))
-
-(defmacro mm-define-generic (name args &optional doc)
-  (if doc
-      `(defun ,(intern (format "mime-%s" name)) ,args
-	 ,doc
-	 (mime-entity-send ,(car args) ',name
-			   ,@(mm-arglist-to-arguments (cdr args)))
-	 )
-    `(defun ,(intern (format "mime-%s" name)) ,args
-       (mime-entity-send ,(car args) ',name
-			 ,@(mm-arglist-to-arguments (cdr args)))
-       )))
-
-(put 'mm-define-generic 'lisp-indent-function 'defun)
+(defmacro mime-entity-send (entity message &rest args)
+  `(luna-send ,entity ',(intern (format "mime-%s" (eval message))) ,@args))
 
 (defun mime-open-entity (type location)
   "Open an entity and return it.
 TYPE is representation-type.
 LOCATION is location of entity.  Specification of it is depended on
 representation-type."
-  (let ((entity (make-mime-entity-internal type location)))
-    (mime-entity-send entity 'initialize-instance)
-    entity))
+  (require (intern (format "mm%s" type)))
+  (luna-make-entity (mm-expand-class-name type) :location location))
 
-(mm-define-generic entity-cooked-p (entity)
+(luna-define-generic mime-entity-cooked-p (entity)
   "Return non-nil if contents of ENTITY has been already code-converted.")
 
 
@@ -118,7 +86,7 @@ representation-type."
 
 (defun mime-entity-children (entity)
   (or (mime-entity-children-internal entity)
-      (mime-entity-send entity 'entity-children)))
+      (luna-send entity 'mime-entity-children entity)))
 
 (defalias 'mime-entity-node-id 'mime-entity-node-id-internal)
 
@@ -150,7 +118,7 @@ If MESSAGE is not specified, `mime-message-structure' is used."
 If MESSAGE is not specified, `mime-message-structure' is used."
   (or message
       (setq message mime-message-structure))
-  (if (equal cid (mime-read-field 'Content-Id message))
+  (if (equal cid (mime-entity-read-field message "Content-Id"))
       message
     (let ((children (mime-entity-children message))
 	  ret)
@@ -176,73 +144,40 @@ If MESSAGE is specified, it is regarded as root entity."
 ;;; @ Entity Buffer
 ;;;
 
-(defun mime-entity-buffer (entity)
-  (or (mime-entity-buffer-internal entity)
-      (mime-entity-send entity 'entity-buffer)))
+(luna-define-generic mime-entity-buffer (entity))
 
-(mm-define-generic entity-point-min (entity)
-  "Return the start point of ENTITY in the buffer which contains ENTITY.")
+(luna-define-generic mime-entity-header-buffer (entity))
 
-(mm-define-generic entity-point-max (entity)
-  "Return the end point of ENTITY in the buffer which contains ENTITY.")
+(luna-define-generic mime-entity-body-buffer (entity))
 
-(defun mime-entity-header-start (entity)
-  (or (mime-entity-header-start-internal entity)
-      (mime-entity-send entity 'entity-header-start)))
+(luna-define-generic mime-entity-point-min (entity))
 
-(defun mime-entity-header-end (entity)
-  (or (mime-entity-header-end-internal entity)
-      (mime-entity-send entity 'entity-header-end)))
-
-(defun mime-entity-body-start (entity)
-  (or (mime-entity-body-start-internal entity)
-      (mime-entity-send entity 'entity-body-start)))
-
-(defun mime-entity-body-end (entity)
-  (or (mime-entity-body-end-internal entity)
-      (mime-entity-send entity 'entity-body-end)))
+(luna-define-generic mime-entity-point-max (entity))
 
 
 ;;; @ Entity Header
 ;;;
 
+(luna-define-generic mime-goto-header-start-point (entity)
+  "Set buffer and point to header-start-position of ENTITY.")
+
+(luna-define-generic mime-entity-fetch-field (entity field-name)
+  "Return the value of the ENTITY's header field whose type is FIELD-NAME.")
+
 (defun mime-fetch-field (field-name &optional entity)
-  (or (symbolp field-name)
-      (setq field-name (intern (capitalize (capitalize field-name)))))
+  "Return the value of the ENTITY's header field whose type is FIELD-NAME."
+  (if (symbolp field-name)
+      (setq field-name (symbol-name field-name))
+    )
   (or entity
       (setq entity mime-message-structure))
-  (cond ((eq field-name 'Date)
-	 (or (mime-entity-date-internal entity)
-	     (mime-entity-set-date-internal
-	      entity (mime-entity-send entity 'fetch-field "Date"))
-	     ))
-	((eq field-name 'Message-Id)
-	 (or (mime-entity-message-id-internal entity)
-	     (mime-entity-set-message-id-internal
-	      entity (mime-entity-send entity 'fetch-field "Message-Id"))
-	     ))
-	((eq field-name 'References)
-	 (or (mime-entity-references-internal entity)
-	     (mime-entity-set-references-internal
-	      entity (mime-entity-send entity 'fetch-field "References"))
-	     ))
-	(t
-	 (let* ((header (mime-entity-original-header-internal entity))
-		(field-body (cdr (assq field-name header))))
-	   (or field-body
-	       (progn
-		 (if (setq field-body
-			   (mime-entity-send entity 'fetch-field
-					     (symbol-name field-name)))
-		     (mime-entity-set-original-header-internal
-		      entity (put-alist field-name field-body header))
-		   )
-		 field-body))
-	   ))))
+  (mime-entity-fetch-field entity field-name)
+  )
+(make-obsolete 'mime-fetch-field 'mime-entity-fetch-field)
 
 (defun mime-entity-content-type (entity)
   (or (mime-entity-content-type-internal entity)
-      (let ((ret (mime-fetch-field 'Content-Type entity)))
+      (let ((ret (mime-entity-fetch-field entity "Content-Type")))
 	(if ret
 	    (mime-entity-set-content-type-internal
 	     entity (mime-parse-Content-Type ret))
@@ -250,7 +185,7 @@ If MESSAGE is specified, it is regarded as root entity."
 
 (defun mime-entity-content-disposition (entity)
   (or (mime-entity-content-disposition-internal entity)
-      (let ((ret (mime-fetch-field 'Content-Disposition entity)))
+      (let ((ret (mime-entity-fetch-field entity "Content-Disposition")))
 	(if ret
 	    (mime-entity-set-content-disposition-internal
 	     entity (mime-parse-Content-Disposition ret))
@@ -258,7 +193,7 @@ If MESSAGE is specified, it is regarded as root entity."
 
 (defun mime-entity-encoding (entity &optional default-encoding)
   (or (mime-entity-encoding-internal entity)
-      (let ((ret (mime-fetch-field 'Content-Transfer-Encoding entity)))
+      (let ((ret (mime-entity-fetch-field entity "Content-Transfer-Encoding")))
 	(mime-entity-set-encoding-internal
 	 entity
 	 (or (and ret (mime-parse-Content-Transfer-Encoding ret))
@@ -294,50 +229,57 @@ If MESSAGE is specified, it is regarded as root entity."
     (Content-Id		. mime-parse-msg-id)
     ))
 
+(defun mime-entity-read-field (entity field-name)
+  (let ((sym (if (symbolp field-name)
+		 (prog1
+		     field-name
+		   (setq field-name (symbol-name field-name)))
+	       (capitalize (capitalize field-name)))))
+    (cond ((eq sym 'Content-Type)
+	   (mime-entity-content-type entity)
+	   )
+	  ((eq sym 'Content-Disposition)
+	   (mime-entity-content-disposition entity)
+	   )
+	  ((eq sym 'Content-Transfer-Encoding)
+	   (mime-entity-encoding entity)
+	   )
+	  (t
+	   (let* ((header (mime-entity-parsed-header-internal entity))
+		  (field (cdr (assq sym header))))
+	     (or field
+		 (let ((field-body (mime-entity-fetch-field entity field-name))
+		       parser)
+		   (when field-body
+		     (setq parser
+			   (cdr (assq sym mime-field-parser-alist)))
+		     (setq field
+			   (if parser
+			       (funcall parser
+					(eword-lexical-analyze field-body))
+			     (mime-decode-field-body field-body sym 'plain)
+			     ))
+		     (mime-entity-set-parsed-header-internal
+		      entity (put-alist sym field header))
+		     field))))))))
+
 (defun mime-read-field (field-name &optional entity)
-  (or (symbolp field-name)
-      (setq field-name (capitalize (capitalize field-name))))
   (or entity
       (setq entity mime-message-structure))
-  (cond ((eq field-name 'Content-Type)
-	 (mime-entity-content-type entity)
-	 )
-	((eq field-name 'Content-Disposition)
-	 (mime-entity-content-disposition entity)
-	 )
-	((eq field-name 'Content-Transfer-Encoding)
-	 (mime-entity-encoding entity)
-	 )
-	(t
-	 (let* ((header (mime-entity-parsed-header-internal entity))
-		(field (cdr (assq field-name header))))
-	   (or field
-	       (let ((field-body (mime-fetch-field field-name entity))
-		     parser)
-		 (when field-body
-		   (setq parser
-			 (cdr (assq field-name mime-field-parser-alist)))
-		   (setq field
-			 (if parser
-			     (funcall parser
-				      (eword-lexical-analyze field-body))
-			   (mime-decode-field-body
-			    field-body field-name 'plain)
-			   ))
-		   (mime-entity-set-parsed-header-internal
-		    entity (put-alist field-name field header))
-		   field)))))))
+  (mime-entity-read-field entity field-name)
+  )
+(make-obsolete 'mime-read-field 'mime-entity-read-field)
 
-(mm-define-generic insert-header (entity &optional invisible-fields
-					 visible-fields)
+(luna-define-generic mime-insert-header (entity &optional invisible-fields
+						visible-fields)
   "Insert before point a decoded header of ENTITY.")
-
-(define-obsolete-function-alias
-  'mime-insert-decoded-header 'mime-insert-header)
 
 
 ;;; @ Entity Attributes
 ;;;
+
+(luna-define-generic mime-entity-name (entity)
+  "Return name of the ENTITY.")
 
 (defun mime-entity-uu-filename (entity)
   (if (member (mime-entity-encoding entity) mime-uuencode-encoding-name-list)
@@ -376,25 +318,25 @@ If MESSAGE is specified, it is regarded as root entity."
 ;;; @ Entity Content
 ;;;
 
-(mm-define-generic entity-content (entity)
+(luna-define-generic mime-entity-content (entity)
   "Return content of ENTITY as byte sequence (string).")
 
-(mm-define-generic insert-entity-content (entity)
+(luna-define-generic mime-insert-entity-content (entity)
   "Insert content of ENTITY at point.")
 
-(mm-define-generic write-entity-content (entity filename)
+(luna-define-generic mime-write-entity-content (entity filename)
   "Write content of ENTITY into FILENAME.")
 
-(mm-define-generic insert-text-content (entity)
+(luna-define-generic mime-insert-text-content (entity)
   "Insert decoded text body of ENTITY.")
 
-(mm-define-generic insert-entity (entity)
+(luna-define-generic mime-insert-entity (entity)
   "Insert header and body of ENTITY at point.")
 
-(mm-define-generic write-entity (entity filename)
+(luna-define-generic mime-write-entity (entity filename)
   "Write header and body of ENTITY into FILENAME.")
 
-(mm-define-generic write-entity-body (entity filename)
+(luna-define-generic mime-write-entity-body (entity filename)
   "Write body of ENTITY into FILENAME.")
 
 
