@@ -63,9 +63,11 @@ current-buffer, and return it.")
 ;;; @ MIME entity
 ;;;
 
-(defun mime-entity-fetch-field (entity field-name)
+(defun mime-fetch-field (field-name &optional entity)
   (or (symbolp field-name)
       (setq field-name (intern (capitalize (capitalize field-name)))))
+  (or entity
+      (setq entity mime-message-structure))
   (let* ((header (mime-entity-original-header entity))
 	 (field-body (cdr (assq field-name header))))
     (or field-body
@@ -83,9 +85,11 @@ current-buffer, and return it.")
 	    )
 	  field-body))))
 
-(defun mime-entity-read-field (entity field-name)
+(defun mime-read-field (field-name &optional entity)
   (or (symbolp field-name)
       (setq field-name (capitalize (capitalize field-name))))
+  (or entity
+      (setq entity mime-message-structure))
   (cond ((eq field-name 'Content-Type)
 	 (mime-entity-content-type entity)
 	 )
@@ -99,7 +103,7 @@ current-buffer, and return it.")
 	 (let* ((header (mime-entity-parsed-header entity))
 		(field (cdr (assq field-name header))))
 	   (or field
-	       (let ((field-body (mime-entity-fetch-field entity field-name)))
+	       (let ((field-body (mime-fetch-field field-name entity)))
 		 (when field-body
 		   (cond ((memq field-name '(From Resent-From
 					     To Resent-To
