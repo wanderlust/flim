@@ -1,5 +1,8 @@
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* eword-encode.el: Rename `tm-eword::mailbox-to-rwl' ->
+	`eword-encode-mailbox-to-rword-list'.
+
 	* eword-encode.el: Rename `tm-eword::phrase-to-rwl' ->
 	`eword-encode-phrase-to-rword-list'.
 
