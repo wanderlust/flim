@@ -26,6 +26,11 @@
 
 ;;; Code:
 
+(require 'emu)
+(or (fboundp 'write-region-as-binary)
+    (error "Please install latest APEL."))
+
+
 (defconst mel-version "7.2")
 
 
