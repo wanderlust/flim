@@ -59,7 +59,7 @@
 		  filename)
     ))
 
-(luna-define-method mime-insert-header ((entity cooked)
+(luna-define-method mime-insert-header ((entity mime-cooked-entity)
 					&optional invisible-fields
 					visible-fields)
   (let (default-mime-charset)
