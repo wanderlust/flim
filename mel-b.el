@@ -27,35 +27,50 @@
 ;;; Code:
 
 (require 'emu)
+(require 'mime-def)
 
 
 ;;; @ variables
 ;;;
 
-(defvar base64-external-encoder '("mmencode")
-  "*list of base64 encoder program name and its arguments.")
+(defgroup base64 nil
+  "Base64 encoder/decoder"
+  :group 'mime)
 
-(defvar base64-external-decoder '("mmencode" "-u")
-  "*list of base64 decoder program name and its arguments.")
+(defcustom base64-external-encoder '("mmencode")
+  "*list of base64 encoder program name and its arguments."
+  :group 'base64
+  :type '(cons (file :tag "Command")(repeat :tag "Arguments" string)))
 
-(defvar base64-external-decoder-option-to-specify-file '("-o")
-  "*list of options of base64 decoder program to specify file.")
+(defcustom base64-external-decoder '("mmencode" "-u")
+  "*list of base64 decoder program name and its arguments."
+  :group 'base64
+  :type '(cons (file :tag "Command")(repeat :tag "Arguments" string)))
 
-(defvar base64-internal-encoding-limit 1000
+(defcustom base64-external-decoder-option-to-specify-file '("-o")
+  "*list of options of base64 decoder program to specify file."
+  :group 'base64
+  :type '(repeat :tag "Arguments" string))
+
+(defcustom base64-internal-encoding-limit 1000
   "*limit size to use internal base64 encoder.
 If size of input to encode is larger than this limit,
-external encoder is called.")
+external encoder is called."
+  :group 'base64
+  :type 'integer)
 
-(defvar base64-internal-decoding-limit 1000
+(defcustom base64-internal-decoding-limit 1000
   "*limit size to use internal base64 decoder.
 If size of input to decode is larger than this limit,
-external decoder is called.")
+external decoder is called."
+  :group 'base64
+  :type 'integer)
 
 
 ;;; @ internal base64 decoder
 ;;;
 
-(defun base64-char-to-num (c)
+(defsubst base64-char-to-num (c)
   (cond ((and (<= ?A c) (<= c ?Z)) (- c ?A))
 	((and (<= ?a c) (<= c ?z)) (+ (- c ?a) 26))
 	((and (<= ?0 c) (<= c ?9)) (+ (- c ?0) 52))
