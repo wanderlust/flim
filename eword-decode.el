@@ -5,6 +5,7 @@
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
 ;;         MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;         TANAKA Akira <akr@jaist.ac.jp>
+;;         Keiichi Suzuki <keiichi@nanap.org>
 ;; Created: 1995/10/03
 ;; Original: 1992/07/20 ENAMI Tsugutomo's `mime.el'.
 ;;	Renamed: 1993/06/03 to tiny-mime.el by MORIOKA Tomohiko
@@ -115,14 +116,16 @@ such as a version of Net$cape)."
 (defun eword-decode-structured-field-body (string
 					   &optional start-column max-column
 					   start)
-  (let ((tokens (eword-lexical-analyze string start 'must-unfold))
-	(result "")
-	token)
-    (while tokens
-      (setq token (car tokens))
-      (setq result (concat result (eword-decode-token token)))
-      (setq tokens (cdr tokens)))
-    result))
+  (let ((tokens (eword-lexical-analyze string start 'must-unfold)))
+    (if (assq 'error tokens)
+	(eword-decode-unstructured-field-body string start-column max-column)
+      (let ((result "")
+	    token)
+	(while tokens
+	  (setq token (car tokens))
+	  (setq result (concat result (eword-decode-token token)))
+	  (setq tokens (cdr tokens)))
+	result))))
 
 (defun eword-decode-and-unfold-structured-field-body (string
 						      &optional
@@ -136,18 +139,20 @@ characters are regarded as variable `default-mime-charset'.
 
 If an encoded-word is broken or your emacs implementation can not
 decode the charset included in it, it is not decoded."
-  (let ((tokens (eword-lexical-analyze string start 'must-unfold))
-	(result ""))
-    (while tokens
-      (let* ((token (car tokens))
-	     (type (car token)))
-	(setq tokens (cdr tokens))
-	(setq result
-	      (if (eq type 'spaces)
-		  (concat result " ")
-		(concat result (eword-decode-token token))
-		))))
-    result))
+  (let ((tokens (eword-lexical-analyze string start 'must-unfold)))
+    (if (assq 'error tokens)
+	(eword-decode-unstructured-field-body string start-column max-column)
+      (let ((result ""))
+	(while tokens
+	  (let* ((token (car tokens))
+		 (type (car token)))
+	    (setq tokens (cdr tokens))
+	    (setq result
+		  (if (eq type 'spaces)
+		      (concat result " ")
+		    (concat result (eword-decode-token token))
+		    ))))
+	result))))
 
 (defun eword-decode-and-fold-structured-field-body (string
 						    start-column
@@ -158,32 +163,35 @@ decode the charset included in it, it is not decoded."
       string
     (or max-column
 	(setq max-column fill-column))
-    (let ((c start-column)
-	  (tokens (eword-lexical-analyze string start 'must-unfold))
-	  (result "")
-	  token)
-      (while (and (setq token (car tokens))
-		  (setq tokens (cdr tokens)))
-	(let* ((type (car token)))
-	  (if (eq type 'spaces)
-	      (let* ((next-token (car tokens))
-		     (next-str (eword-decode-token next-token))
-		     (next-len (string-width next-str))
-		     (next-c (+ c next-len 1)))
-		(if (< next-c max-column)
-		    (setq result (concat result " " next-str)
-			  c next-c)
-		  (setq result (concat result "\n " next-str)
-			c (1+ next-len)))
-		(setq tokens (cdr tokens))
-		)
-	    (let* ((str (eword-decode-token token)))
-	      (setq result (concat result str)
-		    c (+ c (string-width str)))
-	      ))))
-      (if token
-	  (concat result (eword-decode-token token))
-	result))))
+    (let ((tokens (eword-lexical-analyze string start 'must-unfold)))
+      (if (assq 'error tokens)
+	  (eword-decode-unstructured-field-body string start-column
+						max-column)
+	(let ((c start-column)
+	      (result "")
+	      token)
+	  (while (and (setq token (car tokens))
+		      (setq tokens (cdr tokens)))
+	    (let* ((type (car token)))
+	      (if (eq type 'spaces)
+		  (let* ((next-token (car tokens))
+			 (next-str (eword-decode-token next-token))
+			 (next-len (string-width next-str))
+			 (next-c (+ c next-len 1)))
+		    (if (< next-c max-column)
+			(setq result (concat result " " next-str)
+			      c next-c)
+		      (setq result (concat result "\n " next-str)
+			    c (1+ next-len)))
+		    (setq tokens (cdr tokens))
+		    )
+		(let* ((str (eword-decode-token token)))
+		  (setq result (concat result str)
+			c (+ c (string-width str)))
+		  ))))
+	  (if token
+	      (concat result (eword-decode-token token))
+	    result))))))
 
 (defun eword-decode-unstructured-field-body (string &optional start-column
 						    max-column)
@@ -632,16 +640,19 @@ be the result."
   :type '(repeat function))
 
 (defun eword-analyze-quoted-string (string start &optional must-unfold)
-  (let ((p (std11-check-enclosure string ?\" ?\" nil start)))
-    (if p
-	(cons (cons 'quoted-string
-		    (decode-mime-charset-string
-		     (std11-strip-quoted-pair
-		      (substring string (1+ start) (1- p)))
-		     default-mime-charset))
-	      ;;(substring string p))
-	      p)
-      )))
+  (if (eq (aref string start) ?\")
+      (let ((p (std11-check-enclosure string ?\" ?\" nil start)))
+	(if p
+	    (cons (cons 'quoted-string
+			(decode-mime-charset-string
+			 (std11-strip-quoted-pair
+			  (substring string (1+ start) (1- p)))
+			 default-mime-charset))
+		  ;;(substring string p))
+		  p)
+	  (cons (cons 'error (substring string start))
+		(- (length string) start))
+	  ))))
 
 (defun eword-analyze-domain-literal (string start &optional must-unfold)
   (std11-analyze-domain-literal string start))
@@ -661,8 +672,10 @@ be the result."
 	  (cond ((eq chr ?\\)
 		 (setq i (1+ i))
 		 (if (>= i len)
-		     (throw 'tag nil)
-		   )
+		     (throw 'tag (cons
+				  (cons 'error (substring string start))
+				  len
+				  )))
 		 (setq last-str (concat last-str
 					(substring string from (1- i))
 					(char-to-string (aref string i)))
@@ -704,8 +717,10 @@ be the result."
 			   i (cdr ret)
 			   from i
 			   last-str "")
-		   (throw 'tag nil)
-		   ))
+		   (throw 'tag (cons
+				(cons 'error (substring string start))
+				len
+				))))
 		(t
 		 (setq i (1+ i))
 		 ))
