@@ -1,5 +1,10 @@
 1998-10-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
+	* FLIM-CFG: Use `add-latest-path' instead of `add-path' for adding
+	"custom" to load-path.
+
+1998-10-09  Katsumi Yamaoka   <yamaoka@jpl.org>
+
 	* mime-def.el (mime-library-product): Enclose with
 	`eval-and-compile'.
 
