@@ -139,7 +139,7 @@
 (defvar sasl-digest-md5-nonce-count 1)
 
 (defun sasl-digest-md5-digest-response (digest-challenge username passwd
-						 serv-type host &optional realm)
+							 serv-type host &optional realm)
   (digest-md5-parse-digest-challenge digest-challenge)
   (digest-md5-digest-response
    username

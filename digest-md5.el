@@ -39,7 +39,8 @@
 ;; => (realm "elwood.innosoft.com" nonce "OA6MG9tEQGm2hh" qop "auth" algorithm md5-sess charset utf-8)
 
 ;; (digest-md5-build-response-value
-;;   "chris" "secret" "OA6MHXh6VqTrRk" "imap/elwood.innosoft.com")
+;;   "chris" "elwood.innosoft.com" "secret" "OA6MG9tEQGm2hh"
+;;   "OA6MHXh6VqTrRk" 1 "imap/elwood.innosoft.com" "auth")
 ;; => "d388dad90d4bbd760a152321f2143af7"
 
 ;;; Code:

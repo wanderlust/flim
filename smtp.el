@@ -680,7 +680,7 @@ don't define this value."
 			 user
 			 smtp-authenticate-passphrase
 			 "smtp" smtp-server realm)
-			'no-line-break))
+			'no-line-break) t)
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))

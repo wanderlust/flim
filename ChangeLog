@@ -1,3 +1,12 @@
+2000-01-23  Kenichi OKADA <okada@opaopa.org>
+
+	* smtp.el (smtp-auth-digest-md5): Don't save insecure words.
+
+2000-01-22  Kenichi OKADA <okada@opaopa.org>
+
+	* digest-md5.el (TopLevel): Update example for
+	`digest-md5-build-response-value'.
+
 2000-01-22  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl.el (TopLevel): Autoload `digest-md5-parse-digest-challenge'.
