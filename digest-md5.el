@@ -3,6 +3,7 @@
 ;; Copyright (C) 1999 Kenichi OKADA
 
 ;; Author: Kenichi OKADA <okada@opaopa.org>
+;;	Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
 ;; Keywords: DIGEST-MD5, HMAC-MD5, SASL, IMAP, POP, ACAP
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -35,26 +36,30 @@
 
 ;; Examples.
 ;;
-;; (digest-md5-digest-response "chris" "elwood.innosoft.com"
-;; 			  "OA6MG9tEQGm2hh" "OA6MHXh6VqTrRk"
-;; 			  "imap/elwood.innosoft.com"
-;;  			  "d388dad90d4bbd760a152321f2143af7"
-;; 			  1 "auth" nil "utf-8")
-;; => "charset=utf-8,username=\"chris\",realm=\"elwood.innosoft.com\",nonce=\"OA6MG9tEQGm2hh\",nc=00000001,cnonce=\"OA6MHXh6VqTrRk\",digest-uri=\"imap/elwood.innosoft.com\",response=d388dad90d4bbd760a152321f2143af7,qop=auth"
-;;
+;; (digest-md5-parse-digest-challenge 
+;;   "realm=\"elwood.innosoft.com\",nonce=\"OA6MG9tEQGm2hh\",qop=\"auth\",algorithm=md5-sess,charset=utf-8")
+;; => (realm "elwood.innosoft.com" nonce "OA6MG9tEQGm2hh" qop "auth" algorithm md5-sess charset utf-8)
+
+;; (digest-md5-build-response-value
+;;   "chris" "secret" "OA6MHXh6VqTrRk" "imap/elwood.innosoft.com")
+;; => "d388dad90d4bbd760a152321f2143af7"
 
 ;;; Code:
 
 (require 'hmac-md5)
 (require 'unique-id)
 
+(defvar digest-md5-challenge nil)
+(defvar digest-md5-nonce-count 1)
+
 (defvar digest-md5-parse-digest-challenge-syntax-table
   (let ((table (make-syntax-table)))
     (modify-syntax-entry ?= "." table)
     (modify-syntax-entry ?, "." table)
     table)
-  "A syntax table for parsing sgml attributes.")
+  "A syntax table for parsing digest-challenge attributes.")
 
+;;;###autoload
 (defun digest-md5-parse-digest-challenge (digest-challenge)
   ;; return a property list of 
   ;; (realm nonce qop-options stale maxbuf charset 
@@ -69,7 +74,7 @@
       (insert " "))
     (insert ")")
     (condition-case nil
-	(read (point-min-marker))
+	(setplist 'digest-md5-challenge (read (point-min-marker)))
       (end-of-file
        (error "Parse error in digest-challenge.")))))
 
@@ -84,31 +89,56 @@
   ;; contain at least 64 bits of entropy.
   (concat (unique-id-m "") (unique-id-m "")))
 
-(defun digest-md5-digest-response (username 
-				   realm nonce cnonce
-				   digest-uri response 
-				   &optional nonce-count qop 
-				   maxbuf charset cipher authzid)
-  (concat
-   (if charset
-       (concat "charset=" charset ","))
-   "username=\"" username "\""
-   ",realm=\"" realm "\""
-   ",nonce=\"" nonce "\""
-   (format ",nc=%08x"
-	   (or nonce-count 1))
-   ",cnonce=\"" cnonce "\""
-   ",digest-uri=\"" digest-uri "\""
-   ",response=" response
-   (if qop
-       (concat ",qop=" qop))
-   (if maxbuf
-       (concat ",maxbuf=" maxbuf))
-   (if cipher
-       (concat ",cipher=" cipher))
-   (if authzid
-       (concat ",authzid=\"" authzid "\""))))
+(defmacro digest-md5-challenge (prop)
+  (list 'get ''digest-md5-challenge prop))
 
+(defmacro digest-md5-build-response-value (username passwd cnonce digest-uri)
+  `(encode-hex-string
+    (md5-binary
+     (concat
+      (encode-hex-string
+       (md5-binary (concat (md5-binary 
+			    (concat ,username 
+				    ":" (digest-md5-challenge 'realm)
+				    ":" ,passwd))
+			   ":" (digest-md5-challenge 'nonce)
+			   ":" ,cnonce
+			   (let ((authzid (digest-md5-challenge 'authzid)))
+			     (if authzid (concat ":" authzid) nil)))))
+      ":" (digest-md5-challenge 'nonce)
+      ":" (format "%08x" digest-md5-nonce-count) ":" ,cnonce 
+      ":" (digest-md5-challenge 'qop) ":"
+      (encode-hex-string
+       (md5-binary
+	(concat "AUTHENTICATE:" ,digest-uri
+		(if (member "auth" (split-string
+				    (digest-md5-challenge 'qop) 
+				    ","))
+		    nil
+		  ":00000000000000000000000000000000"))))))))
+
+;;;###autoload
+(defun digest-md5-digest-response (username passwd digest-uri)
+  (let ((cnonce (digest-md5-cnonce)))
+    (concat
+     "username=\"" username "\","
+     "realm=\"" (digest-md5-challenge 'realm) "\","
+     "nonce=\"" (digest-md5-challenge 'nonce) "\","
+     (format "nc=%08x," digest-md5-nonce-count)
+     "cnonce=\"" cnonce "\","
+     "digest-uri=\"" digest-uri "\","
+     "response=" 
+     (digest-md5-build-response-value username passwd cnonce digest-uri)
+     ","
+     (mapconcat 
+      #'identity
+      (delq nil 
+	    (mapcar (lambda (prop)
+		      (if (digest-md5-challenge prop)
+			  (format "%s=%s"
+				  prop (digest-md5-challenge prop))))
+		    '(charset qop maxbuf cipher authzid)))
+      ","))))
   
 (provide 'digest-md5)
 
