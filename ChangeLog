@@ -1,3 +1,9 @@
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* FLIM-MK (check-flim): Limit filename of test files.
+
+	* test/test-rfc2231.el: New file.
+
 2001-04-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* mime-parse.el (mime-decode-parameter-plist): Shortcut for
