@@ -1,5 +1,16 @@
 1998-07-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-parse.el (mime-parse-multipart): Modify for
+	`mime-parse-message'; return children.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-message): Change interface; delete DOC-string; don't
+	parse children instantly.
+	(mime-parse-buffer): Modify for `mime-parse-message'.
+
+	* mime-parse.el (mime-parse-message): Delete autoload cookie.
+
+	* mime.el: Delete autoload setting for `mime-parse-message'.
+
 	* mime-en.sgml, mime-ja.sgml (Entity creation): Delete description
 	of `mime-parse-message'; modify description of `mime-parse-buffer'
 	to add `representation-type'.
