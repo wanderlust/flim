@@ -3,11 +3,10 @@
 ;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;; modified by Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Created: 1995/6/25
 ;; Keywords: MIME, Base64, Quoted-Printable, uuencode, gzip64
 
-;; This file is part of MEL (MIME Encoding Library).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -29,13 +28,39 @@
 (require 'emu)
 (require 'mime-def)
 
-(defcustom mime-content-transfer-encoding-list
+(defcustom mime-encoding-list
   '("7bit" "8bit" "binary" "base64" "quoted-printable")
   "List of Content-Transfer-Encoding.  Each encoding must be string."
   :group 'mime
   :type '(repeat string))
 
 (defvar mel-encoding-module-alist nil)
+
+(defun mime-encoding-list (&optional service)
+  "Return list of Content-Transfer-Encoding."
+  (if service
+      (let (dest)
+	(mapatoms (lambda (sym)
+		    (or (eq sym nil)
+			(setq dest (cons (symbol-name sym) dest)))
+		    )
+		  (symbol-value (intern (format "%s-obarray" service))))
+	(let ((rest mel-encoding-module-alist)
+	      pair)
+	  (while (setq pair (car rest))
+	    (let ((key (car pair)))
+	      (or (member key dest)
+		  (<= (length key) 1)
+		  (setq dest (cons key dest))))
+	    (setq rest (cdr rest)))
+	  )
+	dest)
+    mime-encoding-list))
+
+(defun mime-encoding-alist (&optional service)
+  "Return table of Content-Transfer-Encoding for completion."
+  (mapcar #'list (mime-encoding-list service))
+  )
 
 (defsubst mel-use-module (name encodings)
   (let (encoding)
@@ -131,7 +156,7 @@ ENCODING must be string."
   (interactive
    (list (region-beginning) (region-end)
 	 (completing-read "encoding: "
-			  (mapcar #'list mime-content-transfer-encoding-list)
+			  (mime-encoding-alist)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-encode-region encoding) start end)
   )
@@ -144,7 +169,7 @@ ENCODING must be string."
   (interactive
    (list (region-beginning) (region-end)
 	 (completing-read "encoding: "
-			  (mapcar #'list mime-content-transfer-encoding-list)
+			  (mime-encoding-alist 'mime-decode-region)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-decode-region encoding)
 	   start end))
@@ -210,7 +235,7 @@ ENCODING must be string.")
   (interactive
    (list (read-file-name "Insert encoded file: ")
 	 (completing-read "encoding: "
-			  (mapcar #'list mime-content-transfer-encoding-list)
+			  (mime-encoding-alist)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-insert-encoded-file encoding)
 	   filename))
@@ -224,7 +249,7 @@ START and END are buffer positions."
    (list (region-beginning) (region-end)
 	 (read-file-name "Write decoded region to file: ")
 	 (completing-read "encoding: "
-			  (mapcar #'list mime-content-transfer-encoding-list)
+			  (mime-encoding-alist 'mime-write-decoded-region)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-write-decoded-region encoding)
 	   start end filename))
