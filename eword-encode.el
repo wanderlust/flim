@@ -462,7 +462,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
       )
     dest))
 
-(defun eword-phrase-route-addr-to-rwl (phrase-route-addr)
+(defun eword-encode-phrase-route-addr-to-rword-list (phrase-route-addr)
   (if (eq (car phrase-route-addr) 'phrase-route-addr)
       (let ((phrase (nth 1 phrase-route-addr))
 	    (route (nth 2 phrase-route-addr))
@@ -491,7 +491,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
   (let ((addr (nth 1 mbox))
 	(comment (nth 2 mbox))
 	dest)
-    (setq dest (or (eword-phrase-route-addr-to-rwl addr)
+    (setq dest (or (eword-encode-phrase-route-addr-to-rword-list addr)
 		   (eword-addr-spec-to-rwl addr)
 		   ))
     (if comment
