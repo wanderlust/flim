@@ -381,7 +381,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	  (sasl-make-instantiator
 	   smtp-sasl-user-name "smtp" (smtp-connection-server connection)))
     (if smtp-sasl-user-realm
-	(sasl-instantiator-set-properties
+	(sasl-instantiator-set-property
 	 instantiator (list 'realm smtp-sasl-user-realm)))
     (setq mechanism (sasl-authenticator-mechanism authenticator)
 	  ;; Retrieve the initial response
