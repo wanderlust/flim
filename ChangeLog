@@ -1,3 +1,8 @@
+2001-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtpmail.el (smtpmail-send-it): Work even if the first line of
+	the subject field has no content (synch with Emacs 20.3).
+
 2001-07-30  AMAKAWA Shuhei <sa264@cam.ac.uk>
 
 	* smtp.el(smtp-submit-package): Send EHLO after starttls.
