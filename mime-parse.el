@@ -218,7 +218,7 @@ mime-{parse|read}-Content-Type."
 	header-end
 	body-start
 	(body-end (point-max))
-	content-type content-disposition encoding
+	content-type encoding
 	primary-type
 	entity)
     (goto-char header-start)
@@ -236,11 +236,6 @@ mime-{parse|read}-Content-Type."
 				   (mime-parse-Content-Type str)
 				 ))
 			     default-ctl)
-	    content-disposition (let ((str (std11-fetch-field
-					    "Content-Disposition")))
-				  (if str
-				      (mime-parse-Content-Disposition str)
-				    ))
 	    encoding (let ((str (std11-fetch-field
 				 "Content-Transfer-Encoding")))
 		       (if str
@@ -251,7 +246,7 @@ mime-{parse|read}-Content-Type."
     (setq entity
 	  (make-mime-entity-internal
 	   (current-buffer) header-start header-end body-start body-end
-	   node-id content-type content-disposition encoding nil))
+	   node-id content-type encoding nil))
     (cond ((eq primary-type 'multipart)
 	   (mime-parse-multipart entity)
 	   )
