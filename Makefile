@@ -15,7 +15,9 @@ FLAGS   = -batch -q -no-site-file -l FLIM-MK
 PREFIX = NONE
 LISPDIR = NONE
 
-GOMI	= *.elc
+GOMI	= *.elc \
+	  *.cp *.cps *.ky *.kys *.fn *.fns *.vr *.vrs \
+	  *.pg *.pgs *.tp *.tps *.toc *.aux *.log
 FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 
@@ -27,7 +29,6 @@ install:	elc
 
 clean:
 	-$(RM) $(GOMI)
-	cd ../tl && make clean
 
 
 tar:
