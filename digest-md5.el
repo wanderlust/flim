@@ -48,7 +48,7 @@
 (require 'hmac-md5)
 (require 'unique-id)
 
-(defun degest-md5-parse-digest-challenge (digest-challenge)
+(defun digest-md5-parse-digest-challenge (digest-challenge)
   ;; return list of 
   ;; (realm nonce qop-options stale maxbuf charset 
   ;; algorithm cipher-opts auth-param).

@@ -1,5 +1,9 @@
 1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
+	* digest-md5.el (digest-md5-parse-digest-challenge): Fix.
+
+1999-12-13  Kenichi OKADA <okada@opaopa.org>
+
 	* digest-md5.el (digest-md5-digest-response): Update.
 	(digest-md5-make-cnonce): New function.
 	(digest-md5-parse-digest-challenge): New function.
