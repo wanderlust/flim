@@ -1,6 +1,24 @@
 1998-08-17  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ew-data.el:
+	  - Abolish prev-token, next-token, start and end
+	  properties on fragment.
+	  - Abolish function `ew-tokenize-frag', `ew-add-open',
+	  `ew-add-close', `ew-add-token', `ew-add-close-token' and
+	  `ew-token-list'.
+	(ew-make-anchor): Add type property.
+	(ew-token-last-frag-p): New function.
+
+	* ew-parse.el: Add new token `anchor'.
+
+	* ew-scan-m.el: Use `ew-add-frag' instead of abolished
+	functions.
+
+	* ew-scan-s.el: Ditto.
+
+1998-08-17  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* ew-data.el:
 	  - Require 'ew-util.
 	  - Change token prefix "ew:raw-" to "ew:".
 

@@ -5,10 +5,9 @@
 (defun ew-make-anchor (column str)
   (let ((anchor (make-symbol str)))
     (put anchor 'anchor anchor)
+    (put anchor 'type 'ew:anchor-tok)
     (put anchor 'prev-frag anchor)
     (put anchor 'next-frag anchor)
-    (put anchor 'prev-token anchor)
-    (put anchor 'next-token anchor)
     (put anchor 'column column)
     (put anchor 'line-length 0)
     anchor))
@@ -20,18 +19,9 @@
       (put frag 'line-length line-length)
       (setq frag (get frag 'prev-frag)))))
 
-(defun ew-tokenize-frag (anchor frag)
-  (put frag 'prev-token (get anchor 'prev-token))
-  (put frag 'next-token anchor)
-  (put (get anchor 'prev-token) 'next-token frag)
-  (put anchor 'prev-token frag)
-  frag)
-
 (defun ew-add-frag (anchor start end type)
   (let ((frag (make-symbol (substring (symbol-name anchor) start end))))
     (put frag 'anchor anchor)
-    (put frag 'start start)
-    (put frag 'end end)
     (put frag 'type type)
     (put frag 'prev-frag (get anchor 'prev-frag))
     (put frag 'next-frag anchor)
@@ -49,25 +39,6 @@
       (put anchor 'column (+ (get anchor 'column) (length (symbol-name frag)))))
     frag))
 
-(defun ew-add-open (anchor start end type)
-  (let ((frag (ew-add-frag anchor start end type)))
-    (put frag 'prev-open (get anchor 'prev-open))
-    (put anchor 'prev-open frag)
-    frag))
-
-(defun ew-add-close (anchor start end type)
-  (let ((frag (ew-add-frag anchor start end type)))
-    (put frag 'pair (get anchor 'prev-open))
-    (put (get anchor 'prev-open) 'pair frag)
-    (put anchor 'prev-open (get (get frag 'pair) 'prev-open))
-    frag))
-    
-(defun ew-add-token (anchor start end type)
-  (ew-tokenize-frag anchor (ew-add-frag anchor start end type)))
-
-(defun ew-add-close-token (anchor start end type)
-  (ew-tokenize-frag anchor (ew-add-close anchor start end type)))
-
 ;;; listup
 
 (defun ew-frag-list (anchor)
@@ -76,14 +47,6 @@
     (while (not (eq anchor tmp))
       (setq res (cons tmp res)
 	    tmp (get tmp 'prev-frag)))
-    res))
-
-(defun ew-token-list (anchor)
-  (let ((res ())
-	(tmp (get anchor 'prev-token)))
-    (while (not (eq anchor tmp))
-      (setq res (cons tmp res)
-	    tmp (get tmp 'prev-token)))
     res))
 
 (defun ew-pair-list (anchor)
@@ -101,19 +64,14 @@
 	       (or (< 0 (match-beginning 0))
 		   (< (match-end 0) (length (symbol-name frag1)))))
       (let ((atom (symbol-name frag1))
-	    (base (get frag1 'start))
 	    (start (match-end 0))
 	    result
 	    frag)
 	(when (< 0 (match-beginning 0))
 	  (setq frag (make-symbol (substring atom 0 (match-beginning 0)))
-		result(ew-rcons* result frag))
-	  (put frag 'start base)
-	  (put frag 'end (+ base (match-beginning 0))))
+		result (ew-rcons* result frag)))
 	(setq frag (make-symbol (substring atom (match-beginning 0) (match-end 0)))
 	      result (ew-rcons* result frag))
-	(put frag 'start (+ base (match-beginning 0)))
-	(put frag 'end (+ base (match-end 0)))
 	(when (cdr result)
 	  (put frag 'prev-frag (cadr result))
 	  (put (cadr result) 'next-frag frag)
@@ -124,22 +82,16 @@
 	  (when (< start (match-beginning 0))
 	    (setq frag (make-symbol (substring atom start (match-beginning 0)))
 		  result (ew-rcons* result frag))
-	    (put frag 'start (+ base start))
-	    (put frag 'end (+ base (match-beginning 0)))
 	    (put frag 'prev-frag (cadr result))
 	    (put (cadr result) 'next-frag frag))
 	  (setq frag (make-symbol (substring atom (match-beginning 0) (match-end 0)))
 		result (ew-rcons* result frag)
 		start (match-end 0))
-	  (put frag 'start (+ base (match-beginning 0)))
-	  (put frag 'end (+ base (match-end 0)))
 	  (put frag 'prev-frag (cadr result))
 	  (put (cadr result) 'next-frag frag))
 	(when (< start (length (symbol-name frag1)))
 	  (setq frag (make-symbol (substring atom start))
 		result (ew-rcons* result frag))
-	  (put frag 'start (+ base start))
-	  (put frag 'end (get frag1 'end))
 	  (put frag 'prev-frag (cadr result))
 	  (put (cadr result) 'next-frag frag))
 	(setq frag (car result))
@@ -171,12 +123,26 @@
   (unless (ew-comment-frag-p frag2)
     (put frag2 'decode 'ew-decode-phrase))
   (setq frag2 (get frag2 'prev-frag))
-  (while (not (get frag2 'prev-token))
+  (while (not (ew-token-last-frag-p frag2))
     (unless (ew-comment-frag-p frag2)
       (put frag2 'decode 'ew-decode-phrase))
     (setq frag2 (get frag2 'prev-frag))))
 
 ;;; frag predicate
+
+(defun ew-token-last-frag-p (frag)
+  (member (get frag 'type)
+	  '(ew:anchor-tok
+	    ew:lt-tok
+	    ew:gt-tok
+	    ew:at-tok
+	    ew:comma-tok
+	    ew:semicolon-tok
+	    ew:colon-tok
+	    ew:dot-tok
+	    ew:atom-tok
+	    ew:qs-end-tok
+	    ew:dl-end-tok)))
 
 (defun ew-comment-frag-p (frag)
   (member (get frag 'type)
