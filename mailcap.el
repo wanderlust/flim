@@ -25,6 +25,9 @@
 
 ;;; Code:
 
+(require 'mime-def)
+
+
 ;;; @ comment
 ;;;
 
