@@ -179,10 +179,14 @@
 				 decoded
 				 (1+ (string-width field-name))
 				 fill-column)))
+		(setq beg (point))
 		(insert field-name)
 		(insert ":")
 		(insert (ew-crlf-to-lf decoded))
 		(insert "\n")
+		(add-text-properties beg (point)
+				     (list 'original-field-name field-name
+					   'original-field-body field-body))
 		))))))))
 
 

@@ -440,7 +440,11 @@ If SEPARATOR is not nil, it is used as header separator."
 			       (1+ (string-width field-name))
 			       fill-column)))
 	      (delete-region p end)
-	      (insert (ew-crlf-to-lf decoded))))
+	      (insert (ew-crlf-to-lf decoded))
+	      (add-text-properties beg (min (1+ (point)) (point-max))
+				   (list 'original-field-name field-name
+					 'original-field-body field-body))
+	      ))
 	(eword-decode-region (point-min) (point-max) t nil nil)
 	))))
 

@@ -1,5 +1,15 @@
 1998-08-27  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-dec.el (ew-decode-field-test): Now interactive.
+
+	* eword-decode.el (eword-decode-header): Put original field as
+	text properties.
+
+	* mmbuffer.el (insert-decoded-header): Put original field as
+	text properties.
+
+1998-08-27  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* DOODLE-TIPS: Add a notice about EVALARGS.
 
 	* Makefile: evaluate environment variable EVALARGS if it is not

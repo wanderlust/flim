@@ -461,33 +461,41 @@ each line is separated by CRLF."
   (not (eq (charsets-to-mime-charset (find-charset-string str)) 'us-ascii)))
 
 ;;;
-
 (defun ew-decode-field-test (field-name field-body)
+  (interactive
+   (list
+    (read-string "field-name:" (or (get-text-property (point) 'original-field-name) ""))
+    (read-string "field-body:" (or (get-text-property (point) 'original-field-body) ""))))
   (with-output-to-temp-buffer "*DOODLE*"
     (save-excursion
+      (set-buffer standard-output)
       (let ((ew-decode-sticked-encoded-word nil)
 	    (ew-decode-quoted-encoded-word nil)
 	    (ew-ignore-75bytes-limit nil)
 	    (ew-ignore-76bytes-limit nil)
 	    (ew-permit-sticked-comment nil)
-	    (ew-permit-sticked-special nil))
-	(princ field-name) (princ ":") (princ field-body) (princ "\n")
-	(princ (make-string fill-column ?-)) (princ "\n")
-	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
-	(setq ew-ignore-76bytes-limit t) (princ "[ew-ignore-76bytes-limit -> t]\n")
-	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
-	(setq ew-ignore-75bytes-limit t) (princ "[ew-ignore-75bytes-limit -> t]\n")
-	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
-	(setq ew-permit-sticked-special t) (princ "[ew-ignore-76bytes-limit -> t]\n")
-	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
-	(setq ew-permit-sticked-comment t) (princ "[ew-ignore-76bytes-comment -> t]\n")
-	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
-	(setq ew-decode-sticked-encoded-word t) (princ "[ew-decode-sticked-encoded-word -> t]\n")
-	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
-	(setq ew-decode-quoted-encoded-word t) (princ "[ew-decode-quoted-encoded-word -> t]\n")
-	(princ field-name) (princ ":") (princ (ew-decode-field-no-cache field-name field-body)) (princ "\n")
-	;; ew-permit-null-encoded-text is not changable when runtime.
-	))))
+	    (ew-permit-sticked-special nil)
+	    (options
+	     '(ew-ignore-76bytes-limit
+	       ew-ignore-75bytes-limit
+	       ew-permit-sticked-special
+	       ew-permit-sticked-comment
+	       ew-decode-sticked-encoded-word
+	       ew-decode-quoted-encoded-word
+	       ))
+	    d1 d2)
+	(setq d1 (ew-decode-field-no-cache field-name field-body))
+	(insert field-name ":" field-body "\n"
+		(make-string 76 ?-) "\n"
+		field-name ":" d1 "\n")
+	(while options
+	  (set (car options) t)
+	  (insert (format "-- %s -> t\n" (car options)))
+	  (setq d2 (ew-decode-field-no-cache field-name field-body))
+	  (unless (equal d1 d2)
+	    (insert field-name ":" d2 "\n")
+	    (setq d1 d2))
+	  (setq options (cdr options)))))))
 
 ;;;
 
