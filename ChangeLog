@@ -1,3 +1,9 @@
+1998-10-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS: Don't install mel-ccl in anything older than XEmacs 21
+	with MULE.
+
+
 1998-10-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.10.3 (Komada) was released.
