@@ -1,3 +1,7 @@
+1999-07-16  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* FLIM: Version 1.13.0 (Iwami) released.
+
 1999-07-09  Nakagawa, Makoto  <nakagawa@pochi.tis.co.jp>
 
 	* smtpmail.el (smtpmail-send-it): Use current-time to get rid of
