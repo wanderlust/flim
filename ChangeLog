@@ -1,5 +1,9 @@
 1998-09-21  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* mel.el: Use `broken-p' to check facility.
+
+1998-09-21  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* mel-ccl.el:
 	  - Require 'pccl instead of 'emu.
 	  - Use `unless-broken' to check facility.

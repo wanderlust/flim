@@ -26,7 +26,7 @@
 
 ;;; Code:
 
-(require 'emu)
+(require 'pccl)
 
 
 ;;; @ encoder/decoder selection framework
@@ -293,15 +293,13 @@ If MODE is nil, the result is appropriate for phrase.")
 (mel-usemodule "mel-ccl" quoted-printable ccl (fboundp 'make-ccl-coding-system))
 (mel-usemodule "mel-ccl" q-encoding ccl (fboundp 'make-ccl-coding-system))
 
-(defvar ccl-encoder-eof-block-is-broken nil)
+(mel-defmethod base64-encode-string ccl (not (broken-p 'ccl-execute-eof-block-on-encoding-some)))
+(mel-defmethod base64-encode-region ccl (not (broken-p 'ccl-execute-eof-block-on-encoding-some)))
+(mel-defmethod base64-insert-encoded-file ccl (not (broken-p 'ccl-execute-eof-block-on-encoding-some)))
 
-(mel-defmethod base64-encode-string ccl (not ccl-encoder-eof-block-is-broken))
-(mel-defmethod base64-encode-region ccl (not ccl-encoder-eof-block-is-broken))
-(mel-defmethod base64-insert-encoded-file ccl (not ccl-encoder-eof-block-is-broken))
-
-(mel-defmethod quoted-printable-encode-string ccl (not ccl-encoder-eof-block-is-broken))
-(mel-defmethod quoted-printable-encode-region ccl (not ccl-encoder-eof-block-is-broken))
-(mel-defmethod quoted-printable-insert-encoded-file ccl (not ccl-encoder-eof-block-is-broken))
+(mel-defmethod quoted-printable-encode-string ccl (not (broken-p 'ccl-execute-eof-block-on-encoding-some)))
+(mel-defmethod quoted-printable-encode-region ccl (not (broken-p 'ccl-execute-eof-block-on-encoding-some)))
+(mel-defmethod quoted-printable-insert-encoded-file ccl (not (broken-p 'ccl-execute-eof-block-on-encoding-some)))
 
 (mel-defmethod base64-decode-string ccl)
 (mel-defmethod base64-decode-region ccl)
