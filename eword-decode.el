@@ -176,7 +176,7 @@ such as a version of Net$cape)."
 ;;;
 
 (defcustom eword-decode-ignored-field-list
-  '(newsgroups path lines nntp-posting-host message-id date)
+  '(newsgroups path lines nntp-posting-host received message-id date)
   "*List of field-names to be ignored when decoding.
 Each field name must be symbol."
   :group 'eword-decode
