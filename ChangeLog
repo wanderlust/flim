@@ -1,3 +1,8 @@
+1998-08-28  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* ew-dec.el (ew-decode-field-test): Print sequence of fragments
+	if prefix argument exists.
+
 1998-08-27  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ew-dec.el (ew-decode-field-test): Support

@@ -512,7 +512,17 @@ each line is separated by CRLF."
 	  (unless (equal d1 d2)
 	    (insert field-name ":" d2 "\n")
 	    (setq d1 d2))
-	  (setq options (cdr options)))))))
+	  (setq options (cdr options)))
+	(insert (make-string 76 ?-) "\n")
+	(when current-prefix-arg
+	  (mapcar
+	   (lambda (frag)
+	     (insert (format "%-16s %S\n"
+			     (get frag 'type)
+			     (symbol-name frag)))
+	     nil)
+	   (ew-frag-list (ew-analyze-field-to-decode field-name field-body)))
+	  (insert (make-string 76 ?-) "\n"))))))
 
 ;;;
 
