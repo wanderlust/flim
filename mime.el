@@ -379,6 +379,8 @@ If MESSAGE is specified, it is regarded as root entity."
 (luna-define-generic mime-write-entity-body (entity filename)
   "Write body of ENTITY into FILENAME.")
 
+(luna-define-generic mime-entity-body (entity)
+  "Return network representation of ENTITY.")
 
 ;;; @ end
 ;;;

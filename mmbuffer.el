@@ -102,6 +102,12 @@
 		       (mime-buffer-entity-body-end-internal entity))
      (mime-entity-encoding entity))))
 
+(luna-define-method mime-entity-body ((entity mime-buffer-entity))
+  (save-excursion
+    (set-buffer (mime-buffer-entity-buffer-internal entity))
+    (buffer-substring (mime-buffer-entity-body-start-internal entity)
+		      (mime-buffer-entity-body-end-internal entity))))
+
 (luna-define-method mime-entity-fetch-field :around
   ((entity mime-buffer-entity) field-name)
   (or (luna-call-next-method)
