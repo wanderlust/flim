@@ -29,11 +29,10 @@
 
 ;; To send mail using QMTP instead of SMTP, do
 
-;; (fset 'smtp-via-smtp 'qmtp-via-qmtp)
+;; (fset 'smtp-send-buffer 'qmtp-send-buffer)
 
 ;;; Code:
 
-(require 'poem)
 (require 'custom)
 
 (defgroup qmtp nil
@@ -125,11 +124,11 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
     (setq qmtp-read-point (point-min))
     (let (process)
       (unwind-protect
-	  (progn
-	    (as-binary-process
-	     (setq process
-		   (funcall qmtp-open-connection-function
-			    "QMTP" (current-buffer) qmtp-server qmtp-service)))
+	  (let ((coding-system-for-read  'binary)
+		(coding-system-for-write 'binary))
+	    (setq process
+		  (funcall qmtp-open-connection-function
+			   "QMTP" (current-buffer) qmtp-server qmtp-service))
 	    (qmtp-send-package process sender recipients buffer))
 	(when (and process
 		   (memq (process-status process) '(open run)))
