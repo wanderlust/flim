@@ -115,7 +115,7 @@ local 変数 @code{mime-message-structure} に格納することにします。
 
 
 @menu
-* Message parser::              Message の解析器
+* Entity creation::             Entity の生成
 * Entity hierarchy::            Entity 階層
 * Entity buffer::               Entity の buffer による表現
 * Entity-header::               Entity header の情報
@@ -123,8 +123,19 @@ local 変数 @code{mime-message-structure} に格納することにします。
 * Entity-content::              Entity の内容
 @end menu
 
-@node Message parser, Entity hierarchy, Entity, Entity
-@section Message の解析器
+@node Entity creation, Entity hierarchy, Entity, Entity
+@section Entity の生成
+
+@defun mime-open-entity &optional  type location
+
+Open an entity and return it.@refill
+
+@var{type} is representation-type.@refill
+
+@var{location} is location of entity.  Specification of it is depended
+on representation-type.
+@end defun
+
 
 @defun mime-parse-message &optional  default-ctl node-id
 
@@ -142,7 +153,7 @@ local 変数 @code{mime-message-structure} に格納することにします。
 
 
 
-@node Entity hierarchy, Entity buffer, Message parser, Entity
+@node Entity hierarchy, Entity buffer, Entity creation, Entity
 @section Entity 階層
 
 @defvar mime-message-structure
@@ -333,6 +344,13 @@ Entity の file 名を返す。
 @end defun
 
 
+@defun mime-entity-cooked-p entity
+
+Return non-nil if contents of @var{entity} has been already
+code-converted.
+@end defun
+
+
 
 @node Entity-content,  , Entity Attributes, Entity
 @section Entity の内容
@@ -340,6 +358,24 @@ Entity の file 名を返す。
 @defun mime-entity-content entity
 
 @var{entity} の内容の byte 列を返す。
+@end defun
+
+
+@defun mime-write-entity-content entity filename
+
+Write content of @var{entity} into @var{filename}.
+@end defun
+
+
+@defun mime-write-entity entity filename
+
+Write representation of @var{entity} into @var{filename}.
+@end defun
+
+
+@defun mime-write-entity-body entity filename
+
+Write body of @var{entity} into @var{filename}.
 @end defun
 
 

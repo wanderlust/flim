@@ -1,3 +1,11 @@
+1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-ja.sgml (Entity creation): Add description of
+	`mime-open-entity'.
+	(Entity Attributes): Add description of `mime-entity-cooked-p'.
+	(Entity-content): Add description of `mime-write-entity-content',
+	`mime-write-entity' and `mime-write-entity-body'.
+
 1998-06-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime.el (mime-write-entity-content): New function.
