@@ -1,5 +1,10 @@
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mmbuffer.el (mime-visible-field-p): Renamed from
+	`eword-visible-field-p'.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime.el (mm-arglist-to-arguments): New function.
 	(mm-define-generic): New macro.
 	(mime-entity-cooked-p): Use `mm-define-generic'.
