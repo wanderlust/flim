@@ -475,14 +475,14 @@ Content-Type field.
 @cindex subtype
 @cindex type
 
-Content-Type $BMs$N7A<0$O0J2<$N$h$&$KDj5A$5$l$F$$$^$9!'(B
+Format of Content-Type field is defined as follows:
 
 @quotation
 ``Content-Type'' ``:'' @strong{type} ``/''
 @strong{subtype} *( ``;'' @strong{parameter} )
 @end quotation
 
-$BNc$($P!"(B
+For example:
 
 @quotation
 @example
@@ -490,8 +490,6 @@ Content-Type: image/jpeg
 @end example
 @end quotation
 
-@noindent
-$B$d(B
 
 @quotation
 @example
@@ -499,18 +497,16 @@ Content-Type: text/plain; charset=iso-2022-jp
 @end example
 @end quotation
 
-@noindent
-$B$J$I$N$h$&$KMQ$$$i$l$^$9!#(B
-
-$B$3$3$G!"(B`type' $B$H(B `subtype' $B$O(B entity $B$N7A<0$r<($9$b$N$G!"N><T$rAm>N$7(B
-$B$F!"(B`media-type' $B$H8F$V$3$H$K$7$^$9!#>e5-$NNc$K$*$1$k(B `image/jpeg' $B$d(B
-`text/plain' $B$O(B media-type $B$N#1$D$G$9!#(B
+`type' and `subtype' indicate format of an entity.  In this document,
+pair of them is called `media-type'.  `image/jpeg' or `text/plain' is
+a media-type.
 
 @noindent
 @strong{[Memo]}
 @quotation
 
-Content-Type $BMs$N$J$$(B entity $B$O(B
+If an entity does not have Content-Type field, it is regarded as
+following:
 
 @quotation
 @example
@@ -519,7 +515,7 @@ Content-Type: text/plain; charset=us-ascii
 @end quotation
 
 @noindent
-$B$H$7$F2r<a$5$l$k!#(B(cf. @ref{us-ascii})
+(cf. @ref{us-ascii})
 @end quotation
 
 
@@ -529,22 +525,23 @@ Content-Type: text/plain; charset=us-ascii
 
 @deffn{Structure} mime-content-type
 
-Content-Type $BMs$N>pJs$r3JG<$9$k$?$a$N9=B$BN!#(B@refill
+Structure to store information of a Content-Type field.@refill
 
-$B$3$N9=B$BN$r;2>H$9$k$K$O(B @code{mime-content-type-$BMWAGL>(B} $B$H$$$&L>A0$N;2(B
-$B>H4X?t$rMQ$$$k!#(B@refill
+Applications should use reference functions
+@code{mime-content-type-SLOT} to refer information of the
+structure.@refill
 
-$B$3$N9=B$BN$NMWAG$O0J2<$NDL$j$G$"$k!'(B
+Slots of the structure are following:
 
 @table @var
 @item primary-type
-media-type $B$N<g7?(B (symbol).
+primary type of media-type (symbol).
 
 @item subtype
-media-type $B$NI{7?(B (symbol).
+subtype of media-type (symbol).
 
 @item parameters
-Content-Type $BMs$N(B parameter ($BO"A[(B list).
+parameters of Content-Type field (association-list).
 
 @end table
 @end deffn
@@ -553,13 +550,13 @@ Content-Type $BMs$N(B parameter ($BO"A[(B list).
 @defun make-mime-content-type type subtype
 	   &optional  parameters
 
-content-type $B$N@8@.;R!#(B
+Constructor of content-type.
 @end defun
 
 
 @defun mime-content-type-parameter content-type parameter
 
-@var{content-type} $B$N(B @var{parameter} $B$NCM$rJV$9!#(B
+Return value of @var{parameter} of @var{content-type}.
 @end defun
 
 
@@ -569,15 +566,16 @@ content-type $B$N@8@.;R!#(B
 
 @defun mime-parse-Content-Type string
 
-@var{string} $B$r(B content-type $B$H$7$F2r@O$7$?7k2L$rJV$9!#(B
+Parse @var{string} as field-body of Content-Type field.
 @end defun
 
 
 @defun mime-read-Content-Type
 
-$B8=:_$N(B buffer $B$N(B Content-Type $BMs$rFI$_<h$j!"2r@O$7$?7k2L$rJV$9!#(B@refill
+Read field-body of Content-Type field from current-buffer, and return
+parsed it.@refill
 
-Content-Type $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
+Return @code{nil} if Content-Type field is not found.
 @end defun
 
 
@@ -597,10 +595,11 @@ Return type/subtype string from @var{type} and @var{subtype}.
 @cindex mime-content-disposition
 @cindex RFC 2183
 @cindex Standards Track
-@cindex Content-Disposition $BMs(B
+@cindex Content-Disposition field
 
-@strong{Content-Disposition $BMs(B} $B$O(B entity $B$NI=<($d(B file $BL>$J$I(B
-$B$NB0@-$K$J$I$K4X$9$k>pJs$r5-=R$9$k$?$a$N$b$N$G$9!#(B
+@strong{Content-Disposition field} is an optional field to
+specify presentation of an entity or attributes of an entity, such as
+file name.
 
 
 @noindent
@@ -611,9 +610,9 @@ Information in Internet Messages: The Content-Disposition Header'',
 August 1997, Standards Track.
 @end quotation
 
-FLIM $B$O(B Content-Disposition $BMs$r9=J82r@O$9$k4X?t$H(B Content-Disposition 
-$BMs$N2r@O7k2L$r3JG<$9$k9=B$BN(B 
-@strong{mime-content-disposition} $B$rDs6!$7$^$9!#(B
+FLIM provides parser for Content-Disposition field and structure
+@strong{mime-content-disposition} to store information of
+Content-Disposition field.
 
 
 @menu
@@ -626,19 +625,21 @@ FLIM $B$O(B Content-Disposition $BMs$r9=J82r@O$9$k4X?t$H(B Content-Dispositi
 
 @deffn{Structure} mime-content-disposition
 
-Content-Disposition $BMs$N2r@O7k2L$r<}$a$k$?$a$N9=B$BN!#(B@refill
+Structure to store information of a Content-Disposition field.@refill
 
-$B$3$N9=B$BN$r;2>H$9$k$K$O(B @code{mime-content-disposition-$BMWAGL>(B} $B$H$$$&L>(B
-$BA0$N;2>H4X?t$rMQ$$$k!#(B@refill
+Applications should use reference functions
+@code{mime-content-disposition-SLOT} to refer information of the
+structure.@refill
 
-$B$3$N9=B$BN$NMWAG$O0J2<$NDL$j$G$"$k!'(B
+Slots of the structure are following:
 
 @table @var
 @item disposition-type
 disposition-type (symbol).
 
 @item parameters
-Content-Disposition $BMs$N(B parameter ($BO"A[(B list).
+parameters of Content-Disposition field
+(association-list).
 
 @end table
 @end deffn
@@ -646,13 +647,13 @@ Content-Disposition $BMs$N(B parameter ($BO"A[(B list).
 
 @defun mime-content-disposition-parameter content-disposition parameter
 
-@var{content-disposition} $B$N(B @var{parameter} $B$NCM$rJV$9!#(B
+Return value of @var{parameter} of @var{content-disposition}.
 @end defun
 
 
 @defun mime-content-disposition-filename content-disposition
 
-@var{content-disposition} $B$N(B filename $B$NCM$rJV$9!#(B
+Return filename of @var{content-disposition}.
 @end defun
 
 
@@ -662,33 +663,33 @@ Content-Disposition $BMs$N(B parameter ($BO"A[(B list).
 
 @defun mime-parse-Content-Disposition string
 
-@var{string} $B$r(B content-disposition $B$H$7$F2r@O$7$?7k2L$rJV$9!#(B
+Parse @var{string} as field-body of Content-Disposition field, and
+return the result.
 @end defun
 
 
 @defun mime-read-Content-Disposition
 
-$B8=:_$N(B buffer $B$N(B Content-Disposition $BMs$rFI$_<h$j!"2r@O$7$?7k2L$rJV$9!#(B
-@refill
+Read field-body of Content-Disposition field from current-buffer,@refill
 
-Content-Disposition $BMs$,B8:_$7$J$$>l9g$O(B nil $B$rJV$9!#(B
+Return nil if Content-Disposition field is not found.
 @end defun
 
 
 
 @node Content-Transfer-Encoding, encoded-word, Content-Disposition, Top
 @chapter Encoding Method
-@cindex Content-Transfer-Encoding $BMs(B
+@cindex Content-Transfer-Encoding $(BMs(B
 
-@strong{Content-Transfer-Encoding $BMs(B} $B$O(B entity $B$NId9f2=K!$r5-=R$9$k$?$a(B
-$B$N$b$N$G$9!#(B@refill
+@strong{Content-Transfer-Encoding $(BMs(B} $(B$O(B entity $(B$NId9f2=K!$r5-=R$9$k$?$a(B
+$(B$N$b$N$G$9!#(B@refill
 
-FLIM $B$G$O(B Content-Transfer-Encoding $BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$3(B
-$B$l$i$N4X?t$O(B Content-Transfer-Encoding $BMs$N>pJs$OJ8;zNs$GI=8=$7$^$9!#(B
+FLIM $(B$G$O(B Content-Transfer-Encoding $(BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$3(B
+$(B$l$i$N4X?t$O(B Content-Transfer-Encoding $(BMs$N>pJs$OJ8;zNs$GI=8=$7$^$9!#(B
 @refill
 
-$B$^$?!"(BContent-Transfer-Encoding $B$K4p$E$$$FId9f2=!&I|9f2=$r9T$&4X?t$bDs(B
-$B6!$5$l$^$9!#(B
+$(B$^$?!"(BContent-Transfer-Encoding $(B$K4p$E$$$FId9f2=!&I|9f2=$r9T$&4X?t$bDs(B
+$(B6!$5$l$^$9!#(B
 
 
 @menu
@@ -703,17 +704,17 @@ FLIM $B$G$O(B Content-Transfer-Encoding $BMs$r9=J82r@O$9$k4X?t$rDs6!$7$^$9!#$
 
 @defun mime-parse-Content-Transfer-Encoding string
 
-@var{string} $B$r(B content-transfer-encoding $B$H$7$F2r@O$7$?7k2L$rJV$9!#(B
+@var{string} $(B$r(B content-transfer-encoding $(B$H$7$F2r@O$7$?7k2L$rJV$9!#(B
 @end defun
 
 
 @defun mime-read-Content-Transfer-Encoding &optional default-encoding
 
-$B8=:_$N(B buffer $B$N(B Content-Transfer-Encoding $BMs$rFI$_<h$j!"2r@O$7$?7k2L$r(B
-$BJV$9!#(B@refill
+$(B8=:_$N(B buffer $(B$N(B Content-Transfer-Encoding $(BMs$rFI$_<h$j!"2r@O$7$?7k2L$r(B
+$(BJV$9!#(B@refill
 
-Content-Transfer-Encoding $BMs$,B8:_$7$J$$>l9g$O(B@var{default-encoding} $B$r(B
-$BJV$9!#(B
+Content-Transfer-Encoding $(BMs$,B8:_$7$J$$>l9g$O(B@var{default-encoding} $(B$r(B
+$(BJV$9!#(B
 @end defun
 
 
@@ -761,7 +762,7 @@ region decoder and @code{nil} means not to decode.
 
 @defun mime-decode-string string encoding
 
-@var{string} $B$r(B @var{encoding} $B$H$7$FI|9f$7$?7k2L$rJV$7$^$9!#(B
+@var{string} $(B$r(B @var{encoding} $(B$H$7$FI|9f$7$?7k2L$rJV$7$^$9!#(B
 @end defun
 
 
@@ -821,8 +822,8 @@ to file.
 @cindex Standards Track
 @cindex RFC 2047
 
-encoded-word $B$O(B header $B$GHs(B ASCII (@ref{ASCII}) $BJ8;z$rI=8=$9$k$?$a$N7A<0(B
-$B$G!"(B@strong{RFC 2047} $B$GDj5A$5$l$F$$$^$9!#(B@refill
+encoded-word $(B$O(B header $(B$GHs(B ASCII (@ref{ASCII}) $(BJ8;z$rI=8=$9$k$?$a$N7A<0(B
+$(B$G!"(B@strong{RFC 2047} $(B$GDj5A$5$l$F$$$^$9!#(B@refill
 
 
 @noindent
@@ -833,10 +834,10 @@ Message Header Extensions for Non-ASCII Text'', November 1996, Standards
 Track (obsolete RFC 1521,1522,1590).
 @end quotation
 
-$B$^$?!"9T57$N0-$$$3$H$@$H8@$($^$9$,!"(Bencoded-word $B$rMQ$$$:$KHs(B ASCII
-(@ref{ASCII}) $BJ8;z$r(B header $B$KF~$l$?5-;v$bB8:_$7$^$9!#(B@refill
+$(B$^$?!"9T57$N0-$$$3$H$@$H8@$($^$9$,!"(Bencoded-word $(B$rMQ$$$:$KHs(B ASCII
+(@ref{ASCII}) $(BJ8;z$r(B header $(B$KF~$l$?5-;v$bB8:_$7$^$9!#(B@refill
 
-FLIM $B$O$3$l$i$rId9f2=!&I|9f2=$9$k5!G=$rDs6!$7$^$9!#(B
+FLIM $(B$O$3$l$i$rId9f2=!&I|9f2=$9$k5!G=$rDs6!$7$^$9!#(B
 
 
 @menu
@@ -874,29 +875,29 @@ It refer variable @code{eword-field-encoding-method-alist}.
 
 @deffn{group} mime
 
-MIME $B4XO"5!G=$K4X$9$k(B group.@refill
+MIME $(B4XO"5!G=$K4X$9$k(B group.@refill
 
-@code{mail} $B$H(B @code{news} $B$KB0$9$k!#(B
+@code{mail} $(B$H(B @code{news} $(B$KB0$9$k!#(B
 @end deffn
 
 
 @defvar default-mime-charset
 
-$BE,@Z$J(B MIME charset (@ref{MIME charset}) $B$,8+$D$+$i$J$+$C$?>l9g$KMQ$$$i(B
-$B$l$k(BMIME charset.@refill
+$(BE,@Z$J(B MIME charset (@ref{MIME charset}) $(B$,8+$D$+$i$J$+$C$?>l9g$KMQ$$$i(B
+$(B$l$k(BMIME charset.@refill
 
-$BK\Mh$O(B APEL $B$NJQ?t$G$"$k!#(B
+$(BK\Mh$O(B APEL $(B$NJQ?t$G$"$k!#(B
 @end defvar
 
 
 @defvar mime-temp-directory
 
-MIME $B5!G=$K4X$9$k<BAu$,0l;~E*$K;HMQ$9$k(B file $B$r:n@.$9$k(B 
+MIME $(B5!G=$K4X$9$k<BAu$,0l;~E*$K;HMQ$9$k(B file $(B$r:n@.$9$k(B 
 directory.@refill
 
-$B4D6-JQ?t(B @code{MIME_TMP_DIR}, @code{TM_TMP_DIR}, @code{TMPDIR},
-@code{TMP} $B$b$7$/$O(B @code{TEMP} $B$,@_Dj$5$l$F$$$?>l9g!"$=$l$r=i4|CM$H$7$F(B
-$BMQ$$$k!#2?$b@_Dj$5$l$F$$$J$$>l9g!"(B@code{"/tmp/"} $B$rMQ$$$k!#(B
+$(B4D6-JQ?t(B @code{MIME_TMP_DIR}, @code{TM_TMP_DIR}, @code{TMPDIR},
+@code{TMP} $(B$b$7$/$O(B @code{TEMP} $(B$,@_Dj$5$l$F$$$?>l9g!"$=$l$r=i4|CM$H$7$F(B
+$(BMQ$$$k!#2?$b@_Dj$5$l$F$$$J$$>l9g!"(B@code{"/tmp/"} $(B$rMQ$$$k!#(B
 @end defvar
 
 
@@ -1385,8 +1386,8 @@ send empty e-mail to:
 @node CVS, History, Bug report, Appendix
 @section CVS based development
 
-FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K!$G:G(B
-$B?7$N(B FLIM $B$rF~<j$9$k$3$H$,$G$-$^$9!'(B
+FLIM $(B$N(B file $(B$O(B CVS $(B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K!$G:G(B
+$(B?7$N(B FLIM $(B$rF~<j$9$k$3$H$,$G$-$^$9!'(B
 
 @example
 (0) cvs login
@@ -1403,7 +1404,7 @@ FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K
 @end example
 
 
-CVS $B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
+CVS $(B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
 
 @itemize @bullet
 @item
@@ -1411,61 +1412,61 @@ CVS $B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
 @end itemize
 
 @noindent
-$B$^$G!"(Baccount $BL>$H(B UNIX $B$N(B passwd $B$HF1$87A<0$N(B crypt $B2=$5$l$?(B password
-$B$r1h$($F8fO"Mm$/$@$5$$!#(B
+$(B$^$G!"(Baccount $(BL>$H(B UNIX $(B$N(B passwd $(B$HF1$87A<0$N(B crypt $(B2=$5$l$?(B password
+$(B$r1h$($F8fO"Mm$/$@$5$$!#(B
 
 
 @node History,  , CVS, Appendix
 @section History of FLIM
 
-FLIM $B$N(B code $B$N:G8E$NItJ,$O(B $B1]JB(B $B;LCR(B $B;a$,=q$$$?(B @file{mime.el}$B$K5/8;$7(B
-$B$^$9!#$3$N>.$5$J(B program $B$O(B Nemacs $B$GF0:n$9$k(B iso-2022-jp $B$N(B B-encoding 
-$B@lMQ$N(B encoded-word $B$NI|9f2=%W%m%0%i%`$G$7$?!#(B@refill
+FLIM $(B$N(B code $(B$N:G8E$NItJ,$O(B $(B1]JB(B $(B;LCR(B $(B;a$,=q$$$?(B @file{mime.el}$(B$K5/8;$7(B
+$(B$^$9!#$3$N>.$5$J(B program $(B$O(B Nemacs $(B$GF0:n$9$k(B iso-2022-jp $(B$N(B B-encoding 
+$(B@lMQ$N(B encoded-word $(B$NI|9f2=%W%m%0%i%`$G$7$?!#(B@refill
 
-$B$=$N8e!"<i2,(B $BCNI'(B $B$O(B @file{mime.el} $B$r85$K(B@file{tiny-mime.el} $B$H$$$&%W%m(B
-$B%0%i%`$r=q$-$^$9!#$3$l$O!"(BNemacs $B$H(B Mule $B$GF0:n$9$k(B encoded-word $B$NId9f(B
-$B2=!&I|9f2=%W%m%0%i%`$G$7$?!#(B@file{tiny-mime.el} $B$O(B B-encoding $B$@$1$G$J$/(B 
-Q-encoding $B$b(Bsupport $B$7!"$^$?!"(BMULE $B$G07$&$3$H$,$G$-$k$5$^$6$^$J(B MIME
-charset (@ref{MIME charset}) $B$rF1;~$K;H$&$3$H$,$G$-$^$7$?!#$3$N;~!"(B
-Nemacs $B$H(B Mule $B$NAPJ}$r(B support $B$9$k$?$a$KMQ$$$i$l$?%F%/%K%C%/$O8e$K(B emu
-package $B$K$^$H$a$i$l$^$9!#(B@refill
+$(B$=$N8e!"<i2,(B $(BCNI'(B $(B$O(B @file{mime.el} $(B$r85$K(B@file{tiny-mime.el} $(B$H$$$&%W%m(B
+$(B%0%i%`$r=q$-$^$9!#$3$l$O!"(BNemacs $(B$H(B Mule $(B$GF0:n$9$k(B encoded-word $(B$NId9f(B
+$(B2=!&I|9f2=%W%m%0%i%`$G$7$?!#(B@file{tiny-mime.el} $(B$O(B B-encoding $(B$@$1$G$J$/(B 
+Q-encoding $(B$b(Bsupport $(B$7!"$^$?!"(BMULE $(B$G07$&$3$H$,$G$-$k$5$^$6$^$J(B MIME
+charset (@ref{MIME charset}) $(B$rF1;~$K;H$&$3$H$,$G$-$^$7$?!#$3$N;~!"(B
+Nemacs $(B$H(B Mule $(B$NAPJ}$r(B support $(B$9$k$?$a$KMQ$$$i$l$?%F%/%K%C%/$O8e$K(B emu
+package $(B$K$^$H$a$i$l$^$9!#(B@refill
 
-$B$3$N:"!"<i2,(B $BCNI'(B $B$O(B @file{tiny-mime.el} $B$r$5$^$6$^$J(B MUA $B$G;H$&$?$a$N@_(B
-$BDj=8$bG[I[$7$F$$$^$7$?$,!"$=$l$i$O8e$K(B@file{tiny-mime.el} $B$H$H$b$K#1$D$N(B 
-package $B$K$^$H$a$i$l!"(Btm $B$H$$$&L>A0$GG[I[$5$l$^$9!#(B@refill
+$(B$3$N:"!"<i2,(B $(BCNI'(B $(B$O(B @file{tiny-mime.el} $(B$r$5$^$6$^$J(B MUA $(B$G;H$&$?$a$N@_(B
+$(BDj=8$bG[I[$7$F$$$^$7$?$,!"$=$l$i$O8e$K(B@file{tiny-mime.el} $(B$H$H$b$K#1$D$N(B 
+package $(B$K$^$H$a$i$l!"(Btm $(B$H$$$&L>A0$GG[I[$5$l$^$9!#(B@refill
 
-$B<i2,(B $BCNI'(B $B$O$d$,$F!"(BMIME message $B$r1\Mw$9$k$?$a$N%W%m%0%i%`$G$"$k(B
-@file{tm-body.el} $B$r=q$-$^$9!#$3$l$O!"$9$0$K(B@file{tm-view.el} $B$H$$$&L>A0(B
-$B$KJQ$o$j$^$7$?$,!"$d$,$F!"$3$l$,(B@file{tiny-mime.el} $B$KBe$o$C$F!"(Btm $B$NCf(B
-$B3K$H$J$j$^$9!#(B@refill
+$(B<i2,(B $(BCNI'(B $(B$O$d$,$F!"(BMIME message $(B$r1\Mw$9$k$?$a$N%W%m%0%i%`$G$"$k(B
+@file{tm-body.el} $(B$r=q$-$^$9!#$3$l$O!"$9$0$K(B@file{tm-view.el} $(B$H$$$&L>A0(B
+$(B$KJQ$o$j$^$7$?$,!"$d$,$F!"$3$l$,(B@file{tiny-mime.el} $(B$KBe$o$C$F!"(Btm $(B$NCf(B
+$(B3K$H$J$j$^$9!#(B@refill
 
-@file{tm-view.el} $B$OEvA3!"(BContent-Transfer-Encoding $B$r07$&I,MW$,$"$j$^$9!#(B
-$B$3$NL\E*$N$?$a$K!"(BMEL $B$,@0Hw$5$l$O$8$a$^$7$?!#(BBase64 $B$K4X$7$F$O(B 
-@file{tiny-mime.el} $B$N(B code $B$,0\$5$l!"$^$?!"?7$?$K(BQuoted-Printable $B$N(B 
-code $B$,DI2C$5$l$^$7$?!#$3$l$i$,(B@file{mel-b.el} $B$H(B @file{mel-q.el} $B$K$J$j(B
-$B$^$7$?!#(B@refill
+@file{tm-view.el} $(B$OEvA3!"(BContent-Transfer-Encoding $(B$r07$&I,MW$,$"$j$^$9!#(B
+$(B$3$NL\E*$N$?$a$K!"(BMEL $(B$,@0Hw$5$l$O$8$a$^$7$?!#(BBase64 $(B$K4X$7$F$O(B 
+@file{tiny-mime.el} $(B$N(B code $(B$,0\$5$l!"$^$?!"?7$?$K(BQuoted-Printable $(B$N(B 
+code $(B$,DI2C$5$l$^$7$?!#$3$l$i$,(B@file{mel-b.el} $(B$H(B @file{mel-q.el} $(B$K$J$j(B
+$(B$^$7$?!#(B@refill
 
-$B$^$?!"8e$K!"<i2,(B $BCNI'(B $B$K$h$C$F(B uuencode $BMQ$N(B @file{mel-u.el} $B$,DI2C$5$l!"(B
-$B$=$N8e$K!">.NS(B $B=$J?(B $B;a$K$h$C$F(B x-gzip64 $BMQ$N(B@file{mel-g.el} $B$,DI2C$5$l$^(B
-$B$7$?!#(B@refill
+$(B$^$?!"8e$K!"<i2,(B $(BCNI'(B $(B$K$h$C$F(B uuencode $(BMQ$N(B @file{mel-u.el} $(B$,DI2C$5$l!"(B
+$(B$=$N8e$K!">.NS(B $(B=$J?(B $(B;a$K$h$C$F(B x-gzip64 $(BMQ$N(B@file{mel-g.el} $(B$,DI2C$5$l$^(B
+$(B$7$?!#(B@refill
 
-tm $B$G$O8e$K!"<i2,(B $BCNI'(B $B$K$h$C$F(B @file{tiny-mime.el} $B$N:F<BAu$,9T$o$l!"$3(B
-$B$N2aDx$G!"(BSTD 11 $B$N(B parser $B$,=q$+$l$^$7$?!#$3$l$O!"8=:_$N(B 
-@file{std11.el} $B$KEv$?$j$^$9!#$^$?!"$3$N2aDx$G(B @file{tiny-mime.el} $B$OI|(B
-$B9f2=$r9T$&(B @file{tm-ew-d.el} $B$HId9f2=$r9T$&(B @file{tm-ew-e.el} $B$KJ,$1$i$l(B
-$B$^$7$?!#$3$NN><T$,8=:_$N(B @file{eword-decode.el} $B$H(B 
-@file{eword-encode.el} $B$N@hAD$KEv$?$j$^$9!#(B@refill
+tm $(B$G$O8e$K!"<i2,(B $(BCNI'(B $(B$K$h$C$F(B @file{tiny-mime.el} $(B$N:F<BAu$,9T$o$l!"$3(B
+$(B$N2aDx$G!"(BSTD 11 $(B$N(B parser $(B$,=q$+$l$^$7$?!#$3$l$O!"8=:_$N(B 
+@file{std11.el} $(B$KEv$?$j$^$9!#$^$?!"$3$N2aDx$G(B @file{tiny-mime.el} $(B$OI|(B
+$(B9f2=$r9T$&(B @file{tm-ew-d.el} $(B$HId9f2=$r9T$&(B @file{tm-ew-e.el} $(B$KJ,$1$i$l(B
+$(B$^$7$?!#$3$NN><T$,8=:_$N(B @file{eword-decode.el} $(B$H(B 
+@file{eword-encode.el} $(B$N@hAD$KEv$?$j$^$9!#(B@refill
 
-$B8e$K!"<i2,(B $BCNI'(B $B$i$K$h$C$F(B tm $B$NA4LL=q$-49$(:n6H$,9T$o$l!"$3$N2aDx$G!"(Btm 
-$B$O(B APEL, MEL, SEMI, EMH, RMAIL-MIME, Gnus-MIME $B$J$I$KJ,$1$i$l$^$7$?!#$3(B
-$B$N$&$A$N(B MEL $B$,(B FLIM $B$ND>@\$N@hAD$KEv$?$j$^$9!#(B@refill
+$(B8e$K!"<i2,(B $(BCNI'(B $(B$i$K$h$C$F(B tm $(B$NA4LL=q$-49$(:n6H$,9T$o$l!"$3$N2aDx$G!"(Btm 
+$(B$O(B APEL, MEL, SEMI, EMH, RMAIL-MIME, Gnus-MIME $(B$J$I$KJ,$1$i$l$^$7$?!#$3(B
+$(B$N$&$A$N(B MEL $(B$,(B FLIM $(B$ND>@\$N@hAD$KEv$?$j$^$9!#(B@refill
 
-$B8e$K!"(BAPEL $B$+$i(B @file{std11.el} $B$,0\$5$l!"$^$?!"(B@file{mailcap.el},
-@file{eword-decode.el} $B$*$h$S(B @file{eword-encode.el} $B$,(B SEMI $B$+$i0\$5$l!"(B
-package $B$NL>A0$,(B FLIM$B$H$J$j$^$9!#(B@refill
+$(B8e$K!"(BAPEL $(B$+$i(B @file{std11.el} $(B$,0\$5$l!"$^$?!"(B@file{mailcap.el},
+@file{eword-decode.el} $(B$*$h$S(B @file{eword-encode.el} $(B$,(B SEMI $(B$+$i0\$5$l!"(B
+package $(B$NL>A0$,(B FLIM$(B$H$J$j$^$9!#(B@refill
 
-$B$3$ND>A0$+$iEDCf(B $BE/(B $B;a$,$h$j(B RFC $B$KCi<B$J<BAu$r=q$-;O$a!"$3$l$O!"8=:_!"(B
-FLIM $B$N;^$G$"$k(B ``FLIM-FLAM'' $B$H$J$C$F$$$^$9!#(B
+$(B$3$ND>A0$+$iEDCf(B $(BE/(B $(B;a$,$h$j(B RFC $(B$KCi<B$J<BAu$r=q$-;O$a!"$3$l$O!"8=:_!"(B
+FLIM $(B$N;^$G$"$k(B ``FLIM-FLAM'' $(B$H$J$C$F$$$^$9!#(B
 
 
 @node Concept Index, Function Index, Appendix, Top
