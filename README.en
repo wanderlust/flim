@@ -36,7 +36,7 @@ What's FLIM
 Installation
 ============
 
-(0) before installing it, please install APEL (9.11 or later) package.
+(0) before installing it, please install APEL (9.12 or later) package.
     APEL package is available at:
 
 	ftp://ftp.jaist.ac.jp/pub/GNU/elisp/apel/
