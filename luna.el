@@ -55,7 +55,7 @@ If SLOTS is specified, TYPE will be defined to have them."
 		      (put (intern name oa) 'luna-member-index i)
 		      (setq i (1+ i))
 		      )))
-		(luna-class-obarray parent))
+		(luna-class-obarray (luna-find-class parent)))
       )
     (setq rest slots)
     (while rest
@@ -65,7 +65,7 @@ If SLOTS is specified, TYPE will be defined to have them."
 	(setq i (1+ i))
 	))
     `(luna-set-class ',type
-		     (vector 'class ,oa ,parents ,i))
+		     (vector 'class ,oa ',parents ,i))
     ))
 
 (defmacro luna-class-name (entity)
