@@ -181,7 +181,7 @@ Each field name must be symbol."
   '(Reply-To Resent-Reply-To From Resent-From Sender Resent-Sender
 	     To Resent-To Cc Resent-Cc Bcc Resent-Bcc Dcc
 	     Mime-Version Content-Type Content-Transfer-Encoding
-	     Content-Disposition)
+	     Content-Disposition User-Agent)
   "*List of field-names to decode as structured field.
 Each field name must be symbol."
   :group 'eword-decode
