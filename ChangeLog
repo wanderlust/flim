@@ -1,3 +1,10 @@
+1998-05-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-q.el (quoted-printable-internal-encode-region): Use
+	'looking-at-as-unibyte instead of local binding for
+	enable-multibyte-characters.
+
+
 1998-05-09  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.2.1 (Kamitobaguchi) was released.
