@@ -173,6 +173,12 @@ local 変数。
 @end defun
 
 
+@defun mime-entity-node-id entity
+
+@var{entity} の node-id を返す。
+@end defun
+
+
 @defun mime-entity-number entity
 
 @var{entity} の entity-number を返す。
