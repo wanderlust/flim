@@ -738,19 +738,22 @@ represents addr-spec of RFC 822. [std11.el]"
 	    )))))
 
 (defun std11-comment-value-to-string (value)
-  (let ((dest ""))
-    (if (stringp value)
-	(setq dest (std11-strip-quoted-pair value))
+  (if (stringp value)
+      (std11-strip-quoted-pair value)
+    (let ((dest ""))
       (while value
-	(setq dest (concat dest
-			   (if (stringp (car value))
-			       (car value)
-			     (std11-comment-value-to-string (cdr (car value)))
-			     ))
+	(setq dest
+	      (concat dest
+		      (if (stringp (car value))
+			  (car value)
+			(concat "("
+				(std11-comment-value-to-string
+				 (cdr (car value)))
+				")")
+			))
 	      value (cdr value))
-	))
-    (concat "(" dest ")")
-    ))
+	)
+      dest)))
 
 (defun std11-full-name-string (address)
   "Return string of full-name part from parsed ADDRESS of RFC 822."
