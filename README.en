@@ -215,13 +215,13 @@ Function base64-decode-string (STRING)
 
 Function q-encoding-encode-string (STRING &optional MODE)
 
-  Encode STRING as Q-encoding of encoded-word.
+  Encode STRING to Q-encoding of encoded-word, and return the result.
   MODE allows `text', `comment', `phrase' or nil.  Default value is
   `phrase'.
 
 Function q-encoding-decode-string (STRING)
 
-  Decode STRING as Q-encoding of encoded-word.
+  Decode STRING which is encoded in Q-encoding and return the result.
 
 Function base64-encoded-length (STRING)
 
