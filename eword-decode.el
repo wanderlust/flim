@@ -4,6 +4,7 @@
 
 ;; Author: ENAMI Tsugutomo <enami@sys.ptg.sony.co.jp>
 ;;         MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;         TANAKA Akira <akr@jaist.ac.jp>
 ;; Maintainer: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Created: 1995/10/03
 ;; Original: 1992/07/20 ENAMI Tsugutomo's `mime.el'.
