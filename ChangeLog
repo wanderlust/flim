@@ -1,5 +1,27 @@
 1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* mime-parse.el (mime-parse-encapsulated): Use
+	`mime-entity-body-start-point' and `mime-entity-body-end-point'.
+
+	* mime.el (mime-parse-buffer): Revert to auto-load from
+	"mime-parse".
+
+	* mime-parse.el (mime-parse-multipart): Move from mime-parse.el
+	again.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-message): Likewise.
+	(mime-parse-buffer): Likewise.
+
+	* mmbuffer.el (mime-parse-multipart): Move to mime-parse.el again.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-message): Likewise.
+	(mime-parse-buffer): Likewise.
+
+	* mmbuffer.el (mime-parse-encapsulated): Run in body-buffer of an
+	entity.
+
+1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* mmbuffer.el (initialize-instance): Don't initialize slots if
 	they are initialized.
 	(mime-parse-multipart): Run in body-buffer of an entity.
