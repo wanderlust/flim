@@ -1,3 +1,8 @@
+1999-02-20  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
+	1.12.3.
+
 1999-02-19  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (mime-decode-header-in-region): Fix typo.
@@ -71,7 +76,7 @@
 	* Sync up to flim-1_12_1 from flim-1_11_3.
 
 	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
-	1.12.1.
+	1.12.0.
 
 1999-01-04  Tanaka Akira      <akr@jaist.ac.jp>
 
