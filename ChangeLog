@@ -1,6 +1,6 @@
 1998-10-20  Katsumi Yamaoka   <yamaoka@jpl.org>
 
-	* mel-u.el: Fix typo.
+	* mel-u.el (mime-write-decoded-region): Fix typo.
 
 	* mime-def.el: Enclose defining procedure for the constants
 	`std11-quoted-pair-regexp', `std11-non-qtext-char-list' and
