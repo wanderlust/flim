@@ -201,7 +201,7 @@ If is is not found, return DEFAULT-ENCODING."
 	    (mime-entity-set-children-internal entity (nreverse children))
 	    )
 	(mime-entity-set-content-type-internal
-	 entity (make-mime-content-type 'application 'octet-stream))
+	 entity (make-mime-content-type 'message 'x-broken))
 	nil)
       )))
 
