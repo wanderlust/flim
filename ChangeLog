@@ -1,5 +1,14 @@
 2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* mime.el (mime-find-entity-from-number): Now second argument
+	`message' is not an optional argument.
+	(mime-find-entity-from-node-id): Likewise.
+	(mime-find-entity-from-content-id): Likewise.
+	(mime-fetch-field): Delete obsolete function.
+	(mime-read-field): Likewise.
+
+2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* mime.el (mime-entity-header-buffer): Mark it as obsolete.
 	(mime-goto-header-start-point): Likewise.
 	(mime-entity-header-start-point): Likewise.
