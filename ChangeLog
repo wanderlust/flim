@@ -1,3 +1,17 @@
+2001-04-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-def.el (make-mime-content-type): Don't reverse parameters.
+	(make-mime-content-disposition): New function.
+
+	* mime-parse.el (mime-decode-parameter-value): Removed comments.
+	(mime-decode-parameter-encode-segment): New function.
+	(mime-decode-parameter-plist): New implementation.
+	Switched from decode-then-concat to concat-then-decode model.
+	(mime-parse-parameters): Strip quoted-pair in quoted-string.
+	(mime-parse-Content-Type): Use `make-mime-content-type'.
+	(mime-parse-Content-Disposition): Use
+	`make-mime-content-disposition'.
+
 2001-04-15  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* eword-decode.el (eword-lexical-analyze-internal):
