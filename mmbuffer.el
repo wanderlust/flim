@@ -28,7 +28,7 @@
 
 (mm-define-backend buffer)
 
-(mm-define-method open-entity ((nil buffer) location)
+(mm-define-method open ((nil buffer) location)
   (mime-parse-buffer location))
 
 (mm-define-method point-min ((entity buffer))
