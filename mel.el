@@ -137,8 +137,7 @@ region by its value."
 	 (completing-read "encoding: "
 			  mel-encoding-module-alist
 			  nil t "base64")))
-  (funcall (mel-find-function 'mime-encode-region (or encoding "7bit"))
-	   start end)
+  (funcall (mel-find-function 'mime-encode-region encoding) start end)
   )
 
 
