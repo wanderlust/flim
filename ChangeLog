@@ -1,3 +1,11 @@
+2002-07-24  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* smtp.el (smtp-end-of-line): New variable.
+	(smtp-read-response): Use it.
+	(smtp-send-command): Use it.
+	(smtp-send-data): Use it.
+
+
 2001-02-20  Kenichi OKADA <okada@opaopa.org>
 
 	* SLIM: Version 1.14.8 released.
