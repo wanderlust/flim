@@ -69,8 +69,7 @@ This function uses external uuencode decoder which is specified by
 variable `uuencode-external-decoder'."
   (interactive "*r")
   (save-excursion
-    (let ((the-buf (current-buffer))
-	  (filename (make-temp-file "x-uue")))
+    (let ((filename (make-temp-file "x-uue")))
       (save-excursion
 	(save-restriction
 	  (set-mark end)
@@ -134,8 +133,7 @@ variable `uuencode-external-encoder'."
 START and END are buffer positions."
   (interactive "*r\nFWrite decoded region to file: ")
   (save-excursion
-    (let ((the-buf (current-buffer))
-	  (clone-buf (clone-buffer " *x-uue*"))
+    (let ((clone-buf (clone-buffer " *x-uue*"))
 	  (file (make-temp-file "x-uue")))
       (save-excursion
 	(save-restriction
