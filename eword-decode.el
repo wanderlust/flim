@@ -39,8 +39,6 @@
   "Encoded-word decoding"
   :group 'mime)
 
-(defconst eword-decode-version "1.2.2")
-
 
 ;;; @ MIME encoded-word definition
 ;;;
