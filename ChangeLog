@@ -1,5 +1,12 @@
 1999-08-19  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* luna.el (luna-define-generic): Use <(` ...)>, <(, ...)> and <(,@
+	...)> instead of <`...>, <,...> and <,@...>.
+	(luna-define-internal-accessors): Use <(` ...)> and <(, ...)>
+	instead of <`...> and <,...>.
+
+1999-08-19  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* smtpmail.el (smtpmail-send-it): Don't use bare lambda.
 
 	* mime-def.el (mm-define-backend): Don't use bare lambda.
