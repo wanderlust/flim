@@ -1,6 +1,6 @@
 ;;; qmtp.el --- basic functions to send mail with QMTP server
 
-;; Copyright (C) 2000 Daiki Ueno
+;; Copyright (C) 2000 Free Software Foundation, Inc.
 
 ;; Author: Daiki Ueno <ueno@unixuser.org>
 ;; Keywords: QMTP, qmail

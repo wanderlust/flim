@@ -1,6 +1,6 @@
 ;;; sasl.el --- SASL client framework
 
-;; Copyright (C) 2000 Daiki Ueno
+;; Copyright (C) 2000 Free Software Foundation, Inc.
 
 ;; Author: Daiki Ueno <ueno@unixuser.org>
 ;; Keywords: SASL
@@ -235,13 +235,13 @@ It contain at least 64 bits of entropy."
     sasl-login-response-2))
 
 (defun sasl-login-response-1 (client step)
-  (unless (string-match "^user ?name." (sasl-step-data step)) ;; XXX
-    (sasl-error (format "Unexpected response: %s" (sasl-step-data step))))
+;;;  (unless (string-match "^Username:" (sasl-step-data step))
+;;;    (sasl-error (format "Unexpected response: %s" (sasl-step-data step))))
   (sasl-client-name client))
 
 (defun sasl-login-response-2 (client step)
-  (unless (string-match "^password." (sasl-step-data step))  ;; XXX
-    (sasl-error (format "Unexpected response: %s" (sasl-step-data step))))
+;;;  (unless (string-match "^Password:" (sasl-step-data step))
+;;;    (sasl-error (format "Unexpected response: %s" (sasl-step-data step))))
   (sasl-read-passphrase
    (format "LOGIN passphrase for %s: " (sasl-client-name client))))
 
