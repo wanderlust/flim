@@ -68,63 +68,6 @@ be the result."
 	(cons (cons 'mime-token (substring string start end))
 	      end))))
 
-;;; This hard-coded analyzer is much faster.
-;;; (defun mime-lexical-analyze (string)
-;;;   "Analyze STRING as lexical tokens of MIME."
-;;;   (let ((len (length string))
-;;;         (start 0)
-;;; 	chr pos dest)
-;;;     (while (< start len)
-;;;       (setq chr (aref string start))
-;;;       (cond
-;;;        ;; quoted-string
-;;;        ((eq chr ?\")
-;;; 	(if (setq pos (std11-check-enclosure string ?\" ?\" nil start))
-;;; 	    (setq dest (cons (cons 'quoted-string
-;;; 				   (substring string (1+ start) pos))
-;;; 			     dest)
-;;; 		  start (1+ pos))
-;;; 	(setq dest (cons (cons 'error
-;;; 			       (substring string start))
-;;; 			 dest)
-;;; 	      start len)))
-;;;        ;; comment
-;;;        ((eq chr ?\()
-;;; 	(if (setq pos (std11-check-enclosure string ?\( ?\) t start))
-;;; 	    (setq start (1+ pos))
-;;; 	  (setq dest (cons (cons 'error
-;;; 				 (substring string start))
-;;; 			   dest)
-;;; 		start len)))
-;;;        ;; spaces
-;;;        ((memq chr std11-space-char-list)
-;;; 	(setq pos (1+ start))
-;;; 	(while (and (< pos len)
-;;; 		    (memq (aref string pos) std11-space-char-list))
-;;; 	  (setq pos (1+ pos)))
-;;; 	(setq start pos))
-;;;        ;; tspecials
-;;;        ((memq chr mime-tspecial-char-list)
-;;; 	(setq dest (cons (cons 'tspecials
-;;; 			       (substring string start (1+ start)))
-;;; 			 dest)
-;;; 	      start (1+ start)))
-;;;        ;; token
-;;;        ((eq (string-match mime-token-regexp string start)
-;;; 	    start)
-;;; 	(setq pos (match-end 0)
-;;; 	      dest (cons (cons 'mime-token
-;;; 			       (substring string start pos))
-;;; 			 dest)
-;;; 	      start pos))
-;;;        ;; error
-;;;        (t
-;;; 	(setq pos len
-;;; 	      dest (cons (cons 'error
-;;; 			       (substring string start pos))
-;;; 			 dest)
-;;; 	      start pos))))
-;;;     (nreverse dest)))
 (defun mime-lexical-analyze (string)
   "Analyze STRING as lexical tokens of MIME."
   (let ((ret (std11-lexical-analyze string mime-lexical-analyzer))
@@ -184,13 +127,6 @@ be the result."
 
 (defun mime-decode-parameter-plist (params)
   "Decode PARAMS as a property list of MIME parameter values.
-
-PARAMS is a property list, which is a list of the form
-\(PARAMETER-NAME1 VALUE1 PARAMETER-NAME2 VALUE2...).
-
-This function returns an alist of the form
-\((ATTRIBUTE1 . DECODED-VALUE1) (ATTRIBUTE2 . DECODED-VALUE2)...).
-
 If parameter continuation is used, segments of values are concatenated.
 If parameters contain charset information, values are decoded.
 If parameters contain language information, it is set to `mime-language'
@@ -353,16 +289,9 @@ Return a property list, which is a list of the form
 ;;;###autoload
 (defun mime-parse-Content-Type (field-body)
   "Parse FIELD-BODY as Content-Type field.  FIELD-BODY is a string.
-
-Return value is
-
-    ((type . PRIMARY-TYPE)
-     (subtype. SUBTYPE)
-     (ATTRIBUTE1 . VALUE1)(ATTRIBUTE2 . VALUE2) ...)
-
-or nil.
-
-PRIMARY-TYPE and SUBTYPE are symbols, and other elements are strings."
+Return value is a mime-content-type object.
+Use `mime-content-type-primary-type', `mime-content-type-subtype',
+and `mime-content-type-parameter' to deal with it."
   (let ((tokens (mime-lexical-analyze field-body)))
     (when (eq (car (car tokens)) 'mime-token)
       (let ((primary-type (cdr (car tokens))))
@@ -379,7 +308,7 @@ PRIMARY-TYPE and SUBTYPE are symbols, and other elements are strings."
 ;;;###autoload
 (defun mime-read-Content-Type ()
   "Parse field-body of Content-Type field of current-buffer.
-Format of return value is same as that of `mime-parse-Content-Type'."
+See `mime-parse-Content-Type' for more information."
   (let ((field-body (std11-field-body "Content-Type")))
     (if field-body
 	(mime-parse-Content-Type field-body)
@@ -392,15 +321,9 @@ Format of return value is same as that of `mime-parse-Content-Type'."
 ;;;###autoload
 (defun mime-parse-Content-Disposition (field-body)
   "Parse FIELD-BODY as Content-Disposition field.  FIELD-BODY is a string.
-
-Return value is
-
-    ((type . DISPOSITION-TYPE)
-     (ATTRIBUTE1 . VALUE1)(ATTRIBUTE2 . VALUE2) ...)
-
-or nil.
-
-DISPOSITION-TYPE is a symbol, and other elements are strings."
+Return value is a mime-content-disposition object.
+Use `mime-content-disposition-type', `mime-content-disposition-parameter',
+and `mime-content-disposition-filename' to deal with it."
   (let ((tokens (mime-lexical-analyze field-body)))
     (when (eq (car (car tokens)) 'mime-token)
       (make-mime-content-disposition
@@ -410,7 +333,8 @@ DISPOSITION-TYPE is a symbol, and other elements are strings."
 
 ;;;###autoload
 (defun mime-read-Content-Disposition ()
-  "Parse field-body of Content-Disposition field of current-buffer."
+  "Parse field-body of Content-Disposition field of current-buffer.
+See `mime-parse-Content-Disposition' for more information."
   (let ((field-body (std11-field-body "Content-Disposition")))
     (if field-body
 	(mime-parse-Content-Disposition field-body)
@@ -430,7 +354,8 @@ Return value is a string."
 
 ;;;###autoload
 (defun mime-read-Content-Transfer-Encoding ()
-  "Parse field-body of Content-Transfer-Encoding field of current-buffer."
+  "Parse field-body of Content-Transfer-Encoding field of current-buffer.
+See `mime-parse-Content-Transfer-Encoding' for more information."
   (let ((field-body (std11-field-body "Content-Transfer-Encoding")))
     (if field-body
 	(mime-parse-Content-Transfer-Encoding field-body)
