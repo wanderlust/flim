@@ -1,3 +1,8 @@
+2002-11-15  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* FLIM-ELS (flim-version-specific-modules): Don't install mailcap.el.
+	* FLIM-MK (install-flim): Avoid creating empty directory.
+
 2002-11-06  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
 
 	* mime-parse.el (mime-parse-buffer): Require mmbuffer.
