@@ -385,10 +385,11 @@ message/rfc822, `mime-entity' structures of them are included in
 	 (args (cdr spec))
 	 (specializer (car (last args)))
 	 (class (nth 1 specializer)))
-    `(progn
+    `(let (sym)
        (mel-define-service ,name)
-       (fset (intern ,class ,(intern (format "%s-obarray" name)))
-	     (symbol-function ,function)))))
+       (setq sym (intern ,class ,(intern (format "%s-obarray" name))))
+       (or (fboundp sym)
+	   (fset sym (symbol-function ,function))))))
 
 (defmacro mel-define-function (function spec)
   (let* ((name (car spec))
