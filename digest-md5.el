@@ -48,44 +48,30 @@
 (require 'hmac-md5)
 (require 'unique-id)
 
+(defvar digest-md5-parse-digest-challenge-syntax-table
+  (let ((table (make-syntax-table)))
+    (modify-syntax-entry ?= "." table)
+    (modify-syntax-entry ?, "." table)
+    table)
+  "A syntax table for parsing sgml attributes.")
+
 (defun digest-md5-parse-digest-challenge (digest-challenge)
-  ;; return list of 
+  ;; return a property list of 
   ;; (realm nonce qop-options stale maxbuf charset 
   ;; algorithm cipher-opts auth-param).
-  (let (realm nonce qop-options stale maxbuf charset 
-	      algorithm cipher-opts auth-param
-	      challenges challenge)
-    (setq challenges
-	  (split-string digest-challenge ","))
-    (while (car challenges)
-      (if (null (string-match
-		 "\\([a-z]+\\)=\"?\\(.+\\)\"?" (car challenges)))
-	  (error "Parse error in digest-challenge1."))
-      (setq challenge (cons
-		       (match-string 1 (car challenges))
-		       (match-string 2 (car challenges))))
-      (cond
-       ((string= (car challenge) "realm")
-	(setq realm (cdr challenge)))
-       ((string= (car challenge) "nonce")
-	(setq nonce (cdr challenge)))
-       ((string= (car challenge) "qop")
-	(setq qop-options  (cdr challenge)))
-       ((string= (car challenge) "stale")
-	(setq stale (cdr challenge)))
-       ((string= (car challenge) "maxbuf")
-	(setq maxbuf (cdr challenge)))
-       ((string= (car challenge) "charset")
-	(setq charset (cdr challenge)))
-       ((string= (car challenge) "algorithm")
-	(setq algorithm (cdr challenge)))
-       ((string= (car challenge) "cipher")
-	(setq cipher-opts (cdr challenge)))
-       (t
-	(error "Parse error in digest-challenge.")))
-  (setq challenges (cdr challenges)))
-    (list realm nonce qop-options stale maxbuf charset 
-	  algorithm cipher-opts auth-param)))
+  (with-temp-buffer
+    (set-syntax-table digest-md5-parse-challenge-syntax-table)
+    (insert digest-challenge)
+    (goto-char (point-min))
+    (insert "(")
+    (while (progn (forward-sexp) (not (eobp)))
+      (delete-char 1)
+      (insert " "))
+    (insert ")")
+    (condition-case nil
+	(read (point-min-marker))
+      (end-of-file
+       (error "Parse error in digest-challenge.")))))
 
 (defun digest-md5-digest-uri (serv-type host &optional serv-name)
   (concat serv-type "/" host
