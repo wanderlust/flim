@@ -204,6 +204,12 @@ buffer local 変数。
 非-<code>nil</code> を返す。
 </defun>
 
+<defun name="mime-entity-node-id">
+	  <args> entity
+<p>
+<var>entity</var> の node-id を返す。
+</defun>
+
 <defun name="mime-entity-number">
 	  <args> entity
 <p>
