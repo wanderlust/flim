@@ -36,25 +36,17 @@
 
 (luna-define-method initialize-instance :after ((entity mime-dual-entity)
 						&rest init-args)
-  (let (buf)
-    (setq buf (mime-dual-entity-header-buffer-internal entity))
+  (let ((buf (mime-dual-entity-header-buffer-internal entity)))
     (if buf
 	(with-current-buffer buf
-	  (if (mime-root-entity-p entity)
-	      (setq mime-message-structure entity))
 	  (or (mime-entity-content-type-internal entity)
 	      (mime-entity-set-content-type-internal
 	       entity
 	       (let ((str (std11-fetch-field "Content-Type")))
 		 (if str
 		     (mime-parse-Content-Type str)
-		   ))))))
-    (setq buf (mime-dual-entity-body-buffer-internal entity))
-    (if buf
-	(with-current-buffer buf
-	  (if (mime-root-entity-p entity)
-	      (setq mime-message-structure entity))))
-    ) entity)
+		   )))))))
+  entity)
 
 (luna-define-method mime-entity-name ((entity mime-dual-entity))
   (buffer-name (mime-dual-entity-header-buffer-internal entity))

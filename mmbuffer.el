@@ -45,8 +45,6 @@
        entity (mime-entity-location-internal entity)))
   (save-excursion
     (set-buffer (mime-buffer-entity-buffer-internal entity))
-    (if (mime-root-entity-p entity)
-	(setq mime-message-structure entity))
     (let ((header-start
 	   (or (mime-buffer-entity-header-start-internal entity)
 	       (mime-buffer-entity-set-header-start-internal
