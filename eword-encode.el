@@ -687,16 +687,18 @@ It refer variable `mime-field-encoding-method-alist'."
       (goto-char (point-min))
       (let ((default-cs (mime-charset-to-coding-system default-mime-charset))
 	    bbeg end field-name)
-	(while (re-search-forward std11-field-head-regexp nil t)
+	(while (re-search-forward
+		(concat "\\(" std11-field-head-regexp "\\)" " ?")
+		nil t)
 	  (setq bbeg (match-end 0)
-		field-name (buffer-substring (match-beginning 0) (1- bbeg))
+		field-name (buffer-substring (match-beginning 0) (1- (match-end 1)))
 		end (std11-field-end))
 	  (and (delq 'ascii (find-charset-region bbeg end))
 	       (let ((method (eword-find-field-encoding-method
 			      (downcase field-name))))
 		 (cond ((eq method 'mime)
 			(let* ((field-body
-			       (buffer-substring-no-properties bbeg end))
+				(buffer-substring-no-properties bbeg end))
 			       (encoded-body
 				(mime-encode-field-body
 				 field-body field-name)))
