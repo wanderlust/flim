@@ -1,3 +1,7 @@
+2000-12-13  Kenichi Handa     <handa@etl.go.jp>
+
+	* luna.el: Fix and add DOCs and comments; fix coding style.
+
 2000-12-09  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mmbuffer.el (mmbuffer-parse-multipart): Add new optional
