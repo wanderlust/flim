@@ -27,7 +27,11 @@
 (require 'poe)
 
 (defvar sasl-mechanisms
-  '(("CRAM-MD5" sasl-cram)))
+  '(("CRAM-MD5" sasl-cram)
+    ("DIGEST-MD5" sasl-digest)
+    ("PLAIN" sasl-plain)))
+
+(defvar sasl-unique-id-function #'sasl-unique-id-function)
 
 (defmacro sasl-make-authenticator (mechanism continuations)
   `(vector ,mechanism ,continuations))
@@ -38,17 +42,20 @@
 (defmacro sasl-authenticator-continuations-internal (authenticator)
   `(aref ,authenticator 1))
 
-(defmacro sasl-make-principal (name service server)
-  `(vector ,name ,service ,server))
+(defmacro sasl-make-principal (name service server &optional realm)
+  `(vector ,name ,realm ,service ,server))
 
 (defmacro sasl-principal-name-internal (principal)
   `(aref ,principal 0))
 
-(defmacro sasl-principal-service-internal (principal)
+(defmacro sasl-principal-realm-internal (principal)
   `(aref ,principal 1))
 
-(defmacro sasl-principal-server-internal (principal)
+(defmacro sasl-principal-service-internal (principal)
   `(aref ,principal 2))
+
+(defmacro sasl-principal-server-internal (principal)
+  `(aref ,principal 3))
 
 (defun sasl-find-authenticator (mechanisms)
   "Retrieve an apropriate authenticator object from MECHANISMS hints."
@@ -85,6 +92,59 @@ The data type of the value and the CHALLENGE is nil or a cons cell of the form
 	  (autoload 'ange-ftp-read-passwd "ange-ftp")
 	  (setq sasl-read-passphrase 'ange-ftp-read-passwd))))
   (funcall sasl-read-passphrase prompt))
+
+(defun sasl-unique-id ()
+  "Compute a data string which must be different each time.
+It contain at least 64 bits of entropy."
+  (concat (funcall sasl-unique-id-function)(funcall sasl-unique-id-function)))
+
+(defvar sasl-unique-id-char nil)
+
+;; stolen (and renamed) from message.el
+(defun sasl-unique-id-function ()
+  ;; Don't use microseconds from (current-time), they may be unsupported.
+  ;; Instead we use this randomly inited counter.
+  (setq sasl-unique-id-char
+	(% (1+ (or sasl-unique-id-char (logand (random t) (1- (lsh 1 20)))))
+	   ;; (current-time) returns 16-bit ints,
+	   ;; and 2^16*25 just fits into 4 digits i base 36.
+	   (* 25 25)))
+  (let ((tm (current-time)))
+    (concat
+     (sasl-unique-id-number-base36
+      (+ (car   tm)
+	 (lsh (% sasl-unique-id-char 25) 16)) 4)
+     (sasl-unique-id-number-base36
+      (+ (nth 1 tm)
+	 (lsh (/ sasl-unique-id-char 25) 16)) 4))))
+
+(defun sasl-unique-id-number-base36 (num len)
+  (if (if (< len 0)
+	  (<= num 0)
+	(= len 0))
+      ""
+    (concat (sasl-unique-id-number-base36 (/ num 36) (1- len))
+	    (char-to-string (aref "zyxwvutsrqponmlkjihgfedcba9876543210"
+				  (% num 36))))))
+
+;;; PLAIN SASL mechanism (RFC2595 Section 6)
+(defconst sasl-plain-continuations
+  '(sasl-plain-response))
+
+(unless (get 'sasl-plain 'sasl-authenticator)
+  (put 'sasl-plain 'sasl-authenticator
+       (sasl-make-authenticator "PLAIN" sasl-plain-continuations)))
+
+(defun sasl-plain-response (principal challenge)
+  (let ((passphrase
+	 (sasl-read-passphrase
+	  (format "PLAIN passphrase for %s: "
+		  (sasl-principal-name-internal principal)))))
+    (unwind-protect
+	(concat "\0" (sasl-principal-name-internal principal) "\0" passphrase)
+      (fillarray passphrase 0))))
+
+(provide 'sasl-plain)
 
 (provide 'sasl)
 

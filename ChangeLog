@@ -1,3 +1,20 @@
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* FLIM-ELS (hmac-modules): New variable.
+	(flim-modules): Move HMAC modules to `hmac-modules'
+	- Add `sasl-digest'.
+
+	* smtp.el (smtp-sasl-principal-realm): New user option.
+
+	* sasl.el (sasl-plain-response): New function.
+	(sasl-mechanisms): Add `DIGEST-MD5' and `PLAIN'.
+	(sasl-unique-id-function): New variable.
+	(sasl-plain-continuations): New variable.
+	(sasl-unique-id): New function.
+	(sasl-unique-id-char): New variable.
+
+	* sasl-digest.el: New file.
+
 2000-11-01   Daiki Ueno  <ueno@unixuser.org>
 
 	* smtp.el: Bind `sasl-mechanisms'; add autoload settings for

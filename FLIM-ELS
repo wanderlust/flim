@@ -11,9 +11,16 @@
 		     mime mime-parse mmgeneric
 		     mmbuffer mmcooked mmdbuffer mmexternal
 		     mailcap
-		     md5 md5-el md5-dl hex-util hmac-def hmac-md5 
-		     sasl sasl-cram
+		     sasl sasl-cram sasl-digest
 		     smtp qmtp smtpmail))
+
+(setq hmac-modules '(hex-util
+		     hmac-def
+		     md5 md5-el md5-dl
+		     sha1 sha1-el sha1-dl
+		     hmac-md5 hmac-sha1))
+
+(setq flim-modules (nconc hmac-modules flim-modules))
 
 (if (and (fboundp 'base64-encode-string)
 	 (subrp (symbol-function 'base64-encode-string)))

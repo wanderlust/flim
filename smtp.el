@@ -94,6 +94,11 @@ don't define this value."
   :type 'string
   :group 'smtp-extensions)
 
+(defcustom smtp-sasl-principal-realm smtp-local-domain
+  "Realm name to be used for authorization."
+  :type 'string
+  :group 'smtp-extensions)
+
 (defcustom smtp-sasl-mechanisms nil
   "List of authentication mechanisms."
   :type '(repeat string)
@@ -327,8 +332,9 @@ or `smtp-local-domain' correctly."))))))
 	  (cdr (assq 'auth (smtp-connection-extensions-internal connection))))
 	 (principal
 	  (sasl-make-principal
-	   smtp-sasl-principal-name "smtp"
-	   (smtp-connection-server-internal connection)))
+	   smtp-sasl-principal-name
+	   "smtp" (smtp-connection-server-internal connection)
+	   smtp-sasl-principal-realm))
 	 (authenticator
 	  (sasl-find-authenticator mechanisms))
 	 (mechanism
@@ -336,12 +342,12 @@ or `smtp-local-domain' correctly."))))))
 	 ;; Retrieve the initial response
 	 (sasl-response
 	  (sasl-evaluate-challenge authenticator principal))
-	 sasl-challenge
 	 response)
     (smtp-send-command
      process
      (if (nth 1 sasl-response)
-	 (format "AUTH %s %s" mechanism (base64-encode-string (nth 1 sasl-response)))
+	 (format "AUTH %s %s" mechanism (base64-encode-string
+					 (nth 1 sasl-response) t))
        (format "AUTH %s" mechanism)))
     (catch 'done
       (while t
@@ -359,7 +365,8 @@ or `smtp-local-domain' correctly."))))))
 	(setq sasl-response
 	      (sasl-evaluate-challenge
 	       authenticator principal sasl-response))
-	(smtp-send-command process (base64-encode-string sasl-response))))))
+	(smtp-send-command process (base64-encode-string
+				    (nth 1 sasl-response) t))))))
 
 (defun smtp-primitive-starttls (package)
   (let* ((connection
