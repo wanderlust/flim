@@ -1,6 +1,6 @@
 ;;; mmcooked.el --- MIME entity implementation for binary buffer
 
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: MIME, multimedia, mail, news
@@ -63,7 +63,8 @@
 					&optional invisible-fields
 					visible-fields)
   (let (default-mime-charset)
-    (funcall (luna-class-find-function (luna-find-class 'mime-buffer-entity)
+    (funcall (car (luna-class-find-functions
+		   (luna-find-class 'mime-buffer-entity))
 				       'mime-insert-header)
 	     entity invisible-fields visible-fields)
     ))
