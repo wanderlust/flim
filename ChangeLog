@@ -1,5 +1,14 @@
 1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
 
+	* (TESTPAT): add test.
+
+	* eword-decode.el (eword-analyze-quoted-string): quote string as
+	quoted-string.
+	(eword-analyze-encoded-word): quote non-atoms string as
+	quoted-string.
+
+1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
+
 	* Fix character code for ChangeLog.
 
 1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>

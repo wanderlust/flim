@@ -1,5 +1,5 @@
 ;----------------------------------------------------------------------------
-;-------- This sequece of hyphens is 76 bytes long. -------------------------
+;-------- This sequece of HYPHEN-MINUS is 76 bytes long. --------------------
 ;----------------------------------------------------------------------------
 
 ; options:
@@ -16,32 +16,34 @@
 
 (defun decode (src dsts &rest opts)
   (setq eword-lexical-analyze-cache nil)
-  (setq eword-decode-sticked-encoded-word nil)
+  (setq eword-decode-sticked-encoded-word
+    (or (memq 'permit-sticked-comment opts)
+  	(memq 'permit-sticked-special opts)))
   (setq eword-decode-quoted-encoded-word nil)
-  (if (memq 'permit-sticked-comment opts) (setq eword-decode-sticked-encoded-word t))
   (if (stringp dsts) (setq dsts (list dsts)))
   (with-temp-buffer
-    (insert src "\nDummy-Header: \n" mail-header-separator)
-    (eword-decode-header 'us-ascii)
+    (insert src "\n" mail-header-separator)
+    (eword-decode-header 'us-ascii mail-header-separator)
     (goto-char (point-min))
+    (std11-narrow-to-header mail-header-separator)
     (std11-field-end)
     (let ((result (buffer-substring (point-min) (point))))
-      (if (member result dsts)
-	  t
-	result))))
+      (if (member result dsts) t result))))
 
 (defun encode (src dsts &rest opts)
+  (setq eword-lexical-analyze-cache nil)
+  (setq eword-decode-sticked-encoded-word nil)
+  (setq eword-decode-quoted-encoded-word nil)
   (if (stringp dsts) (setq dsts (list dsts)))
   (with-temp-buffer
-    (insert src "\nDummy-Header: \n" mail-header-separator)
+    (insert src "\n" mail-header-separator)
     (goto-char (point-min))
     (eword-encode-header 'us-ascii)
     (goto-char (point-min))
+    (std11-narrow-to-header mail-header-separator)
     (std11-field-end)
     (let ((result (buffer-substring (point-min) (point))))
-      (if (member result dsts)
-	  t
-	result))))
+      (if (member result dsts) t result))))
 
 ;;; from RFC2047
 
@@ -312,12 +314,16 @@
 'permit-sticked-comment)
 
 (decode
-"From: =?ISO-2022-JP?B?YSJiGyRCJCIbKEJjXAo=?= <akr@jaist.ac.jp>"
-"From: \"a\"b$B$"(Bc\\\" <akr@jaist.ac.jp>")
+"From: =?US-ASCII?Q?=28?= <akr@jaist.ac.jp>, =?US-ASCII?Q?=29?= <akr@jaist.ac.jp>"
+"From: \"(\" <akr@jaist.ac.jp>, \")\" <akr@jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?B?YSJiGyRCJCIbKEJjXA==?= <akr@jaist.ac.jp>"
+"From: \"a\\\"b$B$"(Bc\\\\\" <akr@jaist.ac.jp>")
 
 (encode
-"From: "a\"b$B$"(B\\" <akr@jaist.ac.jp>"
-"From: =?ISO-2022-JP?B?YSJiGyRCJCIbKEJjXAo=?= <akr@jaist.ac.jp>")
+"From: \"a\\\"b$B$"(Bc\\\\\" <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?YSJiGyRCJCIbKEJjXA==?= <akr@jaist.ac.jp>")
 
 (decode
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
@@ -505,6 +511,15 @@
 "Subject: =?ISO-2022-JP?B?DQoNCg==?="
 "Subject: ")
 
+(decode
+"Subject: =?US-ASCII?Q?a=0D=0A_b?="
+"Subject: a b")
+
+(decode
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a
+ =?ISO-2022-JP?B?GyRCJCQbKEI=?="
+"From: $B$"(B a $B$$(B")
+
 (encode
 "Subject: $B0$(B                                                                                                                          $BR_(B"
 "Subject: =?ISO-2022-JP?B?GyRCMCQbKEIgICAgICAgICAgICAgICAgICAgICAgICAgICAg?=
@@ -535,12 +550,74 @@
 "From: .AN! <akr@jaist.ac.jp>"*B
 "From: =?ISO-8859-1?Q?=A1?= <akr@jaist.ac.jp>")
 
+(decode
+"From: =?ISO-8859-1?Q?abcdefghijklmnopqrst=A1=28=29=22=5C?= <akr@jaist.ac.jp>"
+"From: \"abcdefghijklmnopqrst.AN!()\\\"\\\\\" <akr@jaist.ac.jp>")*B
+
 (encode
-"From: \"abcdefghijklmnopqrstu.AN!()\\\"\\\\\" <akr@jaist.ac.jp>"*B
+"From: \"abcdefghijklmnopqrst.AN!()\\\"\\\\\" <akr@jaist.ac.jp>"*B
 "From: =?ISO-8859-1?Q?abcdefghijklmnopqrst=A1=28=29=22=5C?= <akr@jaist.ac.jp>")
 
 (encode
 "From: akr@jaist.ac.jp (abcdefghijklmnopqrst.AN!\\(\\)\"\\\\)"*B
 "From: akr@jaist.ac.jp (=?ISO-8859-1?Q?abcdefghijklmnopqrst=A1=28=29\"=5C?=)")
+
+(decode
+"Subject: ?= =?"
+"Subject: ?= =?")
+
+(decode
+"Subject: \" =?ISO-2022-JP?B?GyRCJCIbKEI=?= \""
+"Subject: \" $B$"(B \"")
+
+(decode
+"From: \"\\\\\" =?ISO-2022-JP?B?GyRCJCIbKEI=?= \"\" <akr@jaist.ac.jp>"
+"From: \"\\\\\" $B$"(B \"\" <akr@jaist.ac.jp>")
+
+(decode
+"Subject: =?ISO-2022-JP?Q?=1B$B$\"=1B(B_=1B$B$\"=1B(B?="
+"Subject: $B$"(B $B$"(B")
+
+(decode
+"Subject: =?ISO-2022-JP?Q?=1B$B$\"=1B(B =1B$B$\"=1B(B?="
+"Subject: =?ISO-2022-JP?Q?=1B$B$\"=1B(B =1B$B$\"=1B(B?=")
+
+(decode
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a =?ISO-8859-8?Q?=E0?="
+"Subject: $B$"(B a .HN`")*B
+
+(encode
+"Subject: $B$"(B a .HN`"*B
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a =?ISO-8859-8?Q?=E0?=")
+
+(decode
+"Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
+"Subject: .HN`$BNm(B")*B
+
+(encode
+"Subject: .HN`$BNm(B"*B
+"Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?GyRCTm0bKEI=?=")
+
+(decode
+"Subject: =?ISO-8859-8?Q?=E0_?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
+"Subject: .HN` $BNm(B")*B
+
+(encode
+"Subject: .HN` $BNm(B"*B
+'("Subject: =?ISO-8859-8?Q?=E0_?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
+  "Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?IBskQk5tGyhC?="))
+
+(encode
+"Subject: .FNC$B4X?t(B"*B
+'("Subject: =?ISO-8859-7?Q?=C3?= =?ISO-2022-JP?B?GyRCNFg/dBsoQg==?="
+  "Subject: =?ISO-2022-JP-2?B?Gy5GG05DGyRCNFg/dBsoQg==?="))
+
+(decode
+"Subject: =?ISO-2022-JP-2?B?Gy5GG05DGyRCNFg/dBsoQg==?="
+"Subject: .FNC$B4X?t(B")*B
+
+(decode
+"Subject: =?ISO-8859-7?Q?=C3?= =?ISO-2022-JP?B?GyRCNFg/dBsoQg==?="
+"Subject: .FNC$B4X?t(B")*B
 
 ;----------------------------------------------------------------------------

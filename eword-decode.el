@@ -575,16 +575,18 @@ be the result."
 (defun eword-analyze-quoted-string (string &optional must-unfold)
   (let ((p (std11-check-enclosure string ?\" ?\")))
     (if p
-	(cons (cons 'quoted-string
-		    (if eword-decode-quoted-encoded-word
-			(eword-decode-quoted-string
-			 (substring string 0 p)
-			 default-mime-charset)
-		      (decode-mime-charset-string
-		       (std11-strip-quoted-pair (substring string 0 p))
-		       default-mime-charset)))
-	      (substring string p)))
-      ))
+        (cons (cons 'quoted-string
+                    (if eword-decode-quoted-encoded-word
+                        (std11-wrap-as-quoted-string
+                         (eword-decode-quoted-string
+                          (substring string 1 (1- p))
+                          default-mime-charset))
+                      (std11-wrap-as-quoted-string
+                       (decode-mime-charset-string
+                        (std11-strip-quoted-pair (substring string 1 (1- p)))
+                        default-mime-charset))))
+              (substring string p)))
+    ))
 
 (defun eword-analyze-domain-literal (string &optional must-unfold)
   (std11-analyze-domain-literal string))
@@ -611,12 +613,20 @@ be the result."
 
 (defun eword-analyze-encoded-word (string &optional must-unfold)
   (let ((decoded (eword-decode-first-encoded-words
-  		   string
-		   eword-encoded-word-in-phrase-regexp
-		   eword-after-encoded-word-in-phrase-regexp
-		   must-unfold)))
+                  string
+                  eword-encoded-word-in-phrase-regexp
+                  eword-after-encoded-word-in-phrase-regexp
+                  must-unfold)))
     (if decoded
-      (cons (cons 'atom (car decoded)) (cdr decoded)))))
+        (let ((s (car decoded)))
+          (while (or (string-match std11-atom-regexp s)
+                     (string-match std11-spaces-regexp s))
+            (setq s (substring s (match-end 0))))
+          (if (= (length s) 0)
+              (cons (cons 'atom (car decoded)) (cdr decoded))
+            (cons (cons 'quoted-string
+                        (std11-wrap-as-quoted-string (car decoded)))
+                  (cdr decoded)))))))
 
 (defun eword-analyze-atom (string &optional must-unfold)
   (if (let ((enable-multibyte-characters nil))
