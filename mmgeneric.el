@@ -144,44 +144,50 @@
 	  )
 	t)))
 
+(defun mime-insert-header-from-buffer (buffer start end
+					      &optional invisible-fields
+					      visible-fields)
+  (let ((the-buf (current-buffer))
+	f-b p f-e field-name len field field-body)
+    (save-excursion
+      (set-buffer buffer)
+      (save-restriction
+	(narrow-to-region start end)
+	(goto-char start)
+	(while (re-search-forward std11-field-head-regexp nil t)
+	  (setq f-b (match-beginning 0)
+		p (match-end 0)
+		field-name (buffer-substring f-b p)
+		len (string-width field-name)
+		f-e (std11-field-end))
+	  (when (mime-visible-field-p field-name
+				      visible-fields invisible-fields)
+	    (setq field (intern
+			 (capitalize (buffer-substring f-b (1- p))))
+		  field-body (buffer-substring p f-e))
+	    (with-current-buffer the-buf
+	      (insert field-name)
+	      (insert
+	       (if (memq field eword-decode-ignored-field-list)
+		   ;; Don't decode
+		   field-body
+		 (if (memq field eword-decode-structured-field-list)
+		     ;; Decode as structured field
+		     (eword-decode-and-fold-structured-field field-body len)
+		   ;; Decode as unstructured field
+		   (eword-decode-unstructured-field-body field-body len)
+		   )))
+	      (insert "\n")
+	      )))))))
+
 (mm-define-method insert-header ((entity generic)
 				 &optional invisible-fields visible-fields)
-  (save-restriction
-    (narrow-to-region (point)(point))
-    (let ((the-buf (current-buffer))
-	  (src-buf (mime-entity-buffer entity))
-	  (h-end (mime-entity-header-end-internal entity))
-	  beg p end field-name len field field-body)
-      (save-excursion
-	(set-buffer src-buf)
-	(goto-char (mime-entity-header-start-internal entity))
-	(save-restriction
-	  (narrow-to-region (point) h-end)
-	  (while (re-search-forward std11-field-head-regexp nil t)
-	    (setq beg (match-beginning 0)
-		  p (match-end 0)
-		  field-name (buffer-substring beg p)
-		  len (string-width field-name)
-		  end (std11-field-end))
-	    (when (mime-visible-field-p field-name
-					visible-fields invisible-fields)
-	      (setq field (intern
-			   (capitalize (buffer-substring beg (1- p))))
-		    field-body (buffer-substring p end))
-	      (with-current-buffer the-buf
-		(insert field-name)
-		(insert
-		 (if (memq field eword-decode-ignored-field-list)
-		     ;; Don't decode
-		     field-body
-		   (if (memq field eword-decode-structured-field-list)
-		       ;; Decode as structured field
-		       (eword-decode-and-fold-structured-field field-body len)
-		     ;; Decode as unstructured field
-		     (eword-decode-unstructured-field-body field-body len)
-		     )))
-		(insert "\n")
-		))))))))
+  (mime-insert-header-from-buffer
+   (mime-entity-buffer entity)
+   (mime-entity-header-start-internal entity)
+   (mime-entity-header-end-internal entity)
+   invisible-fields visible-fields)
+  )
 
 (mm-define-method insert-text-content ((entity generic))
   (insert
