@@ -1,6 +1,6 @@
 ;;; mime-def.el --- definition module about MIME
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: definition, MIME, multimedia, mail, news
@@ -27,7 +27,7 @@
 (require 'mcharset)
 
 (eval-and-compile
-  (defconst mime-library-product ["FLIM" (1 11 3) "Saidaiji"]
+  (defconst mime-library-product ["FLIM" (1 12 6) "Family-K.DŽòenmae"]
     "Product name, version number and code name of MIME-library package.")
   )
 
@@ -72,12 +72,6 @@
 ;;; @ required functions
 ;;;
 
-(defsubst eliminate-top-spaces (string)
-  "Eliminate top sequence of space or tab in STRING."
-  (if (string-match "^[ \t]+" string)
-      (substring string (match-end 0))
-    string))
-
 (defsubst regexp-* (regexp)
   (concat regexp "*"))
 
@@ -93,7 +87,7 @@
   (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
   (defconst std11-qtext-regexp
     (eval-when-compile
-      (concat "[^" (apply #'string std11-non-qtext-char-list) "]"))))
+      (concat "[^" std11-non-qtext-char-list "]"))))
 (defconst std11-quoted-string-regexp
   (eval-when-compile
     (concat "\""
@@ -105,8 +99,12 @@
 ;;; @ about MIME
 ;;;
 
-(defconst mime-tspecials "][()<>@,\;:\\\"/?=")
-(defconst mime-token-regexp (concat "[^" mime-tspecials "\000-\040]+"))
+(eval-and-compile
+  (defconst mime-tspecial-char-list
+    '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=)))
+(defconst mime-token-regexp
+  (eval-when-compile
+    (concat "[^" mime-tspecial-char-list "\000-\040]+")))
 (defconst mime-charset-regexp mime-token-regexp)
 
 (defconst mime-media-type/subtype-regexp
@@ -446,7 +444,7 @@ If ARGS is specified, NAME is defined as a generic function for the
 service."
   `(progn
      (add-to-list 'mel-service-list ',name)
-     (defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
+     (defvar ,(intern (format "%s-obarray" name)) (make-vector 7 0))
      ,@(if args
 	   `((defun ,name ,args
 	       ,@rest

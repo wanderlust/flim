@@ -96,8 +96,11 @@ Content-Transfer-Encoding for it."
 
 (mel-define-backend "binary" ("8bit"))
 
-(when (and (fboundp 'base64-encode-string)
-	   (subrp (symbol-function 'base64-encode-string)))
+(defvar mel-b-builtin
+   (and (fboundp 'base64-encode-string)
+        (subrp (symbol-function 'base64-encode-string))))
+
+(when mel-b-builtin
   (mel-define-backend "base64")
   (mel-define-method-function (mime-encode-string string (nil "base64"))
 			      'base64-encode-string)
@@ -201,8 +204,10 @@ ENCODING must be string."
 ENCODING must be string.  If ENCODING is found in
 `mime-string-decoding-method-alist' as its key, this function decodes
 the STRING by its value."
-  (funcall (mel-find-function 'mime-decode-string encoding)
-	   string))
+  (let ((f (mel-find-function 'mime-decode-string encoding)))
+    (if f
+	(funcall f string)
+      string)))
 
 
 (mel-define-service encoded-text-encode-string (string encoding)

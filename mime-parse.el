@@ -1,6 +1,6 @@
 ;;; mime-parse.el --- MIME message parser
 
-;; Copyright (C) 1994,1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1994,1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: parse, MIME, multimedia, mail, news
@@ -24,11 +24,48 @@
 
 ;;; Code:
 
-(require 'emu)
 (require 'std11)
 (require 'mime-def)
 
 (eval-when-compile (require 'cl))
+
+
+;;; @ lexical analyzer
+;;;
+
+(defcustom mime-lexical-analyzer
+  '(std11-analyze-quoted-string
+    std11-analyze-domain-literal
+    std11-analyze-comment
+    std11-analyze-spaces
+    mime-analyze-tspecial
+    mime-analyze-token)
+  "*List of functions to return result of lexical analyze.
+Each function must have two arguments: STRING and START.
+STRING is the target string to be analyzed.
+START is start position of STRING to analyze.
+
+Previous function is preferred to next function.  If a function
+returns nil, next function is used.  Otherwise the return value will
+be the result."
+  :group 'mime
+  :type '(repeat function))
+
+(defun mime-analyze-tspecial (string start)
+  (if (and (> (length string) start)
+	   (memq (aref string start) mime-tspecial-char-list))
+      (cons (cons 'tpecials (substring string start (1+ start)))
+	    (1+ start))
+    ))
+
+(defun mime-analyze-token (string start)
+  (if (and (string-match mime-token-regexp string start)
+	   (= (match-beginning 0) start))
+      (let ((end (match-end 0)))
+	(cons (cons 'mime-token (substring string start end))
+	      ;;(substring string end)
+	      end)
+	)))
 
 
 ;;; @ field parser
@@ -96,13 +133,16 @@ and return parsed it.  Format of return value is as same as
 ;;; @ Content-Disposition
 ;;;
 
-(defconst mime-disposition-type-regexp mime-token-regexp)
+(eval-and-compile
+  (defconst mime-disposition-type-regexp mime-token-regexp)
+  )
 
 ;;;###autoload
 (defun mime-parse-Content-Disposition (string)
   "Parse STRING as field-body of Content-Disposition field."
   (setq string (std11-unfold-string string))
-  (if (string-match `,(concat "^" mime-disposition-type-regexp) string)
+  (if (string-match (eval-when-compile
+		      (concat "^" mime-disposition-type-regexp)) string)
       (let* ((e (match-end 0))
 	     (type (downcase (substring string 0 e)))
 	     ret dest)
@@ -131,10 +171,16 @@ and return parsed it."
 ;;;###autoload
 (defun mime-parse-Content-Transfer-Encoding (string)
   "Parse STRING as field-body of Content-Transfer-Encoding field."
-  (if (string-match "[ \t\n\r]+$" string)
-      (setq string (match-string 0 string))
-    )
-  (downcase string))
+  (let ((tokens (std11-lexical-analyze string mime-lexical-analyzer))
+	token)
+    (while (and tokens
+		(setq token (car tokens))
+		(std11-ignored-token-p token))
+      (setq tokens (cdr tokens)))
+    (if token
+	(if (eq (car token) 'mime-token)
+	    (downcase (cdr token))
+	  ))))
 
 ;;;###autoload
 (defun mime-read-Content-Transfer-Encoding (&optional default-encoding)
@@ -145,6 +191,24 @@ If is is not found, return DEFAULT-ENCODING."
     (if str
 	(mime-parse-Content-Transfer-Encoding str)
       default-encoding)))
+
+
+;;; @ Content-Id / Message-Id
+;;;
+
+;;;###autoload
+(defun mime-parse-msg-id (tokens)
+  "Parse TOKENS as msg-id of Content-Id or Message-Id field."
+  (car (std11-parse-msg-id tokens)))
+
+;;;###autoload
+(defun mime-uri-parse-cid (string)
+  "Parse STRING as cid URI."
+  (inline
+    (mime-parse-msg-id (cons '(specials . "<")
+			     (nconc
+			      (cdr (cdr (std11-lexical-analyze string)))
+			      '((specials . ">")))))))
 
 
 ;;; @ message parser

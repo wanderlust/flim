@@ -1,11 +1,11 @@
 ;;; std11.el --- STD 11 functions for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
 
-;; This file is part of MU (Message Utilities).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -24,11 +24,13 @@
 
 ;;; Code:
 
-(autoload 'buffer-substring-no-properties "emu")
-(autoload 'member "emu")
+(or (fboundp 'buffer-substring-no-properties)
+    (require 'poe))
+
+(require 'custom)
 
 
-;;; @ field
+;;; @ fetch
 ;;;
 
 (defconst std11-field-name-regexp "[!-9;-~]+")
@@ -37,18 +39,20 @@
 (defconst std11-next-field-head-regexp
   (concat "\n" std11-field-name-regexp ":"))
 
-(defun std11-field-end ()
-  "Move to end of field and return this point. [std11.el]"
-  (if (re-search-forward std11-next-field-head-regexp nil t)
+(defun std11-field-end (&optional bound)
+  "Move to end of field and return this point.
+The optional argument BOUNDs the search; it is a buffer position."
+  (if (re-search-forward std11-next-field-head-regexp bound t)
       (goto-char (match-beginning 0))
-    (if (re-search-forward "^$" nil t)
+    (if (re-search-forward "^$" bound t)
 	(goto-char (1- (match-beginning 0)))
       (end-of-line)
       ))
   (point)
   )
 
-(defsubst std11-fetch-field (name)
+;;;###autoload
+(defun std11-fetch-field (name)
   "Return the value of the header field NAME.
 The buffer is expected to be narrowed to just the headers of the message."
   (save-excursion
@@ -58,19 +62,33 @@ The buffer is expected to be narrowed to just the headers of the message."
 	  (buffer-substring-no-properties (match-end 0) (std11-field-end))
 	))))
 
+;;;###autoload
+(defun std11-narrow-to-header (&optional boundary)
+  "Narrow to the message header.
+If BOUNDARY is not nil, it is used as message header separator."
+  (narrow-to-region
+   (goto-char (point-min))
+   (if (re-search-forward
+	(concat "^\\(" (regexp-quote (or boundary "")) "\\)?$")
+	nil t)
+       (match-beginning 0)
+     (point-max)
+     )))
+
+;;;###autoload
 (defun std11-field-body (name &optional boundary)
   "Return the value of the header field NAME.
 If BOUNDARY is not nil, it is used as message header separator."
   (save-excursion
     (save-restriction
-      (std11-narrow-to-header boundary)
-      (std11-fetch-field name)
+      (inline (std11-narrow-to-header boundary)
+	      (std11-fetch-field name))
       )))
 
 (defun std11-find-field-body (field-names &optional boundary)
   "Return the first found field-body specified by FIELD-NAMES
 of the message header in current buffer. If BOUNDARY is not nil, it is
-used as message header separator. [std11.el]"
+used as message header separator."
   (save-excursion
     (save-restriction
       (std11-narrow-to-header boundary)
@@ -90,7 +108,7 @@ used as message header separator. [std11.el]"
 (defun std11-field-bodies (field-names &optional default-value boundary)
   "Return list of each field-bodies of FIELD-NAMES of the message header
 in current buffer. If BOUNDARY is not nil, it is used as message
-header separator. [std11.el]"
+header separator."
   (save-excursion
     (save-restriction
       (std11-narrow-to-header boundary)
@@ -111,46 +129,9 @@ header separator. [std11.el]"
 	  )
 	dest))))
 
-
-;;; @ unfolding
-;;;
-
-(defun std11-unfold-string (string)
-  "Unfold STRING as message header field."
-  (let ((dest "")
-	(p 0))
-    (while (string-match "\n\\([ \t]\\)" string p)
-      (setq dest (concat dest
-                         (substring string p (match-beginning 0))
-                         (substring string
-				    (match-beginning 1)
-				    (setq p (match-end 0)))
-                         ))
-      )
-    (concat dest (substring string p))
-    ))
-
-
-;;; @ header
-;;;
-
-(defun std11-narrow-to-header (&optional boundary)
-  "Narrow to the message header.
-If BOUNDARY is not nil, it is used as message header separator.
-\[std11.el]"
-  (narrow-to-region
-   (goto-char (point-min))
-   (if (re-search-forward
-	(concat "^\\(" (regexp-quote (or boundary "")) "\\)?$")
-	nil t)
-       (match-beginning 0)
-     (point-max)
-     )))
-
 (defun std11-header-string (regexp &optional boundary)
   "Return string of message header fields matched by REGEXP.
-If BOUNDARY is not nil, it is used as message header separator.
-\[std11.el]"
+If BOUNDARY is not nil, it is used as message header separator."
   (let ((case-fold-search t))
     (save-excursion
       (save-restriction
@@ -168,8 +149,7 @@ If BOUNDARY is not nil, it is used as message header separator.
 
 (defun std11-header-string-except (regexp &optional boundary)
   "Return string of message header fields not matched by REGEXP.
-If BOUNDARY is not nil, it is used as message header separator.
-\[std11.el]"
+If BOUNDARY is not nil, it is used as message header separator."
   (let ((case-fold-search t))
     (save-excursion
       (save-restriction
@@ -187,8 +167,7 @@ If BOUNDARY is not nil, it is used as message header separator.
 
 (defun std11-collect-field-names (&optional boundary)
   "Return list of all field-names of the message header in current buffer.
-If BOUNDARY is not nil, it is used as message header separator.
-\[std11.el]"
+If BOUNDARY is not nil, it is used as message header separator."
   (save-excursion
     (save-restriction
       (std11-narrow-to-header boundary)
@@ -202,6 +181,26 @@ If BOUNDARY is not nil, it is used as message header separator.
 	      )
 	  )
 	dest))))
+
+
+;;; @ unfolding
+;;;
+
+;;;###autoload
+(defun std11-unfold-string (string)
+  "Unfold STRING as message header field."
+  (let ((dest "")
+	(p 0))
+    (while (string-match "\n\\([ \t]\\)" string p)
+      (setq dest (concat dest
+                         (substring string p (match-beginning 0))
+                         (substring string
+				    (match-beginning 1)
+				    (setq p (match-end 0)))
+                         ))
+      )
+    (concat dest (substring string p))
+    ))
 
 
 ;;; @ quoted-string
@@ -227,13 +226,13 @@ If BOUNDARY is not nil, it is used as message header separator.
 (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
 
 (defun std11-wrap-as-quoted-string (string)
-  "Wrap STRING as RFC 822 quoted-string. [std11.el]"
+  "Wrap STRING as RFC 822 quoted-string."
   (concat "\""
 	  (std11-wrap-as-quoted-pairs string std11-non-qtext-char-list)
 	  "\""))
 
 (defun std11-strip-quoted-pair (string)
-  "Strip quoted-pairs in STRING. [std11.el]"
+  "Strip quoted-pairs in STRING."
   (let (dest
 	(b 0)
 	(i 0)
@@ -251,7 +250,7 @@ If BOUNDARY is not nil, it is used as message header separator.
     ))
 
 (defun std11-strip-quoted-string (string)
-  "Strip quoted-string STRING. [std11.el]"
+  "Strip quoted-string STRING."
   (let ((len (length string)))
     (or (and (>= len 2)
 	     (let ((max (1- len)))
@@ -265,48 +264,77 @@ If BOUNDARY is not nil, it is used as message header separator.
 ;;; @ lexical analyze
 ;;;
 
-(defconst std11-space-chars " \t\n")
-(defconst std11-spaces-regexp (` (, (concat "[" std11-space-chars "]+"))))
-(defconst std11-special-char-list '(?\] ?\[
-					?\( ?\) ?< ?> ?@
-					?, ?\; ?: ?\\ ?\"
-					?.))
+(defcustom std11-lexical-analyzer
+  '(std11-analyze-quoted-string
+    std11-analyze-domain-literal
+    std11-analyze-comment
+    std11-analyze-spaces
+    std11-analyze-special
+    std11-analyze-atom)
+  "*List of functions to return result of lexical analyze.
+Each function must have two arguments: STRING and START.
+STRING is the target string to be analyzed.
+START is start position of STRING to analyze.
+
+Previous function is preferred to next function.  If a function
+returns nil, next function is used.  Otherwise the return value will
+be the result."
+  :group 'news
+  :group 'mail
+  :type '(repeat function))
+
+(eval-and-compile
+  (defconst std11-space-char-list '(?  ?\t ?\n))
+  (defconst std11-special-char-list '(?\] ?\[
+					  ?\( ?\) ?< ?> ?@
+					  ?, ?\; ?: ?\\ ?\"
+					  ?.))
+  )
+;; (defconst std11-spaces-regexp
+;;   (eval-when-compile (concat "[" std11-space-char-list "]+")))
 (defconst std11-atom-regexp
-  (` (, (concat "^[^" std11-special-char-list std11-space-chars "]+"))))
+  (eval-when-compile
+    (concat "[^" std11-special-char-list std11-space-char-list "]+")))
 
-(defun std11-analyze-spaces (string)
-  (if (and (string-match std11-spaces-regexp string)
-	   (= (match-beginning 0) 0))
+(defun std11-analyze-spaces (string start)
+  (if (and (string-match (eval-when-compile
+			   (concat "[" std11-space-char-list "]+"))
+			 string start)
+	   (= (match-beginning 0) start))
       (let ((end (match-end 0)))
-	(cons (cons 'spaces (substring string 0 end))
-	      (substring string end)
-	      ))))
+	(cons (cons 'spaces (substring string start end))
+	      ;;(substring string end)
+	      end)
+	)))
 
-(defun std11-analyze-special (str)
-  (if (and (> (length str) 0)
-	   (memq (aref str 0) std11-special-char-list))
-      (cons (cons 'specials (substring str 0 1))
-	    (substring str 1)
-	    )))
+(defun std11-analyze-special (string start)
+  (if (and (> (length string) start)
+	   (memq (aref string start) std11-special-char-list))
+      (cons (cons 'specials (substring string start (1+ start)))
+	    ;;(substring string 1)
+	    (1+ start))
+    ))
 
-(defun std11-analyze-atom (str)
-  (if (string-match std11-atom-regexp str)
+(defun std11-analyze-atom (string start)
+  (if (and (string-match std11-atom-regexp string start)
+	   (= (match-beginning 0) start))
       (let ((end (match-end 0)))
-	(cons (cons 'atom (substring str 0 end))
-	      (substring str end)
-	      ))))
+	(cons (cons 'atom (substring string start end))
+	      ;;(substring string end)
+	      end)
+	)))
 
-(defun std11-check-enclosure (str open close &optional recursive from)
-  (let ((len (length str))
+(defun std11-check-enclosure (string open close &optional recursive from)
+  (let ((len (length string))
 	(i (or from 0))
 	)
     (if (and (> len i)
-	     (eq (aref str i) open))
+	     (eq (aref string i) open))
 	(let (p chr)
 	  (setq i (1+ i))
 	  (catch 'tag
 	    (while (< i len)
-	      (setq chr (aref str i))
+	      (setq chr (aref string i))
 	      (cond ((eq chr ?\\)
 		     (setq i (1+ i))
 		     (if (>= i len)
@@ -320,7 +348,7 @@ If BOUNDARY is not nil, it is used as message header separator.
 		    ((eq chr open)
 		     (if (and recursive
 			      (setq p (std11-check-enclosure
-				       str open close recursive i))
+				       string open close recursive i))
 			      )
 			 (setq i p)
 		       (throw 'tag nil)
@@ -330,41 +358,51 @@ If BOUNDARY is not nil, it is used as message header separator.
 		     ))
 	      ))))))
 
-(defun std11-analyze-quoted-string (str)
-  (let ((p (std11-check-enclosure str ?\" ?\")))
+(defun std11-analyze-quoted-string (string start)
+  (let ((p (std11-check-enclosure string ?\" ?\" nil start)))
     (if p
-	(cons (cons 'quoted-string (substring str 1 (1- p)))
-	      (substring str p))
+	(cons (cons 'quoted-string (substring string (1+ start) (1- p)))
+	      ;;(substring string p))
+	      p)
       )))
 
-(defun std11-analyze-domain-literal (str)
-  (let ((p (std11-check-enclosure str ?\[ ?\])))
+(defun std11-analyze-domain-literal (string start)
+  (let ((p (std11-check-enclosure string ?\[ ?\] nil start)))
     (if p
-	(cons (cons 'domain-literal (substring str 1 (1- p)))
-	      (substring str p))
+	(cons (cons 'domain-literal (substring string (1+ start) (1- p)))
+	      ;;(substring string p))
+	      p)
       )))
 
-(defun std11-analyze-comment (str)
-  (let ((p (std11-check-enclosure str ?\( ?\) t)))
+(defun std11-analyze-comment (string start)
+  (let ((p (std11-check-enclosure string ?\( ?\) t start)))
     (if p
-	(cons (cons 'comment (substring str 1 (1- p)))
-	      (substring str p))
+	(cons (cons 'comment (substring string (1+ start) (1- p)))
+	      ;;(substring string p))
+	      p)
       )))
 
-(defun std11-lexical-analyze (str)
-  (let (dest ret)
-    (while (not (string-equal str ""))
+;;;###autoload
+(defun std11-lexical-analyze (string &optional analyzer start)
+  "Analyze STRING as lexical tokens of STD 11."
+  (or analyzer
+      (setq analyzer std11-lexical-analyzer))
+  (or start
+      (setq start 0))
+  (let ((len (length string))
+	dest ret)
+    (while (< start len)
       (setq ret
-	    (or (std11-analyze-quoted-string str)
-		(std11-analyze-domain-literal str)
-		(std11-analyze-comment str)
-		(std11-analyze-spaces str)
-		(std11-analyze-special str)
-		(std11-analyze-atom str)
-		'((error) . "")
-		))
-      (setq dest (cons (car ret) dest))
-      (setq str (cdr ret))
+	    (let ((rest analyzer)
+		  func r)
+	      (while (and (setq func (car rest))
+			  (null (setq r (funcall func string start))))
+		(setq rest (cdr rest)))
+	      (or r
+		  (list (cons 'error (substring string start)) (1+ len)))
+	      ))
+      (setq dest (cons (car ret) dest)
+	    start (cdr ret))
       )
     (nreverse dest)
     ))
@@ -685,8 +723,8 @@ If BOUNDARY is not nil, it is used as message header separator.
 	      (cdr ret))
       )))
 
-(defun std11-parse-in-reply-to (tokens)
-  "Parse lexical TOKENS as In-Reply-To field, and return the result."
+(defun std11-parse-msg-ids (tokens)
+  "Parse lexical TOKENS as `*(phrase / msg-id)', and return the result."
   (let ((ret (or (std11-parse-msg-id tokens)
 		 (std11-parse-phrase tokens))))
     (if ret
@@ -700,13 +738,16 @@ If BOUNDARY is not nil, it is used as message header separator.
 	  (nreverse dest)
 	  ))))
 
+(defalias 'std11-parse-in-reply-to 'std11-parse-msg-ids)
+(make-obsolete 'std11-parse-in-reply-to 'std11-parse-msg-ids)
+
 
 ;;; @ composer
 ;;;
 
 (defun std11-addr-to-string (seq)
   "Return string from lexical analyzed list SEQ
-represents addr-spec of RFC 822. [std11.el]"
+represents addr-spec of RFC 822."
   (mapconcat (function
 	      (lambda (token)
 		(let ((name (car token)))
@@ -720,9 +761,9 @@ represents addr-spec of RFC 822. [std11.el]"
 	     seq "")
   )
 
+;;;###autoload
 (defun std11-address-string (address)
-  "Return string of address part from parsed ADDRESS of RFC 822.
-\[std11.el]"
+  "Return string of address part from parsed ADDRESS of RFC 822."
   (cond ((eq (car address) 'group)
 	 (mapconcat (function std11-address-string)
 		    (car (cdr address))
@@ -737,9 +778,27 @@ represents addr-spec of RFC 822. [std11.el]"
 	      )
 	    )))))
 
+(defun std11-comment-value-to-string (value)
+  (if (stringp value)
+      (std11-strip-quoted-pair value)
+    (let ((dest ""))
+      (while value
+	(setq dest
+	      (concat dest
+		      (if (stringp (car value))
+			  (car value)
+			(concat "("
+				(std11-comment-value-to-string
+				 (cdr (car value)))
+				")")
+			))
+	      value (cdr value))
+	)
+      dest)))
+
+;;;###autoload
 (defun std11-full-name-string (address)
-  "Return string of full-name part from parsed ADDRESS of RFC 822.
-\[std11.el]"
+  "Return string of full-name part from parsed ADDRESS of RFC 822."
   (cond ((eq (car address) 'group)
 	 (mapconcat (function
 		     (lambda (token)
@@ -761,10 +820,10 @@ represents addr-spec of RFC 822. [std11.el]"
 				  (std11-strip-quoted-pair (cdr token))
 				  )
 				 ((eq type 'comment)
-				  (concat
-				   "("
-				   (std11-strip-quoted-pair (cdr token))
-				   ")")
+				  (concat "("
+					  (std11-comment-value-to-string
+					   (cdr token))
+					  ")")
 				  )
 				 (t
 				  (cdr token)
@@ -772,15 +831,17 @@ represents addr-spec of RFC 822. [std11.el]"
 		      (nth 1 addr) ""))
 	     )
 	   (cond ((> (length phrase) 0) phrase)
-		 (comment (std11-strip-quoted-pair comment))
+		 (comment (std11-comment-value-to-string comment))
 		 )
 	   ))))
 
+;;;###autoload
 (defun std11-msg-id-string (msg-id)
   "Return string from parsed MSG-ID of RFC 822."
   (concat "<" (std11-addr-to-string (cdr msg-id)) ">")
   )
 
+;;;###autoload
 (defun std11-fill-msg-id-list-string (string &optional column)
   "Fill list of msg-id in STRING, and return the result."
   (or column
@@ -822,20 +883,35 @@ represents addr-spec of RFC 822. [std11.el]"
 ;;; @ parser with lexical analyzer
 ;;;
 
+;;;###autoload
 (defun std11-parse-address-string (string)
-  "Parse STRING as mail address. [std11.el]"
+  "Parse STRING as mail address."
   (std11-parse-address (std11-lexical-analyze string))
   )
 
+;;;###autoload
 (defun std11-parse-addresses-string (string)
-  "Parse STRING as mail address list. [std11.el]"
+  "Parse STRING as mail address list."
   (std11-parse-addresses (std11-lexical-analyze string))
   )
 
+;;;###autoload
+(defun std11-parse-msg-id-string (string)
+  "Parse STRING as msg-id."
+  (std11-parse-msg-id (std11-lexical-analyze string))
+  )
+
+;;;###autoload
+(defun std11-parse-msg-ids-string (string)
+  "Parse STRING as `*(phrase / msg-id)'."
+  (std11-parse-msg-ids (std11-lexical-analyze string))
+  )
+
+;;;###autoload
 (defun std11-extract-address-components (string)
   "Extract full name and canonical address from STRING.
 Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).
-If no name can be extracted, FULL-NAME will be nil. [std11.el]"
+If no name can be extracted, FULL-NAME will be nil."
   (let* ((structure (car (std11-parse-address-string
 			  (std11-unfold-string string))))
          (phrase  (std11-full-name-string structure))

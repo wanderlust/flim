@@ -1,6 +1,6 @@
 ;;; mime.el --- MIME library module
 
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: MIME, multimedia, mail, news
@@ -29,11 +29,10 @@
 (require 'mime-def)
 (require 'eword-decode)
 
-(autoload 'eword-encode-field "eword-encode"
-  "Encode header field STRING, and return the result.")
+(eval-and-compile
+
 (autoload 'eword-encode-header "eword-encode"
   "Encode header fields to network representation, such as MIME encoded-word.")
-
 
 (autoload 'mime-parse-Content-Type "mime-parse"
   "Parse STRING as field-body of Content-Type field.")
@@ -53,9 +52,16 @@ and return parsed it.")
   "Read field-body of Content-Transfer-Encoding field from
 current-buffer, and return it.")
 
+(autoload 'mime-parse-msg-id "mime-parse"
+  "Parse TOKENS as msg-id of Content-Id or Message-Id field.")
+
+(autoload 'mime-uri-parse-cid "mime-parse"
+  "Parse STRING as cid URI.")
+
 (autoload 'mime-parse-buffer "mime-parse"
   "Parse BUFFER as a MIME message.")
 
+)
 
 ;;; @ Entity Representation and Implementation
 ;;;
@@ -138,6 +144,21 @@ If MESSAGE is not specified, `mime-message-structure' is used."
   "Return entity from ENTITY-NODE-ID in MESSAGE.
 If MESSAGE is not specified, `mime-message-structure' is used."
   (mime-find-entity-from-number (reverse entity-node-id) message))
+
+(defun mime-find-entity-from-content-id (cid &optional message)
+  "Return entity from CID in MESSAGE.
+If MESSAGE is not specified, `mime-message-structure' is used."
+  (or message
+      (setq message mime-message-structure))
+  (if (equal cid (mime-read-field 'Content-Id message))
+      message
+    (let ((children (mime-entity-children message))
+	  ret)
+      (while (and children
+		  (null (setq ret (mime-find-entity-from-content-id
+				   cid (car children)))))
+	(setq children (cdr children)))
+      ret)))
 
 (defun mime-entity-parent (entity &optional message)
   "Return mother entity of ENTITY.
@@ -244,6 +265,35 @@ If MESSAGE is specified, it is regarded as root entity."
 	     default-encoding "7bit"))
 	)))
 
+(defvar mime-field-parser-alist
+  '((Return-Path	. std11-parse-route-addr)
+    
+    (Reply-To 		. std11-parse-addresses)
+    
+    (Sender		. std11-parse-mailbox)
+    (From		. std11-parse-addresses)
+
+    (Resent-Reply-To	. std11-parse-addresses)
+    
+    (Resent-Sender	. std11-parse-mailbox)
+    (Resent-From	. std11-parse-addresses)
+
+    (To			. std11-parse-addresses)
+    (Resent-To		. std11-parse-addresses)
+    (Cc			. std11-parse-addresses)
+    (Resent-Cc		. std11-parse-addresses)
+    (Bcc		. std11-parse-addresses)
+    (Resent-Bcc		. std11-parse-addresses)
+    
+    (Message-Id		. mime-parse-msg-id)
+    (Recent-Message-Id	. mime-parse-msg-id)
+    
+    (In-Reply-To	. std11-parse-msg-ids)
+    (References		. std11-parse-msg-ids)
+    
+    (Content-Id		. mime-parse-msg-id)
+    ))
+
 (defun mime-read-field (field-name &optional entity)
   (or (symbolp field-name)
       (setq field-name (capitalize (capitalize field-name))))
@@ -262,29 +312,18 @@ If MESSAGE is specified, it is regarded as root entity."
 	 (let* ((header (mime-entity-parsed-header-internal entity))
 		(field (cdr (assq field-name header))))
 	   (or field
-	       (let ((field-body (mime-fetch-field field-name entity)))
+	       (let ((field-body (mime-fetch-field field-name entity))
+		     parser)
 		 (when field-body
-		   (cond ((memq field-name '(From Resent-From
-					     To Resent-To
-					     Cc Resent-Cc
-					     Bcc Resent-Bcc
-					     Reply-To Resent-Reply-To))
-			  (setq field (std11-parse-addresses
-				       (eword-lexical-analyze field-body)))
-			  )
-			 ((memq field-name '(Sender Resent-Sender))
-			  (setq field (std11-parse-address
-				       (eword-lexical-analyze field-body)))
-			  )
-			 ((memq field-name eword-decode-ignored-field-list)
-			  (setq field field-body))
-			 ((memq field-name eword-decode-structured-field-list)
-			  (setq field (eword-decode-structured-field-body
-				       field-body)))
-			 (t
-			  (setq field (eword-decode-unstructured-field-body
-				       field-body))
-			  ))
+		   (setq parser
+			 (cdr (assq field-name mime-field-parser-alist)))
+		   (setq field
+			 (if parser
+			     (funcall parser
+				      (eword-lexical-analyze field-body))
+			   (mime-decode-field-body
+			    field-body field-name 'plain)
+			   ))
 		   (mime-entity-set-parsed-header-internal
 		    entity (put-alist field-name field header))
 		   field)))))))
@@ -340,11 +379,17 @@ If MESSAGE is specified, it is regarded as root entity."
 (mm-define-generic entity-content (entity)
   "Return content of ENTITY as byte sequence (string).")
 
-(mm-define-generic insert-text-content (entity)
-  "Insert decoded text body of ENTITY.")
+(mm-define-generic insert-entity-content (entity)
+  "Insert content of ENTITY at point.")
 
 (mm-define-generic write-entity-content (entity filename)
   "Write content of ENTITY into FILENAME.")
+
+(mm-define-generic insert-text-content (entity)
+  "Insert decoded text body of ENTITY.")
+
+(mm-define-generic insert-entity (entity)
+  "Insert header and body of ENTITY at point.")
 
 (mm-define-generic write-entity (entity filename)
   "Write header and body of ENTITY into FILENAME.")

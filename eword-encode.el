@@ -1,6 +1,6 @@
 ;;; eword-encode.el --- RFC 2047 based encoded-word encoder for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(require 'emu)
+(require 'poem)
 (require 'mel)
 (require 'std11)
 (require 'mime-def)
@@ -83,6 +83,7 @@ If method is nil, this field will not be encoded."
     (cn-gb		. "B")
     (cn-gb-2312		. "B")
     (euc-kr		. "B")
+    (tis-620		. "B")
     (iso-2022-jp-2	. "B")
     (iso-2022-int-1	. "B")
     (utf-8		. "B")
@@ -331,23 +332,28 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     ))
 
 (defun eword-encode-rword-list (column rwl)
-  (let (ret dest ps special str ew-f pew-f)
+  (let (ret dest ps special str ew-f pew-f bew)
     (while rwl
       (setq ew-f (nth 2 (car rwl)))
       (if (and pew-f ew-f)
 	  (setq rwl (cons '(" ") rwl)
+		bew t
 		pew-f nil)
-	(setq pew-f ew-f)
+	(setq pew-f ew-f
+	      bew nil)
 	)
       (setq ret (tm-eword::encode-string-1 column rwl))
       (setq str (car ret))
       (if (eq (elt str 0) ?\n)
-	  (if (eq special ?\()
-	      (progn
-		(setq dest (concat dest "\n ("))
-		(setq ret (tm-eword::encode-string-1 2 rwl))
-		(setq str (car ret))
-		))
+	  (cond
+	   ((eq special ?\()
+	    (setq dest (concat dest "\n ("))
+	    (setq ret (tm-eword::encode-string-1 2 rwl))
+	    (setq str (car ret)))
+	   ((eq bew t)
+	    (setq dest (concat dest "\n "))
+	    (setq ret (tm-eword::encode-string-1 1 (cdr rwl)))
+	    (setq str (car ret))))
 	(cond ((eq special ? )
 	       (if (string= str "(")
 		   (setq ps t)
@@ -473,9 +479,9 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
       (let ((phrase (nth 1 phrase-route-addr))
 	    (route (nth 2 phrase-route-addr))
 	    dest)
-	(if (eq (car (car phrase)) 'spaces)
-	    (setq phrase (cdr phrase))
-	  )
+        ;; (if (eq (car (car phrase)) 'spaces)
+        ;;     (setq phrase (cdr phrase))
+        ;;   )
 	(setq dest (eword-encode-phrase-to-rword-list phrase))
 	(if dest
 	    (setq dest (append dest '((" " nil nil))))
@@ -506,7 +512,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		      '((" " nil nil)
 			("(" nil nil))
 		      (eword-encode-split-string comment 'comment)
-		      '((")" nil nil))
+		      (list '(")" nil nil))
 		      )))
     dest))
 
@@ -515,18 +521,21 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (if dest
 	(while (setq addresses (cdr addresses))
 	  (setq dest
-		(append dest
-			'(("," nil nil))
-			'((" " nil nil))
-			(eword-encode-mailbox-to-rword-list (car addresses))
-			))
+		(nconc dest
+		       (list '("," nil nil))
+		       ;; (list '(" " nil nil))
+		       (eword-encode-mailbox-to-rword-list (car addresses))
+		       ))
 	  ))
     dest))
 
 (defsubst eword-encode-msg-id-to-rword-list (msg-id)
-  (cons '("<" nil nil)
-	(append (eword-encode-addr-seq-to-rword-list (cdr msg-id))
-		'((">" nil nil)))))
+  (list
+   (list
+    (concat "<"
+	    (caar (eword-encode-addr-seq-to-rword-list (cdr msg-id)))
+	    ">")
+    nil nil)))
 
 (defsubst eword-encode-in-reply-to-to-rword-list (in-reply-to)
   (let (dest)
@@ -574,8 +583,7 @@ Optional argument COLUMN is start-position of the field."
   (car (eword-encode-rword-list
 	(or column 13)
 	(eword-encode-in-reply-to-to-rword-list
-	 (std11-parse-in-reply-to
-	  (std11-lexical-analyze string))))))
+	 (std11-parse-msg-ids-string string)))))
 
 (defun eword-encode-structured-field-body (string &optional column)
   "Encode header field STRING as structured field, and return the result.
