@@ -78,21 +78,17 @@ external decoder is called."
   "Split sequence SEQ into SIZE elements packs, and return list of packs.
 \[mel-b-el; tl-seq function]"
   (let ((len (length seq))
-	(i 0)(p 0)
+	(p 0)
 	dest unit)
     (while (< p len)
       (setq unit (cons (elt seq p) unit))
-      (setq i (1+ i))
       (setq p (1+ p))
-      (if (= i size)
-	  (progn
-	    (setq dest (cons (nreverse unit) dest))
-	    (setq unit nil)
-	    (setq i 0))))
-    (nreverse
-     (if unit
-	 (cons (nreverse unit) dest)
-       dest))))
+      (when (zerop (mod p size))
+	(setq dest (cons (nreverse unit) dest))
+	(setq unit nil)))
+    (if unit
+	(nreverse (cons (nreverse unit) dest))
+      (nreverse dest))))
 
 
 ;;; @ internal base64 encoder
@@ -107,31 +103,31 @@ external decoder is called."
   `(aref base64-characters ,n))
 
 (defun base64-encode-1 (pack)
-  (let ((a (car pack))
-	(b (nth 1 pack))
-	(c (nth 2 pack)))
-    (concat
-     (char-to-string (base64-num-to-char (ash a -2)))
-     (if b
-	 (concat
-	  (char-to-string
-	   (base64-num-to-char (logior (ash (logand a 3) 4) (ash b -4))))
-	  (if c
-	      (concat
-	       (char-to-string
-		(base64-num-to-char (logior (ash (logand b 15) 2) (ash c -6))))
-	       (char-to-string (base64-num-to-char (logand c 63))))
-	    (concat (char-to-string
-		     (base64-num-to-char (ash (logand b 15) 2))) "=")))
-       (concat (char-to-string
-		(base64-num-to-char (ash (logand a 3) 4))) "==")))))
+  (let ((buf (make-string 4 ?=)))
+    (aset buf 0 (base64-num-to-char (ash (car pack) -2)))
+    (if (nth 1 pack)
+	(progn
+	  (aset buf 1 (base64-num-to-char
+		       (logior (ash (logand (car pack) 3) 4)
+			       (ash (nth 1 pack) -4))))
+	  (if (nth 2 pack)
+	      (progn
+		(aset buf 2 (base64-num-to-char
+			     (logior (ash (logand (nth 1 pack) 15) 2)
+				     (ash (nth 2 pack) -6))))
+		(aset buf 3 (base64-num-to-char
+			     (logand (nth 2 pack) 63))))
+	    (aset buf 2 (base64-num-to-char
+			 (ash (logand (nth 1 pack) 15) 2)))))
+      (aset buf 1 (base64-num-to-char
+		   (ash (logand (car pack) 3) 4))))
+    buf))
 
 (defun-maybe base64-encode-string (string)
   "Encode STRING to base64, and return the result."
   (let* ((len (length string))
-	 (m (mod len 3))
 	 (b 0)(e 57)
-	 dest)
+	 (dest ""))
     (while (< e len)
       (setq dest
 	    (concat dest
@@ -146,9 +142,7 @@ external decoder is called."
 	    (mapconcat
 	     (function base64-encode-1)
 	     (pack-sequence (substring string b) 3)
-	     "")
-	    (cond ((= m 2) "=")
-		  ((= m 1) "==")))))
+	     ""))))
 
 (defun base64-internal-encode-region (beg end)
   (save-excursion
