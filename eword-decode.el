@@ -289,50 +289,6 @@ Each field name must be symbol."
   :group 'eword-decode
   :type '(repeat symbol))
 
-(defun eword-decode-field-body
-  (field-name field-body &optional unfolded max-column)
-  "Decode header field body FIELD-BODY, and return the result.
-
-If FILED-BODY is already unfolded, UNFOLDED should be non-nil.
-
-If MAX-COLUMN is non-nil, result is folded with MAX-COLUMN.
-(Or `fill-column' if MAX-COLUMN is t.)
-Otherwise, the result is unfolded.
-
-If FIELD-NAME is in `eword-decode-ignored-field-list',
-return FIELD-BODY itself.
-
-If FIELD-NAME is in `eword-decode-structured-field-list',
-FIELD-BODY is interpreted as structured field,
-decode MIME encoded-words and return it.
-
-Otherwise, FIELD-BODY is interpreted as unstructured field,
-decode MIME encoded-words and return it.
-
-Anyway, non-encoded-word part is decoded with `default-mime-charset'."
-  (when (symbolp field-name)
-    (setq field-name (symbol-name field-name)))
-  (when (eq max-column t)
-    (setq max-column fill-column))
-  (let ((field-name-symbol (intern (capitalize field-name)))
-	(len (1+ (string-width field-name))))
-    (if (memq field-name-symbol eword-decode-ignored-field-list)
-	;; Don't decode
-	(if max-column
-	    field-body
-	  (std11-unfold-string field-body))
-      (if (memq field-name-symbol eword-decode-structured-field-list)
-	  ;; Decode as structured field
-	  (if max-column
-	      (eword-decode-and-fold-structured-field
-	       field-body len max-column t)
-	    (eword-decode-and-unfold-structured-field field-body))
-	;; Decode as unstructured field
-	(if max-column
-	    (eword-decode-unstructured-field-body field-body len)
-	  (eword-decode-unstructured-field-body
-	   (std11-unfold-string field-body) len))))))
-
 (defun eword-decode-header (&optional code-conversion separator)
   "Decode MIME encoded-words in header fields.
 If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
@@ -350,17 +306,36 @@ If SEPARATOR is not nil, it is used as header separator."
 		      code-conversion
 		    default-mime-charset))))
 	(if default-charset
-	    (let (beg p end field-name field-body)
+	    (let (beg p end field-name len)
 	      (goto-char (point-min))
 	      (while (re-search-forward std11-field-head-regexp nil t)
 		(setq beg (match-beginning 0)
 		      p (match-end 0)
 		      field-name (buffer-substring beg (1- p))
-		      field-body (buffer-substring p end)
+		      len (string-width field-name)
+		      field-name (intern (capitalize field-name))
 		      end (std11-field-end))
-		(delete-region p end)
-		(insert (eword-decode-field-body
-			 field-name field-body nil t))))
+		(cond ((memq field-name eword-decode-ignored-field-list)
+		       ;; Don't decode
+		       )
+		      ((memq field-name eword-decode-structured-field-list)
+		       ;; Decode as structured field
+		       (let ((body (buffer-substring p end))
+			     (default-mime-charset default-charset))
+			 (delete-region p end)
+			 (insert (eword-decode-and-fold-structured-field
+				  body (1+ len)))
+			 ))
+		      (t
+		       ;; Decode as unstructured field
+		       (save-restriction
+			 (narrow-to-region beg (1+ end))
+			 (decode-mime-charset-region p end default-charset)
+			 (goto-char p)
+			 (if (re-search-forward eword-encoded-word-regexp
+						nil t)
+			     (eword-decode-region beg (point-max) 'unfold))
+			 )))))
 	  (eword-decode-region (point-min) (point-max) t)
 	  )))))
 
