@@ -1,3 +1,151 @@
+2000-11-05   Daiki Ueno  <ueno@unixuser.org>
+
+	* qmtp.el (qmtp-send-package): Don't check "K" reply per recipient.
+	(qmtp-via-smtp): Mark as obsolete.
+	(qmtp-send-buffer): New function.
+
+	* sasl.texi: New file.
+
+2000-11-05   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-step-data): New function.
+	(sasl-step-set-data): New function.
+
+2000-11-04   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el: Don't require 'poe'
+	- Rename `sasl-*instantiator*' to `sasl-*client*'.
+	- Rename `sasl-*authenticator*' to `sasl-*mechanism*'.
+	- Rename `sasl-*continuations*' to `sasl-*steps*'.
+	(sasl-make-client): Accept 1st argument `mechanism'.
+	(sasl-next-step): Rename from `sasl-evaluate-challenge'.
+
+2000-11-04   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-make-instantiator): Define as function.
+	(sasl-instantiator-name): Ditto.
+	(sasl-instantiator-service): Ditto.
+	(sasl-instantiator-server): Ditto.
+	(sasl-instantiator-set-properties): Ditto.
+	(sasl-instantiator-set-property): Ditto.
+	(sasl-instantiator-property): Ditto.
+	(sasl-instantiator-properties): Ditto.
+	(sasl-authenticator-mechanism): Ditto.
+	(sasl-authenticator-continuations): Ditto.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el: Rename `sasl-*principal*' to `sasl-*instantiator*'.
+	(sasl-make-instantiator): Abolish optional 4th argument.
+	(sasl-instantiator-set-properties): New function.
+	(sasl-instantiator-put-property): New function.
+	(sasl-instantiator-property): New function.
+	(sasl-instantiator-properties): New function.
+
+	* smtp.el (smtp-sasl-user-name): Rename from
+	`smtp-sasl-principal-user'.
+	(smtp-sasl-user-realm): Rename from `smtp-sasl-principal-realm'.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-mechanisms): Add `LOGIN' and `ANONYMOUS'.
+	(sasl-mechanism-alist): Likewise.
+	(sasl-error): Define.
+	(sasl-login-continuations): New variable.
+	(sasl-login-response-1): New function.
+	(sasl-login-response-2): New function.
+	(sasl-anonymous-continuations): New variable.
+	(sasl-anonymous-response): New function.
+
+	* smtp.el (smtp-error): Define.
+	(smtp-via-smtp): Use it.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-via-smtp): Mark as obsolete.
+	(smtp-send-buffer): Rename from `smtp-via-smtp'.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.el (sasl-make-authenticator): Allocate a freshly generated
+	symbol for each continuation.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl-digest.el (sasl-digest-md5-response-1): Rename from
+	`sasl-digest-md5-digest-response'.
+	(sasl-digest-md5-response-2): New alias.
+	(sasl-digest-md5-parse-digest-challenge): Save excursion.
+
+	* sasl.el (sasl-mechanism-alist): Rename from `sasl-mechanisms'.
+	(sasl-mechanisms): New variable.
+	(sasl-find-authenticator): Check `sasl-mechanisms' rather than
+	`sasl-mechanism-alist'.
+
+	* smtp.el (smtp-submit-package): Use `smtp-primitive-ehlo'.
+	(smtp-primitive-auth): Check authenticator.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
+	* FLIM-ELS (hmac-modules): New variable.
+	(flim-modules): Move HMAC modules to `hmac-modules'
+	- Add `sasl-digest'.
+
+	* smtp.el (smtp-sasl-principal-realm): New user option.
+
+	* sasl.el (sasl-plain-response): New function.
+	(sasl-mechanisms): Add `DIGEST-MD5' and `PLAIN'.
+	(sasl-unique-id-function): New variable.
+	(sasl-plain-continuations): New variable.
+	(sasl-unique-id): New function.
+	(sasl-unique-id-char): New variable.
+
+	* sasl-digest.el: New file.
+
+2000-11-01   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el: Bind `sasl-mechanisms'; add autoload settings for
+	`sasl-make-principal', `sasl-find-authenticator',
+	`sasl-authenticator-mechanism-internal' and
+	`sasl-evaluate-challenge'.
+	(smtp-use-sasl): New user option.
+	(smtp-sasl-principal-name): New user option.
+	(smtp-sasl-mechanisms): New user option.
+	(smtp-submit-package): Call `smtp-primitive-starttls' and
+	`smtp-primitive-auth'.
+	(smtp-primitive-ehlo): Don't modify the rest of a extension line.
+	(smtp-primitive-auth): New function.
+	(smtp-primitive-starttls): Check the response code.
+
+	* sasl.el: New implementation.
+
+	* sasl-cram.el: New file.
+
+	* FLIM-ELS (flim-modules): Add `md5', `md5-el', `md5-dl',
+	`hex-util', `hmac-def', `hmac-md5', `sasl' and `sasl-cram'.
+
+2000-11-01   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el: Add autoload settings for `starttls-open-stream' and
+	`starttls-negotiate'.
+	(smtp-connection-set-extensions-internal): New macro.
+	(smtp-connection-extensions-internal): New macro.
+	(smtp-make-connection): Set the `extension' slot to nil.
+	(smtp-primitive-ehlo): New function.
+	(smtp-submit-package): Rename from `smtp-commit'.
+	(smtp-submit-package-function): Rename from `smtp-commit-function'.
+	(smtp-primitive-starttls): New function.
+	(smtp-extensions): New group.
+	(smtp-use-8bitmime): New variable.
+	(smtp-use-size): New variable.
+	(smtp-use-starttls): New variable.
+	(smtp-via-smtp): Bind `smtp-open-connection-function'.
+
+2000-10-31   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el: New implementation; don't use `tram.el' and `luna.el'.
+
+
 2000-08-28  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* eword-encode.el (eword-encode-mailboxes-to-rword-list):

@@ -5,7 +5,8 @@
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: definition, MIME, multimedia, mail, news
 
-;; This file is part of FLIM (Faithful Library about Internet Message).
+;; This file is part of DEISUI (Deisui is an Entity Implementation for
+;; SEMI based User Interfaces).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as

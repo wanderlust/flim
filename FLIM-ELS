@@ -11,16 +11,23 @@
 		     mime mime-parse mmgeneric
 		     mmbuffer mmcooked mmdbuffer mmexternal
 		     mailcap
-		     smtp smtpmail))
+		     sasl sasl-cram sasl-digest
+		     smtp qmtp smtpmail))
+
+(setq hmac-modules '(hex-util
+		     hmac-def
+		     md5 md5-el md5-dl
+		     sha1 sha1-el sha1-dl
+		     hmac-md5 hmac-sha1))
+
+(setq flim-modules (nconc hmac-modules flim-modules))
 
 (if (and (fboundp 'base64-encode-string)
 	 (subrp (symbol-function 'base64-encode-string)))
     nil
   (if (fboundp 'dynamic-link)
-      (setq flim-modules (cons 'mel-b-dl flim-modules))
-    )
-  (setq flim-modules (cons 'mel-b-el flim-modules))
-  )
+      (setq flim-modules (cons 'mel-b-dl flim-modules)))
+  (setq flim-modules (cons 'mel-b-el flim-modules)))
 
 (require 'pccl)
 (unless-broken ccl-usable
