@@ -122,8 +122,8 @@ mmencode included in metamail or XEmacs package)."
 	       (buffer-string))))
     (or (bolp) (insert ?\n)))
     
-  (mel-define-method-function (encoded-text-encode-string string (nil "B"))
-			      'base64-encode-string)
+  ;; (mel-define-method-function (encoded-text-encode-string string (nil "B"))
+  ;;                             'base64-encode-string)
   (mel-define-method encoded-text-decode-string (string (nil "B"))
     (if (string-match (eval-when-compile
 			(concat "\\`" B-encoded-text-regexp "\\'"))
@@ -202,8 +202,18 @@ the STRING by its value."
       string)))
 
 
-(mel-define-service encoded-text-encode-string (string encoding)
-  "Encode STRING as encoded-text using ENCODING.  ENCODING must be string.")
+(mel-define-service encoded-text-encode-string)
+(defun encoded-text-encode-string (string encoding &optional mode)
+  "Encode STRING as encoded-text using ENCODING.
+ENCODING must be string.
+Optional argument MODE allows `text', `comment', `phrase' or nil.
+Default value is `phrase'."
+  (if (string= encoding "B")
+      (base64-encode-string string 'no-line-break)
+    (let ((f (mel-find-function 'encoded-text-encode-string encoding)))
+      (if f
+	  (funcall f string mode)
+	string))))
 
 (mel-define-service encoded-text-decode-string (string encoding)
   "Decode STRING as encoded-text using ENCODING.  ENCODING must be string.")
