@@ -396,9 +396,39 @@ representation-type $B$NL>A0$N@hF,$K(B <code>mm</code> $B$rIU$1$?$b$N$K$J$C$F
 <h3> mm-backend $B$N:n$jJ}(B
 <node> mm-backend module
 <p>
-$B!J$9$_$^$;$s!#$=$N$&$A=q$-$^$9(B (^_^;$B!K(B
+<defmacro name="mm-define-backend">
+<args> type
+<opts> parents
 <p>
-$B!J$H$j$"$($:!"(Bmm*.el $B$r;29M$K$7$F$/$@$5$$!K(B
+Define mm-backend <var>type</var>.
+<p>
+If <var>PARENTS</var> is specified, <var>type</var> inherits parents.
+Each parent must be representation-type.
+<p>
+Example:
+<p>
+<lisp>
+(mm-define-backend chao (generic))
+</lisp>
+</defmacro>
+
+<defmacro name="mm-define-method">
+<args> name args <rest> body
+<p>
+Define <var>name</var> as a method function of (nth 1 (car
+<var>args</var>)) backend.
+<p>
+<var>args</var> is like an argument list of lambda, but (car
+<var>args</var>) must be specialized parameter.  (car (car
+<var>args</var>)) is name of variable and (nth 1 (car
+<var>args</var>)) is name of backend (representation-type).
+<p>
+Example:
+<p>
+<lisp>
+(mm-define-method entity-cooked-p ((entity chao)) nil)
+</lisp>
+</defmacro>
 
 
 <h1> Content-Type $BMs$N>pJs(B
