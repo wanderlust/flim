@@ -46,9 +46,7 @@ The optional argument BOUNDs the search; it is a buffer position."
     (if (re-search-forward "^$" bound t)
 	(goto-char (1- (match-beginning 0)))
       (end-of-line)
-      ))
-  (point)
-  )
+      (point))))
 
 ;;;###autoload
 (defun std11-fetch-field (name)
