@@ -37,7 +37,9 @@
 (defvar mel-encoding-module-alist nil)
 
 (defun mime-encoding-list (&optional service)
-  "Return list of Content-Transfer-Encoding."
+  "Return list of Content-Transfer-Encoding.
+If SERVICE is specified, it returns available list of
+Content-Transfer-Encoding for it."
   (if service
       (let (dest)
 	(mapatoms (lambda (sym)
