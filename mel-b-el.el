@@ -123,7 +123,7 @@ external decoder is called."
 		   (ash (logand (car pack) 3) 4))))
     buf))
 
-(defun-maybe base64-encode-string (string)
+(defun-maybe base64-encode-string (string &optional no-line-break)
   "Encode STRING to base64, and return the result."
   (let* ((len (length string))
 	 (b 0)(e 57)
@@ -135,7 +135,7 @@ external decoder is called."
 		     (function base64-encode-1)
 		     (pack-sequence (substring string b e) 3)
 		     "")
-		    "\n"))
+		    (if (not no-line-break) "\n")))
       (setq b e
 	    e (+ e 57)))
     (concat dest
