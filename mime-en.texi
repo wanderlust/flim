@@ -436,7 +436,7 @@ result.@refill
 
 @defmac mm-define-backend type &optional  parents
 
-Define mm-backend @var{type}.@refill
+Define @var{type} as a mm-backend.@refill
 
 If @var{PARENTS} is specified, @var{type} inherits parents.  Each parent
 must be representation-type.@refill
