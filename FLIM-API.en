@@ -1,3 +1,7 @@
+	  FLIM (Faithful Library about Internet Message) API
+			     Version 1.14
+			   Draft Release 1
+
 * Notation
 
 Each function is described by following notation:
@@ -81,12 +85,18 @@ ULEVEL specifies implementation level:
   [Suggest]
 
 
+[Function] mime-find-root-entity (entity)
+  Return root entity of ENTITY.
+
+  [Suggest]
+
+
 [Function] mime-root-entity-p (entity &optional message)
   Return t if ENTITY is root-entity (message).
 
   If MESSAGE is specified, it is regarded as root entity.
 
-  [Suggest]
+  [Suggest]<Suggest>
 
 
 [Function] mime-entity-node-id (entity)
@@ -121,16 +131,12 @@ ULEVEL specifies implementation level:
   [Suggest]<Suggest>
 
 
-[Function] mime-find-root-entity (entity)
-  Return root entity of ENTITY.
-
-  [Suggest]
-
-
 ** MIME-Entity Attributes
 
 [Function] mime-entity-content-type (entity)
   Return content-type of ENTITY.
+
+  (cf. <** Content-Type>)
 
   [Suggest]
 
@@ -138,11 +144,15 @@ ULEVEL specifies implementation level:
 [Function] mime-entity-set-content-type (entity content-type)
   Set ENTITY's content-type to CONTENT-TYPE.
 
+  (cf. <** Content-Type>)
+
   [Suggest]
 
 
 [Function] mime-entity-content-disposition (entity)
   Return content-disposition of ENTITY.
+
+  (cf. <** Content-Disposition>)
 
   [Suggest]
 
@@ -156,9 +166,9 @@ ULEVEL specifies implementation level:
 [Function] mime-entity-encoding (entity &optional default-encoding)
   Return content-transfer-encoding of ENTITY.
 
-If the ENTITY does not have Content-Transfer-Encoding field, this
-function returns DEFAULT-ENCODING.  If it is nil, "7bit" is used as
-default value.
+  If the ENTITY does not have Content-Transfer-Encoding field, this
+  function returns DEFAULT-ENCODING.  If it is nil, "7bit" is used as
+  default value.
 
   [Suggest]
 
@@ -345,7 +355,7 @@ default value.
   Read field-body of Content-Type field from current-buffer,
   and return the parsed result.
 
-  Format of return value is as same as `mime-parse-Content-Type'."
+  Format of return value is as same as `mime-parse-Content-Type'.
 
   Return `nil' if Content-Type field is not found.
 
@@ -384,30 +394,42 @@ default value.
 
 ** Content-Disposition
 
+[Function] mime-parse-Content-Disposition (string)
+  Parse STRING as field-body of Content-Disposition field.
+
+  [Suggest]
+
+
+[Function] mime-read-Content-Disposition ()
+  Read field-body of Content-Disposition field from current-buffer,
+and return parsed it.
+
+  [Suggest]
+
+
 [Inline function] mime-content-disposition-type (content-disposition)
   Return disposition-type of CONTENT-DISPOSITION.
+
+  [Required]
 
 
 [Inline function] mime-content-disposition-parameter
 				(content-disposition parameter)
   Return PARAMETER value of CONTENT-DISPOSITION.
 
+  [Required]
+
 
 [Inline function] mime-content-disposition-filename (content-disposition)
   Return filename of CONTENT-DISPOSITION.
+
+  [Suggest]<Suggest>
 
 
 [Inline function] mime-content-disposition-parameters (content-disposition)
   Return disposition-parameters of CONTENT-DISPOSITION.
 
-
-[Function] mime-parse-Content-Disposition (string)
-  Parse STRING as field-body of Content-Disposition field.
-
-
-[Function] mime-read-Content-Disposition ()
-  Read field-body of Content-Disposition field from current-buffer,
-and return parsed it.
+  [Suggest]
 
 
 * encoded-word
@@ -815,8 +837,8 @@ If BOUNDARY is not nil, it is used as message header separator.
 [Function] std11-extract-address-components (string)
   Extract full name and canonical address from STRING.
 
-Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).
-If no name can be extracted, FULL-NAME will be nil.
+  Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).  If no
+  name can be extracted, FULL-NAME will be nil.
 
 
 * SMTP
@@ -826,9 +848,10 @@ If no name can be extracted, FULL-NAME will be nil.
 (require 'smtp)
 
 
-** Level 1 features
+** Features
 
 [Function] smtp-send-buffer (sender recipients buffer)
+  (This description will be written by Daiki Ueno <ueno@unixuser.org>)
 
 
 * QMTP
@@ -838,6 +861,7 @@ If no name can be extracted, FULL-NAME will be nil.
 (require 'qmtp)
 
 
-** Level 1 features
+** Features
 
 [Function] qmtp-send-buffer (sender recipients buffer)
+  (This description will be written by Daiki Ueno <ueno@unixuser.org>)
