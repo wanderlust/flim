@@ -1,3 +1,7 @@
+2001-06-01  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.3 (Unebigory-Dòmae)-A released.
+
 2001-06-01  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mel-b-el.el: Require `pces' for the macro `as-binary-process'
