@@ -443,7 +443,7 @@ If ARGS is specified, NAME is defined as a generic function for the
 service."
   `(progn
      (add-to-list 'mel-service-list ',name)
-     (defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
+     (defvar ,(intern (format "%s-obarray" name)) (make-vector 7 0))
      ,@(if args
 	   `((defun ,name ,args
 	       ,@rest
