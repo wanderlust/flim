@@ -305,7 +305,7 @@ don't define this value."
     response))
 
 (defun smtp-check-response (response)
-  (> (car response) 200))
+  (= (/ (car response) 100) 2))
 
 (defun smtp-send-command (process command)
   (goto-char (point-max))
