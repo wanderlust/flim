@@ -1,3 +1,13 @@
+1998-10-09  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-max-size-to-decode): New user option.
+	(eword-decode-and-fold-structured-field): Do nothing if size of
+	input is bigger than `eword-max-size-to-decode'.
+
+1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64-numbers): Use `eval-when-compile'.
+
 1998-10-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* FLIM-CFG: Use `add-latest-path' instead of `add-path' for adding
