@@ -54,6 +54,9 @@
  (t
   (require 'sha1-el)))
 
+(defalias 'sha1-encode 'sha1-string)
+(defalias 'sha1-encode-binary 'sha1-string)
+
 (provide 'sha1)
 
 ;;; sha1.el ends here
