@@ -1,4 +1,7 @@
-Wed Jul 22 16:40:07 GMT 1998
+1998-07-22  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* ChangeLog: Fix typo.
+
 1998-07-22  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: Add 25 tests.
@@ -7,34 +10,34 @@ Wed Jul 22 16:40:07 GMT 1998
 
 	* eword-decode.el (decode-entire-string): Add formal argument
 	`chars-must-be-quote'.
-	(eword-decode-unstructured): Add argument actual `chars-must-be-quote'.
-	(eword-decode-comment): Add argument actual `chars-must-be-quote'.
-	(eword-decode-quoted-string): Add argument actual `chars-must-be-quote'.
+	(eword-decode-unstructured): Add actual argument `chars-must-be-quote'.
+	(eword-decode-comment): Add actual argument `chars-must-be-quote'.
+	(eword-decode-quoted-string): Add actual argument `chars-must-be-quote'.
 	(eword-analyze-quoted-string): Does not quote result of
 	`eword-decode-quoted-string' as quoted-string because the result is
 	now already quoted-string form.
 
 1998-07-21  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add two tests.
+	* TESTPAT: Add two tests.
 
 	* TESTPAT: quoted-encoded-word quoting character is changed from * to +.
 
 1998-07-21  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add sixteen tests.
+	* TESTPAT: Add sixteen tests.
 
 1998-07-20  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add three tests.
+	* TESTPAT: Add three tests.
 
 1998-07-20  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add two tests.
+	* TESTPAT: Add two tests.
 
 1998-07-20  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add test.
+	* TESTPAT: Add test.
 
 1998-07-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -46,27 +49,27 @@ Wed Jul 22 16:40:07 GMT 1998
 
 1998-07-19  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add full automatic testing capability.
+	* TESTPAT: Add full automatic testing capability.
 
 1998-07-19  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add quoted-encoded-word description and test.
+	* TESTPAT: Add quoted-encoded-word description and test.
 
 1998-07-18  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add test result by FLIM-FLAM.
+	* TESTPAT: Add test result by FLIM-FLAM.
 
-	* eword-decode.el (eword-lexical-analyze-internal): restrict
+	* eword-decode.el (eword-lexical-analyze-internal): Restrict
 	calling `eword-analyze-encoded-word' after calling
 	`eword-analyze-spaces'.
 
 1998-07-18  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add test.
+	* TESTPAT: Add test.
 
-	* eword-decode.el (eword-analyze-quoted-string): quote string as
+	* eword-decode.el (eword-analyze-quoted-string): Quote string as
 	quoted-string.
-	(eword-analyze-encoded-word): quote non-atoms string as
+	(eword-analyze-encoded-word): Quote non-atoms string as
 	quoted-string.
 
 1998-07-18  Tanaka Akira      <akr@jaist.ac.jp>
@@ -79,15 +82,15 @@ Wed Jul 22 16:40:07 GMT 1998
 
 1998-07-18  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add test driver for FLIM-FLAM.
+	* TESTPAT: Add test driver for FLIM-FLAM.
 
 1998-07-16  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: change format to s-exp.
+	* TESTPAT: Change format to s-exp.
 
 1998-07-13  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* TESTPAT: add one test.
+	* TESTPAT: Add one test.
 
 1998-07-06  Tanaka Akira      <akr@jaist.ac.jp>
 
@@ -100,7 +103,7 @@ Wed Jul 22 16:40:07 GMT 1998
 1998-05-27  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-after-encoded-word-in-phrase-regexp):
-	remove `(' to do not decode encoded word just before comment.
+	Remove `(' to do not decode encoded word just before comment.
 
 1998-05-27  Tanaka Akira      <akr@jaist.ac.jp>
 
