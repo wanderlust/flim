@@ -1,3 +1,24 @@
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmcooked.el, mmbuffer.el: Use `mm-define-backend' and
+	`mm-define-method'.
+
+	* mime.el: Move `mime-entity-implementation-alist' to mime-def.el.
+	(mime-find-function): New implementation.
+	(mime-entity-cooked-p): Use `mime-entity-send'.
+	(mime-entity-point-min): Change message to `point-min'.
+	(mime-entity-point-max): Change message to `point-max'.
+	(mime-entity-header-start): Change message to `header-start'.
+	(mime-entity-header-end): Change message to `header-end'.
+	(mime-entity-body-start): Change message to `body-start'.
+	(mime-entity-body-end): Change message to `body-end'.
+
+	* mime-def.el (mime-entity-implementation-alist): Moved from
+	mime.el.
+	(mm-define-backend): New macro.
+	(mm-define-method): New macro.
+
+
 1998-07-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.8.1 (Kutsukawa) was released.
