@@ -1,5 +1,9 @@
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* FLIM-Chao: Version 1.8.0 (Shij-Dò)-A was released.
+
+1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmcooked.el: Abolish method `open'.
 
 	* mmbuffer.el (initialize-instance): New method; abolish `open'.
