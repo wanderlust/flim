@@ -179,7 +179,7 @@
 	      (insert "\n")
               (add-text-properties p (point)
                                    (list 'original-field-name field-name
-                                         'original-field-body field-body))
+                                         'original-field-body (ew-lf-to-crlf field-body)))
 	      )))))))
 
 (mm-define-method insert-header ((entity generic)
