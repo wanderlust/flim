@@ -109,7 +109,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;;
 
 (defsubst eword-encode-char-type (character)
-  (if (or (eq character ? )(eq character ?\t))
+  (if (memq character '(?  ?\t ?\n))
       nil
     (char-charset character)
     ))

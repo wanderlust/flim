@@ -507,7 +507,12 @@ Non MIME encoded-word part in FILED-BODY is decoded with
                        (1+ (string-width field-name))
                        (if (eq max-column t) fill-column max-column)))
       (setq decoded (ew-crlf-unfold decoded)))
-    (ew-crlf-to-lf decoded)))
+    (setq decoded (ew-crlf-to-lf decoded))
+    (add-text-properties 0 (length decoded)
+                         (list 'original-field-name field-name
+                               'original-field-body field-body)
+                         decoded)
+    decoded))
 
 (defun eword-decode-header (&optional code-conversion separator)
   "Decode MIME encoded-words in header fields.

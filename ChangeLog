@@ -1,3 +1,10 @@
+1998-10-27  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* Sync up to flim-1_11_3 from flim-1_11_2.
+
+	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
+	1.11.2.
+
 1998-10-26  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up to flim-1_11_2 from flim-1_11_0.
@@ -1255,6 +1262,27 @@
 1998-10-27  Tanaka Akira  <akr@jaist.ac.jp>
 
         * eword-encode.el (eword-encode-field-body): Unfold `field-body'.
+
+
+1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.11.3 (Saidaiji) was released.
+
+1998-10-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* VERSION: New file (Renamed from FLIM-VERSION).
+
+1998-10-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-char-type): Return nil for ?\n.
+
+1998-10-27  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-field-body): Unfold `field-body'.
+
+1998-10-27  Yoshiki Hayashi   <g740685@komaba.ecc.u-tokyo.ac.jp>
+
+	* README.ja: Update.
 
 
 1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>

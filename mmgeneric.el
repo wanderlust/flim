@@ -165,10 +165,14 @@
 	    (setq field (buffer-substring f-b (1- p))
 		  field-body (buffer-substring p f-e))
 	    (with-current-buffer the-buf
+              (setq p (point))
 	      (insert
                field-name
                (eword-decode-field-body field-body field nil t)
 	       "\n")
+              (add-text-properties p (point)
+                                   (list 'original-field-name field
+                                         'original-field-body field-body))
 	      )))))))
 
 (mm-define-method insert-header ((entity generic)
