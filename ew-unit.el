@@ -5,36 +5,6 @@
 
 (provide 'ew-unit)
 
-(defconst ew-anchored-encoded-word-regexp
-  (eval-when-compile
-    (require 'ew-var)
-    (concat "\\`" ew-encoded-word-regexp "\\'")))
-
-(defconst ew-b-regexp
-  (eval-when-compile
-    (concat "\\`\\("
-            "[A-Za-z0-9+/]"
-            "[A-Za-z0-9+/]"
-            "[A-Za-z0-9+/]"
-            "[A-Za-z0-9+/]"
-            "\\)*"
-            "[A-Za-z0-9+/]"
-            "[A-Za-z0-9+/]"
-            "\\(==\\|"
-            "[A-Za-z0-9+/]"
-            "[A-Za-z0-9+/=]"
-            "\\)\\'")))
-
-(defconst ew-q-regexp "\\`\\([^=?]\\|=[0-9A-Fa-f][0-9A-Fa-f]\\)*\\'")
-
-(defconst ew-byte-decoder-alist
-  '(("B" . ew-decode-b)
-    ("Q" . ew-decode-q)))
-
-(defconst ew-byte-checker-alist
-  '(("B" . ew-b-check)
-    ("Q" . ew-q-check)))
-
 (defun ew-b-check (encoding encoded-text) (string-match ew-b-regexp encoded-text))
 (defun ew-q-check (encoding encoded-text) (string-match ew-q-regexp encoded-text))
 

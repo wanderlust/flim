@@ -1,5 +1,34 @@
 1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-bq.el (ew-ccl-decode-b-0-table): Use `if' instead of `cond'
+	(ew-ccl-decode-b-1-table): Ditto.
+	(ew-ccl-decode-b-2-table): Ditto.
+	(ew-ccl-decode-b-3-table): Ditto.
+
+	* ew-quote.el:
+	  - Move `ew-quoting-char', `ew-quoting-chars-regexp' and
+	  `ew-type2-regexp' to ew-var.el.
+
+	* ew-unit.el:
+	  - Move `ew-anchored-encoded-word-regexp', `ew-b-regexp',
+	  `ew-q-regexp', `ew-byte-decoder-alist' and `ew-byte-checker-alist'
+	  to ew-var.el.
+
+	* ew-var.el (ew-permit-null-encoded-text): New variable.
+	(ew-encoded-text-regexp): Change positive closure to normal closure if
+	`ew-permit-null-encoded-text' is non-nil.
+	(ew-quoting-char): New variable (moved from ew-var.el).
+	(ew-quoting-chars-regexp): New variable (moved from ew-var.el).
+	(ew-type2-regexp): New variable (moved from ew-var.el).
+	(ew-anchored-encoded-word-regexp): New variable (moved from ew-unit.el).
+	(ew-b-regexp): New variable (moved from ew-unit.el).
+	(ew-q-regexp): New variable (moved from ew-unit.el).
+	(ew-byte-decoder-alist): New variable (moved from ew-unit.el).
+	(ew-byte-checker-alist): New variable (moved from ew-unit.el).
+	(ew-dynamic-options): Add `ew-permit-null-encoded-text'.
+
+1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-bq.el (ew-ccl-decode-base64): Abolished.
 	(ew-ccl-decode-b-bit-ex): New compile time function.
 	(ew-ccl-decode-b-0-table): New compile time constant.

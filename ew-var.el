@@ -8,6 +8,7 @@
 (defvar ew-ignore-76bytes-limit nil)
 (defvar ew-permit-sticked-comment nil)
 (defvar ew-permit-sticked-special nil)
+(defvar ew-permit-null-encoded-text nil) ; affect when loading time.
 
 (defvar ew-remove-bare-crlf nil)
 (defvar ew-default-mime-charset 'x-ctext)
@@ -53,19 +54,63 @@
 
 ;;; constants.
 
-(eval-and-compile
-  (defconst ew-token-regexp "[-!#-'*+0-9A-Z^-~]+")
-  (defconst ew-encoded-text-regexp "[!->@-~]+")
-)
+(defconst ew-token-regexp "[-!#-'*+0-9A-Z^-~]+")
+(defconst ew-encoded-text-regexp
+  (if ew-permit-null-encoded-text
+      "[!->@-~]*"
+    "[!->@-~]+"))
+
 (defconst ew-encoded-word-regexp
+  (concat (regexp-quote "=?")
+          "\\(" ew-token-regexp "\\)"
+          (regexp-quote "?")
+          "\\(" ew-token-regexp "\\)"
+          (regexp-quote "?")
+          "\\(" ew-encoded-text-regexp "\\)"
+          (regexp-quote "?=")))
+
+(defconst ew-anchored-encoded-word-regexp
+  (concat "\\`" ew-encoded-word-regexp "\\'"))
+
+(defconst ew-b-regexp
   (eval-when-compile
-    (concat (regexp-quote "=?")
-            "\\(" ew-token-regexp "\\)"
-            (regexp-quote "?")
-            "\\(" ew-token-regexp "\\)"
-            (regexp-quote "?")
-            "\\(" ew-encoded-text-regexp "\\)"
-            (regexp-quote "?="))))
+    (concat "\\`\\("
+            "[A-Za-z0-9+/]"
+            "[A-Za-z0-9+/]"
+            "[A-Za-z0-9+/]"
+            "[A-Za-z0-9+/]"
+            "\\)*"
+            "\\("
+            "[A-Za-z0-9+/]"
+            "[A-Za-z0-9+/]"
+            "\\(==\\|[A-Za-z0-9+/]=\\)"
+            "\\)?"
+            "\\'")))
+
+(defconst ew-q-regexp
+  "\\`\\([^=?]\\|=[0-9A-Fa-f][0-9A-Fa-f]\\)*\\'")
+
+(defconst ew-quoting-char ?+)
+(defconst ew-quoting-chars-regexp
+  (concat (regexp-quote (char-to-string ew-quoting-char)) "*"))
+
+(defconst ew-type2-regexp
+  (concat (regexp-quote "=?")
+          "\\(" ew-token-regexp "\\)"
+          (regexp-quote "?")
+          "\\(" ew-token-regexp "\\)"
+          (regexp-quote "?")
+          "\\(" ew-encoded-text-regexp "\\)"
+          (regexp-quote "?")
+          "\\'"))
+
+(defconst ew-byte-decoder-alist
+  '(("B" . ew-decode-b)
+    ("Q" . ew-decode-q)))
+
+(defconst ew-byte-checker-alist
+  '(("B" . ew-b-check)
+    ("Q" . ew-q-check)))
 
 ;;; utilities for variables.
 
@@ -80,4 +125,5 @@
     (if ew-permit-sticked-comment 16 0)
     (if ew-permit-sticked-special 32 0)
     (if ew-remove-bare-crlf 64 0)
+    (if ew-permit-null-encoded-text 128 0)
     )))

@@ -278,41 +278,38 @@
   (vconcat
    (mapcar
     (lambda (v)
-      (cond
-       ((eq v t) (lsh 1 24))
-       (v (ew-ccl-decode-b-bit-ex (lsh v 18)))
-       (t (lsh 1 24))))
+      (if (integerp v)
+	  (ew-ccl-decode-b-bit-ex (lsh v 18))
+	(lsh 1 24)))
     ew-ccl-256-to-64-table)))
 
 (defconst ew-ccl-decode-b-1-table
   (vconcat
    (mapcar
     (lambda (v)
-      (cond
-       ((eq v t) (lsh 1 25))
-       (v (ew-ccl-decode-b-bit-ex (lsh v 12)))
-       (t (lsh 1 25))))
+      (if (integerp v)
+	  (ew-ccl-decode-b-bit-ex (lsh v 12))
+	(lsh 1 25)))
     ew-ccl-256-to-64-table)))
 
 (defconst ew-ccl-decode-b-2-table
   (vconcat
    (mapcar
     (lambda (v)
-      (cond
-       ((eq v t) (lsh 1 26))
-       (v (ew-ccl-decode-b-bit-ex (lsh v 6)))
-       (t (lsh 1 26))))
+      (if (integerp v)
+	  (ew-ccl-decode-b-bit-ex (lsh v 6))
+	(lsh 1 26)))
     ew-ccl-256-to-64-table)))
 
 (defconst ew-ccl-decode-b-3-table
   (vconcat
    (mapcar
     (lambda (v)
-      (cond
-       ((eq v t) (lsh 1 27))
-       (v (ew-ccl-decode-b-bit-ex v))
-       (t (lsh 1 27))))
+      (if (integerp v)
+	  (ew-ccl-decode-b-bit-ex v)
+	(lsh 1 27)))
     ew-ccl-256-to-64-table)))
+
 )
 
 (define-ccl-program ew-ccl-decode-b
