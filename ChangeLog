@@ -1,7 +1,10 @@
 1999-12-20  Katsumi Yamaoka   <yamaoka@jpl.org>
 
-	* mel-b-el.el (base64-encode-string): Allow the optional second arg
+	* mel-b-el.el (base64-encode-region): Allow the optional second arg
 	`no-line-break'.
+	(base64-external-encode-region): Likewise.
+	(base64-internal-encode-region): Likewise.
+	(base64-encode-string): Likewise.
 
 1999-12-13  Kenichi OKADA <okada@opaopa.org>
 
