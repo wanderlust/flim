@@ -249,6 +249,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 
 ;;;###autoload
 (defun smtp-via-smtp (sender recipients buffer)
+  "Like `smtp-send-buffer', but sucks in any errors."
   (condition-case nil
       (progn
 	(smtp-send-buffer sender recipients buffer)
@@ -259,6 +260,10 @@ of the host to connect to.  SERVICE is name of the service desired."
 
 ;;;###autoload
 (defun smtp-send-buffer (sender recipients buffer)
+  "Send a message.
+SENDER is an envelope sender address.
+RECIPIENTS is a list of envelope recipient addresses.
+BUFFER may be a buffer or a buffer name which contains mail message."
   (let ((server
 	 (if (functionp smtp-server)
 	     (funcall smtp-server sender recipients)
