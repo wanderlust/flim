@@ -61,7 +61,7 @@ Content-Transfer-Encoding for it."
 
 (defun mime-encoding-alist (&optional service)
   "Return table of Content-Transfer-Encoding for completion."
-  (mapcar #'list (mime-encoding-list service)))
+  (mapcar (function list) (mime-encoding-list service)))
 
 (defsubst mel-use-module (name encodings)
   (while encodings
