@@ -136,27 +136,27 @@ don't define this value."
 	(net-transaction-error trans 'helo))
     trans))
 
-(defun smtp-mailfrom (sender buffer trans)
+(defun smtp-mailfrom (sender trans)
   (smtp-send-command
    (smtp-transaction-process-internal trans)
-   (format "MAIL FROM:<%s>%s%s"
+   (format "MAIL FROM:<%s>%s"
 	   sender
 	   ;; SIZE --- Message Size Declaration (RFC1870)
-	   (if (memq 'size
-		     (smtp-transaction-extensions-internal trans))
-	       (format " SIZE=%d"
-		       (save-excursion
-			 (set-buffer buffer)
-			 (+ (- (point-max) (point-min))
-			    ;; Add one byte for each change-of-line
-			    ;; because or CR-LF representation:
-			    (count-lines (point-min) (point-max))
-			    ;; For some reason, an empty line is
-			    ;; added to the message.	Maybe this
-			    ;; is a bug, but it can't hurt to add
-			    ;; those two bytes anyway:
-			    2)))
-	     "")
+;;;	   (if (memq 'size
+;;;		     (smtp-transaction-extensions-internal trans))
+;;;	       (format " SIZE=%d"
+;;;		       (save-excursion
+;;;			 (set-buffer buffer)
+;;;			 (+ (- (point-max) (point-min))
+;;;			    ;; Add one byte for each change-of-line
+;;;			    ;; because or CR-LF representation:
+;;;			    (count-lines (point-min) (point-max))
+;;;			    ;; For some reason, an empty line is
+;;;			    ;; added to the message.	Maybe this
+;;;			    ;; is a bug, but it can't hurt to add
+;;;			    ;; those two bytes anyway:
+;;;			    2)))
+;;;	     "")
 	   ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
 	   (if (and (memq '8bitmime
 			  (smtp-transaction-extensions-internal trans))
@@ -221,7 +221,7 @@ don't define this value."
      (net-transaction-compose-&&
       #'smtp-greeting
       (net-transaction-compose-|| #'smtp-ehlo #'smtp-helo))
-     (smtp-closure-partial-apply #'smtp-mailfrom sender buffer))
+     (smtp-closure-partial-apply #'smtp-mailfrom sender))
     (net-transaction-fold-left
      (lambda (accu recipient)
        (net-transaction-compose-&&
