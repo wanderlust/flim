@@ -143,7 +143,40 @@ If MESSAGE is specified, it is regarded as root entity."
   (null (mime-entity-parent entity message)))
 
 
-;;; @ Entity Buffer
+;;; @ Header buffer
+;;;
+
+(luna-define-generic mime-entity-header-buffer (entity))
+
+(luna-define-generic mime-goto-header-start-point (entity)
+  "Set buffer and point to header-start-position of ENTITY.")
+
+
+;;; @ Body buffer
+;;;
+
+(luna-define-generic mime-entity-body-buffer (entity))
+
+(luna-define-generic mime-entity-body-start-point (entity)
+  "Set buffer and point to body-start-position of ENTITY.")
+
+(define-obsolete-function-alias
+  'mime-entity-body-start 'mime-entity-body-start-point)
+
+(luna-define-generic mime-entity-body-end-point (entity)
+  "Set buffer and point to body-end-position of ENTITY.")
+
+(define-obsolete-function-alias
+  'mime-entity-body-end 'mime-entity-body-end-point)
+
+(luna-define-generic mime-goto-body-start-point (entity)
+  "Set buffer and point to body-start-position of ENTITY.")
+
+(luna-define-generic mime-goto-body-end-point (entity)
+  "Set buffer and point to body-end-position of ENTITY.")
+
+
+;;; @ Entity buffer (obsolete)
 ;;;
 
 (luna-define-generic mime-entity-buffer (entity))
@@ -152,28 +185,9 @@ If MESSAGE is specified, it is regarded as root entity."
  'mime-entity-buffer
  "use mime-entity-header-buffer or mime-entity-body-buffer instead.")
 
-(luna-define-generic mime-entity-header-buffer (entity))
-
-(luna-define-generic mime-entity-body-buffer (entity))
-
 (luna-define-generic mime-entity-point-min (entity))
 
 (luna-define-generic mime-entity-point-max (entity))
-
-(luna-define-generic mime-entity-body-end-point (entity)
-  "Set buffer and point to body-start-position of ENTITY.")
-
-(define-obsolete-function-alias
-  'mime-entity-body-end 'mime-entity-body-end-point)
-
-(luna-define-generic mime-goto-header-start-point (entity)
-  "Set buffer and point to header-start-position of ENTITY.")
-
-(luna-define-generic mime-goto-body-start-point (entity)
-  "Set buffer and point to body-start-position of ENTITY.")
-
-(luna-define-generic mime-goto-body-end-point (entity)
-  "Set buffer and point to body-end-position of ENTITY.")
 
 
 ;;; @ Entity Header
