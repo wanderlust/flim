@@ -93,6 +93,12 @@ START and END are buffer positions."
 (defvar base64-external-encoder '("mmencode")
   "*list of base64 encoder program name and its arguments.")
 
+(defvar base64-external-decoder '("mmencode" "-u")
+  "*list of base64 decoder program name and its arguments.")
+
+(defvar base64-external-decoder-option-to-specify-file '("-o")
+  "*list of option of base64 decoder program to specify file.")
+
 (defun base64-insert-encoded-file (filename)
   "Encode contents of file FILENAME to base64, and insert the result.
 It calls external base64 encoder specified by
@@ -102,6 +108,21 @@ mmencode included in metamail or XEmacs package)."
   (apply (function call-process) (car base64-external-encoder)
 	 filename t nil (cdr base64-external-encoder))
   )
+
+(defun base64-write-decoded-region (start end filename)
+  "Decode and write current region encoded by base64 into FILENAME.
+START and END are buffer positions."
+  (interactive
+   (list (region-beginning) (region-end)
+	 (read-file-name "Write decoded region to file: ")))
+  (as-binary-process
+   (apply (function call-process-region)
+	  start end (car base64-external-decoder)
+	  nil nil nil
+	  (append (cdr base64-external-decoder)
+		  base64-external-decoder-option-to-specify-file
+		  (list filename))
+	  )))
 
 
 ;;; @ etc
