@@ -60,7 +60,45 @@ current-buffer, and return it.")
   "Parse BUFFER as a MIME message.")
 
 
-;;; @ MIME entity
+;;; @ Entity as node of message
+;;;
+
+(defun mime-find-entity-from-number (entity-number &optional message)
+  "Return entity from ENTITY-NUMBER in MESSAGE.
+If MESSAGE is not specified, `mime-message-structure' is used."
+  (or message
+      (setq message mime-message-structure))
+  (let ((sn (car entity-number)))
+    (if (null sn)
+	message
+      (let ((rc (nth sn (mime-entity-children message))))
+	(if rc
+	    (mime-find-entity-from-number (cdr entity-number) rc)
+	  ))
+      )))
+
+(defsubst mime-find-entity-from-node-id (entity-node-id &optional message)
+  "Return entity from ENTITY-NODE-ID in MESSAGE.
+If MESSAGE is not specified, `mime-message-structure' is used."
+  (mime-find-entity-from-number (reverse entity-node-id) message))
+
+(defsubst mime-entity-parent (entity &optional message)
+  "Return mother entity of ENTITY.
+If MESSAGE is not specified, `mime-message-structure' in the buffer of
+ENTITY is used."
+  (mime-find-entity-from-node-id
+   (cdr (mime-entity-node-id entity))
+   (or message
+       (save-excursion
+	 (set-buffer (mime-entity-buffer entity))
+	 mime-message-structure))))
+
+(defsubst mime-root-entity-p (entity)
+  "Return t if ENTITY is root-entity (message)."
+  (null (mime-entity-node-id entity)))
+
+
+;;; @ Entity Header
 ;;;
 
 (defun mime-fetch-field (field-name &optional entity)
@@ -130,6 +168,10 @@ current-buffer, and return it.")
 		    entity (put-alist field-name field header))
 		   field)))))))
 
+
+;;; @ Entity Content
+;;;
+
 (defun mime-entity-content (entity)
   (save-excursion
     (set-buffer (mime-entity-buffer entity))
@@ -137,9 +179,30 @@ current-buffer, and return it.")
 					  (mime-entity-body-end entity))
 			(mime-entity-encoding entity))))
 
-(defsubst mime-root-entity-p (entity)
-  "Return t if ENTITY is root-entity (message)."
-  (null (mime-entity-node-id entity)))
+
+;;; @ Another Entity Information
+;;;
+
+(defun mime-entity-uu-filename (entity)
+  (if (member (mime-entity-encoding entity) mime-uuencode-encoding-name-list)
+      (save-excursion
+	(set-buffer (mime-entity-buffer entity))
+	(goto-char (mime-entity-body-start entity))
+	(if (re-search-forward "^begin [0-9]+ "
+			       (mime-entity-body-end entity) t)
+	    (if (looking-at ".+$")
+		(buffer-substring (match-beginning 0)(match-end 0))
+	      )))))
+
+(defun mime-entity-filename (entity)
+  (or (mime-entity-uu-filename entity)
+      (mime-content-disposition-filename
+       (mime-entity-content-disposition entity))
+      (cdr (let ((param (mime-content-type-parameters
+			 (mime-entity-content-type entity))))
+	     (or (assoc "name" param)
+		 (assoc "x-name" param))
+	     ))))
 
 
 ;;; @ end
