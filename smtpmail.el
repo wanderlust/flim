@@ -130,6 +130,7 @@ This is relative to `smtpmail-queue-dir'.")
 		    (save-restriction
 		      (narrow-to-region (point)
 					(save-excursion
+					  (forward-line 1)
 					  (while (looking-at "^[ \t]")
 					    (forward-line 1))
 					  (point)))
