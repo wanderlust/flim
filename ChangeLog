@@ -1,3 +1,16 @@
+2000-03-02  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* FLIM-ELS (flim-modules): Add `mmgeneric'.
+
+	* mmgeneric.el: New file.
+
+	* mmbuffer.el: Require `mmgeneric'.
+
+	* mime.el: Require `mmgeneric' when compiling.
+
+	* mime-def.el: Move mime-entity related definitions to
+	mmgeneric.el.
+
 2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mime.el (mime-find-entity-from-number): Now second argument
