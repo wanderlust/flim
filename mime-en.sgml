@@ -286,6 +286,17 @@ us-ascii characters'' are also decoded as
 <var>default-mime-charset</var>.
 </defun>
 
+<defun name="mime-insert-text-content">
+	    <args> entity
+<p>
+Insert before point a contents of <var>entity</var> as text entity.
+<p>
+Contents of the <var>entity</var> are decoded as <dref>MIME
+charset</dref>.  If the <var>entity</var> does not have charset
+parameter of Content-Type field, <var>default-mime-charset</var> is
+used as default value.
+</defun>
+
 <defvar name="default-mime-charset">
 <p>
 Symbol to indicate default value of <dref>MIME-charset</dref>.
