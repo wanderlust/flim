@@ -1,8 +1,8 @@
 ;;; mel-b-ccl.el --- Base64 encoder/decoder using CCL.
 
-;; Copyright (C) 1998,1999 Tanaka Akira
+;; Copyright (C) 1998,1999,2000 Free Software Foundation, Inc.
 
-;; Author: Tanaka Akira <akr@jaist.ac.jp>
+;; Author: Tanaka Akira <akr@m17n.org>
 ;; Created: 1998/9/17
 ;; Keywords: MIME, Base64
 
@@ -419,7 +419,9 @@ abcdefghijklmnopqrstuvwxyz\
   (defun base64-ccl-insert-encoded-file (filename)
     "Encode contents of file FILENAME to base64, and insert the result."
     (interactive "*fInsert encoded file: ")
-    (insert-file-contents-as-coding-system 'mel-ccl-base64-lf-rev filename))
+    (let ((coding-system-for-read 'mel-ccl-base64-lf-rev)
+	  format-alist)
+      (insert-file-contents filename)))
 
   (mel-define-method-function (mime-encode-string string (nil "base64"))
 			      'base64-ccl-encode-string)
@@ -447,7 +449,9 @@ abcdefghijklmnopqrstuvwxyz\
 (defun base64-ccl-write-decoded-region (start end filename)
   "Decode the region from START to END and write out to FILENAME."
   (interactive "*r\nFWrite decoded region to file: ")
-  (write-region-as-coding-system 'mel-ccl-b-rev start end filename))
+  (let ((coding-system-for-write 'mel-ccl-b-rev)
+	jka-compr-compression-info-list jam-zcat-filename-list)
+    (write-region start end filename)))
 
 (mel-define-method-function (mime-decode-string string (nil "base64"))
 			    'base64-ccl-decode-string)
