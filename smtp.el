@@ -3,8 +3,9 @@
 ;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
-;;         Simon Leinen <simon@switch.ch> (ESMTP support)
-;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;;	Simon Leinen <simon@switch.ch> (ESMTP support)
+;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;;	Daiki Ueno <ueno@unixuser.org>
 ;; Keywords: SMTP, mail
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -33,35 +34,47 @@
 
 (eval-when-compile (require 'cl))	; push
 
+(require 'net-trans)
+
+(eval-and-compile
+  (luna-define-class smtp-transaction (transaction)
+		     (process
+		      extensions
+		      sender
+		      recipients
+		      buffer))
+
+  (luna-define-internal-accessors 'smtp-transaction))
+
 (defgroup smtp nil
   "SMTP protocol for sending mail."
   :group 'mail)
 
 (defcustom smtp-default-server nil
-  "*Specify default SMTP server."
+  "Specify default SMTP server."
   :type '(choice (const nil) string)
   :group 'smtp)
 
 (defcustom smtp-server (or (getenv "SMTPSERVER") smtp-default-server)
-  "*The name of the host running SMTP server.  It can also be a function
+  "The name of the host running SMTP server.  It can also be a function
 called from `smtp-via-smtp' with arguments SENDER and RECIPIENTS."
   :type '(choice (string :tag "Name")
 		 (function :tag "Function"))
   :group 'smtp)
 
 (defcustom smtp-service "smtp"
-  "*SMTP service port number. \"smtp\" or 25."
+  "SMTP service port number. \"smtp\" or 25."
   :type '(choice (integer :tag "25" 25)
                  (string :tag "smtp" "smtp"))
   :group 'smtp)
 
 (defcustom smtp-use-8bitmime t
-  "*If non-nil, use ESMTP 8BITMIME if available."
+  "If non-nil, use ESMTP 8BITMIME if available."
   :type 'boolean
   :group 'smtp)
 
 (defcustom smtp-local-domain nil
-  "*Local domain name without a host name.
+  "Local domain name without a host name.
 If the function (system-name) returns the full internet address,
 don't define this value."
   :type '(choice (const nil) string)
@@ -73,12 +86,22 @@ don't define this value."
   :group 'smtp)
 
 (defcustom smtp-notify-success nil
-  "*If non-nil, notification for successful mail delivery is returned 
+  "If non-nil, notification for successful mail delivery is returned 
  to user (RFC1891)."
   :type 'boolean
   :group 'smtp)
- 
+
+(defvar smtp-open-connection-function (function open-network-stream))
+
+(defvar smtp-default-commands
+  '(&& smtp-greeting (|| smtp-ehlo smtp-helo)
+       smtp-mailfrom smtp-rcptto  smtp-data))
+
+(defvar smtp-commands smtp-default-commands)
+
 (defvar smtp-read-point nil)
+
+(defvar smtp-transaction-function nil)
 
 (defun smtp-make-fqdn ()
   "Return user's fully qualified domain name."
@@ -91,163 +114,169 @@ don't define this value."
      (t
       (error "Cannot generate valid FQDN. Set `smtp-local-domain' correctly.")))))
 
+(luna-define-generic smtp-greeting (trans))
+(luna-define-generic smtp-ehlo (trans))
+(luna-define-generic smtp-helo (trans))
+(luna-define-generic smtp-mailfrom (trans))
+(luna-define-generic smtp-rcptto (trans))
+(luna-define-generic smtp-data (trans))
+
+(luna-define-method smtp-greeting ((trans smtp-transaction))
+  (let ((response
+	 (smtp-read-response
+	  (smtp-transaction-process-internal trans))))
+    (or (smtp-check-response response)
+	(transaction-error trans 'greeting))
+    trans))
+  
+(luna-define-method smtp-ehlo ((trans smtp-transaction))
+  (smtp-send-command
+   (smtp-transaction-process-internal trans)
+   (format "EHLO %s" (smtp-make-fqdn)))
+  (let ((response
+	 (smtp-read-response 
+	  (smtp-transaction-process-internal trans))))
+    (or (smtp-check-response response)
+	(transaction-error trans 'ehlo))
+    (smtp-transaction-set-extensions-internal trans (cdr response))
+    trans))
+
+(luna-define-method smtp-helo ((trans smtp-transaction))
+  (smtp-send-command
+   (smtp-transaction-process-internal trans)
+   (format "HELO %s" (smtp-make-fqdn)))
+  (let ((response
+	 (smtp-read-response
+	  (smtp-transaction-process-internal trans))))
+    (or (smtp-check-response response)
+	(transaction-error trans 'helo))
+    trans))
+
+(luna-define-method smtp-mailfrom ((trans smtp-transaction))
+  (smtp-send-command
+   (smtp-transaction-process-internal trans)
+   (format "MAIL FROM:<%s>%s%s"
+	   (smtp-transaction-sender-internal trans)
+	   ;; SIZE --- Message Size Declaration (RFC1870)
+	   (if (memq 'size
+		     (smtp-transaction-extensions-internal trans))
+	       (format " SIZE=%d"
+		       (save-excursion
+			 (set-buffer
+			  (smtp-transaction-buffer-internal trans))
+			 (+ (- (point-max) (point-min))
+			    ;; Add one byte for each change-of-line
+			    ;; because or CR-LF representation:
+			    (count-lines (point-min) (point-max))
+			    ;; For some reason, an empty line is
+			    ;; added to the message.	Maybe this
+			    ;; is a bug, but it can't hurt to add
+			    ;; those two bytes anyway:
+			    2)))
+	     "")
+	   ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
+	   (if (and (memq '8bitmime
+			  (smtp-transaction-extensions-internal trans))
+		    smtp-use-8bitmime)
+	       " BODY=8BITMIME"
+	     "")))
+  (let ((response
+	 (smtp-read-response
+	  (smtp-transaction-process-internal trans))))
+    (or (smtp-check-response response)
+	(transaction-error trans 'mailfrom))
+    trans))
+
+(luna-define-method smtp-rcptto ((trans smtp-transaction))
+  (let ((recipients
+	 (smtp-transaction-recipients-internal trans))
+	response)
+    (while recipients
+      (smtp-send-command
+       (smtp-transaction-process-internal trans)
+       (format
+	(if smtp-notify-success
+	    "RCPT TO:<%s> NOTIFY=SUCCESS"
+	  "RCPT TO:<%s>")
+	(car recipients)))
+      (setq response
+	    (smtp-read-response
+	     (smtp-transaction-process-internal trans)))
+      (or (smtp-check-response response)
+	  (transaction-error trans 'rcptto))
+      (setq recipients (cdr recipients)))
+    trans))
+
+(luna-define-method smtp-data ((trans smtp-transaction))
+  (smtp-send-command
+   (smtp-transaction-process-internal trans)
+   "DATA")
+  (let ((response
+	 (smtp-read-response
+	  (smtp-transaction-process-internal trans))))
+    (or (smtp-check-response response)
+	(transaction-error trans 'data))
+
+    ;; Mail contents
+    (smtp-send-data 
+     (smtp-transaction-process-internal trans)
+     (smtp-transaction-buffer-internal trans))
+
+    ;; DATA end "."
+    (smtp-send-command
+     (smtp-transaction-process-internal trans)
+     ".")
+    (setq response
+	  (smtp-read-response
+	   (smtp-transaction-process-internal trans)))
+    (or (smtp-check-response response)
+	(transaction-error trans 'data))
+    trans))
+
 (defun smtp-via-smtp (sender recipients smtp-text-buffer)
   (let ((server (if (functionp smtp-server)
 		    (funcall smtp-server sender recipients)
 		  smtp-server))
-	process response extensions)
+	process response extensions
+	transaction error)
     (save-excursion
       (set-buffer
        (get-buffer-create
 	(format "*trace of SMTP session to %s*" server)))
+      (buffer-disable-undo)
       (erase-buffer)
       (make-local-variable 'smtp-read-point)
       (setq smtp-read-point (point-min))
-
+      (make-local-variable 'smtp-transaction-function)
+      (or smtp-transaction-function
+	  (let ((function (transaction-compose-commands smtp-commands)))
+	    (or (functionp function)
+		(error "Unable to compose SMTP commands"))
+	    (setq smtp-transaction-function function)))
       (unwind-protect
-	  (catch 'done
-	    (setq process (open-network-stream-as-binary
-			   "SMTP" (current-buffer) server smtp-service))
-	    (or process (throw 'done nil))
-
-	    (set-process-filter process 'smtp-process-filter)
-
-	    ;; Greeting
-	    (setq response (smtp-read-response process))
-	    (if (or (null (car response))
-		    (not (integerp (car response)))
-		    (>= (car response) 400))
-		(throw 'done (car (cdr response))))
-
-	    ;; EHLO
-	    (smtp-send-command process
-			       (format "EHLO %s" (smtp-make-fqdn)))
-	    (setq response (smtp-read-response process))
-	    (if (or (null (car response))
-		    (not (integerp (car response)))
-		    (>= (car response) 400))
-		(progn
-		  ;; HELO
-		  (smtp-send-command process
-				     (format "HELO %s" (smtp-make-fqdn)))
-		  (setq response (smtp-read-response process))
-		  (if (or (null (car response))
-			  (not (integerp (car response)))
-			  (>= (car response) 400))
-		      (throw 'done (car (cdr response)))))
-	      (let ((extension-lines (cdr (cdr response))))
-		(while extension-lines
-		  (push (intern (downcase (substring (car extension-lines) 4)))
-			extensions)
-		  (setq extension-lines (cdr extension-lines)))))
-
-	    ;; ONEX --- One message transaction only (sendmail extension?)
-	    (if (or (memq 'onex extensions)
-		    (memq 'xone extensions))
-		(progn
-		  (smtp-send-command process "ONEX")
-		  (setq response (smtp-read-response process))
-		  (if (or (null (car response))
-			  (not (integerp (car response)))
-			  (>= (car response) 400))
-		      (throw 'done (car (cdr response))))))
-
-	    ;; VERB --- Verbose (sendmail extension?)
-	    (if (and smtp-debug-info
-		     (or (memq 'verb extensions)
-			 (memq 'xvrb extensions)))
-		(progn
-		  (smtp-send-command process "VERB")
-		  (setq response (smtp-read-response process))
-		  (if (or (null (car response))
-			  (not (integerp (car response)))
-			  (>= (car response) 400))
-		      (throw 'done (car (cdr response))))))
-
-	    ;; XUSR --- Initial (user) submission (sendmail extension?)
-	    (if (memq 'xusr extensions)
-		(progn
-		  (smtp-send-command process "XUSR")
-		  (setq response (smtp-read-response process))
-		  (if (or (null (car response))
-			  (not (integerp (car response)))
-			  (>= (car response) 400))
-		      (throw 'done (car (cdr response))))))
-
-	    ;; MAIL FROM:<sender>
-	    (smtp-send-command
-	     process
-	     (format "MAIL FROM:<%s>%s%s"
-		     sender
-		     ;; SIZE --- Message Size Declaration (RFC1870)
-		     (if (memq 'size extensions)
-			 (format " SIZE=%d"
-				 (save-excursion
-				   (set-buffer smtp-text-buffer)
-				   (+ (- (point-max) (point-min))
-				      ;; Add one byte for each change-of-line
-				      ;; because or CR-LF representation:
-				      (count-lines (point-min) (point-max))
-				      ;; For some reason, an empty line is
-				      ;; added to the message.	Maybe this
-				      ;; is a bug, but it can't hurt to add
-				      ;; those two bytes anyway:
-				      2)))
-		       "")
-		     ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
-		     (if (and (memq '8bitmime extensions)
-			      smtp-use-8bitmime)
-			 " BODY=8BITMIME"
-		       "")))
-	    (setq response (smtp-read-response process))
-	    (if (or (null (car response))
-		    (not (integerp (car response)))
-		    (>= (car response) 400))
-		(throw 'done (car (cdr response))))
-
-	    ;; RCPT TO:<recipient>
-	    (while recipients
-	      (smtp-send-command process
-				 (format
-				  (if smtp-notify-success
-				      "RCPT TO:<%s> NOTIFY=SUCCESS" 
-				    "RCPT TO:<%s>")
-				  (car recipients)))
-	      (setq recipients (cdr recipients))
-	      (setq response (smtp-read-response process))
-	      (if (or (null (car response))
-		      (not (integerp (car response)))
-		      (>= (car response) 400))
-		  (throw 'done (car (cdr response)))))
-
-	    ;; DATA
-	    (smtp-send-command process "DATA")
-	    (setq response (smtp-read-response process))
-	    (if (or (null (car response))
-		    (not (integerp (car response)))
-		    (>= (car response) 400))
-		(throw 'done (car (cdr response))))
-
-	    ;; Mail contents
-	    (smtp-send-data process smtp-text-buffer)
-
-	    ;; DATA end "."
-	    (smtp-send-command process ".")
-	    (setq response (smtp-read-response process))
-	    (if (or (null (car response))
-		    (not (integerp (car response)))
-		    (>= (car response) 400))
-		(throw 'done (car (cdr response))))
-
-	    t)
-
-	(if (and process
-		 (eq (process-status process) 'open))
-	    (progn
-	      ;; QUIT
-	      (smtp-send-command process "QUIT")
-	      (smtp-read-response process)
-	      (delete-process process)))))))
+	  (progn
+	    (as-binary-process
+	     (setq process
+		   (funcall smtp-open-connection-function
+			    "SMTP" (current-buffer) server smtp-service)))
+	    (when process
+	      (set-process-filter process 'smtp-process-filter)
+	      (setq transaction
+		    (luna-make-entity 'smtp-transaction
+				      :process process
+				      :sender sender
+				      :recipients recipients
+				      :buffer smtp-text-buffer)
+		    error
+		    (catch (transaction-error-name transaction)
+		      (funcall smtp-transaction-function transaction)
+		      nil))
+	      (not error)))
+	(when (and process
+		   (memq (process-status process) '(open run)))
+	  ;; QUIT
+	  (smtp-send-command process "QUIT")
+	  (delete-process process))))))
 
 (defun smtp-process-filter (process output)
   (save-excursion
@@ -303,6 +332,9 @@ don't define this value."
 		  (cons nil (nreverse response-strings)))))))
     (setq smtp-read-point match-end)
     return-value))
+
+(defun smtp-check-response (response)
+  (> (car response) 200))
 
 (defun smtp-send-command (process command)
   (goto-char (point-max))
