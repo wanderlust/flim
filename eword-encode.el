@@ -377,7 +377,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ converter
 ;;;
 
-(defun tm-eword::phrase-to-rwl (phrase)
+(defun eword-encode-phrase-to-rword-list (phrase)
   (let (token type dest str)
     (while phrase
       (setq token (car phrase))
@@ -470,7 +470,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	(if (eq (car (car phrase)) 'spaces)
 	    (setq phrase (cdr phrase))
 	  )
-	(setq dest (tm-eword::phrase-to-rwl phrase))
+	(setq dest (eword-encode-phrase-to-rword-list phrase))
 	(if dest
 	    (setq dest (append dest '((" " nil nil))))
 	  )
