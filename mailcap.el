@@ -95,18 +95,17 @@
 	  (forward-char)))))
 
 (defsubst mailcap-look-at-qchar ()
-  (let ((chr (char-after (point))))
-    (when (eq chr ?\\)
-      (forward-char 2)
-      (char-before (point))
-      )))
+  (when (eq (char-after (point)) ?\\)
+    (prog2
+	(forward-char)
+	(char-after (point))
+      (forward-char))))
 
 (defsubst mailcap-look-at-mtext ()
   (let ((beg (point)))
     (while (or (mailcap-look-at-qchar)
 	       (mailcap-look-at-schar)))
-    (buffer-substring beg (point))
-    ))
+    (buffer-substring beg (point))))
 
 
 ;;; @ field
