@@ -600,8 +600,8 @@ encoded-word.  ASCII token is not encoded."
       ""
     (let (start)
       (if (symbolp field-name)
-	  (setq start (+ (length (symbol-name field-name)) 2))
-	(setq start (+ (length field-name) 2)
+	  (setq start (1+ (length (symbol-name field-name))))
+	(setq start (1+ (length field-name))
 	      field-name (intern (capitalize field-name))))
       (cond ((memq field-name
 		   '(Reply-To
