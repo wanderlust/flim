@@ -430,10 +430,10 @@ If SEPARATOR is not nil, it is used as header separator."
 		    p (match-end 0)
 		    field-name (buffer-substring beg (1- p))
 		    end (std11-field-end)
-		    field-body (buffer-substring p end)
+		    field-body (ew-lf-crlf-to-crlf
+				(buffer-substring p end))
 		    decoded (ew-decode-field
-			     field-name
-			     (ew-lf-crlf-to-crlf field-body)))
+			     field-name field-body))
 	      (unless (equal field-body decoded)
 		(setq decoded (ew-crlf-refold
 			       decoded
