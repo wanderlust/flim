@@ -81,7 +81,7 @@
 			    filename)
     ))
 
-(defun eword-visible-field-p (field-name visible-fields invisible-fields)
+(defun mime-visible-field-p (field-name visible-fields invisible-fields)
   (or (catch 'found
 	(while visible-fields
 	  (let ((regexp (car visible-fields)))
@@ -120,8 +120,8 @@
 		  field-name (buffer-substring beg (1- p))
 		  len (string-width field-name)
 		  end (std11-field-end))
-	    (when (eword-visible-field-p field-name
-					 visible-fields invisible-fields)
+	    (when (mime-visible-field-p field-name
+					visible-fields invisible-fields)
 	      (setq field (intern (capitalize field-name)))
 	      (save-excursion
 		(set-buffer the-buf)
