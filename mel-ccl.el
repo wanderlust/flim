@@ -1216,7 +1216,8 @@ abcdefghijklmnopqrstuvwxyz\
   (interactive
     (list (region-beginning) (region-end)
           (read-file-name "Write decoded region to file: ")))
-  (let ((coding-system-for-write 'mel-ccl-b-rev))
+  (let ((coding-system-for-write 'mel-ccl-b-rev)
+	jka-compr-compression-info-list)
     (write-region start end filename)))
 
 (mel-define-method-function (mime-decode-string string (nil "base64"))
