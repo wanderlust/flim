@@ -1,5 +1,84 @@
 1998-08-28  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-dec.el (ew-decode-field-test): Change column.
+
+	* eword-encode.el (ew-decode-field-test): Sync up to 1.9 from
+	1.3.
+	(eword-encode-field): Add `In-Reply-To' to structured field.
+
+	* mel-b.el:
+	  - Move `base64-internal-encoding-limit',
+	  `base64-internal-decoding-limit', `base64-encode-region',
+	  `base64-decode-region', `base64-encode-string' and
+	  `base64-decode-string'
+	  to mel.el.
+	(base64-internal-encode-string): Renamed from
+	`base64-encode-string'.
+	(base64-external-write-decoded-region): Renamed from
+	`base64-write-decoded-region'.
+	(base64-internal-encoded-length): Renamed from
+	`base64-encoded-length'
+
+	* mel-dl.el:
+	  - Move `base64-encode-string' and `base64-decode-string' to
+	  mel.el.
+	(base64-dl-encode-string): New alias for `encode-base64-string'.
+	(base64-dl-decode-string): New alias for `decode-base64-string'.
+	(base64-dl-encode-region): Renamed from `base64-encode-region'.
+	(base64-dl-decode-region): Renamed from `base64-decode-region'.
+	(base64-external-encoder): Abolished.
+	(base64-external-decoder): Abolished.
+	(base64-external-decoder-option-to-specify-file): Abolished.
+	(base64-insert-encoded-file): Abolished.
+	(base64-write-decoded-region): Abolished.
+	(base64-base64-encoded-length): Abolished.
+
+	* mel-g.el:
+	  - Move `gzip64-encode-region' and `gzip64-decode-region' to
+	  mel.el.
+	(gzip64-external--insert-encoded-file): Renamed from
+	`gzip64-insert-encoded-file'.
+	(gzip64-external-write-decoded-region): Renamed from
+	`gzip64-write-decoded-region'.
+
+	*mel-q.el:
+	  - Move `quoted-printable-internal-encoding-limit',
+	  `quoted-printable-encode-region',
+	  `quoted-printable-internal-decoding-limit' and
+	  `quoted-printable-decode-region' to mel.el
+	(quoted-printable-encode-string): Abolished.
+	(quoted-printable-internal-encode-string): New function.
+	(quoted-printable-external-encode-string): New function.
+	(quoted-printable-external-insert-encoded-file): Renamed from
+	`quoted-printable-insert-encoded-file'.
+	(quoted-printable-decode-string): Abolished.
+	(quoted-printable-internal-decode-string): New function.
+	(quoted-printable-external-decode-string): New function.
+	(quoted-printable-external-write-decoded-region): Renamed from
+	`quoted-printable-write-decoded-region'.
+	(q-encoding-internal-encode-string): Renamed from
+	`q-encoding-encode-string'.
+	(q-encoding-internal-decode-string): Renamed from
+	`q-encoding-decode-string'.
+	(q-encoding-internal-encoded-length): Renamed from
+	`q-encoding-encoded-length'.
+
+	* mel-u.el:
+	  - Move `uuencode-encode-region', `uuencode-decode-region' to
+	  mel.el.
+	(uuencode-external-insert-encoded-file): Renamed from
+	`uuencode-insert-encoded-file'.
+	(uuencode-external-write-decoded-region): Renamed from
+	`uuencode-write-decoded-region'.
+
+	* mel.el: Autoloading Restructured.
+	(base64-internal-encoding-limit): Moved from mel-b.el.
+	(base64-internal-decoding-limit): Moved from mel-b.el.
+	(quoted-printable-internal-encoding-limit): Moved from mel-q.el.
+	(quoted-printable-internal-decoding-limit): Moved from mel-q.el.
+
+1998-08-28  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-dec.el (ew-decode-field-test): Print sequence of fragments
 	if prefix argument exists.
 

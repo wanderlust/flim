@@ -41,16 +41,6 @@
 (defvar base64-external-decoder-option-to-specify-file '("-o")
   "*list of options of base64 decoder program to specify file.")
 
-(defvar base64-internal-encoding-limit 1000
-  "*limit size to use internal base64 encoder.
-If size of input to encode is larger than this limit,
-external encoder is called.")
-
-(defvar base64-internal-decoding-limit 1000
-  "*limit size to use internal base64 decoder.
-If size of input to decode is larger than this limit,
-external decoder is called.")
-
 
 ;;; @ internal base64 decoder/encoder
 ;;;	based on base64 decoder by Enami Tsugutomo
@@ -121,7 +111,7 @@ external decoder is called.")
 ;;; @@ base64 encoder/decoder for string
 ;;;
 
-(defun base64-encode-string (string)
+(defun base64-internal-encode-string (string)
   "Encode STRING to base64, and return the result."
   (let ((len (length string))
 	(b 0)(e 57)
@@ -197,7 +187,7 @@ external decoder is called.")
       (narrow-to-region beg end)
       (let ((str (buffer-substring beg end)))
 	(delete-region beg end)
-	(insert (base64-encode-string str))
+	(insert (base64-internal-encode-string str))
 	)
       (or (bolp)
 	  (insert "\n")
@@ -245,55 +235,10 @@ external decoder is called.")
     (buffer-string)))
 
 
-(defun base64-encode-region (start end)
-  "Encode current region by base64.
-START and END are buffer positions.
-This function calls internal base64 encoder if size of region is
-smaller than `base64-internal-encoding-limit', otherwise it calls
-external base64 encoder specified by `base64-external-encoder'.  In
-this case, you must install the program (maybe mmencode included in
-metamail or XEmacs package)."
-  (interactive "r")
-  (if (and base64-internal-encoding-limit
-	   (> (- end start) base64-internal-encoding-limit))
-      (base64-external-encode-region start end)
-    (base64-internal-encode-region start end)
-    ))
-
-(defun base64-decode-region (start end)
-  "Decode current region by base64.
-START and END are buffer positions.
-This function calls internal base64 decoder if size of region is
-smaller than `base64-internal-decoding-limit', otherwise it calls
-external base64 decoder specified by `base64-external-decoder'.  In
-this case, you must install the program (maybe mmencode included in
-metamail or XEmacs package)."
-  (interactive "r")
-  (if (and base64-internal-decoding-limit
-	   (> (- end start) base64-internal-decoding-limit))
-      (base64-external-decode-region start end)
-    (base64-internal-decode-region start end)
-    ))
-
-(defun base64-decode-string (string)
-  "Decode STRING which is encoded in base64, and return the result.
-This function calls internal base64 decoder if size of STRING is
-smaller than `base64-internal-decoding-limit', otherwise it calls
-external base64 decoder specified by `base64-external-decoder'.  In
-this case, you must install the program (maybe mmencode included in
-metamail or XEmacs package)."
-  (interactive "r")
-  (if (and base64-internal-decoding-limit
-	   (> (length string) base64-internal-decoding-limit))
-      (base64-external-decode-string string)
-    (base64-internal-decode-string string)
-    ))
-
-
 ;;; @ base64 encoder/decoder for file
 ;;;
 
-(defun base64-insert-encoded-file (filename)
+(defun base64-external-insert-encoded-file (filename)
   "Encode contents of file FILENAME to base64, and insert the result.
 It calls external base64 encoder specified by
 `base64-external-encoder'.  So you must install the program (maybe
@@ -303,7 +248,7 @@ mmencode included in metamail or XEmacs package)."
 	 filename t nil (cdr base64-external-encoder))
   )
 
-(defun base64-write-decoded-region (start end filename)
+(defun base64-external-write-decoded-region (start end filename)
   "Decode and write current region encoded by base64 into FILENAME.
 START and END are buffer positions."
   (interactive
@@ -322,7 +267,7 @@ START and END are buffer positions."
 ;;; @ etc
 ;;;
 
-(defun base64-encoded-length (string)
+(defun base64-internal-encoded-length (string)
   (let ((len (length string)))
     (* (+ (/ len 3)
 	  (if (= (mod len 3) 0) 0 1)

@@ -82,21 +82,18 @@
 		       )
     ))
 
-(defalias 'gzip64-encode-region 'gzip64-external-encode-region)
-(defalias 'gzip64-decode-region 'gzip64-external-decode-region)
-
 
 ;;; @ encoder/decoder for file
 ;;;
 
-(defun gzip64-insert-encoded-file (filename)
+(defun gzip64-external-insert-encoded-file (filename)
   (interactive (list (read-file-name "Insert encoded file: ")))
   (apply (function call-process) (car gzip64-external-encoder)
 	 filename t nil
 	 (cdr gzip64-external-encoder))
   )
 
-(defun gzip64-write-decoded-region (start end filename)
+(defun gzip64-external-write-decoded-region (start end filename)
   "Decode and write current region encoded by gzip64 into FILENAME.
 START and END are buffer positions."
   (interactive

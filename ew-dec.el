@@ -517,8 +517,8 @@ each line is separated by CRLF."
 	(when current-prefix-arg
 	  (mapcar
 	   (lambda (frag)
-	     (insert (format "%-16s %S\n"
-			     (get frag 'type)
+	     (insert (format "%-15s %S\n"
+			     (substring (symbol-name (get frag 'type)) 3)
 			     (symbol-name frag)))
 	     nil)
 	   (ew-frag-list (ew-analyze-field-to-decode field-name field-body)))

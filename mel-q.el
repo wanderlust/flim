@@ -106,45 +106,23 @@
 	)
       )))
 
-
-(defvar quoted-printable-internal-encoding-limit
-  (if (and (featurep 'xemacs)(featurep 'mule))
-      0
-    (require 'path-util)
-    (if (exec-installed-p "mmencode")
-	1000
-      (message "Don't found external encoder for Quoted-Printable!")
-      nil))
-  "*limit size to use internal quoted-printable encoder.
-If size of input to encode is larger than this limit,
-external encoder is called.")
-
-(defun quoted-printable-encode-region (start end)
-  "Encode current region by quoted-printable.
-START and END are buffer positions.
-This function calls internal quoted-printable encoder if size of
-region is smaller than `quoted-printable-internal-encoding-limit',
-otherwise it calls external quoted-printable encoder specified by
-`quoted-printable-external-encoder'.  In this case, you must install
-the program (maybe mmencode included in metamail or XEmacs package)."
-  (interactive "r")
-  (if (and quoted-printable-internal-encoding-limit
-	   (> (- end start) quoted-printable-internal-encoding-limit))
-      (quoted-printable-external-encode-region start end)
-    (quoted-printable-internal-encode-region start end)
-    ))
-
-
-(defun quoted-printable-encode-string (string)
+(defun quoted-printable-internal-encode-string (string)
   "Encode STRING to quoted-printable, and return the result."
   (with-temp-buffer
     (insert string)
-    (quoted-printable-encode-region (point-min)(point-max))
+    (quoted-printable-internal-encode-region (point-min)(point-max))
     (buffer-string)
     ))
 
+(defun quoted-printable-external-encode-string (string)
+  "Encode STRING to quoted-printable, and return the result."
+  (with-temp-buffer
+    (insert string)
+    (quoted-printable-external-encode-region (point-min)(point-max))
+    (buffer-string)
+    ))
 
-(defun quoted-printable-insert-encoded-file (filename)
+(defun quoted-printable-external-insert-encoded-file (filename)
   "Encode contents of file FILENAME to quoted-printable, and insert the result.
 It calls external quoted-printable encoder specified by
 `quoted-printable-external-encoder'.  So you must install the program
@@ -201,39 +179,24 @@ It calls external quoted-printable encoder specified by
 	    t t nil (cdr quoted-printable-external-decoder))
      )))
 
-
-(defvar quoted-printable-internal-decoding-limit nil
-  "*limit size to use internal quoted-printable decoder.
-If size of input to decode is larger than this limit,
-external decoder is called.")
-
-(defun quoted-printable-decode-region (start end)
-  "Decode current region by quoted-printable.
-START and END are buffer positions.
-This function calls internal quoted-printable decoder if size of
-region is smaller than `quoted-printable-internal-decoding-limit',
-otherwise it calls external quoted-printable decoder specified by
-`quoted-printable-external-decoder'.  In this case, you must install
-the program (maybe mmencode included in metamail or XEmacs package)."
-  (interactive "r")
-  (if (and quoted-printable-internal-decoding-limit
-	   (> (- end start) quoted-printable-internal-decoding-limit))
-      (quoted-printable-external-decode-region start end)
-    (quoted-printable-internal-decode-region start end)
-    ))
-
-(defun quoted-printable-decode-string (string)
+(defun quoted-printable-internal-decode-string (string)
   "Decode STRING which is encoded in quoted-printable, and return the result."
   (with-temp-buffer
     (insert string)
-    (quoted-printable-decode-region (point-min)(point-max))
+    (quoted-printable-internal-decode-region (point-min)(point-max))
     (buffer-string)))
 
+(defun quoted-printable-external-decode-string (string)
+  "Decode STRING which is encoded in quoted-printable, and return the result."
+  (with-temp-buffer
+    (insert string)
+    (quoted-printable-external-decode-region (point-min)(point-max))
+    (buffer-string)))
 
 (defvar quoted-printable-external-decoder-option-to-specify-file '("-o")
   "*list of options of quoted-printable decoder program to specify file.")
 
-(defun quoted-printable-write-decoded-region (start end filename)
+(defun quoted-printable-external-write-decoded-region (start end filename)
   "Decode and write current region encoded by quoted-printable into FILENAME.
 START and END are buffer positions."
   (interactive
@@ -259,7 +222,7 @@ START and END are buffer positions."
 		?: ?\; ?< ?> ?@ ?\[ ?\] ?^ ?` ?{ ?| ?} ?~)
     ))
 
-(defun q-encoding-encode-string (string &optional mode)
+(defun q-encoding-internal-encode-string (string &optional mode)
   "Encode STRING to Q-encoding of encoded-word, and return the result.
 MODE allows `text', `comment', `phrase' or nil.  Default value is
 `phrase'."
@@ -281,7 +244,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 	       string "")
     ))
 
-(defun q-encoding-decode-string (string)
+(defun q-encoding-internal-decode-string (string)
   "Decode STRING which is encoded in Q-encoding and return the result."
   (let (q h l)
     (mapconcat (function
@@ -318,7 +281,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 	      (string-match "[A-Za-z0-9!*+/=_---]" (char-to-string chr))
 	      ))))
 
-(defun q-encoding-encoded-length (string &optional mode)
+(defun q-encoding-internal-encoded-length (string &optional mode)
   (let ((l 0)(i 0)(len (length string)) chr)
     (while (< i len)
       (setq chr (elt string i))
