@@ -215,10 +215,11 @@ mime-{parse|read}-Content-Type."
     (goto-char header-start)
     (if (re-search-forward "^$" nil t)
 	(setq header-end (match-end 0)
-	      body-start (1+ header-end))
+	      body-start (if (= header-end body-end)
+			     body-end
+			   (1+ header-end)))
       (setq header-end (point-min)
-	    body-start (point-min))
-      )
+	    body-start (point-min)))
     (save-restriction
       (narrow-to-region header-start header-end)
       (setq content-type (or (let ((str (std11-fetch-field "Content-Type")))
