@@ -254,7 +254,7 @@ abcdefghijklmnopqrstuvwxyz\
   `(4
     ((r6 = 0)				; column
      (r5 = 0)				; previous character is white space
-     (r4 = 0)
+     (r4 = 0)                           ; label for eof block
      (read r0)
      (loop				; r6 <= 75
       (loop
@@ -340,15 +340,18 @@ abcdefghijklmnopqrstuvwxyz\
                 (write-read-repeat r0 ,mel-ccl-low-table))
              (break))))
         ;; r0:r3=WSP
-        ((r5 = 1)
-         (if (r6 < 75)
-             ((r6 += 1)
-              (r4 = 4)
-              (write-read-repeat r0))
-           ((r6 = 1)
-            (write ,(if output-crlf "=\r\n" "=\n"))
-            (r4 = 5)
-            (write-read-repeat r0))))
+        (if (r6 < 74)
+	    (break)
+	  (if (r6 < 75)
+	      ((r6 += 1)
+	       (r5 = 1)
+	       (r4 = 4)
+	       (write-read-repeat r0))
+	    ((write ,(if output-crlf "=\r\n" "=\n"))
+	     (r6 = 0)
+	     (r5 = 0)
+	     ;; (r4 = 5)
+	     (repeat))))
         ;; r0:r3=CR/CRLF
         ,(if input-crlf
              ;; r0:r3=CR
@@ -373,15 +376,15 @@ abcdefghijklmnopqrstuvwxyz\
 	       (r4 = 0)
 	       (write-read-repeat r0)))
 	   )))
-      ;; r0:r3={RAW,ENC,CR}
+      ;; r0:r3={RAW,ENC,WSP,CR}
       (loop
        ,(funcall
-         (lambda (after-cr after-raw-enc)
+         (lambda (after-cr after-raw-enc-wsp)
            (if input-crlf
                `(if (r0 == ?\r)
                     ,after-cr
-                  ,after-raw-enc)
-             after-raw-enc))
+                  ,after-raw-enc-wsp)
+             after-raw-enc-wsp))
          ;; r0=\r:r3=CR
          `((r4 = 6)
            (read r0)
@@ -440,33 +443,34 @@ abcdefghijklmnopqrstuvwxyz\
          (funcall
           (lambda (after-newline after-cr-nolf after-nonewline)
             (if input-crlf
-                ;; r0:r3={RAW,ENC}
+                ;; r0:r3={RAW,ENC,WSP}
                 `((r4 = 11)
                   (read r1)
-                  ;; r0:r3={RAW,ENC} r1
+                  ;; r0:r3={RAW,ENC,WSP} r1
                   (if (r1 == ?\r)
-                      ;; r0:r3={RAW,ENC} r1=CR
+                      ;; r0:r3={RAW,ENC,WSP} r1=CR
                       ((r4 = 12)
                        (read r1)
-                       ;; r0:r3={RAW,ENC} CR r1
+                       ;; r0:r3={RAW,ENC,WSP} CR r1
                        (if (r1 == ?\n)
-                           ;; r0:r3=RAW CR r1=LF
+                           ;; r0:r3={RAW,ENC,WSP} CR r1=LF
                            ,after-newline
-                         ;; r0:r3=RAW CR r1=noLF
+                         ;; r0:r3={RAW,ENC,WSP} CR r1=noLF
                          ,after-cr-nolf))
-                    ;; r0:r3={RAW,ENC} r1:noCR
+                    ;; r0:r3={RAW,ENC,WSP} r1:noCR
                     ,after-nonewline))
-              ;; r0:r3={RAW,ENC}
+              ;; r0:r3={RAW,ENC,WSP}
               `((r4 = 11)
                 (read r1)
-                ;; r0:r3={RAW,ENC} r1
+                ;; r0:r3={RAW,ENC,WSP} r1
                 (if (r1 == ?\n)
-                    ;; r0:r3={RAW,ENC} r1=CRLF
+                    ;; r0:r3={RAW,ENC,WSP} r1=CRLF
                     ,after-newline
-                  ;; r0:r3={RAW,ENC} r1:noCRLF
+                  ;; r0:r3={RAW,ENC,WSP} r1:noCRLF
                   ,after-nonewline))))
-          ;; r0:r3={RAW,ENC} CR r1=LF
-          ;; r0:r3={RAW,ENC} r1=CRLF
+	  ;; after-newline
+          ;; r0:r3={RAW,ENC,WSP} CR r1=LF
+          ;; r0:r3={RAW,ENC,WSP} r1=CRLF
           `((r6 = 0)
             (r5 = 0)
             (branch
@@ -486,8 +490,18 @@ abcdefghijklmnopqrstuvwxyz\
               (write ,(if output-crlf "\r\n" "\n"))
               (r4 = 14)
               (read r0)
-              (break))))
-          ;; r0:r3={RAW,ENC} CR r1=noLF
+              (break))
+             ;; r0:r3=WSP CR r1=LF
+             ;; r0:r3=WSP r1=CRLF
+	     ((write ?=)
+	      (write r0 ,mel-ccl-high-table)
+              (write r0 ,mel-ccl-low-table)
+              (write ,(if output-crlf "\r\n" "\n"))
+	      (r4 = 14)
+	      (read r0)
+	      (break))))
+	  ;; after-cr-nolf
+          ;; r0:r3={RAW,ENC,WSP} CR r1=noLF
           `((branch
              r3
              ;; r0:r3=RAW CR r1:noLF
@@ -506,9 +520,25 @@ abcdefghijklmnopqrstuvwxyz\
               (write r0 ,mel-ccl-low-table)
               (write "=0D")
               (r0 = (r1 + 0))
-              (break))))
-          ;; r0:r3={RAW,ENC} r1:noCR
-          ;; r0:r3={RAW,ENC} r1:noCRLF
+              (break))
+             ;; r0:r3=WSP CR r1:noLF
+	     ((r5 = 0)
+	      (write r0)
+	      (r0 = (r1 + 0))
+	      (if (r6 < 72)
+		  ((write "=0D")
+		   (r6 += 4)
+		   (break))
+		;; If r6 is 72, and r1 is CR and the next byte is LF,
+		;; we can write r0, "=0D" and hard linebreak.
+		;; But the next byte is unknown and reading it causes buffering problem.
+		;; So, we give up and write soft linebreak.
+		((write ,(if output-crlf "=\r\n=0D" "=\n=0D"))
+		 (r6 = 3)
+		 (break))))))
+	  ;; after-nonewline
+          ;; r0:r3={RAW,ENC,WSP} r1:noCR
+          ;; r0:r3={RAW,ENC,WSP} r1:noCRLF
           `((branch
              r3
              ;; r0:r3=RAW r1:noCR
@@ -527,7 +557,15 @@ abcdefghijklmnopqrstuvwxyz\
               (write r0 ,mel-ccl-high-table)
               (write r0 ,mel-ccl-low-table)
               (r0 = (r1 + 0))
-              (break)))))))
+              (break))
+             ;; r0:r3=WSP r1:noCR
+             ;; r0:r3=WSP r1:noCRLF
+	     ((r6 += 1)
+	      (r5 = 1)
+	      (write r0)
+	      (r0 = (r1 + 0))
+	      (break))
+	     )))))
       (repeat)))
     ;; EOF
     (					;(write "[EOF:") (write r4 ,mel-ccl-high-table) (write r4 ,mel-ccl-low-table) (write "]")
@@ -543,8 +581,10 @@ abcdefghijklmnopqrstuvwxyz\
       (end)
       ;; 4: r0:r3=WSP ;
       ((write ,(if output-crlf "=\r\n" "=\n")) (end))
-      ;; 5: SOFTBREAK r0:r3=WSP ;
-      ((write ,(if output-crlf "=\r\n" "=\n")) (end))
+      ;; 5: SOFTBREAK ; r0:r3=WSP
+      ;; Now this is ignored.
+      ((write r0)
+       (write ,(if output-crlf "=\r\n" "=\n")) (end))
       ;; 6: ; r0=\r:r3=CR
       (if (r6 <= 73)
           ((write "=0D") (end))
@@ -557,15 +597,19 @@ abcdefghijklmnopqrstuvwxyz\
       ((write ,(if output-crlf "=\r\n=0D=0D" "=\n=0D=0D")) (end))
       ;; 10: (r6=73) CR:r3=CR CR LF ;
       (end)
-      ;; 11: ; r0:r3={RAW,ENC}
+      ;; 11: ; r0:r3={RAW,ENC,WSP}
       (branch
        r3
        ((write r0) (end))
        ((write "=")
         (write r0 ,mel-ccl-high-table)
         (write r0 ,mel-ccl-low-table)
+        (end))
+       ((write "=")
+        (write r0 ,mel-ccl-high-table)
+        (write r0 ,mel-ccl-low-table)
         (end)))
-      ;; 12: ; r0:r3={RAW,ENC} r1=CR
+      ;; 12: ; r0:r3={RAW,ENC,WSP} r1=CR
       (branch
        r3
        ;; ; r0:r3=RAW r1=CR
@@ -578,12 +622,18 @@ abcdefghijklmnopqrstuvwxyz\
         (write r0 ,mel-ccl-high-table)
         (write r0 ,mel-ccl-low-table)
         (write "=0D")
-        (end)))
+        (end))
+       ;; ; r0:r3=WSP r1=CR
+       ((write ,(if output-crlf "=\r\n=" "=\n="))
+	(write r0)
+	(write "=0D")))
       ;; 13: r0:r3=RAW CR LF ;
       ;; 13: r0:r3=RAW CRLF ;
       (end)
       ;; 14: r0:r3=ENC CR LF ;
       ;; 14: r0:r3=ENC CRLF ;
+      ;; 14: r0:r3=WSP CR LF ;
+      ;; 14: r0:r3=WSP CRLF ;
       (end)
       ;; 15: r6=0 ; "F"
       ((write "F") (end))
