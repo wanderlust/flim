@@ -1,6 +1,12 @@
+2000-11-26  Kenichi OKADA   <okada@opaopa.org>
+
+	* SLIM: Version 1.14.4 released.
+	* mime-def.el (mime-library-product): Up.
+	* SLIM-VERSION: Added.
+
 2000-11-22  Kenichi OKADA   <okada@opaopa.org>
 
-	* smtp.el (smtp-primitive-starttls): Call `smtp-primitive-helo'	
+	* smtp.el (smtp-primitive-starttls): Call `smtp-primitive-helo'
 	after `starttls-negotiate'.
 
 2000-11-20  Kenichi OKADA   <okada@opaopa.org>
