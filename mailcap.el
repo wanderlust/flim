@@ -99,19 +99,10 @@
       )))
 
 (defsubst mailcap-look-at-mtext ()
-  (let ((p0 (point))
-	dest)
-    (while (cond ((mailcap-look-at-qchar)
-		  (setq dest
-			(concat dest
-				(buffer-substring p0 (- (point) 2))
-				(char-to-string (char-before (point)))
-				)
-			p0 (point))
-		  )
-		 ((mailcap-look-at-schar)
-		  t)))
-    (concat dest (buffer-substring p0 (point)))
+  (let ((beg (point)))
+    (while (or (mailcap-look-at-qchar)
+	       (mailcap-look-at-schar)))
+    (buffer-substring beg (point))
     ))
 
 
