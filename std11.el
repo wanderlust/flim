@@ -48,6 +48,7 @@
   (point)
   )
 
+;;;###autoload
 (defun std11-fetch-field (name)
   "Return the value of the header field NAME.
 The buffer is expected to be narrowed to just the headers of the message."
@@ -58,6 +59,7 @@ The buffer is expected to be narrowed to just the headers of the message."
 	  (buffer-substring-no-properties (match-end 0) (std11-field-end))
 	))))
 
+;;;###autoload
 (defun std11-narrow-to-header (&optional boundary)
   "Narrow to the message header.
 If BOUNDARY is not nil, it is used as message header separator."
@@ -70,6 +72,7 @@ If BOUNDARY is not nil, it is used as message header separator."
      (point-max)
      )))
 
+;;;###autoload
 (defun std11-field-body (name &optional boundary)
   "Return the value of the header field NAME.
 If BOUNDARY is not nil, it is used as message header separator."
@@ -125,8 +128,7 @@ header separator."
 
 (defun std11-header-string (regexp &optional boundary)
   "Return string of message header fields matched by REGEXP.
-If BOUNDARY is not nil, it is used as message header separator.
-\[std11.el]"
+If BOUNDARY is not nil, it is used as message header separator."
   (let ((case-fold-search t))
     (save-excursion
       (save-restriction
@@ -144,8 +146,7 @@ If BOUNDARY is not nil, it is used as message header separator.
 
 (defun std11-header-string-except (regexp &optional boundary)
   "Return string of message header fields not matched by REGEXP.
-If BOUNDARY is not nil, it is used as message header separator.
-\[std11.el]"
+If BOUNDARY is not nil, it is used as message header separator."
   (let ((case-fold-search t))
     (save-excursion
       (save-restriction
@@ -163,8 +164,7 @@ If BOUNDARY is not nil, it is used as message header separator.
 
 (defun std11-collect-field-names (&optional boundary)
   "Return list of all field-names of the message header in current buffer.
-If BOUNDARY is not nil, it is used as message header separator.
-\[std11.el]"
+If BOUNDARY is not nil, it is used as message header separator."
   (save-excursion
     (save-restriction
       (std11-narrow-to-header boundary)
@@ -183,6 +183,7 @@ If BOUNDARY is not nil, it is used as message header separator.
 ;;; @ unfolding
 ;;;
 
+;;;###autoload
 (defun std11-unfold-string (string)
   "Unfold STRING as message header field."
   (let ((dest "")
@@ -222,13 +223,13 @@ If BOUNDARY is not nil, it is used as message header separator.
 (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
 
 (defun std11-wrap-as-quoted-string (string)
-  "Wrap STRING as RFC 822 quoted-string. [std11.el]"
+  "Wrap STRING as RFC 822 quoted-string."
   (concat "\""
 	  (std11-wrap-as-quoted-pairs string std11-non-qtext-char-list)
 	  "\""))
 
 (defun std11-strip-quoted-pair (string)
-  "Strip quoted-pairs in STRING. [std11.el]"
+  "Strip quoted-pairs in STRING."
   (let (dest
 	(b 0)
 	(i 0)
@@ -352,20 +353,22 @@ If BOUNDARY is not nil, it is used as message header separator.
 	      (substring str p))
       )))
 
-(defun std11-lexical-analyze (str)
+;;;###autoload
+(defun std11-lexical-analyze (string)
+  "Analyze STRING as lexical tokens of STD 11."
   (let (dest ret)
-    (while (not (string-equal str ""))
+    (while (not (string-equal string ""))
       (setq ret
-	    (or (std11-analyze-quoted-string str)
-		(std11-analyze-domain-literal str)
-		(std11-analyze-comment str)
-		(std11-analyze-spaces str)
-		(std11-analyze-special str)
-		(std11-analyze-atom str)
+	    (or (std11-analyze-quoted-string string)
+		(std11-analyze-domain-literal string)
+		(std11-analyze-comment string)
+		(std11-analyze-spaces string)
+		(std11-analyze-special string)
+		(std11-analyze-atom string)
 		'((error) . "")
 		))
       (setq dest (cons (car ret) dest))
-      (setq str (cdr ret))
+      (setq string (cdr ret))
       )
     (nreverse dest)
     ))
@@ -707,7 +710,7 @@ If BOUNDARY is not nil, it is used as message header separator.
 
 (defun std11-addr-to-string (seq)
   "Return string from lexical analyzed list SEQ
-represents addr-spec of RFC 822. [std11.el]"
+represents addr-spec of RFC 822."
   (mapconcat (function
 	      (lambda (token)
 		(let ((name (car token)))
@@ -721,9 +724,9 @@ represents addr-spec of RFC 822. [std11.el]"
 	     seq "")
   )
 
+;;;###autoload
 (defun std11-address-string (address)
-  "Return string of address part from parsed ADDRESS of RFC 822.
-\[std11.el]"
+  "Return string of address part from parsed ADDRESS of RFC 822."
   (cond ((eq (car address) 'group)
 	 (mapconcat (function std11-address-string)
 		    (car (cdr address))
@@ -756,6 +759,7 @@ represents addr-spec of RFC 822. [std11.el]"
 	)
       dest)))
 
+;;;###autoload
 (defun std11-full-name-string (address)
   "Return string of full-name part from parsed ADDRESS of RFC 822."
   (cond ((eq (car address) 'group)
@@ -794,11 +798,13 @@ represents addr-spec of RFC 822. [std11.el]"
 		 )
 	   ))))
 
+;;;###autoload
 (defun std11-msg-id-string (msg-id)
   "Return string from parsed MSG-ID of RFC 822."
   (concat "<" (std11-addr-to-string (cdr msg-id)) ">")
   )
 
+;;;###autoload
 (defun std11-fill-msg-id-list-string (string &optional column)
   "Fill list of msg-id in STRING, and return the result."
   (or column
@@ -840,20 +846,23 @@ represents addr-spec of RFC 822. [std11.el]"
 ;;; @ parser with lexical analyzer
 ;;;
 
+;;;###autoload
 (defun std11-parse-address-string (string)
-  "Parse STRING as mail address. [std11.el]"
+  "Parse STRING as mail address."
   (std11-parse-address (std11-lexical-analyze string))
   )
 
+;;;###autoload
 (defun std11-parse-addresses-string (string)
-  "Parse STRING as mail address list. [std11.el]"
+  "Parse STRING as mail address list."
   (std11-parse-addresses (std11-lexical-analyze string))
   )
 
+;;;###autoload
 (defun std11-extract-address-components (string)
   "Extract full name and canonical address from STRING.
 Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).
-If no name can be extracted, FULL-NAME will be nil. [std11.el]"
+If no name can be extracted, FULL-NAME will be nil."
   (let* ((structure (car (std11-parse-address-string
 			  (std11-unfold-string string))))
          (phrase  (std11-full-name-string structure))
