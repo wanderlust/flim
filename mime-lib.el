@@ -29,6 +29,35 @@
 (require 'mime-def)
 (require 'eword-decode)
 
+
+(autoload 'mime-parse-Content-Type "mime-parse"
+  "Parse STRING as field-body of Content-Type field.")
+
+(autoload 'mime-read-Content-Type "mime-parse"
+  "Read field-body of Content-Type field from current-buffer,
+and return parsed it.")
+
+(autoload 'mime-parse-Content-Disposition "mime-parse"
+  "Parse STRING as field-body of Content-Disposition field.")
+
+(autoload 'mime-read-Content-Disposition "mime-parse"
+  "Read field-body of Content-Disposition field from current-buffer,
+and return parsed it.")
+
+(autoload 'mime-parse-Content-Transfer-Encoding "mime-parse"
+  "Parse STRING as field-body of Content-Transfer-Encoding field.")
+
+(autoload 'mime-read-Content-Transfer-Encoding "mime-parse"
+  "Read field-body of Content-Transfer-Encoding field from
+current-buffer, and return it.")
+
+(autoload 'mime-parse-message "mime-parse"
+  "Parse current-buffer as a MIME message.")
+
+(autoload 'mime-parse-buffer "mime-parse"
+  "Parse BUFFER as a MIME message.")
+
+
 (defun mime-entity-fetch-field (entity field-name)
   (or (symbolp field-name)
       (setq field-name (intern (capitalize (capitalize field-name)))))
