@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(require 'emu)
+(require 'poe)
 (require 'mime-def)
 
 (eval-and-compile
