@@ -12,7 +12,8 @@
 		     mmbuffer mmcooked mmdbuffer mmexternal
 		     mime-conf
 		     sasl sasl-cram sasl-digest
-		     smtp qmtp smtpmail))
+		     smtp qmtp smtpmail
+		     raw-io))
 
 (setq flim-version-specific-modules '(mailcap))
 

@@ -26,6 +26,10 @@
 
 (require 'luna)
 
+(eval-when-compile
+  (require 'eword-decode) ; mime-find-field-presentation-method
+  )
+
 
 ;;; @ MIME entity
 ;;;

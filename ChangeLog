@@ -1,3 +1,16 @@
+2000-12-22  Keiichi Suzuki  <keiichi@mdcnet.co.jp>
+
+	* mel-q.el: Require `poem' for `string-to-char-list' when
+	compiling.
+
+2000-12-22  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-decode.el (eword-decode-header): Revert to obsolete alias.
+
+2000-12-22  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmgeneric.el: Add comment for eword-decode.
+
 2000-12-21  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mailcap.el: Require `poe' for `define-obsolete-function-alias'.
@@ -98,10 +111,17 @@
 	(mime-header-lexical-analyzer): Renamed from
 	`eword-lexical-analyzer'; switch to variable.
 
+	* FLIM-ELS (flim-modules): Add `raw-io'.
+
 2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* eword-encode.el (eword-encode-default-start-column): Switch to
 	variable.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* raw-io.el (start-process): New function.
+	(binary-start-process-shell-command): New function.
 
 2000-12-17  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -114,6 +134,10 @@
 	(eword-encode-addr-seq-to-rword-list): Don't use `butlast'.
 	(eword-encode-header): Use `find-charset-region' instead of
 	`find-non-ascii-charset-string'.
+
+2000-12-16  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* raw-io.el: New file.
 
 2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 

@@ -485,7 +485,8 @@ and return parsed it.
 
 ** decoder
 
-[Function] mime-decode-header-in-buffer (&optional code-conversion separator)
+[Function] mime-decode-header-in-buffer (&optional code-conversion
+						   separator)
   Decode MIME encoded-words in header fields.
 
   If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
@@ -496,6 +497,19 @@ and return parsed it.
   If SEPARATOR is not nil, it is used as header separator.
 
   [Suggest]
+
+
+[Function] [Function] eword-decode-header (&optional code-conversion
+						     separator)
+  As same as `mime-decode-header-in-buffer', q.v.
+
+  Note that
+
+       (require 'eword-decode)
+
+  is necessary to use this function.
+
+  [Optional]<Obsolete> (Usage: cmail 2.61)
 
 
 [Function] mime-decode-header-in-region (start end
