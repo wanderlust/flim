@@ -33,7 +33,7 @@
 
 (eval-and-compile
 
-(autoload 'eword-encode-header "eword-encode"
+(autoload 'mime-encode-header-in-buffer "eword-encode"
   "Encode header fields to network representation, such as MIME encoded-word.")
 
 (autoload 'mime-parse-Content-Type "mime-parse"
