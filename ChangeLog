@@ -1,5 +1,20 @@
 2000-08-14   Daiki Ueno  <ueno@unixuser.org>
 
+	* smtp.el: Require `net-trans'.
+	(smtp-transaction): New class.
+	(smtp-open-connection-function): New variable.
+	(smtp-default-commands): New variable.
+	(smtp-commands): New variable.
+	(smtp-transaction-function): New variable.
+	(smtp-greeting): New generic function.
+	(smtp-ehlo): New generic function.
+	(smtp-helo): New generic function.
+	(smtp-mailfrom): New generic function.
+	(smtp-rcptto): New generic function.
+	(smtp-data): New generic function.
+	(smtp-via-smtp): Simplify.
+	(smtp-check-response): New function.
+
 	* net-trans.el: New file.
 
 	* FLIM-ELS (flim-modules): Add `net-trans'.
