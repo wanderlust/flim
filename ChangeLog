@@ -1,3 +1,7 @@
+1999-04-22  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mime.el: Delete autoload setting for `eword-encode-field'.
+
 1999-04-22  MORIOKA Tomohiko  <tomo@etl.go.jp>
 
 	* eword-encode.el: Require `poem' instead of `emu'.

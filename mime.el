@@ -29,8 +29,6 @@
 (require 'mime-def)
 (require 'eword-decode)
 
-(autoload 'eword-encode-field "eword-encode"
-  "Encode header field STRING, and return the result.")
 (autoload 'eword-encode-header "eword-encode"
   "Encode header fields to network representation, such as MIME encoded-word.")
 
