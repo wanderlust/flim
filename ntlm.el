@@ -63,7 +63,6 @@
 
 ;;; Code:
 
-(require 'poem)
 (require 'md4)
 
 ;;;
@@ -106,13 +105,19 @@ is not given."
 	    domain		;bufer field
 	    )))
 
+(eval-when-compile
+  (defmacro ntlm-string-as-unibyte (string)
+    (if (fboundp 'string-as-unibyte)
+	`(string-as-unibyte ,string)
+      string)))
+
 (defun ntlm-build-auth-response (challenge user password-hashes)
   "Return the response string to a challenge string CHALLENGE given by
 the NTLM based server for the user USER and the password hash list
 PASSWORD-HASHES.  NTLM uses two hash values which are represented
 by PASSWORD-HASHES.  PASSWORD-HASHES should be a return value of
- (list (smb-passwd-hash password) (ntlm-md4hash password))"
-  (let* ((rchallenge (string-as-unibyte challenge))
+ (list (ntlm-smb-passwd-hash password) (ntlm-md4hash password))"
+  (let* ((rchallenge (ntlm-string-as-unibyte challenge))
 	 ;; get fields within challenge struct
 	 ;;(ident (substring rchallenge 0 8))	;ident, 8 bytes
 	 ;;(msgType (substring rchallenge 8 12))	;msgType, 4 bytes
@@ -140,9 +145,9 @@ by PASSWORD-HASHES.  PASSWORD-HASHES should be a return value of
 
     ;; generate response data
     (setq lmRespData
-	  (smb-owf-encrypt (car password-hashes) challengeData))
+	  (ntlm-smb-owf-encrypt (car password-hashes) challengeData))
     (setq ntRespData
-	  (smb-owf-encrypt (cadr password-hashes) challengeData))
+	  (ntlm-smb-owf-encrypt (cadr password-hashes) challengeData))
 
     ;; get offsets to fields to pack the response struct in a string
     (setq lu (length user))
@@ -211,7 +216,7 @@ by PASSWORD-HASHES.  PASSWORD-HASHES should be a return value of
 
 (defun ntlm-get-password-hashes (password)
   "Return a pair of SMB hash and NT MD4 hash of the given password PASSWORD"
-  (list (smb-passwd-hash password)
+  (list (ntlm-smb-passwd-hash password)
 	(ntlm-md4hash password)))
 
 (defun ntlm-ascii2unicode (str len)
@@ -234,46 +239,46 @@ little-endian utf16."
 	    j (+ 2 j)))
     buf))
 
-(defun smb-passwd-hash (passwd)
+(defun ntlm-smb-passwd-hash (passwd)
   "Return the SMB password hash string of 16 bytes long for the given password
 string PASSWD.  PASSWD is truncated to 14 bytes if longer."
   (let ((len (min (length passwd) 14)))
-    (smbdes-e-p16
+    (ntlm-smb-des-e-p16
      (concat (substring (upcase passwd) 0 len) ;fill top 14 bytes with passwd
 	     (make-string (- 15 len) 0)))))
 
-(defun smb-owf-encrypt (passwd c8)
+(defun ntlm-smb-owf-encrypt (passwd c8)
   "Return the response string of 24 bytes long for the given password
 string PASSWD based on the DES encryption.  PASSWD is of at most 14
 bytes long and the challenge string C8 of 8 bytes long."
   (let ((len (min (length passwd) 16)) p22)
     (setq p22 (concat (substring passwd 0 len) ;fill top 16 bytes with passwd
 		      (make-string (- 22 len) 0)))
-    (smbdes-e-p24 p22 c8)))
+    (ntlm-smb-des-e-p24 p22 c8)))
 
-(defun smbdes-e-p24 (p22 c8)
+(defun ntlm-smb-des-e-p24 (p22 c8)
   "Return a 24 bytes hashed string for a 21 bytes string P22 and a 8 bytes
 string C8."
-  (concat (smbhash c8 p22 t)		;hash first 8 bytes of p22
-	  (smbhash c8 (substring p22 7) t)
-	  (smbhash c8 (substring p22 14) t)))
+  (concat (ntlm-smb-hash c8 p22 t)		;hash first 8 bytes of p22
+	  (ntlm-smb-hash c8 (substring p22 7) t)
+	  (ntlm-smb-hash c8 (substring p22 14) t)))
 
-(defconst smb-sp8 [75 71 83 33 64 35 36 37])
+(defconst ntlm-smb-sp8 [75 71 83 33 64 35 36 37])
 
-(defun smbdes-e-p16 (p15)
+(defun ntlm-smb-des-e-p16 (p15)
   "Return a 16 bytes hashed string for a 15 bytes string P15."
-  (concat (smbhash smb-sp8 p15 t)	;hash of first 8 bytes of p15
-	  (smbhash smb-sp8 (substring p15 7) t)	;hash of last 8 bytes of p15
-	  ))
+  (concat (ntlm-smb-hash ntlm-smb-sp8 p15 t)	;hash of first 8 bytes of p15
+	  (ntlm-smb-hash ntlm-smb-sp8		;hash of last 8 bytes of p15
+			 (substring p15 7) t)))
 
-(defun smbhash (in key forw)
+(defun ntlm-smb-hash (in key forw)
   "Return the hash string of length 8 for a string IN of length 8 and
 a string KEY of length 8.  FORW is t or nil."
   (let ((out (make-string 8 0))
 	outb				;string of length 64
 	(inb (make-string 64 0))
 	(keyb (make-string 64 0))
-	(key2 (smb-str-to-key key))
+	(key2 (ntlm-smb-str-to-key key))
 	(i 0) aa)
     (while (< i 64)
       (unless (zerop (logand (aref in (/ i 8)) (lsh 1 (- 7 (% i 8)))))
@@ -281,7 +286,7 @@ a string KEY of length 8.  FORW is t or nil."
       (unless (zerop (logand (aref key2 (/ i 8)) (lsh 1 (- 7 (% i 8)))))
 	(aset keyb i 1))
       (setq i (1+ i)))
-    (setq outb (smb-dohash inb keyb forw))
+    (setq outb (ntlm-smb-dohash inb keyb forw))
     (setq i 0)
     (while (< i 64)
       (unless (zerop (aref outb i))
@@ -291,7 +296,7 @@ a string KEY of length 8.  FORW is t or nil."
       (setq i (1+ i)))
     out))
 
-(defun smb-str-to-key (str)
+(defun ntlm-smb-str-to-key (str)
   "Return a string of length 8 for the given string STR of length 7."
   (let ((key (make-string 8 0))
 	(i 7))
@@ -320,7 +325,7 @@ a string KEY of length 8.  FORW is t or nil."
       (setq i (1- i)))
     key))
 
-(defconst smb-perm1 [57 49 41 33 25 17  9
+(defconst ntlm-smb-perm1 [57 49 41 33 25 17  9
 		     1 58 50 42 34 26 18
 		     10  2 59 51 43 35 27
 		     19 11  3 60 52 44 36
@@ -329,7 +334,7 @@ a string KEY of length 8.  FORW is t or nil."
 		     14  6 61 53 45 37 29
 		     21 13  5 28 20 12  4])
 
-(defconst smb-perm2 [14 17 11 24  1  5
+(defconst ntlm-smb-perm2 [14 17 11 24  1  5
 		     3 28 15  6 21 10
 		     23 19 12  4 26  8
 		     16  7 27 20 13  2
@@ -338,7 +343,7 @@ a string KEY of length 8.  FORW is t or nil."
 		     44 49 39 56 34 53
 		     46 42 50 36 29 32])
 
-(defconst smb-perm3 [58 50 42 34 26 18 10  2
+(defconst ntlm-smb-perm3 [58 50 42 34 26 18 10  2
 		     60 52 44 36 28 20 12  4
 		     62 54 46 38 30 22 14  6
 		     64 56 48 40 32 24 16  8
@@ -347,7 +352,7 @@ a string KEY of length 8.  FORW is t or nil."
 		     61 53 45 37 29 21 13  5
 		     63 55 47 39 31 23 15  7])
 
-(defconst smb-perm4 [32  1  2  3  4  5
+(defconst ntlm-smb-perm4 [32  1  2  3  4  5
 		     4  5  6  7  8  9
 		     8  9 10 11 12 13
 		     12 13 14 15 16 17
@@ -356,7 +361,7 @@ a string KEY of length 8.  FORW is t or nil."
 		     24 25 26 27 28 29
 		     28 29 30 31 32  1])
 
-(defconst smb-perm5 [16  7 20 21
+(defconst ntlm-smb-perm5 [16  7 20 21
 		     29 12 28 17
 		     1 15 23 26
 		     5 18 31 10
@@ -365,7 +370,7 @@ a string KEY of length 8.  FORW is t or nil."
 		     19 13 30  6
 		     22 11  4 25])
 
-(defconst smb-perm6 [40  8 48 16 56 24 64 32
+(defconst ntlm-smb-perm6 [40  8 48 16 56 24 64 32
 		     39  7 47 15 55 23 63 31
 		     38  6 46 14 54 22 62 30
 		     37  5 45 13 53 21 61 29
@@ -374,9 +379,9 @@ a string KEY of length 8.  FORW is t or nil."
 		     34  2 42 10 50 18 58 26
 		     33  1 41  9 49 17 57 25])
 
-(defconst smb-sc [1 1 2 2 2 2 2 2 1 2 2 2 2 2 2 1])
+(defconst ntlm-smb-sc [1 1 2 2 2 2 2 2 1 2 2 2 2 2 2 1])
 
-(defconst smb-sbox [[[14  4 13  1  2 15 11  8  3 10  6 12  5  9  0  7]
+(defconst ntlm-smb-sbox [[[14  4 13  1  2 15 11  8  3 10  6 12  5  9  0  7]
 		     [ 0 15  7  4 14  2 13  1 10  6 12 11  9  5  3  8]
 		     [ 4  1 14  8 13  6  2 11 15 12  9  7  3 10  5  0]
 		     [15 12  8  2  4  9  1  7  5 11  3 14 10  0  6 13]]
@@ -409,7 +414,7 @@ a string KEY of length 8.  FORW is t or nil."
 		     [ 7 11  4  1  9 12 14  2  0  6 10 13 15  3  5  8]
 		     [ 2  1 14  7  4 10  8 13 15 12  9  0  3  5  6 11]]])
 
-(defsubst string-permute (in perm n)
+(defsubst ntlm-string-permute (in perm n)
   "Return a string of length N for a string IN and a permutation vector
 PERM of size N.  The length of IN should be height of PERM."
   (let ((i 0) (out (make-string n 0)))
@@ -418,13 +423,13 @@ PERM of size N.  The length of IN should be height of PERM."
       (setq i (1+ i)))
     out))
 
-(defsubst string-lshift (str count len)
+(defsubst ntlm-string-lshift (str count len)
   "Return a string by circularly shifting a string STR by COUNT to the left.
 length of STR is LEN."
   (let ((c (% count len)))
     (concat (substring str c len) (substring str 0 c))))
 
-(defsubst string-xor (in1 in2 n)
+(defsubst ntlm-string-xor (in1 in2 n)
   "Return exclusive-or of sequences in1 and in2"
   (let ((w (make-string n 0)) (i 0))
     (while (< i n)
@@ -432,7 +437,7 @@ length of STR is LEN."
       (setq i (1+ i)))
     w))
 
-(defun smb-dohash (in key forw)
+(defun ntlm-smb-dohash (in key forw)
   "Return the hash value for a string IN and a string KEY.
 Length of IN and KEY are 64.  FORW non nill means forward, nil means
 backward."
@@ -446,19 +451,19 @@ backward."
 	r				;string of length 32
 	rl				;string of length 64
 	(i 0) (j 0) (k 0))
-    (setq pk1 (string-permute key smb-perm1 56))
+    (setq pk1 (ntlm-string-permute key ntlm-smb-perm1 56))
     (setq c (substring pk1 0 28))
     (setq d (substring pk1 28 56))
 
     (setq i 0)
     (while (< i 16)
-      (setq c (string-lshift c (aref smb-sc i) 28))
-      (setq d (string-lshift d (aref smb-sc i) 28))
+      (setq c (ntlm-string-lshift c (aref ntlm-smb-sc i) 28))
+      (setq d (ntlm-string-lshift d (aref ntlm-smb-sc i) 28))
       (setq cd (concat (substring c 0 28) (substring d 0 28)))
-      (aset ki i (string-permute cd smb-perm2 48))
+      (aset ki i (ntlm-string-permute cd ntlm-smb-perm2 48))
       (setq i (1+ i)))
 
-    (setq pd1 (string-permute in smb-perm3 64))
+    (setq pd1 (ntlm-string-permute in ntlm-smb-perm3 64))
 
     (setq l (substring pd1 0 32))
     (setq r (substring pd1 32 64))
@@ -472,8 +477,8 @@ backward."
 	  r2				;string of length 32
 	  jj m n bj sbox-jmn)
       (while (< i 16)
-	(setq er (string-permute r smb-perm4 48))
-	(setq erk (string-xor er
+	(setq er (ntlm-string-permute r ntlm-smb-perm4 48))
+	(setq erk (ntlm-string-xor er
 		       (aref ki (if forw i (- 15 i)))
 		       48))
 	(setq j 0)
@@ -490,7 +495,7 @@ backward."
 			  (lsh (aref bj 3) 1)
 			  (aref bj 4)))
 	  (setq k 0)
-	  (setq sbox-jmn (aref (aref (aref smb-sbox j) m) n))
+	  (setq sbox-jmn (aref (aref (aref ntlm-smb-sbox j) m) n))
 	  (while (< k 4)
 	    (aset bj k
 		  (if (zerop (logand sbox-jmn (lsh 1 (- 3 k))))
@@ -504,13 +509,13 @@ backward."
 	  (setq cb (concat cb (substring (aref b j) 0 4)))
 	  (setq j (1+ j)))
 
-	(setq pcb (string-permute cb smb-perm5 32))
-	(setq r2 (string-xor l pcb 32))
+	(setq pcb (ntlm-string-permute cb ntlm-smb-perm5 32))
+	(setq r2 (ntlm-string-xor l pcb 32))
 	(setq l r)
 	(setq r r2)
 	(setq i (1+ i))))
     (setq rl (concat r l))
-    (string-permute rl smb-perm6 64)))
+    (ntlm-string-permute rl ntlm-smb-perm6 64)))
 
 (defun ntlm-md4hash (passwd)
   "Return the 16 bytes MD4 hash of a string PASSWD after converting it

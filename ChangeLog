@@ -1,3 +1,30 @@
+2004-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* ntlm.el (ntlm-string-as-unibyte): New macro.
+	(ntlm-build-auth-response): Use it.
+
+2004-01-05  Simon Josefsson  <jas@extundo.com>
+
+	* ntlm.el: Fix namespace.  Change smb-passwd-hash into
+	ntlm-smb-passwd-hash, smb-owf-encrypt into ntlm-smb-owf-encrypt,
+	smb-passwd-hash into ntlm-smb-passwd-hash, smbdes-e-p16 into
+	ntlm-smb-des-e-p16, smbdes-e-p24 into ntlm-smb-des-e-p24, smbhash
+	into ntlm-smb-hash, smb-sp8 into ntlm-smb-sp8, smb-str-to-key into
+	ntlm-smb-str-to-key, smb-dohash into ntlm-smb-dohash, smb-perm1
+	into ntlm-smb-perm1, smb-perm2 into ntlm-smb-perm2, smb-perm3 into
+	ntlm-smb-perm3, smb-perm4 into ntlm-smb-perm4, smb-perm5 into
+	ntlm-smb-perm5, smb-perm6 into ntlm-smb-perm6, smb-sc into
+	ntlm-smb-sc, smb-sbox into ntlm-smb-sbox, string-permute into
+	ntlm-string-permute, string-lshift into ntlm-string-lshift,
+	string-xor into ntlm-string-xor.  Suggested by
+	Jesper Harder <harder@myrealbox.com>.
+
+	* ntlm.el: Don't include poem.
+
+	* md4.el (print-int32, print-string-hexa): Remove.  Suggested by
+	Jesper Harder <harder@myrealbox.com>.
+
+
 2003-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.6 (Marutamachi) released.
