@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-library-version
-  '("FLIM" "Shin-Tanabe" 1 9 2)
+  '("Chao" "Karasuma Oike" 1 9 0)
   "Implementation name, version name and numbers of MIME-library package.")
 
 (defconst mime-library-version-string
@@ -107,7 +107,30 @@
   (concat mime-token-regexp "/" mime-token-regexp))
 
 
-;;; @@ Quoted-Printable
+;;; @@ base64 / B
+;;;
+
+(defconst base64-token-regexp "[A-Za-z0-9+/]")
+(defconst base64-token-padding-regexp "[A-Za-z0-9+/=]")
+
+(defconst B-encoded-text-regexp
+  (concat "\\(\\("
+	  base64-token-regexp
+	  base64-token-regexp
+	  base64-token-regexp
+	  base64-token-regexp
+	  "\\)*"
+	  base64-token-regexp
+	  base64-token-regexp
+	  base64-token-padding-regexp
+	  base64-token-padding-regexp
+          "\\)"))
+
+;; (defconst eword-B-encoding-and-encoded-text-regexp
+;;   (concat "\\(B\\)\\?" eword-B-encoded-text-regexp))
+
+
+;;; @@ Quoted-Printable / Q
 ;;;
 
 (defconst quoted-printable-hex-chars "0123456789ABCDEF")
@@ -115,6 +138,12 @@
 (defconst quoted-printable-octet-regexp
   (concat "=[" quoted-printable-hex-chars
 	  "][" quoted-printable-hex-chars "]"))
+
+(defconst Q-encoded-text-regexp
+  (concat "\\([^=?]\\|" quoted-printable-octet-regexp "\\)+"))
+
+;; (defconst eword-Q-encoding-and-encoded-text-regexp
+;;   (concat "\\(Q\\)\\?" eword-Q-encoded-text-regexp))
 
 
 ;;; @ Content-Type
@@ -275,6 +304,8 @@ message/rfc822, `mime-entity' structures of them are included in
 ;;; @ for mm-backend
 ;;;
 
+(require 'alist)
+
 (defvar mime-entity-implementation-alist nil)
 
 (defmacro mm-define-backend (type &optional parents)
@@ -309,6 +340,66 @@ message/rfc822, `mime-entity' structures of them are included in
 (put 'mm-define-method 'lisp-indent-function 'defun)
 (put 'mm-define-method 'edebug-form-spec
      '(&define name ((arg symbolp) &rest arg) def-body))
+
+(defsubst mm-arglist-to-arguments (arglist)
+  (let (dest)
+    (while arglist
+      (let ((arg (car arglist)))
+	(or (memq arg '(&optional &rest))
+	    (setq dest (cons arg dest)))
+	)
+      (setq arglist (cdr arglist)))
+    (nreverse dest)))
+
+
+;;; @ for mel-backend
+;;;
+
+(defmacro mel-define-service (name &optional args &rest rest)
+  (if args
+      `(progn
+	 (defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
+	 (defun ,name ,args
+	   ,@rest
+	   (funcall (mel-find-function ',name ,(car (last args)))
+		    ,@(mm-arglist-to-arguments (butlast args)))
+	   ))
+    `(defvar ,(intern (format "%s-obarray" name)) (make-vector 1 nil))
+    ))
+
+(put 'mel-define-service 'lisp-indent-function 'defun)
+
+(defmacro mel-define-method (name args &rest body)
+  (let* ((specializer (car (last args)))
+	 (class (nth 1 specializer)))
+    `(progn
+       (mel-define-service ,name)
+       (fset (intern ,class ,(intern (format "%s-obarray" name)))
+	     (lambda ,(butlast args)
+	       ,@body)))))
+
+(put 'mel-define-method 'lisp-indent-function 'defun)
+
+(defmacro mel-define-method-function (spec function)
+  (let* ((name (car spec))
+	 (args (cdr spec))
+	 (specializer (car (last args)))
+	 (class (nth 1 specializer)))
+    `(let (sym)
+       (mel-define-service ,name)
+       (setq sym (intern ,class ,(intern (format "%s-obarray" name))))
+       (or (fboundp sym)
+	   (fset sym (symbol-function ,function))))))
+
+(defmacro mel-define-function (function spec)
+  (let* ((name (car spec))
+	 (args (cdr spec))
+	 (specializer (car (last args)))
+	 (class (nth 1 specializer)))
+    `(progn
+       (define-function ,function
+	 (intern ,class ,(intern (format "%s-obarray" name))))
+       )))
 
 
 ;;; @ end

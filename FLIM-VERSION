@@ -4,43 +4,43 @@
 
 ;;-------------------------------------------------------------------------
 ;;	Kinki Nippon Railway	$(B6a5&F|K\E4F;(B	http://www.kintetsu.co.jp/
-;;	Ky-Dòto Line		$(B5~ET@~(B-A
+;;	Ky-Dòto-A Line		$(B5~ET@~(B
 ;;-------------------------------------------------------------------------
-1.0.1	Ky-Dòto			$(B5~ET(B		; <=> JR, $(B5~ET;T8rDL6I(B-A
-1.1.0	T-Dòji			$(BEl;{(B-A
-1.2.0	J-Dþjò			$(B==>r(B-A
+1.0.1	Ky-Dòto-A			$(B5~ET(B		; <=> JR, $(B5~ET;T8rDL6I(B
+1.1.0	T-Dòji-A			$(BEl;{(B
+1.2.0	J-Dþjò-A			$(B==>r(B
 1.2.1	Kamitobaguchi		$(B>eD;1)8}(B
 1.2.2	Takeda			$(BC]ED(B		; = $(B5~ET;T8rDL6I(B $(B1(4]@~(B
 1.3.0	Fushimi			$(BIz8+(B
 1.4.0	Kintetsu-Tambabashi	$(B6aE4C0GH66(B	; <=> $(B5~:e(B $(BC0GH66(B
-1.4.1	Momoyama-Gory-Dòmae	$(BEm;38fNMA0(B-A
+1.4.1	Momoyama-Gory-Dòmae-A	$(BEm;38fNMA0(B
 1.5.0	Mukaijima		$(B8~Eg(B
 1.6.0	Ogura			$(B>.AR(B
 1.7.0	Iseda			$(B0K@*ED(B
-1.8.0	-DÒkubo			$(BBg5WJ](B-A
+1.8.0	-DÒkubo-A			$(BBg5WJ](B
 1.8.1	Kutsukawa		$(B5WDE@n(B
 1.9.0	Terada			$(B;{ED(B
-1.9.1	Tonosh-Dò			$(BIYLnAq(B-A
+1.9.1	Tonosh-Dò-A			$(BIYLnAq(B
 1.9.2	Shin-Tanabe		$(B?7EDJU(B
------	K-Dòdo			$(B6=8M(B-A
+-----	K-Dòdo-A			$(B6=8M(B
 -----	Miyamaki		$(B;0;3LZ(B
 -----	Kintetsu-Miyazu		$(B6aE45\DE(B
 -----	Komada			$(B9}ED(B
------	Shin-H-Dòsono		$(B?7=K1`(B-A
+-----	Shin-H-Dòsono-A		$(B?7=K1`(B
 -----	Kizugawadai		$(BLZDE@nBf(B
 -----	Yamadagawa		$(B;3ED@n(B
 -----	Takanohara		$(B9b$N86(B
------	Heij-Dò			$(BJ?>k(B-A
+-----	Heij-Dò-A			$(BJ?>k(B
 -----	Saidaiji		$(B@>Bg;{(B
 ;;-------------------------------------------------------------------------
 ;;	Kinki Nippon Railway	$(B6a5&F|K\E4F;(B	http://www.kintetsu.co.jp/
-;;	Ky-Dòto Line		$(B3`86@~(B-A
+;;	Ky-Dòto-A Line		$(B3`86@~(B
 ;;-------------------------------------------------------------------------
 	(Saidaiji)		($(B@>Bg;{(B)
 -----	Amagatsuji		$(BFt%vDT(B
------	Nishinoky-Dò		$(B@>$N5~(B-A
------	Kuj-Dò			$(B6e>r(B-A
------	Kintetsu-K-Dòriyama	$(B6aE474;3(B-A
+-----	Nishinoky-Dò-A		$(B@>$N5~(B
+-----	Kuj-Dò-A			$(B6e>r(B
+-----	Kintetsu-K-Dòriyama-A	$(B6aE474;3(B
 
 
 [Chao Version names]
@@ -53,8 +53,9 @@
 ;;-------------------------------------------------------------------------
 1.2.0	Takeda			$(BC]ED(B		; = $(B6aE4(B $(B5~ET@~(B
 1.3.0	Kuinabashi		$(B$/$$$J66(B
-1.4.0	J-Dþjò			$(B==>r(B-A
-1.6.0	Kuj-Dò			$(B6e>r(B-A
-1.6.1	Ky-Dòto			$(B5~ET(B		; <=> JR, $(B6aE4(B-A
-1.7.0	Goj-Dò			$(B8^>r(B-A
-1.8.0	Shij-Dò			$(B;M>r(B-A
+1.4.0	J-Dþjò-A			$(B==>r(B
+1.6.0	Kuj-Dò-A			$(B6e>r(B
+1.6.1	Ky-Dòto-A			$(B5~ET(B		; <=> JR, $(B6aE4(B
+1.7.0	Goj-Dò-A			$(B8^>r(B
+1.8.0	Shij-Dò-A			$(B;M>r(B		; <=> $(B:e5^(B $(B5~ET@~(B
+1.9.0	Karasuma Oike		$(B1(4]8fCS(B	; = $(B5~ET;T8rDL6I(B $(BEl@>@~(B
