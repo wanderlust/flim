@@ -1324,6 +1324,7 @@
 ;; NOTE: RFC2047 では encoded-word が空白で区切られなければならないとか、
 ;;  encoded-word は 75bytes 以下でなければならないとか、
 ;;  encoded-word が含まれる行は 76bytes 以下でなければならないとか、
+;;  encoded-word が quoted-string 内には存在できないとか、
 ;;  encoded-text が 1byte 以上なければならないなどという
 ;;  規約があるが、embedded-encoded-word 表現ではそれらは採用しない。
 ;;  単純に encoded-word 内部の文法だけを(修正して)利用する。
@@ -1417,6 +1418,11 @@
 (decode
 "Subject: =?US-ASCII?Q?a=0D=0Ab?="
 "Subject: a=?+US-ASCII?Q?=0D=0A?=b"
+'embedded-encoded-word)
+
+(decode
+"From: =?Unknown-Charset?B?gqA=?= =?US-ASCII?Q?=2E?= <akr@jaist.ac.jp>"
+"From: \"=?+Unknown-Charset?B?gqA=?=.\" <akr@jaist.ac.jp>"
 'embedded-encoded-word)
 
 ;;; Section 8: CR and LF.
