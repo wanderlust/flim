@@ -11,7 +11,9 @@
 		     mime mime-parse mmgeneric
 		     mmbuffer mmcooked mmdbuffer mmexternal
 		     mailcap
-		     closure tram smtp qmtp smtpmail))
+		     md5 md5-el md5-dl hex-util hmac-def hmac-md5 
+		     sasl sasl-cram
+		     smtp qmtp smtpmail))
 
 (if (and (fboundp 'base64-encode-string)
 	 (subrp (symbol-function 'base64-encode-string)))

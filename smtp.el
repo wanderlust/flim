@@ -84,6 +84,23 @@ don't define this value."
   :type 'boolean
   :group 'smtp-extensions)
 
+(defcustom smtp-use-sasl nil
+  "If non-nil, use SMTP Authentication (RFC2554) if available."
+  :type 'boolean
+  :group 'smtp-extensions)
+
+(defcustom smtp-sasl-principal-name (user-login-name)
+  "Identification to be used for authorization."
+  :type 'string
+  :group 'smtp-extensions)
+
+(defcustom smtp-sasl-mechanisms nil
+  "List of authentication mechanisms."
+  :type '(repeat string)
+  :group 'smtp-extensions)
+
+(defvar sasl-mechanisms)
+  
 (defvar smtp-open-connection-function #'open-network-stream)
 
 (defvar smtp-read-point nil)
@@ -239,6 +256,10 @@ or `smtp-local-domain' correctly."))))))
       (progn
 	(smtp-primitive-greeting package)
 	(smtp-primitive-helo package)
+	(if smtp-use-starttls
+	    (smtp-primitive-starttls package))
+	(if smtp-use-sasl
+	    (smtp-primitive-auth package))
 	(smtp-primitive-mailfrom package)
 	(smtp-primitive-rcptto package)
 	(smtp-primitive-data package))
@@ -272,10 +293,12 @@ or `smtp-local-domain' correctly."))))))
     (smtp-connection-set-extensions-internal
      connection (mapcar
 		 (lambda (extension)
-		   (mapcar
-		    (lambda (parameter)
-		      (car (read-from-string (downcase parameter))))
-		    (split-string extension)))
+		   (let ((extensions
+			  (split-string extension)))
+		     (setcar extensions
+			     (car (read-from-string
+				   (downcase (car extensions)))))
+		     extensions))
 		 (cdr response)))))
 
 (defun smtp-primitive-helo (package)
@@ -289,6 +312,55 @@ or `smtp-local-domain' correctly."))))))
     (if (/= (car response) 250)
 	(smtp-response-error response))))
 
+(eval-and-compile
+  (autoload 'sasl-make-principal "sasl")
+  (autoload 'sasl-find-authenticator "sasl")
+  (autoload 'sasl-authenticator-mechanism-internal "sasl")
+  (autoload 'sasl-evaluate-challenge "sasl"))
+
+(defun smtp-primitive-auth (package)
+  (let* ((connection
+	  (smtp-find-connection (current-buffer)))
+	 (process
+	  (smtp-connection-process-internal connection))
+	 (mechanisms
+	  (cdr (assq 'auth (smtp-connection-extensions-internal connection))))
+	 (principal
+	  (sasl-make-principal
+	   smtp-sasl-principal-name "smtp"
+	   (smtp-connection-server-internal connection)))
+	 (authenticator
+	  (sasl-find-authenticator mechanisms))
+	 (mechanism
+	  (sasl-authenticator-mechanism-internal authenticator))
+	 ;; Retrieve the initial response
+	 (sasl-response
+	  (sasl-evaluate-challenge authenticator principal))
+	 sasl-challenge
+	 response)
+    (smtp-send-command
+     process
+     (if (nth 1 sasl-response)
+	 (format "AUTH %s %s" mechanism (base64-encode-string (nth 1 sasl-response)))
+       (format "AUTH %s" mechanism)))
+    (catch 'done
+      (while t
+	(setq response (smtp-read-response process))
+	(when (= (car response) 235)
+	  ;; The authentication process is finished.
+	  (setq sasl-response
+		(sasl-evaluate-challenge authenticator principal sasl-response))
+	  (if (null sasl-response)
+	      (throw 'done nil))
+	  (smtp-response-error response)) ;Bogus server?
+	(if (/= (car response) 334)
+	    (smtp-response-error response))
+	(setcar (cdr sasl-response) (base64-decode-string (nth 1 response)))
+	(setq sasl-response
+	      (sasl-evaluate-challenge
+	       authenticator principal sasl-response))
+	(smtp-send-command process (base64-encode-string sasl-response))))))
+
 (defun smtp-primitive-starttls (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
@@ -298,6 +370,8 @@ or `smtp-local-domain' correctly."))))))
     ;; STARTTLS --- begin a TLS negotiation (RFC 2595)
     (smtp-send-command process "STARTTLS")
     (setq response (smtp-read-response process))
+    (if (/= (car response) 220)
+	(smtp-response-error response))
     (starttls-negotiate process)))
 
 (defun smtp-primitive-mailfrom (package)

@@ -1,5 +1,27 @@
 2000-11-01   Daiki Ueno  <ueno@unixuser.org>
 
+	* smtp.el: Bind `sasl-mechanisms'; add autoload settings for
+	`sasl-make-principal', `sasl-find-authenticator',
+	`sasl-authenticator-mechanism-internal' and
+	`sasl-evaluate-challenge'.
+	(smtp-use-sasl): New user option.
+	(smtp-sasl-principal-name): New user option.
+	(smtp-sasl-mechanisms): New user option.
+	(smtp-submit-package): Call `smtp-primitive-starttls' and
+	`smtp-primitive-auth'.
+	(smtp-primitive-ehlo): Don't modify the rest of a extension line.
+	(smtp-primitive-auth): New function.
+	(smtp-primitive-starttls): Check the response code.
+
+	* sasl.el: New implementation.
+
+	* sasl-cram.el: New file.
+
+	* FLIM-ELS (flim-modules): Add `md5', `md5-el', `md5-dl',
+	`hex-util', `hmac-def', `hmac-md5', `sasl' and `sasl-cram'.
+
+2000-11-01   Daiki Ueno  <ueno@unixuser.org>
+
 	* smtp.el: Add autoload settings for `starttls-open-stream' and
 	`starttls-negotiate'.
 	(smtp-connection-set-extensions-internal): New macro.
