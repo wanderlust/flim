@@ -113,6 +113,7 @@ don't define this value."
   :group 'smtp-extensions)
 
 (defvar sasl-mechanisms)
+
 ;;;###autoload
 (defvar smtp-open-connection-function (function open-network-stream)
   "*Function used for connecting to a SMTP server.
@@ -257,10 +258,10 @@ to connect to.  SERVICE is name of the service desired."
 Return a newly allocated connection-object.
 BUFFER is the buffer to associate with the connection.  SERVER is name
 of the host to connect to.  SERVICE is name of the service desired."
-  (let* ((process
-	  (binary-funcall smtp-open-connection-function
-			  "SMTP" buffer server service))
-	 connection)
+  (let ((process
+	 (binary-funcall smtp-open-connection-function
+			 "SMTP" buffer server service))
+	connection)
     (when process
       (setq connection (smtp-make-connection process server service))
       (set-process-filter process 'smtp-process-filter)
@@ -414,10 +415,10 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	 (if (sasl-step-data step)
 	     (base64-encode-string (sasl-step-data step) t)
 	   ""))))
-    ;;;    (smtp-connection-set-encoder-internal
-    ;;;     connection (sasl-client-encoder client))
-    ;;;    (smtp-connection-set-decoder-internal
-    ;;;     connection (sasl-client-decoder client))
+;;;    (smtp-connection-set-encoder-internal
+;;;     connection (sasl-client-encoder client))
+;;;    (smtp-connection-set-decoder-internal
+;;;     connection (sasl-client-decoder client))
     ))
 
 (defun smtp-primitive-starttls (package)
