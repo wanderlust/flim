@@ -1,10 +1,9 @@
 ;;; mel-g.el --- Gzip64 encoder/decoder.
 
-;; Copyright (C) 1995,1996,1997,1998 MORIOKA Tomohiko
-;; Copyright (C) 1996,1997,1999 Shuhei KOBAYASHI
+;; Copyright (C) 1995,96,97,98,99,2001  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
-;;         MORIOKA Tomohiko <tomo@m17n.org>
+;;	MORIOKA Tomohiko <tomo@m17n.org>
 ;; Maintainer: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Created: 1995/10/25
 ;; Keywords: Gzip64, base64, gzip, MIME
@@ -132,4 +131,4 @@ START and END are buffer positions."
 
 (provide 'mel-g)
 
-;;; mel-g.el ends here.
+;;; mel-g.el ends here
