@@ -35,55 +35,36 @@
 
 (dynamic-call "emacs_base64_init" base64-dl-handle)
 
-(defalias 'base64-encode-string 'encode-base64-string)
-(defalias 'base64-decode-string 'decode-base64-string)
+(defalias 'base64-dl-encode-string 'encode-base64-string)
+(defalias 'base64-dl-decode-string 'decode-base64-string)
 
-(defun base64-encode-region (start end)
+(defun base64-dl-encode-region (start end)
   "Encode current region by base64.
 START and END are buffer positions."
   (interactive "r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region start end)
-      (let ((str (buffer-substring start end)))
-	(delete-region start end)
-	(insert (encode-base64-string str))
-	)
-      (or (bolp)
-	  (insert "\n")
-	  )
-      )))
+  (let ((str (buffer-substring start end)))
+    (delete-region start end)
+    (insert (encode-base64-string str))
+    )
+  (or (bolp)
+      (insert "\n"))
+  )
 
-(defun base64-decode-region (start end)
+(defun base64-dl-decode-region (start end)
   "Decode current region by base64.
 START and END are buffer positions."
   (interactive "r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region start end)
-      (goto-char (point-min))
-      (while (looking-at ".*\n")
-	(condition-case err
-	    (replace-match
-	     (decode-base64-string
-	      (buffer-substring (match-beginning 0) (1- (match-end 0))))
-	     t t)
-	  (error
-	   (prog1
-	       (message (nth 1 err))
-	     (replace-match "")))))
-      (if (looking-at ".*$")
-	  (condition-case err
-	      (replace-match
-	       (decode-base64-string
-		(buffer-substring (match-beginning 0) (match-end 0)))
-	       t t)
-	    (error
-	     (prog1
-		 (message (nth 1 err))
-	       (replace-match "")))
-	    ))
+  (let ((str (buffer-substring start end)))
+    (delete-region start end)
+    (condition-case err
+	(insert (decode-base64-string str))
+      (error (message (nth 1 err)))
       )))
+
+(defalias 'base64-encode-string 'encode-base64-string)
+(defalias 'base64-decode-string 'decode-base64-string)
+(defalias 'base64-encode-region 'base64-dl-encode-region)
+(defalias 'base64-decode-region 'base64-dl-decode-region)
 
 
 ;;; @ base64 encoder/decoder for file
