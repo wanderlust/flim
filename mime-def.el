@@ -82,6 +82,12 @@
   :type '(choice (integer :tag "Limit (bytes)")
 		 (const :tag "Don't limit" nil)))
 
+(defcustom mime-header-accept-quoted-encoded-words t
+  "*Accept encoded-words in quoted-strings."
+  :group 'mime-header
+  :type 'boolean)
+
+
 ;;; @@@ encoding
 ;;;
 
