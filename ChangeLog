@@ -1,3 +1,17 @@
+1998-12-14  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* mel-b-ccl.el (base64-ccl-insert-encoded-file): Use
+	`insert-file-contents-as-coding-system' (renamed from
+	`insert-file-contents-as-specified-coding-system').
+	* mel-q-ccl.el (quoted-printable-ccl-insert-encoded-file):
+	Likewise.
+
+	* mel-b-ccl.el (base64-ccl-write-decoded-region): Use
+	`write-region-as-coding-system' (renamed from
+	`write-region-as-specified-coding-system').
+	* mel-q-ccl.el (quoted-printable-ccl-write-decoded-region):
+	Likewise.
+
 1998-12-08  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* smtp.el (smtp-coding-system): Abolished.

@@ -918,7 +918,7 @@ abcdefghijklmnopqrstuvwxyz\
   (defun quoted-printable-ccl-insert-encoded-file (filename)
     "Encode contents of the file named as FILENAME, and insert it."
     (interactive (list (read-file-name "Insert encoded file: ")))
-    (insert-file-contents-as-specified-coding-system
+    (insert-file-contents-as-coding-system
      filename 'mel-ccl-quoted-printable-lf-lf-rev))
 
   (mel-define-method-function
@@ -950,8 +950,8 @@ encoding."
   (interactive
    (list (region-beginning) (region-end)
          (read-file-name "Write decoded region to file: ")))
-  (write-region-as-specified-coding-system
-   start end filename 'mel-ccl-quoted-printable-lf-lf-rev))
+  (write-region-as-coding-system start end filename
+				 'mel-ccl-quoted-printable-lf-lf-rev))
 
 (mel-define-method-function
  (mime-decode-string string (nil "quoted-printable"))
