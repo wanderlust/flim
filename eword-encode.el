@@ -604,7 +604,7 @@ encoded-word.  ASCII token is not encoded."
 	  (setq start (+ (length (symbol-name field-name)) 2))
 	(setq start (+ (length field-name) 2)
 	      field-name (intern (capitalize field-name)))
-	(cond ((memq field-name-symbol
+	(cond ((memq field-name
 		     '(Reply-To
 		       From Sender
 		       Resent-Reply-To Resent-From
@@ -613,10 +613,10 @@ encoded-word.  ASCII token is not encoded."
 		       Dcc))
 	       (eword-encode-address-list field-body start)
 	       )
-	      ((eq field-name-symbol 'In-Reply-To)
+	      ((eq field-name 'In-Reply-To)
 	       (eword-encode-in-reply-to field-body start)
 	       )
-	      ((memq field-name-symbol '(Mime-Version User-Agent))
+	      ((memq field-name '(Mime-Version User-Agent))
 	       (eword-encode-structured-field-body field-body start)
 	       )
 	      (t
