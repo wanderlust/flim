@@ -1,8 +1,6 @@
 ;;; mime.el --- MIME library module
 
-;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
-;; Copyright (C) 1999 Electrotechnical Laboratory, JAPAN.
-;; Licensed to the Free Software Foundation.
+;; Copyright (C) 1998,1999,2000 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: MIME, multimedia, mail, news
@@ -143,7 +141,7 @@ If MESSAGE is specified, it is regarded as root entity."
   (null (mime-entity-parent entity message)))
 
 
-;;; @ Header buffer
+;;; @ Header buffer (obsolete)
 ;;;
 
 (luna-define-generic mime-entity-header-buffer (entity))
@@ -157,8 +155,13 @@ If MESSAGE is specified, it is regarded as root entity."
 (luna-define-generic mime-entity-header-end-point (entity)
   "Return header-end-position of ENTITY.")
 
+(make-obsolete 'mime-entity-header-buffer "don't use it.")
+(make-obsolete 'mime-goto-header-start-point "don't use it.")
+(make-obsolete 'mime-entity-header-start-point "don't use it.")
+(make-obsolete 'mime-entity-header-end-point "don't use it.")
 
-;;; @ Body buffer
+
+;;; @ Body buffer (obsolete)
 ;;;
 
 (luna-define-generic mime-entity-body-buffer (entity))
@@ -172,28 +175,32 @@ If MESSAGE is specified, it is regarded as root entity."
 (luna-define-generic mime-entity-body-start-point (entity)
   "Return body-start-position of ENTITY.")
 
-(define-obsolete-function-alias
-  'mime-entity-body-start 'mime-entity-body-start-point)
-
 (luna-define-generic mime-entity-body-end-point (entity)
   "Return body-end-position of ENTITY.")
 
-(define-obsolete-function-alias
-  'mime-entity-body-end 'mime-entity-body-end-point)
+(defalias 'mime-entity-body-start 'mime-entity-body-start-point)
+(defalias 'mime-entity-body-end 'mime-entity-body-end-point)
+
+(make-obsolete 'mime-entity-body-buffer "don't use it.")
+(make-obsolete 'mime-goto-body-start-point "don't use it.")
+(make-obsolete 'mime-goto-body-end-point "don't use it.")
+(make-obsolete 'mime-entity-body-start-point "don't use it.")
+(make-obsolete 'mime-entity-body-end-point "don't use it.")
+(make-obsolete 'mime-entity-body-start "don't use it.")
+(make-obsolete 'mime-entity-body-end "don't use it.")
 
 
 ;;; @ Entity buffer (obsolete)
 ;;;
 
 (luna-define-generic mime-entity-buffer (entity))
-(make-obsolete 'mime-entity-buffer
- "use mime-entity-header-buffer or mime-entity-body-buffer instead.")
+(make-obsolete 'mime-entity-buffer "don't use it.")
 
 (luna-define-generic mime-entity-point-min (entity))
-(make-obsolete 'mime-entity-point-min 'mime-entity-header-start-point)
+(make-obsolete 'mime-entity-point-min "don't use it.")
 
 (luna-define-generic mime-entity-point-max (entity))
-(make-obsolete 'mime-entity-point-max 'mime-entity-body-end-point)
+(make-obsolete 'mime-entity-point-max "don't use it.")
 
 
 ;;; @ Entity Header
