@@ -66,15 +66,14 @@
 (eval-when-compile (require 'hmac-def))
 (require 'hex-util)			; (decode-hex-string STRING)
 (require 'sha1)				; expects (sha1 STRING)
+(require 'poe)
 
-;;; For consintency with hmac-md5.el, we define this function here.
-(or (fboundp 'sha1-binary)
-    (defun sha1-binary (string)
-      "Return the SHA1 of STRING in binary form."
-      (decode-hex-string (sha1 string))))
+(defun-maybe sha1-binary (string)
+  "Return the SHA1 of STRING in binary form."
+  (decode-hex-string (sha1 string)))
 
 (define-hmac-function hmac-sha1 sha1-binary 64 20) ; => (hmac-sha1 TEXT KEY)
-;; (define-hmac-function hmac-sha1-96 sha1-binary 64 20 96)
+(define-hmac-function hmac-sha1-96 sha1-binary 64 20 96)
 
 (provide 'hmac-sha1)
 
