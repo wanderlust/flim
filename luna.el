@@ -27,6 +27,13 @@
 
 (eval-when-compile (require 'cl))
 
+(eval-when-compile (require 'static))
+
+(static-unless (or (>= emacs-major-version 20)(featurep 'xemacs))
+  (defconst :before ':before)
+  (defconst :after ':after)
+  (defconst :around ':around))
+
 (defmacro luna-find-class (name)
   "Return the luna-class of the given NAME."
   `(get ,name 'luna-class))
@@ -52,6 +59,11 @@ If SLOTS is specified, TYPE will be defined to have them."
 			       ',slots))
 
 (defun luna-define-class-function (type &optional parents slots)
+  (static-unless (or (>= emacs-major-version 20)(featurep 'xemacs))
+    (let (key)
+      (dolist (slot slots)
+	(setq key (intern (format ":%s" slot)))
+	(set key key))))
   (let ((oa (make-vector 31 0))
 	(rest parents)
 	parent name
