@@ -1,3 +1,7 @@
+1999-08-09  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* FLIM-ELS (flim-modules): Add `mmdbuffer'.
+
 1999-07-27  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mmdbuffer.el: New module.
