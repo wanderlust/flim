@@ -1,33 +1,33 @@
-;;;
-;;; mel-q.el: Quoted-Printable encoder/decoder for GNU Emacs
-;;;
-;;; Copyright (C) 1995 Free Software Foundation, Inc.
-;;; Copyright (C) 1995,1996 MORIOKA Tomohiko
-;;;
-;;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;;; Maintainer: MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;;; Created: 1995/6/25
-;;; Version:
-;;;	$Id$
-;;; Keywords: MIME, Quoted-Printable
-;;;
-;;; This file is part of MEL (MIME Encoding Library).
-;;;
-;;; This program is free software; you can redistribute it and/or
-;;; modify it under the terms of the GNU General Public License as
-;;; published by the Free Software Foundation; either version 2, or
-;;; (at your option) any later version.
-;;;
-;;; This program is distributed in the hope that it will be useful,
-;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-;;; General Public License for more details.
-;;;
-;;; You should have received a copy of the GNU General Public License
-;;; along with This program.  If not, write to the Free Software
-;;; Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-;;;
+;;; mel-q.el: Quoted-Printable and Q-encoding encoder/decoder for GNU Emacs
+
+;; Copyright (C) 1995,1996,1997 Free Software Foundation, Inc.
+
+;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Created: 1995/6/25
+;; Version: $Id$
+;; Keywords: MIME, Quoted-Printable, Q-encoding
+
+;; This file is part of MEL (MIME Encoding Library).
+
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2, or (at
+;; your option) any later version.
+
+;; This program is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
 ;;; Code:
+
+(require 'emu)
+
 
 ;;; @ constants
 ;;;
@@ -73,10 +73,11 @@ external decoder is called.")
 	  ))
 
 
-;;; @@ Quoted-Printable encode/decode string
+;;; @@ Quoted-Printable encoder/decoder for string
 ;;;
 
-(defun quoted-printable-encode-string (str)
+(defun quoted-printable-encode-string (string)
+  "Encode STRING to quoted-printable, and return the result."
   (let ((i 0))
     (mapconcat (function
 		(lambda (chr)
@@ -103,9 +104,10 @@ external decoder is called.")
 			       (char-to-string chr)
 			       )))
 			)))
-	       str "")))
+	       string "")))
 
-(defun quoted-printable-decode-string (str)
+(defun quoted-printable-decode-string (string)
+  "Decode STRING which is encoded in quoted-printable, and return the result."
   (let (q h l)
     (mapconcat (function
 		(lambda (chr)
@@ -130,10 +132,10 @@ external decoder is called.")
 			   )
 			(t (char-to-string chr))
 			)))
-	       str "")))
+	       string "")))
 
 
-;;; @@ Quoted-Printable encode/decode region
+;;; @@ Quoted-Printable encoder/decoder for region
 ;;;
 
 (defun quoted-printable-internal-encode-region (beg end)
@@ -168,30 +170,15 @@ external decoder is called.")
 	  ))
       )))
 
-(cond ((boundp 'MULE)
-       (define-program-coding-system
-	 nil (car quoted-printable-external-encoder) *noconv*)
-       (define-program-coding-system
-	 nil (car quoted-printable-external-decoder) *noconv*)
-       )
-      ((boundp 'NEMACS)
-       (define-program-kanji-code
-	 nil (car quoted-printable-external-encoder) 0)
-       (define-program-kanji-code
-	 nil (car quoted-printable-external-decoder) 0)
-       ))
-
 (defun quoted-printable-external-encode-region (beg end)
   (save-excursion
     (save-restriction
       (narrow-to-region beg end)
-      (let ((selective-display nil) ;Disable ^M to nl translation.
-	    (mc-flag nil)      ;Mule
-	    (kanji-flag nil))  ;NEmacs
-	(apply (function call-process-region)
-	       beg end (car quoted-printable-external-encoder)
-	       t t nil (cdr quoted-printable-external-encoder))
-	)
+      (as-binary-process
+       (apply (function call-process-region)
+	      beg end (car quoted-printable-external-encoder)
+	      t t nil (cdr quoted-printable-external-encoder))
+       )
       ;; for OS/2
       ;;   regularize line break code
       (goto-char (point-min))
@@ -202,15 +189,20 @@ external decoder is called.")
 
 (defun quoted-printable-external-decode-region (beg end)
   (save-excursion
-    (let ((selective-display nil) ;Disable ^M to nl translation.
-	  (mc-flag nil)      ;Mule
-	  (kanji-flag nil))  ;NEmacs
-      (apply (function call-process-region)
-	     beg end (car quoted-printable-external-decoder)
-	     t t nil (cdr quoted-printable-external-decoder))
-      )))
+    (as-binary-process
+     (apply (function call-process-region)
+	    beg end (car quoted-printable-external-decoder)
+	    t t nil (cdr quoted-printable-external-decoder))
+     )))
 
 (defun quoted-printable-encode-region (beg end)
+  "Encode current region by quoted-printable.
+START and END are buffer positions.
+This function calls internal quoted-printable encoder if size of
+region is smaller than `quoted-printable-internal-encoding-limit',
+otherwise it calls external quoted-printable encoder specified by
+`quoted-printable-external-encoder'.  In this case, you must install
+the program (maybe mmencode included in metamail or XEmacs package)."
   (interactive "r")
   (if (and quoted-printable-internal-encoding-limit
 	   (> (- end beg) quoted-printable-internal-encoding-limit))
@@ -219,6 +211,13 @@ external decoder is called.")
     ))
 
 (defun quoted-printable-decode-region (beg end)
+  "Decode current region by quoted-printable.
+START and END are buffer positions.
+This function calls internal quoted-printable decoder if size of
+region is smaller than `quoted-printable-internal-decoding-limit',
+otherwise it calls external quoted-printable decoder specified by
+`quoted-printable-external-decoder'.  In this case, you must install
+the program (maybe mmencode included in metamail or XEmacs package)."
   (interactive "r")
   (if (and quoted-printable-internal-decoding-limit
 	   (> (- end beg) quoted-printable-internal-decoding-limit))
@@ -227,60 +226,54 @@ external decoder is called.")
     ))
 
 
+;;; @@ Quoted-Printable encoder/decoder for file
+;;;
+
+(defun quoted-printable-insert-encoded-file (filename)
+  "Encode contents of file FILENAME to quoted-printable, and insert the result.
+It calls external quoted-printable encoder specified by
+`quoted-printable-external-encoder'.  So you must install the program
+(maybe mmencode included in metamail or XEmacs package)."
+  (interactive (list (read-file-name "Insert encoded file: ")))
+  (apply (function call-process) (car quoted-printable-external-encoder)
+	 filename t nil (cdr quoted-printable-external-encoder))
+  )
+
+
 ;;; @ Q-encoding encode/decode string
 ;;;
 
-(defun q-encoding-encode-string-for-text (str)
-  (mapconcat (function
-	      (lambda (chr)
-		(cond ((eq chr 32) "_")
-		      ((or (< chr 32) (< 126 chr) (eq chr ?=))
-		       (quoted-printable-quote-char chr)
-		       )
-		      (t (char-to-string chr))
-		      )))
-	     str ""))
+(defconst q-encoding-special-chars-alist
+  '((text	?= ?? ?_)
+    (comment	?= ?? ?_ ?\( ?\) ?\\)
+    (phrase	?= ?? ?_ ?\( ?\) ?\\ ?\" ?# ?$ ?% ?& ?' ?, ?. ?/
+		?: ?\; ?< ?> ?@ ?\[ ?\] ?^ ?` ?{ ?| ?} ?~)
+    ))
 
-(defun q-encoding-encode-string-for-comment (str)
-  (mapconcat (function
-	      (lambda (chr)
-		(cond ((eq chr 32) "_")
-		      ((or (< chr 32) (< 126 chr)
-			   (memq chr '(?= ?\( ?\) ?\\))
-			   )
-		       (quoted-printable-quote-char chr)
-		       )
-		      (t (char-to-string chr))
-		      )))
-	     str ""))
+(defun q-encoding-encode-string (string &optional mode)
+  "Encode STRING to Q-encoding of encoded-word, and return the result.
+MODE allows `text', `comment', `phrase' or nil.  Default value is
+`phrase'."
+  (let ((specials (cdr (or (assq mode q-encoding-special-chars-alist)
+			   (assq 'phrase q-encoding-special-chars-alist)
+			   ))))
+    (mapconcat (function
+		(lambda (chr)
+		  (cond ((eq chr 32) "_")
+			((or (< chr 32) (< 126 chr)
+			     (memq chr specials)
+			     )
+			 (quoted-printable-quote-char chr)
+			 )
+			(t
+			 (char-to-string chr)
+			 ))
+		  ))
+	       string "")
+    ))
 
-(defun q-encoding-encode-string-for-phrase (str)
-  (mapconcat (function
-	      (lambda (chr)
-		(cond ((eq chr 32) "_")
-		      ((or (and (<= ?A chr)(<= chr ?Z))
-			   (and (<= ?a chr)(<= chr ?z))
-			   (and (<= ?0 chr)(<= chr ?9))
-			   (memq chr '(?! ?* ?+ ?- ?/))
-			   )
-		       (char-to-string chr)
-		       )
-		      (t (quoted-printable-quote-char chr))
-		      )))
-	     str ""))
-
-(defun q-encoding-encode-string (str &optional mode)
-  (cond ((eq mode 'text)
-	 (q-encoding-encode-string-for-text str)
-	 )
-	((eq mode 'comment)
-	 (q-encoding-encode-string-for-comment str)
-	 )
-	(t
-	 (q-encoding-encode-string-for-phrase str)
-	 )))
-
-(defun q-encoding-decode-string (str)
+(defun q-encoding-decode-string (string)
+  "Decode STRING which is encoded in Q-encoding and return the result."
   (let (q h l)
     (mapconcat (function
 		(lambda (chr)
@@ -305,17 +298,28 @@ external decoder is called.")
 			   )
 			(t (char-to-string chr))
 			)))
-	       str "")))
+	       string "")))
 
 
 ;;; @@ etc
 ;;;
 
+(defun q-encoding-printable-char-p (chr mode)
+  (and (not (memq chr '(?= ?? ?_)))
+       (<= ?\   chr)(<= chr ?~)
+       (cond ((eq mode 'text) t)
+	     ((eq mode 'comment)
+	      (not (memq chr '(?\( ?\) ?\\)))
+	      )
+	     (t
+	      (string-match "[A-Za-z0-9!*+/=_---]" (char-to-string chr))
+	      ))))
+
 (defun q-encoding-encoded-length (string &optional mode)
   (let ((l 0)(i 0)(len (length string)) chr)
     (while (< i len)
       (setq chr (elt string i))
-      (if (string-match "[A-Za-z0-9!*+/=_---]" (char-to-string chr))
+      (if (q-encoding-printable-char-p chr mode)
 	  (setq l (+ l 1))
 	(setq l (+ l 3))
 	)
