@@ -1,3 +1,44 @@
+2001-03-18  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mel-b-dl.el: Don't do `dynamic-call' at compile-time.
+	(base64-dl-handle): Don't eval at compile-time.
+
+2001-03-18  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hmac-md5.el, sha1.el: Update Copyright header.
+
+2001-03-18  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	Support for built-in `md5' of Emacs 21.
+
+	* md5.el (md5-dl-module): Moved from md5-dl.el.
+	Use it for test whether to require 'md5-dl.
+
+	* md5-dl.el: Removed hack for compiler.
+	(md5-dl-handle): Do `dynamic-link' unconditionally.
+	(md5-region): Not interactive.
+	(md5): Removed autoload cookie.
+
+	* sha1.el: Removed hack for compiler.
+	Use `sha1-dl-module' for test whether to require 'sha1-dl.
+	(sha1-encode, sha1-encode-binary): Removed compatibility code
+	for another sha1.el since it was broken.
+
+	* sha1-dl.el: Removed hack for compiler.
+	(sha1-dl-handle): Do `dynamic-link' unconditionally.
+
+2001-03-18  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hmac-md5.el: Require 'poe.
+	Provide 'md5 if built-in `md5' is found.
+	(md5-binary): Define with `defun-maybe-cond'.
+	(md5-binary) [v21]: Removed extra arguments.
+	(hmac-md5-96): New function.
+
+	* hmac-sha1.el: Require 'poe.
+	(sha1-binary): Define with `defun-maybe'.
+	(hmac-sha1-96): New function.
+
 2001-03-11  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* mel-g.el: Update Copyright header.
