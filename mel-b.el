@@ -60,7 +60,10 @@ external encoder is called."
   :type '(choice (const :tag "Always use internal encoder" nil)
 		 (integer :tag "Size")))
 
-(defcustom base64-internal-decoding-limit 70000
+(defcustom base64-internal-decoding-limit (if (and (featurep 'xemacs)
+						   (featurep 'mule))
+					      1000
+					    7600)
   "*limit size to use internal base64 decoder.
 If size of input to decode is larger than this limit,
 external decoder is called."
@@ -194,15 +197,30 @@ external decoder is called."
 (defun base64-internal-decode-string (string)
   (base64-internal-decode string (make-string (length string) 0)))
 
-(defsubst base64-decode-string! (string)
-  (base64-internal-decode string string))
+;; (defsubst base64-decode-string! (string)
+;;   (setq string (string-as-unibyte string))
+;;   (base64-internal-decode string string))
 
 (defun base64-internal-decode-region (beg end)
   (save-excursion
-    (let ((str (buffer-substring beg end)))
+    (let ((str (string-as-unibyte (buffer-substring beg end))))
       (delete-region beg end)
       (goto-char beg)
-      (insert (base64-decode-string! str)))))
+      (insert (base64-internal-decode str str)))))
+
+;; (defun base64-internal-decode-region2 (beg end)
+;;   (save-excursion
+;;     (let ((str (buffer-substring beg end)))
+;;       (delete-region beg end)
+;;       (goto-char beg)
+;;       (insert (base64-decode-string! str)))))
+
+;; (defun base64-internal-decode-region3 (beg end)
+;;   (save-excursion
+;;     (let ((str (buffer-substring beg end)))
+;;       (delete-region beg end)
+;;       (goto-char beg)
+;;       (insert (base64-internal-decode-string str)))))
 
 
 ;;; @ external encoder/decoder
@@ -305,7 +323,7 @@ metamail or XEmacs package)."
       (base64-decode-string string)
     (error "Invalid encoded-text %s" string)))
 
-(mel-define-method mime-insert-encoded-file (filename (nil "base64"))
+(defun base64-insert-encoded-file (filename)
   "Encode contents of file FILENAME to base64, and insert the result.
 It calls external base64 encoder specified by
 `base64-external-encoder'.  So you must install the program (maybe
@@ -319,14 +337,17 @@ mmencode included in metamail or XEmacs package)."
     (insert
      (base64-encode-string
       (with-temp-buffer
+	(set-buffer-multibyte nil)
 	(insert-file-contents-as-binary filename)
 	(buffer-string))))
     (or (bolp)
 	(insert "\n"))
      ))
 
-(mel-define-method mime-write-decoded-region (start end filename
-						    (nil "base64"))
+(mel-define-method-function (mime-insert-encoded-file filename (nil "base64"))
+			    'base64-insert-encoded-file)
+
+(defun base64-write-decoded-region (start end filename)
   "Decode and write current region encoded by base64 into FILENAME.
 START and END are buffer positions."
   (interactive
@@ -344,7 +365,12 @@ START and END are buffer positions."
     (let ((str (buffer-substring start end)))
       (with-temp-buffer
 	(insert (base64-internal-decode-string str))
-	(write-region-as-binary (point-min) (point-max) filename)))))
+	(write-region-as-binary (point-min) (point-max) filename)
+	))))
+
+(mel-define-method-function
+ (mime-write-decoded-region start end filename (nil "base64"))
+ 'base64-write-decoded-region)
 
        
 ;;; @ etc
