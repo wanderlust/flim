@@ -53,7 +53,7 @@
 		  filename)
     ))
 
-(mm-define-method write-entity-body ((entity cooked) filename)
+(mm-define-method write-body ((entity cooked) filename)
   (save-excursion
     (set-buffer (mime-entity-buffer-internal entity))
     (write-region (mime-entity-body-start-internal entity)
