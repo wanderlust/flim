@@ -59,9 +59,9 @@ message or one of the parts in the body of a multipart entity.'  In this
 document, the term @strong{entity} indicates all of header fields and
 body.@refill
 
-The definition of RFC 2045 indicates that a MIME message is a tree.  An
-message is a tree, each node is an entity, like following figure.
-Namely MIME extends message to tree structure.@refill
+The definition of RFC 2045 indicates that a MIME message is a tree, and
+each node of the tree is an entity.  Namely MIME extends message to tree
+structure.@refill
 
 FLIM uses @strong{mime-entity} structure to represent
 information of entity.  In this document, it is called simply

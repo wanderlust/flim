@@ -64,10 +64,8 @@ field と内容を指す」となっています。ここでは、MIME で定義された head
 field 以外の全ての header と body を指す語として @strong{entity}を用いる
 ことにします。@refill
 
-RFC 2045 の定義は、MIME message が entity を単位とする木構造であることを
-示しています。message は下図で示すような木となり、entity はこの木におけ
-る節となります。つまり、MIME は message を木構造に拡張した訳です。
-@refill
+RFC 2045 の定義は、MIME message が entity を節とする木構造であることを示
+しています。つまり、MIME は message を木構造に拡張した訳です。@refill
 
 FLIM は entity の情報を表現するために@strong{mime-entity} 構
 造体を用います。以下では単に mime-entity と呼ぶことにします。
