@@ -104,14 +104,14 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
     (setq qmtp-read-point (point))))
 
 ;;;###autoload
-(defun qmtp-via-smtp (sender recipients buffer)
+(defun qmtp-via-qmtp (sender recipients buffer)
   (condition-case nil
       (progn
 	(qmtp-send-buffer sender recipients buffer)
 	t)
     (error)))
 
-(make-obsolete 'qmtp-via-smtp "It's old API.")
+(make-obsolete 'qmtp-via-qmtp "It's old API.")
 
 ;;;###autoload
 (defun qmtp-send-buffer (sender recipients buffer)
