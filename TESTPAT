@@ -17,120 +17,7 @@
 ;;encode-long-ascii-string-for-fold ; violate the policy preserving US-ASCII string
 ;;divide-atom-for-fold		    ; violate tne policy preserving absence of space
 
-;;; test driver
-
-(defvar target 'doodle)
-(cond
- ((eq target 'flim) ; FLIM or FLAM
-  (require 'mime)
-  (require 'ew-line)
-
-  (if (< max-specpdl-size 1000)
-    (setq max-specpdl-size 1000))
-
-  (defun decode-test (src dsts &rest opts)
-    (setq src (ew-crlf-to-lf src))
-    (setq eword-lexical-analyze-cache nil)
-    (setq eword-decode-sticked-encoded-word
-      (or (memq 'permit-sticked-comment opts)
-	  (memq 'permit-sticked-special opts)))
-    (setq eword-decode-quoted-encoded-word nil)
-    (with-temp-buffer
-      (insert src "\n" mail-header-separator)
-      (eword-decode-header 'us-ascii mail-header-separator)
-      (goto-char (point-min))
-      (std11-narrow-to-header mail-header-separator)
-      (std11-field-end)
-      (let ((result (ew-lf-to-crlf
-		     (std11-unfold-string
-		      (buffer-substring-no-properties (point-min) (point))))))
-	(if (member result dsts) t result))))
-
-  (defun encode-test (src dsts &rest opts)
-    (setq eword-lexical-analyze-cache nil)
-    (setq eword-decode-sticked-encoded-word nil)
-    (setq eword-decode-quoted-encoded-word nil)
-    (with-temp-buffer
-      (insert src "\n" mail-header-separator)
-      (goto-char (point-min))
-      (eword-encode-header 'us-ascii)
-      (goto-char (point-min))
-      (std11-narrow-to-header mail-header-separator)
-      (std11-field-end)
-      (let ((result (ew-lf-to-crlf (buffer-substring-no-properties (point-min) (point)))))
-	(if (member result dsts) t result)))))
-
- ((eq target 'doodle) ; DOODLE
-  (require 'ew-dec)
-  (require 'ew-line)
-
-  (defun decode-test (src dsts &rest opts)
-    (setq ew-decode-field-cache-buf nil)
-    (let ((ew-decode-sticked-encoded-word nil)
-	  (ew-decode-quoted-encoded-word nil)
-	  (ew-ignore-75bytes-limit (memq 'ignore-75bytes-limit opts))
-	  (ew-ignore-76bytes-limit (memq 'ignore-76bytes-limit opts))
-	  (ew-permit-sticked-comment (memq 'permit-sticked-comment opts))
-	  (ew-permit-sticked-special (memq 'permit-sticked-special opts))
-	  (ew-permit-null-encoded-text nil))
-      (string-match "\\`[^:]*:" src)
-      (let* ((field-name (substring src
-				    (match-beginning 0)
-				    (1- (match-end 0))))
-	     (field-body (substring src (match-end 0)))
-	     (result (ew-crlf-unfold
-		      (concat field-name ":"
-			      (ew-decode-field field-name field-body)))))
-	(if (member result dsts) t result))))
-
-  (defun encode-test (src dsts &rest opts)
-    nil)
-  )
-)
-
-;;;
-
-(setq decode-succ-count 0)
-(setq decode-all-count 0)
-(defun decode (src dsts &rest opts)
-  (if (stringp dsts) (setq dsts (list dsts)))
-  (setq decode-all-count (1+ decode-all-count))
-  (let ((res (condition-case nil
-	       (apply 'decode-test src dsts opts)
-	       (error nil))))
-    (if (eq res t)
-      (progn
-	(setq decode-succ-count (1+ decode-succ-count))
-	(insert "\n'dsucc"))
-      (insert (format "\n%S\n'dfail" res)))
-    res))
-
-(setq encode-succ-count 0)
-(setq encode-all-count 0)
-(defun encode (src dsts &rest opts)
-  (if (stringp dsts) (setq dsts (list dsts)))
-  (setq encode-all-count (1+ encode-all-count))
-  (let ((res (condition-case nil
-	       (apply 'encode-test src dsts opts)
-	       (error nil))))
-    (if (eq res t)
-      (progn
-	(setq encode-succ-count (1+ encode-succ-count))
-	(insert "\n'esucc"))
-      (insert (format "\n%S\n'efail" res)))
-    res))
-
-(defun report ()
-  (let ((report (format "Decode: %d/%d  Encode: %d/%d  Total: %d/%d"
-		  decode-succ-count decode-all-count
-		  encode-succ-count encode-all-count
-		  (+ decode-succ-count encode-succ-count)
-		  (+ decode-all-count encode-all-count))))
-    (if noninteractive
-      (princ (concat report "\n"))
-      (insert "\n\"" report "\""))))
-
-;;;start-test
+(defconst test-patterns '(
 
 ;;; Section 1: Decoding examples from RFC2047
 
@@ -338,7 +225,7 @@
 (decode
 "From: =?US-ASCII?Q?=28?= <akr@jaist.ac.jp>, =?US-ASCII?Q?=29?= <akr@jaist.ac.jp>"
 "From: \"(\" <akr@jaist.ac.jp>, \")\" <akr@jaist.ac.jp>"
-'ignore-76bytes-limit)
+ignore-76bytes-limit)
 
 (decode
 "From: =?ISO-2022-JP?B?YSJiGyRCJCIbKEJjXA==?= <akr@jaist.ac.jp>"
@@ -526,7 +413,7 @@
 (decode
 "=?ISO-2022-JP?B?GyRCJCIbKEI=?=: test"
 "=?ISO-2022-JP?B?GyRCJCIbKEI=?=: test"
-'permit-sticked-special)
+permit-sticked-special)
 
 ;;; Section 3: Decoding melancholic inputs.
 
@@ -554,17 +441,17 @@
 (decode
 "From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
 "From: (a)$B$"(B <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (decode
 "From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>"
 "From: $B$"(B(b) <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (decode
 "From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>"
 "From: (a)$B$"(B(b) <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (decode
 "From: \"a\"=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
@@ -582,7 +469,7 @@
 "From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(=?ISO-2022-JP?B?GyRCJCIbKEI=?=)\r
  <akr@jaist.ac.jp>"
 "From: $B$"(B($B$"(B) <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (decode
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
@@ -591,7 +478,7 @@
 (decode
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
 "To: $B$"(B<akr@jaist.ac.jp>"
-'permit-sticked-special)
+permit-sticked-special)
 
 (decode
 "To: <akr@jaist.ac.jp>,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
@@ -600,7 +487,7 @@
 (decode
 "To: <akr@jaist.ac.jp>,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
 "To: <akr@jaist.ac.jp>,$B$"(B<akr@jaist.ac.jp>"
-'permit-sticked-special)
+permit-sticked-special)
 
 (decode
 "To: akr@jaist.ac.jp,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
@@ -609,7 +496,7 @@
 (decode
 "To: akr@jaist.ac.jp,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
 "To: akr@jaist.ac.jp,$B$"(B<akr@jaist.ac.jp>"
-'permit-sticked-special)
+permit-sticked-special)
 
 (decode
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:akr@jaist.ac.jp;"
@@ -618,7 +505,7 @@
 (decode
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:akr@jaist.ac.jp;"
 "To: $B$"(B:akr@jaist.ac.jp;"
-'permit-sticked-special)
+permit-sticked-special)
 
 (decode
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<akr@jaist.ac.jp>;"
@@ -627,7 +514,7 @@
 (decode
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<akr@jaist.ac.jp>;"
 "To: $B$"(B:$B$$(B<akr@jaist.ac.jp>;"
-'ignore-76bytes-limit 'permit-sticked-special)
+ignore-76bytes-limit permit-sticked-special)
 
 (decode
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<foo@bar>,=?ISO-2022-JP?B?GyRCJCYbKEI=?=<foo@bar>;,=?ISO-2022-JP?B?GyRCJCgbKEI=?=<foo@bar>"
@@ -636,7 +523,7 @@
 (decode
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<foo@bar>,=?ISO-2022-JP?B?GyRCJCYbKEI=?=<foo@bar>;,=?ISO-2022-JP?B?GyRCJCgbKEI=?=<foo@bar>"
 "To: $B$"(B:$B$$(B<foo@bar>,$B$&(B<foo@bar>;,$B$((B<foo@bar>"
-'ignore-76bytes-limit 'permit-sticked-special)
+ignore-76bytes-limit permit-sticked-special)
 
 (decode
 "Subject:=?ISO-2022-JP?B?GyRCJCIbKEI=?="
@@ -663,7 +550,7 @@
 "From: akr@jaist.ac.jp\r
  (=?ISO-2022-JP?B?GyRCJCIbKEI=?=(=?ISO-2022-JP?B?GyRCJCQbKEI=?=)=?ISO-2022-JP?B?GyRCJCYbKEI=?=)"
 "From: akr@jaist.ac.jp ($B$"(B($B$$(B)$B$&(B)"
-'ignore-76bytes-limit)
+ignore-76bytes-limit)
 
 (decode
 "Subject: =?=?ISO-2022-JP?B?GyRCJCIbKEI=?="
@@ -756,7 +643,7 @@
 (encode
 "Subject: $B0$(B                                                                                                                          $BR_(B"
 "Subject: =?ISO-2022-JP?B?GyQpQrCkICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICDS3w=="
-'ignore-76bytes-limit 'ignore-75bytes-limit)
+ignore-76bytes-limit ignore-75bytes-limit)
 
 (encode
 "From: .AN! <akr@jaist.ac.jp>"*B
@@ -772,25 +659,25 @@
 
 (encode
 "Subject: $B$"(B a .HN`"*B
-'("Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a =?ISO-8859-8?Q?=E0?="
-  "Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a =?ISO-8859-8?B?4A==?="))
+("Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a =?ISO-8859-8?Q?=E0?="
+ "Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?= a =?ISO-8859-8?B?4A==?="))
 
 (encode
 "Subject: .HN`$BNm(B"*B
-'("Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
-  "Subject: =?ISO-8859-8?B?4A==?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="))
+("Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
+ "Subject: =?ISO-8859-8?B?4A==?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="))
 
 (encode
 "Subject: .HN` $BNm(B"*B
-'("Subject: =?ISO-8859-8?Q?=E0_?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
-  "Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?IBskQk5tGyhC?="
-  "Subject: =?ISO-8859-8?B?4CA=?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
-  "Subject: =?ISO-8859-8?B?4A==?= =?ISO-2022-JP?B?IBskQk5tGyhC?="))
+("Subject: =?ISO-8859-8?Q?=E0_?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
+ "Subject: =?ISO-8859-8?Q?=E0?= =?ISO-2022-JP?B?IBskQk5tGyhC?="
+ "Subject: =?ISO-8859-8?B?4CA=?= =?ISO-2022-JP?B?GyRCTm0bKEI=?="
+ "Subject: =?ISO-8859-8?B?4A==?= =?ISO-2022-JP?B?IBskQk5tGyhC?="))
 
 (encode
 "Subject: .FNC$B4X?t(B"*B
-'("Subject: =?ISO-8859-7?Q?=C3?= =?ISO-2022-JP?B?GyRCNFg/dBsoQg==?="
-  "Subject: =?ISO-2022-JP-2?B?Gy5GG05DGyRCNFg/dBsoQg==?="))
+("Subject: =?ISO-8859-7?Q?=C3?= =?ISO-2022-JP?B?GyRCNFg/dBsoQg==?="
+ "Subject: =?ISO-2022-JP-2?B?Gy5GG05DGyRCNFg/dBsoQg==?="))
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaa($B$"$$(B)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
@@ -799,23 +686,23 @@
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaa ($B$"$$(B)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'("From: aaaaaaaaaaaaaaaaaaaaa
+("From: aaaaaaaaaaaaaaaaaaaaa
  (=?ISO-2022-JP?B?GyRCJCIkJBsoQg==?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-  "From: aaaaaaaaaaaaaaaaaaaaa (=?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ "From: aaaaaaaaaaaaaaaaaaaaa (=?ISO-2022-JP?B?GyRCJCIbKEI=?=
  =?ISO-2022-JP?B?GyRCJCQbKEI=?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"))
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaa( $B$"$$(B)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'("From: aaaaaaaaaaaaaaaaaaaaa(
+("From: aaaaaaaaaaaaaaaaaaaaa(
  =?ISO-2022-JP?B?GyRCJCIkJBsoQg==?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-  "From: aaaaaaaaaaaaaaaaaaaaa( =?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ "From: aaaaaaaaaaaaaaaaaaaaa( =?ISO-2022-JP?B?GyRCJCIbKEI=?=
  =?ISO-2022-JP?B?GyRCJCQbKEI=?=)aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"))
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaa($B$"$$(B )aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'("From: aaaaaaaaaaaaaaaaaaaaa(=?ISO-2022-JP?B?GyRCJCIkJBsoQg==?=
+("From: aaaaaaaaaaaaaaaaaaaaa(=?ISO-2022-JP?B?GyRCJCIkJBsoQg==?=
  )aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-  "From: aaaaaaaaaaaaaaaaaaaaa(=?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ "From: aaaaaaaaaaaaaaaaaaaaa(=?ISO-2022-JP?B?GyRCJCIbKEI=?=
  =?ISO-2022-JP?B?GyRCJCQbKEI=?= )aaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"))
 
 (encode
@@ -859,51 +746,51 @@
 "From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: ($B$"(B)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
 "From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: ($B$"(B)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
 "From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)\r
  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'separate-sticked-tokens-for-fold)
+separate-sticked-tokens-for-fold)
 
 (encode
 "From: ($B$"(B)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
 "From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)=?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaa?=\r
  =?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?= <akr@jaist.ac.jp>"
-'encode-long-ascii-string-for-fold 'permit-sticked-special)
+encode-long-ascii-string-for-fold permit-sticked-special)
 
 (encode
 "From: ($B$"(B)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
 "From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  aaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'divide-atom-for-fold)
+divide-atom-for-fold)
 
 (encode
 "From: ($B$"(B)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'("From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-  "From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+("From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+ "From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
  <akr@jaist.ac.jp>")
-'ignore-76bytes-limit)
+ignore-76bytes-limit)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa($B$"(B)aa <akr@jaist.ac.jp>"
 "From: =?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?=\r
  =?US-ASCII?Q?a?=(=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aa <akr@jaist.ac.jp>"
-'encode-long-ascii-string-for-fold)
+encode-long-ascii-string-for-fold)
 
 (encode
 "From: $B$"(B aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa($B$"(B)aa <akr@jaist.ac.jp>"
 "From: =?ISO-2022-JP?B?GyRCJCIbKEIgYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYQ==?=\r
  =?US-ASCII?Q?aaaaaaaaaaaaaaa?=(=?ISO-2022-JP?B?GyRCJCIbKEI=?=)aa"
-'encode-long-ascii-string-for-fold)
+encode-long-ascii-string-for-fold)
 
 (encode
 "From: ($B$"(B) <akr@jaist.ac.jp>"
@@ -914,21 +801,21 @@
 "From: ((((((((((((((((((((((((((((((((((((((((=?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=))))))))))))))))))))))))))))))))))))))))\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: ((((((((((((((((((((((((((((((((((((((((($B$"(B))))))))))))))))))))))))))))))))))))))))) <akr@jaist.ac.jp>"
 "From: (((((((((((((((((((((((((((((((((((((((((=?ISO-2022-JP?B?GyhC?=\r
  =?ISO-2022-JP?B?GyRCJCIbKEI=?=)))))))))))))))))))))))))))))))))))))))))\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: (((((((((((((((((((((((((((((((((((((((((((((($B$"(B)))))))))))))))))))))))))))))))))))))))))))))) <akr@jaist.ac.jp>"
 "From: ((((((((((((((((((((((((((((((((((((((((((((((=?ISO-2022-JP?B?GyhC?=\r
  =?ISO-2022-JP?B?GyRCJCIbKEI=?=))))))))))))))))))))))))))))))))))))))))))))))\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: ((((((((((((((((((((((((((((((((((((((((((((((($B$"(B))))))))))))))))))))))))))))))))))))))))))))))) <akr@jaist.ac.jp>"
@@ -936,7 +823,7 @@
  =?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=)))))))))))))))))))))))))))))))))))))))))))))))\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: (((((((((((((((((((((((((((((((((((((((((((((((($B$"(B)))))))))))))))))))))))))))))))))))))))))))))))) <akr@jaist.ac.jp>"
@@ -945,7 +832,7 @@
  =?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=))))))))))))))))))))))))))))))))))))))))))))))))\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: (((((((((((((((((((((((((((((((((((((((((((((((((((((($B$"(B)))))))))))))))))))))))))))))))))))))))))))))))))))))) <akr@jaist.ac.jp>"
@@ -954,7 +841,7 @@
  =?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=))))))))))))))))))))))))))))))))))))))))))))))))))))))\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: ((((((((((((((((((((((((((((((((((((((((((($B$"(B))))))))))))))))))))))))))))))))))))))))))) <akr@jaist.ac.jp>"
@@ -963,7 +850,7 @@
  =?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=))))))))))))))))))))))))))))))))))))))))))))))))))))))\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: ((((((((((((((((((((((((((((((((((((((((((((((((((((((($B$"(B))))))))))))))))))))))))))))))))))))))))))))))))))))))) <akr@jaist.ac.jp>"
@@ -972,7 +859,7 @@
  =?ISO-2022-JP?B?GyhC?=(=?ISO-2022-JP?B?GyRCJCIbKEI=?=)=?ISO-2022-JP?B?GyhC?=\r
  =?ISO-2022-JP?B?GyhC?=))))))))))))))))))))))))))))))))))))))))))))))))))))))\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: (((((((((((((((((((((((((((((((((((((((((((((((((((((((($B$"(B)))))))))))))))))))))))))))))))))))))))))))))))))))))))) <akr@jaist.ac.jp>"
@@ -982,7 +869,7 @@
  =?ISO-2022-JP?B?GyhC?=))))))))))))))))))))))))))))))))=?ISO-2022-JP?B?GyhC?=\r
  =?ISO-2022-JP?B?GyhC?=))))))))))))))))))))))))\r
  <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: ()($B$"(B)() <akr@jaist.ac.jp>"
@@ -1004,14 +891,14 @@
 "From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=)()()()()()()()()()()()()()()()()()()()()()()()\r
   <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: ($B$"(B)()()()()()()()()()()()()()()()()()()()()()()()()()()() <akr@jaist.ac.jp>"
 "From: (=?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=)()()()()()()()()()()()()()()()(=?ISO-2022-JP?B?GyhC?=\r
  =?ISO-2022-JP?B?GyhC?=)()()()()()()()()()()() <akr@jaist.ac.jp>"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "To: l@d ($B$"(B aaa)($B$"(B)"
@@ -1031,13 +918,13 @@
 "To: l@d ($B$"(B aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)($B$"(B)"
 "To: l@d (=?ISO-2022-JP?B?GyRCJCIbKEIgYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE=?=\r
  =?US-ASCII?Q?aaaaaaaaaaaaaaaaaa?=)(=?ISO-2022-JP?B?GyRCJCIbKEI=?=)"
-'encode-long-ascii-string-for-fold)
+encode-long-ascii-string-for-fold)
 
 (encode
 "To: l@d ($B$"(B aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()$B$"(B)"
 "To: l@d (=?ISO-2022-JP?B?GyRCJCIbKEIgYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE=?=\r
  =?US-ASCII?Q?aaaaaaaaaaaaaaaaaa?=()=?ISO-2022-JP?B?GyRCJCIbKEI=?=)"
-'encode-long-ascii-string-for-fold)
+encode-long-ascii-string-for-fold)
 
 (encode
 "To: l@d ($B$"(B aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa $B$"(B)($B$"(B)"
@@ -1077,167 +964,167 @@
 "From: akr@jaist.ac.jp ($B$"(B($B$$(B)$B$&(B)"
 "From: akr@jaist.ac.jp\r
  (=?ISO-2022-JP?B?GyRCJCIbKEI=?=(=?ISO-2022-JP?B?GyRCJCQbKEI=?=)=?ISO-2022-JP?B?GyRCJCYbKEI=?=)"
-'ignore-76bytes-limit)
+ignore-76bytes-limit)
 
 (encode
 "From: akr@jaist.ac.jp ($B$"(B($B$$(B)$B$&(B)"
 "From: akr@jaist.ac.jp (=?ISO-2022-JP?B?GyRCJCIbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=(=?ISO-2022-JP?B?GyRCJCQbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=)=?ISO-2022-JP?B?GyRCJCYbKEI=?=)"
-'zero-characters-encoded-word-hack)
+zero-characters-encoded-word-hack)
 
 (encode
 "From: $B$"(B($B$"(B) <akr@jaist.ac.jp>"
 "From: =?ISO-2022-JP?B?GyRCJCIbKEIoGyRCJCIbKEIp?= <akr@jaist.ac.jp>"
-'encode-sticked-comment-as-atom)
+encode-sticked-comment-as-atom)
 
 (encode
 "From: $B$"(B($B$"(B) <akr@jaist.ac.jp>"
 "From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(=?ISO-2022-JP?B?GyRCJCIbKEI=?=)\r
  <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: $B$"(B($B$"(B) <akr@jaist.ac.jp>"
 "From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)\r
  <akr@jaist.ac.jp>"
-'separate-sticked-comment)
+separate-sticked-comment)
 
 (encode
 "To: $B$"(B<akr@jaist.ac.jp>"
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
-'permit-sticked-special)
+permit-sticked-special)
 
 (encode
 "To: $B$"(B<akr@jaist.ac.jp>"
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
-'separate-sticked-special)
+separate-sticked-special)
 
 (encode
 "To: <akr@jaist.ac.jp>,$B$"(B<akr@jaist.ac.jp>"
 "To: <akr@jaist.ac.jp>,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
-'permit-sticked-special)
+permit-sticked-special)
 
 (encode
 "To: <akr@jaist.ac.jp>,$B$"(B<akr@jaist.ac.jp>"
 "To: <akr@jaist.ac.jp>, =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
-'separate-sticked-special)
+separate-sticked-special)
 
 (encode
 "To: akr@jaist.ac.jp,$B$"(B<akr@jaist.ac.jp>"
 "To: akr@jaist.ac.jp,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
-'permit-sticked-special)
+permit-sticked-special)
 
 (encode
 "To: akr@jaist.ac.jp,$B$"(B<akr@jaist.ac.jp>"
 "To: akr@jaist.ac.jp, =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
-'separate-sticked-special)
+separate-sticked-special)
 
 (encode
 "To: $B$"(B:akr@jaist.ac.jp;"
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:akr@jaist.ac.jp;"
-'permit-sticked-special)
+permit-sticked-special)
 
 (encode
 "To: $B$"(B:akr@jaist.ac.jp;"
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?= :akr@jaist.ac.jp;"
-'separate-sticked-special)
+separate-sticked-special)
 
 (encode
 "To: $B$"(B:$B$$(B<akr@jaist.ac.jp>;"
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<akr@jaist.ac.jp>;"
-'ignore-76bytes-limit 'permit-sticked-special)
+ignore-76bytes-limit permit-sticked-special)
 
 (encode
 "To: $B$"(B:$B$$(B<akr@jaist.ac.jp>;"
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=<akr@jaist.ac.jp>;"
-'zero-characters-encoded-word-hack 'permit-sticked-special)
+zero-characters-encoded-word-hack permit-sticked-special)
 
 (encode
 "To: $B$"(B:$B$$(B<akr@jaist.ac.jp>;"
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?= : =?ISO-2022-JP?B?GyRCJCQbKEI=?=\r
  <akr@jaist.ac.jp>;"
-'separate-sticked-special)
+separate-sticked-special)
 
 (encode
 "To: $B$"(B:$B$$(B<foo@bar>,$B$&(B<foo@bar>;,$B$((B<foo@bar>"
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<foo@bar>,=?ISO-2022-JP?B?GyRCJCYbKEI=?=<foo@bar>;,=?ISO-2022-JP?B?GyRCJCgbKEI=?=<foo@bar>"
-'ignore-76bytes-limit 'permit-sticked-special)
+ignore-76bytes-limit permit-sticked-special)
 
 (encode
 "To: $B$"(B:$B$$(B<foo@bar>,$B$&(B<foo@bar>;,$B$((B<foo@bar>"
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=<foo@bar>,=?ISO-2022-JP?B?GyRCJCYbKEI=?=\r
  =?ISO-2022-JP?B?GyhC?=<foo@bar>;,=?ISO-2022-JP?B?GyRCJCgbKEI=?=<foo@bar>"
-'zero-characters-encoded-word-hack 'permit-sticked-special)
+zero-characters-encoded-word-hack permit-sticked-special)
 
 (encode
 "To: $B$"(B:$B$$(B<foo@bar>,$B$&(B<foo@bar>;,$B$((B<foo@bar>"
 "To: =?ISO-2022-JP?B?GyRCJCIbKEI=?= : =?ISO-2022-JP?B?GyRCJCQbKEI=?=\r
  <foo@bar>, =?ISO-2022-JP?B?GyRCJCYbKEI=?= <foo@bar>;,\r
  =?ISO-2022-JP?B?GyRCJCgbKEI=?= <foo@bar>"
-'separate-sticked-special)
+separate-sticked-special)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaa <akr@jaist.ac.jp>"
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6ShPw==?=()aaaaa\r
  <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaa <akr@jaist.ac.jp>"
-'("From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
+("From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
  =?US-ASCII?Q?=3F?=()aaaaa <akr@jaist.ac.jp>"
-  "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
+ "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
  =?EUC-KR?B?pKE/?=()aaaaa <akr@jaist.ac.jp>")
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaa <akr@jaist.ac.jp>"
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=
  =?US-ASCII?Q?=3F?=()aaaaa <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'("From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
+("From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
  =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-  "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
+ "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
  =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>")
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
  =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
  =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
  =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
  =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
  =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
@@ -1245,7 +1132,7 @@
  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
  =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
@@ -1253,38 +1140,38 @@
  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
  =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  <akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
-'("From:\r
+("From:\r
  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
  =?US-ASCII?Q?=3F?=()=?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?=\r
  =?US-ASCII?Q?aaaaaaaaaaaaaaaa?= <akr@jaist.ac.jp>"
-  "From: =?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?=
+ "From: =?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?=
  =?US-ASCII?Q?aa?=()=?US-ASCII?Q?=3F?=\r 
  =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  <akr@jaist.ac.jp>")
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
  =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
 "From:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
  =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 (encode
 "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?$(C$!(B?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
 "From:\r
  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
  =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<akr@jaist.ac.jp>"
-'permit-sticked-comment)
+permit-sticked-comment)
 
 ;----------------------------------------------------------------------------
 
@@ -1385,95 +1272,95 @@
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?="
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?G?H4sIACqUszUAA8tIzcnJBwCGphA2BQAAAA==?="
 "Subject: =?+US-ASCII?G?H4sIACqUszUAA8tIzcnJBwCGphA2BQAAAA==?="
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?Unknown-Encoding?H4sIAGOUszUAAwtyczYyMDEHAEpvqpIHAAAA?="
 "Subject: =?+US-ASCII?Unknown-Encoding?H4sIAGOUszUAAwtyczYyMDEHAEpvqpIHAAAA?="
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?ISO-2022-JP?G?H4sIAGiTszUAA5NWcVIBAhMtaQ0nAGLSaeEMAAAA?=\r
  =?ISO-2022-JP?G?H4sIAH6TszUAA5NWcVIxV3FTyVbxldZwAgAuIikKDgAAAA==?="
 "Subject: =?+ISO-2022-JP?G?H4sIAGiTszUAA5NWcVIBAhMtaQ0nAGLSaeEMAAAA?==?+ISO-2022-JP?G?H4sIAH6TszUAA5NWcVIxV3FTyVbxldZwAgAuIikKDgAAAA==?="
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?= =?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=  =?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=\r
  =?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=\r
 \t=?Unknown-Charset?B?gqA=?="
 "Subject: =?+Unknown-Charset?B?gqA=?==?+Unknown-Charset?B?gqA=?="
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: a=?Unknown-Charset?B?gqA=?="
 "Subject: a=?Unknown-Charset?B?gqA=?="
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?Unknown-Charset?B?gqA=?=b"
 "Subject: =?Unknown-Charset?B?gqA=?=b"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: a=?Unknown-Charset?B?gqA=?=b"
 "Subject: a=?Unknown-Charset?B?gqA=?=b"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: a =?Unknown-Charset?B?gqA=?= b"
 "Subject: a =?+Unknown-Charset?B?gqA=?= b"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?ISO-2022-JP?B?DQoNCg==?="
 "Subject: =?+US-ASCII?Q?=0D=0A=0D=0A?="
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?Q?a=0D=0A_b?="
 "Subject: a b"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "Subject: =?US-ASCII?Q?a=0D=0Ab?="
 "Subject: a=?+US-ASCII?Q?=0D=0A?=b"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "From: =?+C?Q?abcdef?= <akr@jaist.ac.jp>"
 "From: =?++++C?Q?abcdef?= <akr@jaist.ac.jp>"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "From: \"=?+C?Q?abcdef?=\" <akr@jaist.ac.jp>"
 "From: \"=?+++C?Q?abcdef?=\" <akr@jaist.ac.jp>"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "From: =?C?Q?abc?= =?US-ASCII?Q?=2E?= <akr@jaist.ac.jp>"
 "From: \"=?+C?Q?abc?=.\" <akr@jaist.ac.jp>"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 ;;; Section 8: CR and LF.
 
@@ -1508,12 +1395,12 @@
 (decode
 "From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?= =?US-ASCII?Q?a?=)"
 "From: akr@jaist.ac.jp (=?+US-ASCII?Q?=0D=0A?=a)"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0Aa?=)"
 "From: akr@jaist.ac.jp (=?+US-ASCII?Q?=0D=0A?=a)"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A_?=)"
@@ -1535,17 +1422,89 @@
 "From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?=\r
  =?US-ASCII?Q?=0D=0A?= =?US-ASCII?Q?a?=)"
 "From: akr@jaist.ac.jp (=?+US-ASCII?Q?=0D=0A=0D=0A?=a)"
-'embedded-encoded-word)
+embedded-encoded-word)
 
 (decode
 "From: akr@jaist.ac.jp (\\\r=?US-ASCII?Q?=0A?=\r
  =?US-ASCII?Q?=0D?=\\\n =?US-ASCII?Q?a?=)"
 "From: akr@jaist.ac.jp (=?+US-ASCII?Q?=0D=0A?=\r\\
  a)"
-'embedded-encoded-word)
+embedded-encoded-word)
 
-;;;end-test
-
-(report)
+))
 
 ;----------------------------------------------------------------------------
+
+;;; test driver.
+
+(defun report (decoder encoder &optional verbose)
+  (let ((pats test-patterns) pat src dsts opts dst
+	(decode-success 0)
+	(decode-failure 0)
+	(decode-error 0)
+	(decode-giveup 0)
+	(encode-success 0)
+	(encode-failure 0)
+	(encode-error 0)
+	(encode-giveup 0))
+    (while pats
+      (setq pat (car pats)
+	    src (nth 1 pat)
+	    dsts (nth 2 pat)
+	    opts (nthcdr 3 pat)
+            pats (cdr pats))
+      (if (stringp dsts) (setq dsts (list dsts)))
+      (cond
+	((eq (car pat) 'decode)
+	 (condition-case err
+	     (progn
+	       (setq dst (apply decoder src opts))
+	       (if dst
+		   (if (member dst dsts)
+		       (progn
+			 (if verbose (message "decode-success: %S" pat))
+			 (setq decode-success (1+ decode-success)))
+		     (progn
+		       (if verbose (message "decode-failure: %S" pat))
+		       (setq decode-failure (1+ decode-failure))))
+		 (progn
+		   (if verbose (message "decode-giveup: %S" pat))
+		   (setq decode-giveup (1+ decode-giveup)))))
+	   (error
+	     (if verbose (message "decode-error: %S %S" err pat))
+	     (setq decode-error (1+ decode-error)))))
+	((eq (car pat) 'encode)
+	 (condition-case err
+	     (progn
+	       (setq dst (apply encoder src opts))
+	       (if dst
+		   (if (member dst dsts)
+		       (progn
+			 (if verbose (message "encode-success: %S" pat))
+			 (setq encode-success (1+ encode-success)))
+		     (progn
+		       (if verbose (message "encode-failure: %S" pat))
+		       (setq encode-failure (1+ encode-failure))))
+		 (progn
+		   (if verbose (message "encode-giveup: %S" pat))
+		   (setq encode-giveup (1+ encode-giveup)))))
+	   (error
+	     (if verbose (message "encode-error: %S %S" err pat))
+	     (setq encode-error (1+ encode-error)))))
+	(t
+	  (message "pattern error: %S" pat))))
+    (message "\
+decode %d patterns:
+  success: %d
+  failure: %d
+  error: %d
+  giveup: %d
+encode %d patterns:
+  success: %d
+  failure: %d
+  error: %d
+  giveup: %d"
+      (+ decode-success decode-failure decode-error decode-giveup)
+      decode-success decode-failure decode-error decode-giveup
+      (+ encode-success encode-failure encode-error encode-giveup)
+      encode-success encode-failure encode-error encode-giveup)))

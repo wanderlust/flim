@@ -1,3 +1,14 @@
+1999-05-24  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* TESTPAT-DOODLE: New file.
+
+	* TESTPAT-FLIM: New file.
+
+	* TESTPAT: Re-constructed.
+
+	* Makefile (check): Use TESTPAT-DOODLE.
+	(check-verbose): New target.
+
 1999-03-27  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE

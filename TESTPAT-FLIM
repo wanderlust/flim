@@ -1,0 +1,44 @@
+(setq load-path (cons "." load-path))
+(require 'mime)
+
+(if (< max-specpdl-size 1000)
+  (setq max-specpdl-size 1000))
+
+(defun crlf-to-lf (str) (decode-coding-string str 'raw-text-dos))
+(defun lf-to-crlf (str) (encode-coding-string str 'raw-text-dos))
+
+(defun decode-flim (src &rest opts)
+  (unless (memq 'embedded-encoded-word opts)
+    (setq src (crlf-to-lf src))
+    (setq eword-lexical-analyze-cache nil)
+    (setq eword-decode-sticked-encoded-word
+      (or (memq 'permit-sticked-comment opts)
+	  (memq 'permit-sticked-special opts)))
+    (setq eword-decode-quoted-encoded-word nil)
+    (with-temp-buffer
+      (insert src "\n" mail-header-separator)
+      (eword-decode-header 'us-ascii mail-header-separator)
+      (goto-char (point-min))
+      (std11-narrow-to-header mail-header-separator)
+      (std11-field-end)
+      (std11-unfold-string (buffer-substring (point-min) (point))))))
+
+(defun encode-flim (src &rest opts)
+  (setq src (crlf-to-lf src))
+  (setq eword-lexical-analyze-cache nil)
+  (setq eword-decode-sticked-encoded-word nil)
+  (setq eword-decode-quoted-encoded-word nil)
+  (with-temp-buffer
+    (insert src "\n" mail-header-separator)
+    (goto-char (point-min))
+    (eword-encode-header 'us-ascii)
+    (goto-char (point-min))
+    (std11-narrow-to-header mail-header-separator)
+    (std11-field-end)
+    (lf-to-crlf (buffer-substring (point-min) (point)))))
+
+(defun report-flim ()
+  (report 'decode-flim 'encode-flim))
+
+(defun report-flim-verbose ()
+  (report 'decode-flim 'encode-flim t))

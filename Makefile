@@ -71,7 +71,10 @@ ew-parse.el: ew-parse.scm lalr-el.scm
 	-scm -f lalr-el.scm -f ew-parse.scm > ew-parse.out
 
 check:
-	$(EMACS) $(FLAGS_CURDIR) -l ./TESTPAT -eval '(report)'
+	$(EMACS) -batch -q -no-site-file -l TESTPAT -l TESTPAT-DOODLE -f report-doodle 2>&1
+
+check-verbose:
+	$(EMACS) -batch -q -no-site-file -l TESTPAT -l TESTPAT-DOODLE -f report-doodle-verbose 2>&1
 
 # The file BENCHMARK is not a part of FLAM-DOODLE because it is so large.
 benchmark:
