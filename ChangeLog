@@ -1,4 +1,11 @@
-Sun Oct 25 01:37:34 GMT 1998
+1998-10-25  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-field-body): New function.
+	(eword-decode-header): Use `eword-decode-field-body'.
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Use
+	`eword-decode-field-body'.
+
 1998-10-25  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* eword-encode.el (eword-encode-field-body): New function.

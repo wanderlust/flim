@@ -315,7 +315,7 @@ Anyway, non-encoded-word part is decoded with `default-mime-charset'."
   (when (eq max-column t)
     (setq max-column fill-column))
   (let ((field-name-symbol (intern (capitalize field-name)))
-	(len (string-width field-name)))
+	(len (1+ (string-width field-name))))
     (if (memq field-name-symbol eword-decode-ignored-field-list)
 	;; Don't decode
 	(if max-column
@@ -350,36 +350,17 @@ If SEPARATOR is not nil, it is used as header separator."
 		      code-conversion
 		    default-mime-charset))))
 	(if default-charset
-	    (let (beg p end field-name len)
+	    (let (beg p end field-name field-body)
 	      (goto-char (point-min))
 	      (while (re-search-forward std11-field-head-regexp nil t)
 		(setq beg (match-beginning 0)
 		      p (match-end 0)
 		      field-name (buffer-substring beg (1- p))
-		      len (string-width field-name)
-		      field-name (intern (capitalize field-name))
+		      field-body (buffer-substring p end)
 		      end (std11-field-end))
-		(cond ((memq field-name eword-decode-ignored-field-list)
-		       ;; Don't decode
-		       )
-		      ((memq field-name eword-decode-structured-field-list)
-		       ;; Decode as structured field
-		       (let ((body (buffer-substring p end))
-			     (default-mime-charset default-charset))
-			 (delete-region p end)
-			 (insert (eword-decode-and-fold-structured-field
-				  body (1+ len)))
-			 ))
-		      (t
-		       ;; Decode as unstructured field
-		       (save-restriction
-			 (narrow-to-region beg (1+ end))
-			 (decode-mime-charset-region p end default-charset)
-			 (goto-char p)
-			 (if (re-search-forward eword-encoded-word-regexp
-						nil t)
-			     (eword-decode-region beg (point-max) 'unfold))
-			 )))))
+		(delete-region p end)
+		(insert (eword-decode-field-body
+			 field-name field-body nil t))))
 	  (eword-decode-region (point-min) (point-max) t)
 	  )))))
 
