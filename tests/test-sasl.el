@@ -91,9 +91,8 @@ algorithm=md5-sess,charset=utf-8")
 	 (client
 	  (sasl-make-client mechanism "kawagish@nokiaseap" "imap" "xxx.yyy.com"))
 	 (sasl-read-passphrase
-	  '(lambda (passphrase)
-	     (ntlm-get-password-hashes
-	      "!\"#456secret")))
+	  #'(lambda (passphrase)
+	      "!\"#456secret"))
 	 step
 	 response)
     ;; init

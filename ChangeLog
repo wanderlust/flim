@@ -1,5 +1,10 @@
 2001-02-20  Kenichi OKADA <okada@opaopa.org>
 
+	* tests/test-sasl.el(test-sasl-ntlm-imap): Fix
+	`sasl-read-passphrase'
+
+2001-02-20  Kenichi OKADA <okada@opaopa.org>
+
 	* tests/test-sasl.el(test-sasl-ntlm-imap): Change name.
 	Delete wrong lines.
 
