@@ -1,5 +1,9 @@
 1999-08-19  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* CLIME: Version 1.13.1 (Ando) released.
+
+1999-08-19  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* luna.el (luna-define-generic): Use <(` ...)>, <(, ...)> and <(,@
 	...)> instead of <`...>, <,...> and <,@...>.
 	(luna-define-internal-accessors): Use <(` ...)> and <(, ...)>
