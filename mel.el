@@ -26,7 +26,6 @@
 ;;; Code:
 
 (require 'mime-def)
-(require 'poem)
 (require 'alist)
 (require 'path-util)
 
