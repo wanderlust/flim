@@ -94,7 +94,10 @@
       (write-region start end filename append visit lockname)))
   )
 
-  
+(or (fboundp 'char-int)
+    (defalias 'char-int 'identity))
+
+
 ;;; @ about STD 11
 ;;;
 
