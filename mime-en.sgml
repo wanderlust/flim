@@ -283,7 +283,7 @@ If a field-name is matched with some elements of
 <p>
 Each <dref>encoded-word</dref> in the header is decoded.  ``Raw non
 us-ascii characters'' are also decoded as
-<var>default-mime-charset</var>.
+<code>default-mime-charset</code>.
 </defun>
 
 <defun name="mime-insert-text-content">
@@ -293,7 +293,7 @@ Insert before point a contents of <var>entity</var> as text entity.
 <p>
 Contents of the <var>entity</var> are decoded as <dref>MIME
 charset</dref>.  If the <var>entity</var> does not have charset
-parameter of Content-Type field, <var>default-mime-charset</var> is
+parameter of Content-Type field, <code>default-mime-charset</code> is
 used as default value.
 </defun>
 
