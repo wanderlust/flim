@@ -1,4 +1,5 @@
 (require 'ew-var)
+(require 'ew-util)
 (provide 'ew-data)
 
 (defun ew-make-anchor (column str)
@@ -160,9 +161,9 @@
     (ew-separate-eword
      frag1 frag2
      (if ew-decode-quoted-encoded-word
-	 '(ew:raw-atom-tok
-	   ew:raw-qs-texts-tok)
-       '(ew:raw-atom-tok))))
+	 '(ew:atom-tok
+	   ew:qs-texts-tok)
+       '(ew:atom-tok))))
   (while (not (eq frag1 frag2))
     (unless (ew-comment-frag-p frag2)
       (put frag2 'decode 'ew-decode-phrase))
@@ -179,28 +180,28 @@
 
 (defun ew-comment-frag-p (frag)
   (member (get frag 'type)
-	  '(ew:raw-cm-begin-tok
-	    ew:raw-cm-end-tok
-	    ew:raw-cm-nested-begin-tok
-	    ew:raw-cm-nested-end-tok
-	    ew:raw-cm-texts-tok
-	    ew:raw-cm-wsp-tok
-	    ew:raw-cm-fold-tok
-	    ew:raw-cm-qfold-tok
-	    ew:raw-cm-qpair-tok)))
+	  '(ew:cm-begin-tok
+	    ew:cm-end-tok
+	    ew:cm-nested-begin-tok
+	    ew:cm-nested-end-tok
+	    ew:cm-texts-tok
+	    ew:cm-wsp-tok
+	    ew:cm-fold-tok
+	    ew:cm-qfold-tok
+	    ew:cm-qpair-tok)))
 
 (defun ew-special-frag-p (frag)
   (member (get frag 'type)
-	  '(ew:raw-lt-tok
-	    ew:raw-gt-tok
-	    ew:raw-at-tok
-	    ew:raw-comma-tok
-	    ew:raw-semicolon-tok
-	    ew:raw-colon-tok
-	    ew:raw-dot-tok
-	    ew:raw-qs-begin-tok
-	    ew:raw-qs-end-tok
-	    ew:raw-dl-begin-tok
-	    ew:raw-dl-end-tok
-	    ew:raw-cm-begin-tok
-	    ew:raw-cm-end-tok)))
+	  '(ew:lt-tok
+	    ew:gt-tok
+	    ew:at-tok
+	    ew:comma-tok
+	    ew:semicolon-tok
+	    ew:colon-tok
+	    ew:dot-tok
+	    ew:qs-begin-tok
+	    ew:qs-end-tok
+	    ew:dl-begin-tok
+	    ew:dl-end-tok
+	    ew:cm-begin-tok
+	    ew:cm-end-tok)))

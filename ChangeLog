@@ -1,5 +1,23 @@
 1998-08-17  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-data.el:
+	  - Require 'ew-util.
+	  - Change token prefix "ew:raw-" to "ew:".
+
+	* ew-dec.el: Change token prefix "ew:raw-" to "ew:".
+	(ew-mark): Shorten parse error message.
+
+	* ew-scan-m.el: Change token prefix "ew:raw-" to "ew:".
+	(ew-scan-mime): Change atom to token.
+
+	* ew-scan-s.el: Change token prefix "ew:raw-" to "ew:".
+
+	* ew-scan-u.el: Change token prefix "ew:raw-" to "ew:".
+
+	* ew-parse.el: Change token prefix "ew:raw-" to "ew:".
+
+1998-08-17  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-dec.el: Require 'ew-var.
 	(ew-decode-field-cache-buf): New variable.
 	(ew-decode-field-cache-num): New variable.
