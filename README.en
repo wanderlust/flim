@@ -84,7 +84,7 @@ Installation
   /usr/local/lib/xemacs/site-lisp).
 
   You can specify other optional settings by editing the file
-  MEL-CFG.  Please read comments in it.
+  FLIM-CFG.  Please read comments in it.
 
 
 load-path (for Emacs or MULE)
