@@ -1,8 +1,8 @@
 ;;; mel.el : a MIME encoding/decoding library
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
-;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Created: 1995/6/25
 ;; Keywords: MIME, Base64, Quoted-Printable, uuencode, gzip64
 
@@ -27,6 +27,7 @@
 
 (require 'mime-def)
 (require 'poem)
+(require 'alist)
 
 (defcustom mime-encoding-list
   '("7bit" "8bit" "binary" "base64" "quoted-printable")
