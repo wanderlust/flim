@@ -64,7 +64,7 @@
 (defun scram-make-unique-nonce ()	; 8*OCTET, globally unique.
   ;; For example, concatenated string of process-identifier, system-clock,
   ;; sequence-number, random-number, and domain-name.
-  (concat "<" "foo" "bar" "baz" "@" (system-name) ">")) ; TEMPORARY
+  (concat "<" (sasl-unique-id) "@" (system-name) ">"))
   
 (defun scram-xor-string (str1 str2)
   ;; (length str1) == (length str2) == (length dst) == 16 (in SCRAM-MD5)

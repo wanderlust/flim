@@ -1,5 +1,18 @@
 1999-12-06  Kenichi OKADA <okada@opaopa.org>
 
+	* sasl.el (sasl-number-base36): New function.
+	(sasl-unique-id): New function.
+	(sasl-unique-id-char): New variable.
+	* scram-md5.el (scram-make-unique-nonce): Fix to use `sasl-unique-id'.
+
+1999-12-06  Kenichi OKADA <okada@opaopa.org>
+
+	* sha1-el.el: Fix.
+	* hex-util.el: Fix.
+
+
+1999-12-06  Kenichi OKADA <okada@opaopa.org>
+
 	* SLIM: Version 1.13.4 released.
 
 1999-12-04  Kenichi OKADA <okada@opaopa.org>
