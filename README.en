@@ -11,21 +11,22 @@ What's FLIM
 
     mime.el	--- MIME library
 
-        mime-def.el --- Definitions about MIME format
+      mime-def.el --- Definitions about MIME format
 
-    	mime-parse.el --- MIME parser
+      mime-parse.el --- MIME parser
 
-    	mel.el --- MIME encoder/decoder
-	    mel-dl.el --- base64 (b-encoding) encoder/decoder
-			  (for Emacs 20 with dynamic loading support)
-	    mel-b.el  --- base64 (b-encoding) encoder/decoder
-			  (for other emacsen)
-	    mel-q.el  --- quoted-printable and q-encoding encoder/decoder
-	    mel-u.el  --- unofficial module for uuencode
-	    mel-g.el  --- unofficial module for gzip64
+      mel.el --- MIME encoder/decoder
+	mel-b-dl.el --- base64 (B-encoding) encoder/decoder
+			(for Emacs 20 with dynamic loading support)
+	mel-b.el    --- base64 (B-encoding) encoder/decoder
+			(for other emacsen)
+	mel-q.el    --- quoted-printable and Q-encoding
+		    	encoder/decoder
+	mel-u.el    --- unofficial module for uuencode
+	mel-g.el    --- unofficial module for gzip64
 
-	eword-decode.el --- encoded-word decoder
-	eword-encode.el --- encoded-word encoder
+      eword-decode.el --- encoded-word decoder
+      eword-encode.el --- encoded-word encoder
 
     mailcap.el	--- mailcap parser and utility
 

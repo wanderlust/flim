@@ -12,7 +12,7 @@
 		     mailcap))
 
 (if (fboundp 'dynamic-link)
-    (setq flim-modules (cons 'mel-dl flim-modules))
+    (setq flim-modules (cons 'mel-b-dl flim-modules))
   )
 
 ;;; FLIM-ELS ends here

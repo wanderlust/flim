@@ -54,17 +54,6 @@
 	    )
 	  f))))
 
-(defmacro mel-define-service (name args &rest rest)
-  `(progn
-     (defvar ,(intern (format "%s-obarray" name)) [nil])
-     (defun ,name ,args
-       ,@rest
-       (funcall (mel-find-function ',name ,(car (last args)))
-		,@(mm-arglist-to-arguments (butlast args)))
-       )))
-
-(put 'mel-define-service 'lisp-indent-function 'defun)
-
 
 ;;; @ setting for modules
 ;;;
@@ -82,7 +71,7 @@
 (mel-use-module 'mel-u '("x-uue" "x-uuencode"))
 
 (if base64-dl-module
-    (mel-use-module 'mel-dl '("base64" "B"))
+    (mel-use-module 'mel-b-dl '("base64" "B"))
   )
 
 
