@@ -1,3 +1,17 @@
+1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* ew-bq.el (ew-ccl-use-symbol): New variable.
+	(ew-ccl-untrusted-eof-block): New variable.
+	(ew-make-ccl-coding-system): New function.
+	(ew-ccl-decode-base64): New ccl program renamed from `ew-ccl-decode-b'.
+	(ew-ccl-encode-b-is-broken): Abolished.
+	(ew-ccl-uq): Use `ew-make-ccl-coding-system' to define.
+	(ew-ccl-cq): Ditto.
+	(ew-ccl-pq): Ditto.
+	(ew-ccl-b): Ditto.
+	(ew-ccl-quoted-printable): Ditto.
+	(ew-ccl-base64): Ditto.
+
 1998-08-24  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ew-bq.el (ew-ccl-quoted-printable): Change mnemonic B to Q.

@@ -3,6 +3,40 @@
 
 (provide 'ew-bq)
 
+;;;
+
+(defvar ew-ccl-use-symbol
+  (eval-when-compile
+    (define-ccl-program ew-ccl-identity
+      '(1 ((read r0) (loop (write-read-repeat r0)))))
+    (condition-case nil
+	(progn
+	  (make-coding-system
+	   'ew-ccl-identity 4 ?I
+	   "Identity coding system for byte-compile time checking"
+	   '(ew-ccl-identity . ew-ccl-identity))
+	  t)
+      (error nil))))
+
+(defvar ew-ccl-untrusted-eof-block
+  (eval-when-compile
+    (let ((status (make-vector 9 nil)))
+      (ccl-execute-on-string
+       (ccl-compile
+        '(0 (read r0) (r0 = 2)))
+       status
+       "")
+      (aref status 0))))
+
+(defun ew-make-ccl-coding-system (coding-system mnemonic doc-string decoder encoder)
+  (make-coding-system
+   coding-system 4 mnemonic doc-string
+   (if ew-ccl-use-symbol
+       (cons decoder encoder)
+     (cons (symbol-value decoder) (symbol-value encoder)))))
+
+;;;
+
 (eval-when-compile
 
 (defconst ew-ccl-4-table
@@ -233,7 +267,7 @@
        (write r0 ,ew-ccl-low-table)
        (repeat)))))
 
-(define-ccl-program ew-ccl-decode-b
+(define-ccl-program ew-ccl-decode-base64
   (eval-when-compile
     `(1
       (loop
@@ -278,8 +312,6 @@
 	       (t `((write (r0 | ,v)) (break)))))
 	    ew-ccl-256-to-64-table)))
        (repeat)))))
-
-(eval-and-compile
 
 ;; ew-ccl-encode-b works only 20.3 or later because CCL_EOF_BLOCK
 ;; is not executed on 20.2 (or former?).
@@ -345,8 +377,6 @@
 		     ew-ccl-16-table)))
 	(write ?=)))
       )))
-
-)
 
 ;;;
 
@@ -770,35 +800,29 @@
 
 ;;;
 
-(make-coding-system 'ew-ccl-uq 4 ?Q "MIME Q-encoding in unstructured field"
-		    (cons ew-ccl-decode-q ew-ccl-encode-uq))
+(ew-make-ccl-coding-system
+ 'ew-ccl-uq ?Q "MIME Q-encoding in unstructured field"
+ 'ew-ccl-decode-q 'ew-ccl-encode-uq)
 
-(make-coding-system 'ew-ccl-cq 4 ?Q "MIME Q-encoding in comment"
-		    (cons ew-ccl-decode-q ew-ccl-encode-cq))
+(ew-make-ccl-coding-system
+ 'ew-ccl-cq ?Q "MIME Q-encoding in comment"
+ 'ew-ccl-decode-q 'ew-ccl-encode-cq)
 
-(make-coding-system 'ew-ccl-pq 4 ?Q "MIME Q-encoding in phrase"
-		    (cons ew-ccl-decode-q ew-ccl-encode-pq))
+(ew-make-ccl-coding-system
+ 'ew-ccl-pq ?Q "MIME Q-encoding in phrase"
+ 'ew-ccl-decode-q 'ew-ccl-encode-pq)
 
-(make-coding-system 'ew-ccl-b 4 ?B "MIME B-encoding"
-		    (cons ew-ccl-decode-b ew-ccl-encode-b))
+(ew-make-ccl-coding-system
+ 'ew-ccl-b ?B "MIME B-encoding"
+ 'ew-ccl-decode-base64 'ew-ccl-encode-b)
 
-(make-coding-system 'ew-ccl-base64 4 ?B "MIME Base64-encoding"
-		    (cons ew-ccl-decode-b ew-ccl-encode-base64))
+(ew-make-ccl-coding-system
+ 'ew-ccl-quoted-printable ?Q "MIME Quoted-Printable-encoding"
+ 'ew-ccl-decode-quoted-printable 'ew-ccl-encode-quoted-printable)
 
-(make-coding-system 'ew-ccl-quoted-printable 4 ?Q
-		    "MIME Quoted-Printable-encoding"
-		    (cons ew-ccl-decode-quoted-printable
-			  ew-ccl-encode-quoted-printable))
-
-;;;
-
-(eval-and-compile
-
-(defconst ew-ccl-encode-b-is-broken
-  (eval-when-compile
-    (not (string= (ccl-execute-on-string ew-ccl-encode-b (make-vector 9 nil) "a")
-		  "YQ=="))))
-)
+(ew-make-ccl-coding-system
+ 'ew-ccl-base64 ?B "MIME Base64-encoding"
+ 'ew-ccl-decode-base64 'ew-ccl-encode-base64)
 
 ;;;
 (require 'mel)
@@ -818,7 +842,7 @@
   (defun ew-decode-q (str)
     (string-as-unibyte (decode-coding-string str 'ew-ccl-uq))))
 
-(if (or ew-bq-use-mel base64-dl-module ew-ccl-encode-b-is-broken)
+(if (or ew-bq-use-mel base64-dl-module ew-ccl-untrusted-eof-block)
     (defalias 'ew-encode-b 'base64-encode-string)
   (defun ew-encode-b (str)
     (encode-coding-string (string-as-unibyte str) 'ew-ccl-b)))
