@@ -101,7 +101,10 @@ be the result."
 	       (setq lrl (mime-parse-parameters-skip-to-next-token
 			  (cdr lrl)
 			  ))
-	       (setq val (cdar lrl)))
+	       (setq val (if (eq (caar lrl) 'quoted-string)
+			     (std11-strip-quoted-pair (cdar lrl))
+			   (cdar lrl)
+			   )))
 	  (setq lrl (mime-parse-parameters-skip-to-next-token (cdr lrl))
 		token (car lrl)
 		rest (cons val rest)
