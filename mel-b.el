@@ -70,14 +70,11 @@ external decoder is called."
 ;;; @ internal base64 encoder
 ;;;	based on base64 decoder by Enami Tsugutomo
 
-(defun base64-num-to-char (n)
-  (cond ((eq n nil) ?=)
-	((< n 26) (+ ?A n))
-	((< n 52) (+ ?a (- n 26)))
-	((< n 62) (+ ?0 (- n 52)))
-	((= n 62) ?+)
-	((= n 63) ?/)
-	(t (error "not a base64 integer %d" n))))
+(defconst base64-characters
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
+
+(defmacro base64-num-to-char (n)
+  `(aref base64-characters ,n))
 
 (defun base64-encode-1 (pack)
   (let ((a (car pack))
@@ -148,14 +145,13 @@ external decoder is called."
 ;;;
 
 (defconst base64-numbers
-  [nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
-   nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
-   nil nil nil nil nil nil nil nil nil nil nil 62  nil nil nil 63
-   52  53  54  55  56  57  58  59  60  61  nil nil nil nil nil nil
-   nil  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14
-   15  16  17  18  19  20  21  22  23  24  25  nil nil nil nil nil
-   nil 26  27  28  29  30  31  32  33  34  35  36  37  38  39  40
-   41  42  43  44  45  46  47  48  49  50  51])
+  `,(let ((len (length base64-characters))
+	  (vec (make-vector 123 nil))
+	  (i 0))
+      (while (< i len)
+	(aset vec (aref base64-characters i) i)
+	(setq i (1+ i)))
+      vec))
 
 (defmacro base64-char-to-num (c)
   `(aref base64-numbers ,c))
@@ -182,8 +178,7 @@ external decoder is called."
 		(setq j (1+ j))
 		(if v4
 		    (aset buffer (prog1 j (setq j (1+ j)))
-			  (logior (logand (lsh (logand v3 15) 6) 255)
-				  v4))
+			  (logior (lsh (logand v3 3) 6) v4))
 		  (throw 'tag nil)
 		  ))
 	    (throw 'tag nil)
