@@ -1,3 +1,7 @@
+2001-11-03  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hmac-md5.el: Removed kludge for Emacs 21 prerelease versions.
+
 2001-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtpmail.el (smtpmail-send-it): Work even if the first line of
@@ -5,8 +9,9 @@
 
 2001-07-30  AMAKAWA Shuhei <sa264@cam.ac.uk>
 
-	* smtp.el(smtp-submit-package): Send EHLO after starttls.
+	* smtp.el (smtp-submit-package): Send EHLO after starttls.
 
+
 2001-06-01  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.3 (Unebigory-Dòmae)-A released.
