@@ -4,13 +4,7 @@
 
 ;;; Code:
 
-(setq flim-modules '(std11
-		     mime-def
-		     mel mel-dl mel-b mel-q mel-u mel-g
-		     eword-decode eword-encode
-		     mime mime-parse mmbuffer mmcooked
-		     ;; mime-lib
-		     mailcap
+(setq flim-modules '(
                      closure
                      natset
                      digraph
@@ -26,6 +20,13 @@
                      ew-scan-m
                      ew-scan-u
                      ew-dec
+		     std11
+		     mime-def
+		     mel mel-dl mel-b mel-q mel-u mel-g
+		     eword-decode eword-encode
+		     mime mime-parse mmbuffer mmcooked
+		     ;; mime-lib
+		     mailcap
                      ))
 
 (if (fboundp 'dynamic-link)
