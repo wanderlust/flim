@@ -1,5 +1,16 @@
 1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* std11.el (std11-fetch-field): Add autoload cookie.
+	(std11-narrow-to-header): Likewise.
+	(std11-field-body): Likewise.
+	(std11-unfold-string): Likewise.
+	(std11-lexical-analyze): Add DOC-string; add autoload cookie.
+
+	* std11.el (std11-space-char-list): Renamed from
+	`std11-space-chars'; changed from string to list.
+
+1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* std11.el (std11-fetch-field): Don't define as inline function.
 	(std11-field-body): Enclose `std11-narrow-to-header' and
 	`std11-fetch-field' by `inline'.
