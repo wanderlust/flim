@@ -88,30 +88,22 @@ If this variable is set to nil, use internal function only."
   :group 'sha1)
 
 (defun sha1-string-external (string &optional binary)
-  ;; `with-temp-buffer' is new in v20, so we do not use it.
-  (save-excursion
-    (let (buffer)
-      (unwind-protect
-	  (let (prog args digest)
-	    (if (consp sha1-program)
-		(setq prog (car sha1-program)
-		      args (cdr sha1-program))
-	      (setq prog sha1-program
-		    args nil))
-	    (setq buffer (set-buffer
-			  (generate-new-buffer " *sha1 external*")))
-	    (insert string)
-	    (apply (function call-process-region)
-		   (point-min)(point-max)
-		   prog t t nil args)
-	    ;; SHA1 is 40 bytes long in hexadecimal form.
-	    (setq digest (buffer-substring (point-min)(+ (point-min) 40)))
-	    (if binary
-		(decode-hex-string digest)
-	      digest))
-	(and buffer
-	     (buffer-name buffer)
-	     (kill-buffer buffer))))))
+  (let (prog args digest default-enable-multibyte-characters)
+    (if (consp sha1-program)
+	(setq prog (car sha1-program)
+	      args (cdr sha1-program))
+      (setq prog sha1-program
+	    args nil))
+    (with-temp-buffer
+      (insert string)
+      (apply (function call-process-region)
+	     (point-min)(point-max)
+	     prog t t nil args)
+      ;; SHA1 is 40 bytes long in hexadecimal form.
+      (setq digest (buffer-substring (point-min)(+ (point-min) 40))))
+    (if binary
+	(decode-hex-string digest)
+      digest)))
 
 (defun sha1-region-external (beg end &optional binary)
   (sha1-string-external (buffer-substring-no-properties beg end) binary))

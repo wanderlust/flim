@@ -1,5 +1,9 @@
 2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sha1-el.el (sha1-string-external): Use with-temp-buffer.
+
+2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* sha1-el.el (sha1-string-external): Make it can return a string
 	in binary form.
 	(sha1-region-external): Ditto.
