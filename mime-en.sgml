@@ -883,6 +883,24 @@ Each field is encoded as corresponding method specified by variable
 <code>eword-field-encoding-method-alist</code>.
 </defun>
 
+<defvar name="eword-field-encoding-method-alist">
+<p>
+Association list to specify field encoding method.  Each element looks
+like (FIELD . METHOD).
+<p>
+If METHOD is <code>mime</code>, the FIELD will be encoded into MIME
+format (encoded-word).
+<p>
+If METHOD is <code>nil</code>, the FIELD will not be encoded.
+<p>
+If METHOD is a MIME charset, the FIELD will be encoded as the charset
+when it must be convert into network-code.
+<p>
+Otherwise the FIELD will be encoded as variable
+<code>default-mime-charset</code> when it must be convert into
+network-code.
+</defvar>
+
 
 <h1> Various Customization
 <node> custom
