@@ -1,5 +1,13 @@
 2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
+	* eword-encode.el (eword-encode-text): Specify `mode' of
+	`encoded-text-encode-string'.
+
+	* mel.el (encoded-text-encode-string): Add optional argument
+	`mode'; use `base64-encode-string' directly for "B"-encoding.
+
+2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
 	* FLIM-API.en: Renamed from FLIM-1.14-API.en; reordered and add
 	some sections.
 
