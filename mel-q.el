@@ -169,10 +169,6 @@ It calls external quoted-printable encoder specified by
     (save-restriction
       (narrow-to-region start end)
       (goto-char (point-min))
-      (while (re-search-forward "=\n" nil t)
-	(replace-match "")
-	)
-      (goto-char (point-min))
       (while (search-forward "=" nil t)
 	(let ((beg (match-beginning 0)))
 	  (cond ((looking-at "\n")
