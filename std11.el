@@ -48,18 +48,24 @@
   (point)
   )
 
+(defsubst std11-fetch-field (name)
+  "Return the value of the header field NAME.
+The buffer is expected to be narrowed to just the headers of the message."
+  (save-excursion
+    (goto-char (point-min))
+    (let ((case-fold-search t))
+      (if (re-search-forward (concat "^" name ":[ \t]*") nil t)
+	  (buffer-substring-no-properties (match-end 0) (std11-field-end))
+	))))
+
 (defun std11-field-body (name &optional boundary)
-  "Return body of field NAME.
-If BOUNDARY is not nil, it is used as message header separator.
-\[std11.el]"
+  "Return the value of the header field NAME.
+If BOUNDARY is not nil, it is used as message header separator."
   (save-excursion
     (save-restriction
       (std11-narrow-to-header boundary)
-      (goto-char (point-min))
-      (let ((case-fold-search t))
-	(if (re-search-forward (concat "^" name ":[ \t]*") nil t)
-	    (buffer-substring-no-properties (match-end 0) (std11-field-end))
-	  )))))
+      (std11-fetch-field name)
+      )))
 
 (defun std11-find-field-body (field-names &optional boundary)
   "Return the first found field-body specified by FIELD-NAMES
