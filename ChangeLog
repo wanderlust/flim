@@ -1,5 +1,14 @@
 1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mmcooked.el (mmcooked-write-entity-body): New function.
+
+	* mmbuffer.el (mmbuffer-write-entity-body): New function.
+
+	* mime.el (mime-write-entity-body): Use implementation of
+	mm-backend.
+
+1998-06-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mmcooked.el (mmcooked-write-entity): New function.
 
 	* mmbuffer.el (mmbuffer-write-entity): New function.
