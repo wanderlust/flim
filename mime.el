@@ -287,7 +287,7 @@ ENTITY is used."
 	  (setq invisible-fields (cdr invisible-fields))
 	  )
 	t)))
-		
+
 (defun mime-insert-decoded-header (entity
 				   &optional invisible-fields visible-fields
 				   code-conversion)
@@ -396,14 +396,7 @@ ENTITY is used."
 
 (defun mime-write-entity (entity filename)
   "Write ENTITY into FILENAME."
-  (save-excursion
-    (set-buffer (mime-entity-buffer entity))
-    (if (mime-entity-cooked-p entity)
-	(write-region (mime-entity-point-min entity)
-		      (mime-entity-point-max entity) filename)
-      (write-region-as-binary (mime-entity-point-min entity)
-			      (mime-entity-point-max entity) filename)
-      )))
+  (mime-entity-send entity 'write-entity filename))
 
 (defun mime-write-entity-body (entity filename)
   "Write body of ENTITY into FILENAME."
