@@ -2,7 +2,6 @@
 # Makefile for FLIM.
 #
 
-<<<<<<< Makefile
 PACKAGE = slim
 API	= 1.14
 RELEASE = 1
