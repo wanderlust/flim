@@ -150,14 +150,11 @@ If is is not found, return DEFAULT-ENCODING."
 ;;; @ message parser
 ;;;
 
-(defun mime-parse-multipart (header-start header-end body-start body-end
-					  content-type content-disposition
-					  encoding node-id)
+(defun mime-parse-multipart (entity)
   (goto-char (point-min))
-  (let* ((dash-boundary
-	  (concat "--"
-		  (std11-strip-quoted-string
-		   (mime-content-type-parameter content-type "boundary"))))
+  (let* ((content-type (mime-entity-content-type entity))
+	 (dash-boundary
+	  (concat "--" (mime-content-type-parameter content-type "boundary")))
 	 (delimiter       (concat "\n" (regexp-quote dash-boundary)))
 	 (close-delimiter (concat delimiter "--[ \t]*$"))
 	 (rsep (concat delimiter "[ \t]*\n"))
@@ -166,6 +163,9 @@ If is is not found, return DEFAULT-ENCODING."
 	      (make-mime-content-type 'message 'rfc822)
 	    (make-mime-content-type 'text 'plain)
 	    ))
+	 (header-end (mime-entity-header-end entity))
+	 (body-end (mime-entity-body-end entity))
+	 (node-id (mime-entity-node-id entity))
 	 cb ce ret ncb children (i 0))
     (save-restriction
       (goto-char body-end)
@@ -194,11 +194,8 @@ If is is not found, return DEFAULT-ENCODING."
 	)
       (setq children (cons ret children))
       )
-    (make-mime-entity (current-buffer)
-		      header-start header-end body-start body-end
-		      node-id content-type content-disposition encoding
-		      (nreverse children))
-    ))
+    (mime-entity-set-children entity (nreverse children))
+    entity))
 
 ;;;###autoload
 (defun mime-parse-message (&optional default-ctl default-encoding node-id)
@@ -211,7 +208,8 @@ mime-{parse|read}-Content-Type."
 	body-start
 	(body-end (point-max))
 	content-type content-disposition encoding
-	primary-type)
+	primary-type
+	entity)
     (goto-char header-start)
     (if (re-search-forward "^$" nil t)
 	(setq header-end (match-end 0)
@@ -239,33 +237,26 @@ mime-{parse|read}-Content-Type."
 			 default-encoding))
 	    primary-type (mime-content-type-primary-type content-type))
       )
+    (setq entity
+	  (make-mime-entity (current-buffer)
+			    header-start header-end body-start body-end
+			    node-id
+			    content-type content-disposition encoding nil))
     (cond ((eq primary-type 'multipart)
-	   (mime-parse-multipart header-start header-end
-				 body-start body-end
-				 content-type content-disposition encoding
-				 node-id)
+	   (mime-parse-multipart entity)
 	   )
 	  ((and (eq primary-type 'message)
 		(memq (mime-content-type-subtype content-type)
 		      '(rfc822 news external-body)
 		      ))
-           (make-mime-entity (current-buffer)
-			     header-start header-end body-start body-end
-			     node-id
-			     content-type content-disposition encoding
-			     (save-restriction
-			       (narrow-to-region body-start body-end)
-			       (list (mime-parse-message
-				      nil nil (cons 0 node-id)))
-			       ))
-	   )
-	  (t 
-           (make-mime-entity (current-buffer)
-			     header-start header-end body-start body-end
-			     node-id
-			     content-type content-disposition encoding nil)
+	   (mime-entity-set-children entity
+				     (save-restriction
+				       (narrow-to-region body-start body-end)
+				       (list (mime-parse-message
+					      nil nil (cons 0 node-id)))
+				       ))
 	   ))
-    ))
+    entity))
 
 
 ;;; @ for buffer
