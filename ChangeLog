@@ -1,5 +1,9 @@
 1998-05-13  Tanaka Akira  <akr@jaist.ac.jp>
 
+	* mime-def.el: Fix typo.
+
+1998-05-13  Tanaka Akira  <akr@jaist.ac.jp>
+
 	* Sync up with flim-1_2_0 to flim-1_2_1.
 
 1998-05-08  Tanaka Akira  <akr@jaist.ac.jp>
@@ -108,7 +112,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J-Dþjò)-A was released.
+	* FLIM: Version 1.2.0 (J-Dþêò©-A was released.
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -159,7 +163,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Dòji)-A was released.
+	* FLIM: Version 1.1.0 (T-Dòêi)-A was released.
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -195,7 +199,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Dòto)-A was released.
+	* FLIM: Version 1.0.1 (Ky-Dòôo)-A was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.

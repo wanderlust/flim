@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "FLIM-FLAM 1.2.0 - \"桜\" 2.5R7.0/7.0")
+  "FLIM-FLAM 1.2.1 - \"桜\" 2.5R7.0/7.0")
 
 
 ;;; @ variables
