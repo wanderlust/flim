@@ -828,10 +828,16 @@ be the result."
 	      end)
 	)))
 
+(defvar eword-analyze-sticked-encoded-word nil)
 (defun eword-analyze-atom (string start &optional must-unfold)
   (if (and (string-match std11-atom-regexp string start)
 	   (= (match-beginning 0) start))
       (let ((end (match-end 0)))
+	(if (and eword-analyze-sticked-encoded-word
+		 (string-match eword-encoded-word-regexp string start)
+		 (< start (match-beginning 0))
+		 (< (match-beginning 0) end))
+	    (setq end (match-beginning 0)))
 	(cons (cons 'atom (decode-mime-charset-string
 			   (substring string start end)
 			   default-mime-charset))

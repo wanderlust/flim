@@ -1,3 +1,8 @@
+1999-02-24  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* eword-decode.el (eword-analyze-sticked-encoded-word): New variable.
+	(eword-analyze-atom): Check `eword-analyze-sticked-encoded-word'.
+
 1999-02-22  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): Fix previous
