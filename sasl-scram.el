@@ -122,12 +122,13 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
 
 (defun sasl-scram-md5-parse-server-msg-1 (server-msg-1)
   "Parse SERVER-MSG-1 and return a list of (SALT SECURITY-INFO SERVICE-ID)."
-  (when (and (> (length server-msg-1) 16)
-	     (eq (string-match "[^@]+@[^\0]+\0" server-msg-1 12) 12))
-    (list (substring server-msg-1 0 8)	; salt
-	  (substring server-msg-1 8 12)	; server-security-info
-	  (substring server-msg-1	; service-id
-		     12 (1- (match-end 0))))))
+  (if (and (> (length server-msg-1) 16)
+	   (eq (string-match "[^@]+@[^\0]+\0" server-msg-1 12) 12))
+      (list (substring server-msg-1 0 8)	; salt
+	    (substring server-msg-1 8 12)	; server-security-info
+	    (substring server-msg-1	; service-id
+		       12 (1- (match-end 0))))
+    (sasl-error (format "Unexpected response: %s" server-msg-1))))
 
 (defun sasl-scram-md5-server-salt (server-msg-1)
   (car (sasl-scram-md5-parse-server-msg-1 server-msg-1)))
