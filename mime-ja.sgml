@@ -857,6 +857,18 @@ data $B$O(B <a node="binary"><concept>binary</concept></a> $B$H8F$V$3$H$K$9(
 $B$"$k!#(B
 
 
+<h3> ASCII
+<node> ASCII
+<p>
+$B%"%a%j%+O"K.$G;H$o$l$kJ8;z$rId9f2=$7$?(B<dref>$BId9f2=J8;z=89g(B</dref>$B!#(B
+A-Z, a-z $B$N(B Latin $BJ8;z$H?t;z!"4v$D$+$N5-9f$+$i$J$k!#(BISO 646 $B$N0l$D$G!"(B
+$B8=:_$O9q:]4p=`HG(B (IRV) $B$K$J$C$F$$$k!#(B
+
+<standard abbrev="ASCII" title-en="Coded Character Set -- 7-Bit
+	      American Standard Code for Information Interchange"
+	      number="ANSI X3.4" year="1986">
+
+
 <h3> Base64
 <node> Base64
 <p>
@@ -872,24 +884,6 @@ Internet $B0J30$N(B network $B$r7PM3$9$k>l9g$G$b0BA4$KE>Aw$G$-$k$h$&$K@_7W$5
 $B$l$F$$$k!#(B
 
 
-<h3> ASCII
-<node> ASCII
-<p>
-$B%"%a%j%+O"K.$G;H$o$l$kJ8;z$rId9f2=$7$?(B<dref>$BId9f2=J8;z=89g(B</dref>$B!#(B
-A-Z, a-z $B$N(B Latin $BJ8;z$H?t;z!"4v$D$+$N5-9f$+$i$J$k!#(BISO 646 $B$N0l$D$G!"(B
-$B8=:_$O9q:]4p=`HG(B (IRV) $B$K$J$C$F$$$k!#(B
-
-<standard abbrev="ASCII" title-en="Coded Character Set -- 7-Bit
-	      American Standard Code for Information Interchange"
-	      number="ANSI X3.4" year="1986">
-
-
-<h3> Coded character set$B!JId9f2=J8;z=89g!K(B, Character code$B!JJ8;zId9f!K(B
-<node> Coded character set
-<p>
-$BJ8;z$H(B byte $BNs$H#1BP#1$KBP1~IU$1$k[#Kf$G$J$$5,B'$N=89g!#(B
-
-
 <h3> binary
 <node> binary
 <p>
@@ -903,6 +897,12 @@ A-Z, a-z $B$N(B Latin $BJ8;z$H?t;z!"4v$D$+$N5-9f$+$i$J$k!#(BISO 646 $B$N0l$
 $B$A$J$_$K!"(B<dref>7bit</dref> $B$d(B 8bit $B$GI=8=$G$-$k(B data $B$O(B binary $B$G$bI=(B
 $B8=$G$-$k!#$h$C$F!"(B<concept>binary data</concept> $B$H8@$C$?>l9g!"G$0U$N(B 
 data $B$r;X$9$3$H$,$"$k!#(B
+
+
+<h3> Coded character set$B!JId9f2=J8;z=89g!K(B, Character code$B!JJ8;zId9f!K(B
+<node> Coded character set
+<p>
+$BJ8;z$H(B byte $BNs$H#1BP#1$KBP1~IU$1$k[#Kf$G$J$$5,B'$N=89g!#(B
 
 
 <h3> media-type
