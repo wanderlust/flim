@@ -1,5 +1,9 @@
 2001-11-18  Kenichi OKADA  <okada@opaopa.org>
 
+	* smtp.el (smtp-send-by-myself): Fix.
+
+2001-11-18  Kenichi OKADA  <okada@opaopa.org>
+
 	* smtp.el (smtp-send-by-myself): New variable.
 	(smtp-use-starttls-ignore-error): New variable.
 	(smtp-find-mx): New function.

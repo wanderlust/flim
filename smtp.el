@@ -383,6 +383,10 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     (while (car servers)
       (setq server (caar servers))
       (setq recipients (cdar servers))
+      (if (not (and server recipients))
+	  ;; MAILER-DAEMON is required. :)
+	  (error (format "Cannot send <%s>"
+			 (mapconcat 'concat recipients ">,<"))))
       (setq package
 	    (smtp-make-package sender recipients buffer))
       (save-excursion
