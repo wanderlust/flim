@@ -1,3 +1,8 @@
+2000-12-27  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-conf.el (mime-mailcap-file): Turn to non user option.
+
+
 2000-12-25  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.2 (Yagi-Nishiguchi) released.
