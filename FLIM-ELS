@@ -6,7 +6,7 @@
 
 (setq flim-modules '(std11
                      mime-def
-		     mel mel-dl mel-ccl mel-b mel-q mel-u mel-g
+		     mel mel-ccl mel-b mel-q mel-u mel-g
                      closure
                      natset
                      digraph

@@ -27,48 +27,56 @@
 ;;; Code:
 
 (require 'emu)
+(require 'mime-def)
 
 
 ;;; @ variables
 ;;;
 
-(defvar base64-external-encoder '("mmencode")
-  "*list of base64 encoder program name and its arguments.")
+(defgroup base64 nil
+  "Base64 encoder/decoder"
+  :group 'mime)
 
-(defvar base64-external-decoder '("mmencode" "-u")
-  "*list of base64 decoder program name and its arguments.")
+(defcustom base64-external-encoder '("mmencode")
+  "*list of base64 encoder program name and its arguments."
+  :group 'base64
+  :type '(cons (file :tag "Command")(repeat :tag "Arguments" string)))
 
-(defvar base64-external-decoder-option-to-specify-file '("-o")
-  "*list of options of base64 decoder program to specify file.")
+(defcustom base64-external-decoder '("mmencode" "-u")
+  "*list of base64 decoder program name and its arguments."
+  :group 'base64
+  :type '(cons (file :tag "Command")(repeat :tag "Arguments" string)))
+
+(defcustom base64-external-decoder-option-to-specify-file '("-o")
+  "*list of options of base64 decoder program to specify file."
+  :group 'base64
+  :type '(repeat :tag "Arguments" string))
+
+(defcustom base64-internal-encoding-limit 1000
+  "*limit size to use internal base64 encoder.
+If size of input to encode is larger than this limit,
+external encoder is called."
+  :group 'base64
+  :type '(choice (const :tag "Always use internal encoder" nil)
+		 (integer :tag "Size")))
+
+(defcustom base64-internal-decoding-limit 70000
+  "*limit size to use internal base64 decoder.
+If size of input to decode is larger than this limit,
+external decoder is called."
+  :group 'base64
+  :type '(choice (const :tag "Always use internal decoder" nil)
+		 (integer :tag "Size")))
 
 
-;;; @ internal base64 decoder/encoder
+;;; @ internal base64 encoder
 ;;;	based on base64 decoder by Enami Tsugutomo
 
-;;; @@ convert from/to base64 char
-;;;
+(defconst base64-characters
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
 
-(defun base64-num-to-char (n)
-  (cond ((eq n nil) ?=)
-	((< n 26) (+ ?A n))
-	((< n 52) (+ ?a (- n 26)))
-	((< n 62) (+ ?0 (- n 52)))
-	((= n 62) ?+)
-	((= n 63) ?/)
-	(t (error "not a base64 integer %d" n))))
-
-(defun base64-char-to-num (c)
-  (cond ((and (<= ?A c) (<= c ?Z)) (- c ?A))
-	((and (<= ?a c) (<= c ?z)) (+ (- c ?a) 26))
-	((and (<= ?0 c) (<= c ?9)) (+ (- c ?0) 52))
-	((= c ?+) 62)
-	((= c ?/) 63)
-	((= c ?=) nil)
-	(t (error "not a base64 character %c" c))))
-
-
-;;; @@ encode/decode one base64 unit
-;;;
+(defmacro base64-num-to-char (n)
+  `(aref base64-characters ,n))
 
 (defun base64-encode-1 (pack)
   (let ((a (car pack))
@@ -92,24 +100,6 @@
        (concat (char-to-string
 		(base64-num-to-char (ash (logand a 3) 4))) "==")
        ))))
-
-(defun base64-decode-unit (a b &optional c d)
-  (condition-case err
-      (concat
-       (char-to-string (logior (ash (base64-char-to-num a) 2)
-			       (ash (setq b (base64-char-to-num b)) -4)))
-       (if (and c (setq c (base64-char-to-num c)))
-	   (concat (char-to-string
-		    (logior (ash (logand b 15) 4) (ash c -2)))
-		   (if (and d (setq d (base64-char-to-num d)))
-		       (char-to-string (logior (ash (logand c 3) 6) d))
-		     ))))
-    (error (message (nth 1 err))
-	   "")))
-
-
-;;; @@ base64 encoder/decoder for string
-;;;
 
 (defun base64-internal-encode-string (string)
   "Encode STRING to base64, and return the result."
@@ -139,48 +129,6 @@
 			    ))
       )))
 
-(defun base64-internal-decode-string (string)
-  (let ((len (length string))
-	(i 0)
-	dest)
-    (while (< i len)
-      (let ((a (aref string i)))
-	(setq i (1+ i))
-	(unless (eq a ?\n)
-	  (let ((b (aref string i)))
-	    (setq i (1+ i))
-	    (cond
-	     ((eq b ?\n)
-	      ;; invalid
-	      )
-	     ((>= i len)
-	      (setq dest (concat dest (base64-decode-unit a b) ))
-	      )
-	     (t
-	      (let ((c (aref string i)))
-		(setq i (1+ i))
-		(cond
-		 ((eq c ?\n)
-		  (setq dest (concat dest (base64-decode-unit a b)))
-		  )
-		 ((>= i len)
-		  (setq dest (concat dest (base64-decode-unit a b c)))
-		  )
-		 (t
-		  (let ((d (aref string i)))
-		    (setq i (1+ i))
-		    (setq dest
-			  (concat dest
-				  (if (eq c ?\n)
-				      (base64-decode-unit a b c)
-				    (base64-decode-unit a b c d))))
-		    ))))))))))
-    dest))
-
-
-;;; @ base64 encoder/decoder for region
-;;;
-
 (defun base64-internal-encode-region (beg end)
   (save-excursion
     (save-restriction
@@ -194,12 +142,68 @@
 	  )
       )))
 
+
+;;; @ internal base64 decoder
+;;;
+
+(defconst base64-numbers
+  `,(let ((len (length base64-characters))
+	  (vec (make-vector 123 nil))
+	  (i 0))
+      (while (< i len)
+	(aset vec (aref base64-characters i) i)
+	(setq i (1+ i)))
+      vec))
+
+(defmacro base64-char-to-num (c)
+  `(aref base64-numbers ,c))
+
+(defsubst base64-internal-decode (string buffer)
+  (let* ((len (length string))
+	 (i 0)
+	 (j 0)
+	 v1 v2 v3)
+    (catch 'tag
+      (while (< i len)
+	(when (prog1 (setq v1 (base64-char-to-num (aref string i)))
+		(setq i (1+ i)))
+	  (setq v2 (base64-char-to-num (aref string i))
+		i (1+ i)
+		v3 (base64-char-to-num (aref string i))
+		i (1+ i))
+	  (aset buffer j (logior (lsh v1 2)(lsh v2 -4)))
+	  (setq j (1+ j))
+	  (if v3
+	      (let ((v4 (base64-char-to-num (aref string i))))
+		(setq i (1+ i))
+		(aset buffer j (logior (lsh (logand v2 15) 4)(lsh v3 -2)))
+		(setq j (1+ j))
+		(if v4
+		    (aset buffer (prog1 j (setq j (1+ j)))
+			  (logior (lsh (logand v3 3) 6) v4))
+		  (throw 'tag nil)
+		  ))
+	    (throw 'tag nil)
+	    ))))
+    (substring buffer 0 j)
+    ))
+
+(defun base64-internal-decode-string (string)
+  (base64-internal-decode string (make-string (length string) 0)))
+
+(defsubst base64-decode-string! (string)
+  (base64-internal-decode string string))
+
 (defun base64-internal-decode-region (beg end)
   (save-excursion
     (let ((str (buffer-substring beg end)))
       (delete-region beg end)
       (goto-char beg)
-      (insert (base64-internal-decode-string str)))))
+      (insert (base64-decode-string! str)))))
+
+
+;;; @ external encoder/decoder
+;;;
 
 (defun base64-external-encode-region (beg end)
   (save-excursion
@@ -234,6 +238,7 @@
 	    t t nil (cdr base64-external-decoder)))
     (buffer-string)))
 
+
 ;;; @ base64 encoder/decoder for file
 ;;;
 
@@ -264,7 +269,7 @@ mmencode included in metamail or XEmacs package)."
 START and END are buffer positions."
   (interactive
    (list (region-beginning) (region-end)
-	 (read-file-name "Write decoded region to file: ")))
+         (read-file-name "Write decoded region to file: ")))
   (as-binary-process
    (apply (function call-process-region)
           start end (car base64-external-decoder)
@@ -278,12 +283,81 @@ START and END are buffer positions."
 START and END are buffer positions."
   (interactive
    (list (region-beginning) (region-end)
-	 (read-file-name "Write decoded region to file: ")))
+         (read-file-name "Write decoded region to file: ")))
   (let ((str (buffer-substring start end)))
     (with-temp-buffer
       (insert (base64-internal-decode-string str))
       (write-region-as-binary (point-min) (point-max) filename))))
 
+
+;;; @ mixed functions
+;;;
+
+(defun base64-int-ext-encode-region (start end)
+  "Encode current region by base64.
+START and END are buffer positions.
+This function calls internal base64 encoder if size of region is
+smaller than `base64-internal-encoding-limit', otherwise it calls
+external base64 encoder specified by `base64-external-encoder'.  In
+this case, you must install the program (maybe mmencode included in
+metamail or XEmacs package)."
+  (interactive "r")
+  (if (and base64-internal-encoding-limit
+	   (> (- end start) base64-internal-encoding-limit))
+      (base64-external-encode-region start end)
+    (base64-internal-encode-region start end)))
+
+(defun base64-int-ext-decode-region (start end)
+  "Decode current region by base64.
+START and END are buffer positions.
+This function calls internal base64 decoder if size of region is
+smaller than `base64-internal-decoding-limit', otherwise it calls
+external base64 decoder specified by `base64-external-decoder'.  In
+this case, you must install the program (maybe mmencode included in
+metamail or XEmacs package)."
+  (interactive "r")
+  (if (and base64-internal-decoding-limit
+	   (> (- end start) base64-internal-decoding-limit))
+      (base64-external-decode-region start end)
+    (base64-internal-decode-region start end)))
+
+(defun base64-int-ext-decode-string (string)
+  "Decode STRING which is encoded in base64, and return the result.
+This function calls internal base64 decoder if size of STRING is
+smaller than `base64-internal-decoding-limit', otherwise it calls
+external base64 decoder specified by `base64-external-decoder'.  In
+this case, you must install the program (maybe mmencode included in
+metamail or XEmacs package)."
+  (interactive "r")
+  (if (and base64-internal-decoding-limit
+	   (> (length string) base64-internal-decoding-limit))
+      (base64-external-decode-string string)
+    (base64-internal-decode-string string)))
+
+(defun base64-int-ext-insert-encoded-file (filename)
+  "Encode contents of file FILENAME to base64, and insert the result.
+It calls external base64 encoder specified by
+`base64-external-encoder'.  So you must install the program (maybe
+mmencode included in metamail or XEmacs package)."
+  (interactive (list (read-file-name "Insert encoded file: ")))
+  (if (and base64-internal-encoding-limit
+           (> (nth 7 (file-attributes filename))
+              base64-internal-encoding-limit))
+      (base64-external-insert-encoded-file filename)
+    (base64-internal-insert-encoded-file filename)))
+
+(defun base64-int-ext-write-decoded-region (start end filename)
+  "Decode and write current region encoded by base64 into FILENAME.
+START and END are buffer positions."
+  (interactive
+   (list (region-beginning) (region-end)
+         (read-file-name "Write decoded region to file: ")))
+  (if (and base64-internal-decoding-limit
+           (> (- end start) base64-internal-decoding-limit))
+      (base64-external-write-decoded-region start end filename)
+    (base64-internal-write-decoded-region start end filename)))
+
+       
 ;;; @ etc
 ;;;
 

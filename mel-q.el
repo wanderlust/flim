@@ -106,6 +106,35 @@
 	)
       )))
 
+
+(defvar quoted-printable-internal-encoding-limit
+  (if (and (featurep 'xemacs)(featurep 'mule))
+      0
+    (require 'path-util)
+    (if (exec-installed-p "mmencode")
+	1000
+      (message "Don't found external encoder for Quoted-Printable!")
+      nil))
+  "*limit size to use internal quoted-printable encoder.
+If size of input to encode is larger than this limit,
+external encoder is called.")
+
+(defun quoted-printable-int-ext-encode-region (start end)
+  "Encode current region by quoted-printable.
+START and END are buffer positions.
+This function calls internal quoted-printable encoder if size of
+region is smaller than `quoted-printable-internal-encoding-limit',
+otherwise it calls external quoted-printable encoder specified by
+`quoted-printable-external-encoder'.  In this case, you must install
+the program (maybe mmencode included in metamail or XEmacs package)."
+  (interactive "r")
+  (if (and quoted-printable-internal-encoding-limit
+	   (> (- end start) quoted-printable-internal-encoding-limit))
+      (quoted-printable-external-encode-region start end)
+    (quoted-printable-internal-encode-region start end)
+    ))
+
+
 (defun quoted-printable-internal-encode-string (string)
   "Encode STRING to quoted-printable, and return the result."
   (with-temp-buffer
@@ -178,6 +207,27 @@ It calls external quoted-printable encoder specified by
 	    start end (car quoted-printable-external-decoder)
 	    t t nil (cdr quoted-printable-external-decoder))
      )))
+
+
+(defvar quoted-printable-internal-decoding-limit nil
+  "*limit size to use internal quoted-printable decoder.
+If size of input to decode is larger than this limit,
+external decoder is called.")
+
+(defun quoted-printable-int-ext-decode-region (start end)
+  "Decode current region by quoted-printable.
+START and END are buffer positions.
+This function calls internal quoted-printable decoder if size of
+region is smaller than `quoted-printable-internal-decoding-limit',
+otherwise it calls external quoted-printable decoder specified by
+`quoted-printable-external-decoder'.  In this case, you must install
+the program (maybe mmencode included in metamail or XEmacs package)."
+  (interactive "r")
+  (if (and quoted-printable-internal-decoding-limit
+	   (> (- end start) quoted-printable-internal-decoding-limit))
+      (quoted-printable-external-decode-region start end)
+    (quoted-printable-internal-decode-region start end)
+    ))
 
 (defun quoted-printable-internal-decode-string (string)
   "Decode STRING which is encoded in quoted-printable, and return the result."

@@ -29,41 +29,157 @@
 (require 'emu)
 
 
-;;; @ variable
+;;; @ encoder/decoder selection framework
 ;;;
 
-(defvar base64-internal-encoding-limit 1000
-  "*limit size to use internal base64 encoder.
-If size of input to encode is larger than this limit,
-external encoder is called.")
+(defconst mel-stems '(dl ccl int-ext external internal)
+  "List of encoder/decoder stems. First stem is most prefered.")
 
-(defvar base64-internal-decoding-limit 1000
-  "*limit size to use internal base64 decoder.
- size of input to decode is larger than this limit,
-external decoder is called.")
+(defmacro mel-call-next (fun formal-args)
+  (let ((caller 'funcall)
+        actual-args)
+    (while formal-args
+      (cond
+        ((eq (car formal-args) '&optional) nil)
+        ((eq (car formal-args) '&rest) (setq caller 'apply))
+        (t (setq actual-args (cons (car formal-args) actual-args))))
+      (setq formal-args (cdr formal-args)))
+    `(,caller ',fun ,@(nreverse actual-args))))
 
-(defvar quoted-printable-internal-encoding-limit
-  (if (and (featurep 'xemacs)(featurep 'mule))
-      0
-    (require 'path-util)
-    (if (exec-installed-p "mmencode")
-        1000
-      (message "Don't found external encoder for Quoted-Printable!")
-      nil))
-  "*limit size to use internal quoted-printable encoder.
-If size of input to encode is larger than this limit,
-external encoder is called.")
+(defmacro mel-defgeneric (prefix suffix formal-args &rest docstring-interactive)
+  "Define a generic function named PREFIX-SUFFIX for mel.
+Arguments for the function is specified as FORMAL-ARGS as usual.
+Rest of arguments DOCSTRING-INTERACTIVE should be DOCSTRING and/or
+interactive specification placed at front of a function body."
+  (let ((name (intern (format "%s-%s" prefix suffix)))
+        (stems (make-symbol "stems")))
+    (put name 'prefix prefix)
+    (put name 'suffix suffix)
+    `(progn
+      (put ',name 'stems mel-stems)
+      (put ',name 'prefix ',prefix)
+      (put ',name 'suffix ',suffix)
+      (defun ,name ,formal-args
+        ,@docstring-interactive
+        (catch 'return
+          (let ((,stems (get ',name 'stems)) method)
+            (while ,stems
+              (when (setq method (get ',name (car ,stems)))
+                (fset ',name method)
+                (throw 'return (mel-call-next ,name ,formal-args)))
+              (setq ,stems (cdr ,stems))))
+          (error ,(format "%s: no method" name)))))))
 
-(defvar quoted-printable-internal-decoding-limit nil
-  "*limit size to use internal quoted-printable decoder.
-If size of input to decode is larger than this limit,
-external decoder is called.")
+(defmacro mel-defmodule (prefix stem &optional file)
+  "Declare that FILE defines functions PREFIX-STEM-*.
+If FILE is nil, `mel-PREFIX-STEM' is assumed."
+  (unless file
+    (setq file (format "mel-%s-%s" prefix stem)))
+  (put prefix stem file)
+  `(put ',prefix ',stem ,file))
+
+(defmacro mel-defmethod (name stem &optional file)
+  "Declare that NAME is implemented by STEM in FILE.
+If FILE is nil, module declared with `mel-defmoeudle' is used."
+  (let* ((prefix (get name 'prefix))
+         (suffix (get name 'suffix))
+         (qualified (intern (format "%s-%s-%s" prefix stem suffix))))
+    (unless file
+      (setq file (get prefix stem)))
+    (unless file
+      (error "No file defines %s." qualified))
+    `(progn
+      (autoload ',qualified ,file)
+      (put ',name ',stem ',qualified))))
 
 
-;;; @ autoload
+;;; @ generic
+;;;
+
+(mel-defgeneric base64 encode-string (string)
+  "Encode STRING with base64.")
+(mel-defgeneric base64 decode-string (string)
+  "Decode STRING with base64.")
+(mel-defgeneric base64 encode-region (start end)
+  "Encode current region with base64."
+  (interactive "r"))
+(mel-defgeneric base64 decode-region (start end)
+  "Decode current region with base64."
+  (interactive "r"))
+(mel-defgeneric base64 insert-encoded-file (filename)
+  "Insert a file named FILENAME as base64 encoded form."
+  (interactive (list (read-file-name "Insert encoded file: "))))
+(mel-defgeneric base64 write-decoded-region (start end filename)
+  "Decode and write base64 encoded current region to a file named FILENAME."
+  (interactive
+    (list (region-beginning) (region-end)
+          (read-file-name "Write decoded region to file: "))))
+(mel-defgeneric base64 encoded-length (string))
+
+(mel-defgeneric quoted-printable encode-string (string)
+  "Encode STRING with quoted-printable.")
+(mel-defgeneric quoted-printable decode-string (string)
+  "Decode STRING with quoted-printable.")
+(mel-defgeneric quoted-printable encode-region (start end)
+  "Encode current region with quoted-printable."
+  (interactive "r"))
+(mel-defgeneric quoted-printable decode-region (start end)
+  "Decode current region with quoted-printable."
+  (interactive "r"))
+(mel-defgeneric quoted-printable insert-encoded-file (filename)
+  "Insert a file named FILENAME as quoted-printable encoded form."
+  (interactive (list (read-file-name "Insert encoded file: "))))
+(mel-defgeneric quoted-printable write-decoded-region (start end filename)
+  "Decode and write quoted-printable encoded current region to a file named FILENAME."
+  (interactive
+    (list (region-beginning) (region-end)
+          (read-file-name "Write decoded region to file: "))))
+
+(mel-defgeneric q-encoding encode-string (string &optional mode)
+  "Encode STRING with Q-encoding.
+If MODE is `text', `comment' or `phrase', the result is appropriate for
+unstructured field, comment or phrase in structured field.
+If MODE is nil, the result is appropriate for phrase.")
+(mel-defgeneric q-encoding decode-string (string)
+  "Decode STRING with Q-encoding.")
+(mel-defgeneric q-encoding encoded-length (string mode))
+
+(mel-defgeneric uuencode encode-region (start end)
+  "Encode current region by unofficial uuencode format."
+  (interactive "*r"))
+(mel-defgeneric uuencode decode-region (start end)
+  "Decode current region by unofficial uuencode format."
+  (interactive "*r"))
+(mel-defgeneric uuencode insert-encoded-file (filename)
+  "Insert file encoded by unofficial uuencode format."
+  (interactive (list (read-file-name "Insert encoded file: "))))
+(mel-defgeneric uuencode write-decoded-region (start end filename)
+  "Decode and write current region encoded by uuencode into FILENAME."
+  (interactive
+   (list (region-beginning) (region-end)
+         (read-file-name "Write decoded region to file: "))))
+
+(mel-defgeneric gzip64 encode-region (start end)
+  "Encode current region by unofficial gzip64 format."
+  (interactive "*r"))
+(mel-defgeneric gzip64 decode-region (start end)
+  "Decode current region by unofficial gzip64 format."
+  (interactive "*r"))
+(mel-defgeneric gzip64 insert-encoded-file (filename)
+  "Insert file encoded by unofficial gzip64 format."
+  (interactive (list (read-file-name "Insert encoded file: "))))
+(mel-defgeneric gzip64 write-decoded-region (start end filename)
+  "Decode and write current region encoded by gzip64 into FILENAME."
+  (interactive
+   (list (region-beginning) (region-end)
+         (read-file-name "Write decoded region to file: "))))
+
+;;; @ method
 ;;;
 
 ;; mel-dl
+(mel-defmodule base64 dl "mel-dl")
+
 (defvar base64-dl-module
   (and (fboundp 'dynamic-link)
        (let ((path (expand-file-name "base64.so" exec-directory)))
@@ -71,382 +187,113 @@ external decoder is called.")
 	      path))))
 
 (when base64-dl-module
-  (autoload 'base64-dl-encode-string "mel-dl"
-    "Encode STRING to base64, and return the result.")
-  (autoload 'base64-dl-decode-string "mel-dl"
-    "Decode STRING which is encoded in base64, and return the result.")
-  (autoload 'base64-dl-encode-region "mel-dl"
-    "Encode current region by base64." t)
-  (autoload 'base64-dl-decode-region "mel-dl"
-    "Decode current region by base64." t))
+  (mel-defmethod base64-encode-string dl)
+  (mel-defmethod base64-decode-string dl)
+  (mel-defmethod base64-encode-region dl)
+  (mel-defmethod base64-decode-region dl)
+  )
 
 ;; mel-b
-(autoload 'base64-internal-encode-string "mel-b"
-  "Encode STRING to base64, and return the result.")
-(autoload 'base64-internal-decode-string "mel-b"
-  "Decode STRING which is encoded in base64, and return the result.")
-(autoload 'base64-internal-encode-region "mel-b"
-  "Encode current region by base64." t)
-(autoload 'base64-internal-decode-region "mel-b"
-  "Decode current region by base64." t)
-(autoload 'base64-internal-insert-encoded-file "mel-b"
-  "Encode contents of file to base64, and insert the result." t)
-(autoload 'base64-internal-write-decoded-region "mel-b"
-  "Decode and write current region encoded by base64 into FILENAME." t)
+(mel-defmodule base64 internal "mel-b")
+(mel-defmodule base64 external "mel-b")
+(mel-defmodule base64 int-ext "mel-b")
 
-(autoload 'base64-external-encode-string "mel-b"
-  "Encode STRING to base64, and return the result.")
-(autoload 'base64-external-decode-string "mel-b"
-  "Decode STRING which is encoded in base64, and return the result.")
-(autoload 'base64-external-encode-region "mel-b"
-  "Encode current region by base64." t)
-(autoload 'base64-external-decode-region "mel-b"
-  "Decode current region by base64." t)
-(autoload 'base64-external-insert-encoded-file "mel-b"
-  "Encode contents of file to base64, and insert the result." t)
-(autoload 'base64-external-write-decoded-region "mel-b"
-  "Decode and write current region encoded by base64 into FILENAME." t)
+(mel-defmethod base64-encode-string internal)
+(mel-defmethod base64-decode-string internal)
+(mel-defmethod base64-encode-region internal)
+(mel-defmethod base64-decode-region internal)
+(mel-defmethod base64-insert-encoded-file internal)
+(mel-defmethod base64-write-decoded-region internal)
 
-;; for encoded-word
-(autoload 'base64-internal-encoded-length "mel-b")
+(mel-defmethod base64-encode-string external)
+(mel-defmethod base64-decode-string external)
+(mel-defmethod base64-encode-region external)
+(mel-defmethod base64-decode-region external)
+(mel-defmethod base64-insert-encoded-file external)
+(mel-defmethod base64-write-decoded-region external)
+
+(mel-defmethod base64-encoded-length internal)
+
+(mel-defmethod base64-decode-string int-ext)
+(mel-defmethod base64-encode-region int-ext)
+(mel-defmethod base64-decode-region int-ext)
+(mel-defmethod base64-insert-encoded-file int-ext)
+(mel-defmethod base64-write-decoded-region int-ext)
 
 ;; mel-q
-(autoload 'quoted-printable-internal-encode-string "mel-q"
-  "Encode STRING to quoted-printable, and return the result.")
-(autoload 'quoted-printable-internal-decode-string "mel-q"
-  "Decode STRING which is encoded in quoted-printable, and return the result.")
-(autoload 'quoted-printable-internal-encode-region "mel-q"
-  "Encode current region by Quoted-Printable." t)
-(autoload 'quoted-printable-internal-decode-region "mel-q"
-  "Decode current region by Quoted-Printable." t)
+(mel-defmodule quoted-printable internal "mel-q")
+(mel-defmodule quoted-printable external "mel-q")
+(mel-defmodule quoted-printable int-ext "mel-q")
+(mel-defmodule q-encoding internal "mel-q")
 
-(autoload 'quoted-printable-external-encode-string "mel-q"
-  "Encode STRING to quoted-printable, and return the result.")
-(autoload 'quoted-printable-external-decode-string "mel-q"
-  "Decode STRING which is encoded in quoted-printable, and return the result.")
-(autoload 'quoted-printable-external-encode-region "mel-q"
-  "Encode current region by Quoted-Printable." t)
-(autoload 'quoted-printable-external-decode-region "mel-q"
-  "Decode current region by Quoted-Printable." t)
+(mel-defmethod quoted-printable-encode-string internal)
+(mel-defmethod quoted-printable-decode-string internal)
+(mel-defmethod quoted-printable-encode-region internal)
+(mel-defmethod quoted-printable-decode-region internal)
 
-(autoload 'quoted-printable-external-insert-encoded-file "mel-q"
-  "Encode contents of file to quoted-printable, and insert the result." t)
-(autoload 'quoted-printable-external-write-decoded-region "mel-q"
-  "Decode and write current region encoded by quoted-printable into FILENAME."
-  t)
+(mel-defmethod quoted-printable-encode-string external)
+(mel-defmethod quoted-printable-decode-string external)
+(mel-defmethod quoted-printable-encode-region external)
+(mel-defmethod quoted-printable-decode-region external)
+(mel-defmethod quoted-printable-insert-encoded-file external)
+(mel-defmethod quoted-printable-write-decoded-region external)
 
-;; for encoded-word
-(autoload 'q-encoding-internal-encode-string "mel-q"
-  "Encode STRING to Q-encoding of encoded-word, and return the result.")
-(autoload 'q-encoding-internal-decode-string "mel-q"
-  "Decode STRING which is encoded in Q-encoding and return the result.")
-(autoload 'q-encoding-internal-encoded-length "mel-q")
+(mel-defmethod quoted-printable-encode-region int-ext)
+(mel-defmethod quoted-printable-decode-region int-ext)
+
+(mel-defmethod q-encoding-encode-string internal)
+(mel-defmethod q-encoding-decode-string internal)
+(mel-defmethod q-encoding-encoded-length internal)
 
 ;; mel-u
-(autoload 'uuencode-external-encode-region "mel-u"
-  "Encode current region by unofficial uuencode format." t)
-(autoload 'uuencode-external-decode-region "mel-u"
-  "Decode current region by unofficial uuencode format." t)
-(autoload 'uuencode-external-insert-encoded-file "mel-u"
-  "Insert file encoded by unofficial uuencode format." t)
-(autoload 'uuencode-external-write-decoded-region "mel-u"
-  "Decode and write current region encoded by uuencode into FILENAME." t)
+(mel-defmodule uuencode external "mel-u")
+
+(mel-defmethod uuencode-encode-region external)
+(mel-defmethod uuencode-decode-region external)
+(mel-defmethod uuencode-insert-encoded-file external)
+(mel-defmethod uuencode-write-decoded-region external)
 
 ;; mel-g
-(autoload 'gzip64-external-encode-region "mel-g"
-  "Encode current region by unofficial x-gzip64 format." t)
-(autoload 'gzip64-external-decode-region "mel-g"
-  "Decode current region by unofficial x-gzip64 format." t)
-(autoload 'gzip64-external-insert-encoded-file "mel-g"
-  "Insert file encoded by unofficial gzip64 format." t)
-(autoload 'gzip64-external-write-decoded-region "mel-g"
-  "Decode and write current region encoded by gzip64 into FILENAME." t)
+(mel-defmodule gzip64 external "mel-u")
+
+(mel-defmethod gzip64-encode-region external)
+(mel-defmethod gzip64-decode-region external)
+(mel-defmethod gzip64-insert-encoded-file external)
+(mel-defmethod gzip64-write-decoded-region external)
 
 ;; mel-ccl
+(mel-defmodule base64 ccl "mel-ccl")
+(mel-defmodule quoted-printable ccl "mel-ccl")
+(mel-defmodule q-encoding ccl "mel-ccl")
+
 (when (fboundp 'make-ccl-coding-system)
   (unless (and (boundp 'ccl-encoder-eof-block-is-broken)
                ccl-encoder-eof-block-is-broken)
-    (autoload 'base64-ccl-encode-string "mel-ccl"
-      "Encode STRING with base64 encoding.")
-    (autoload 'base64-ccl-encode-region "mel-ccl"
-      "Encode region from START to END with base64 encoding." t)
-    (autoload 'base64-ccl-insert-encoded-file "mel-ccl"
-      "Encode contents of file FILENAME to base64, and insert the result." t))
+    (mel-defmethod base64-encode-string ccl)
+    (mel-defmethod base64-encode-region ccl)
+    (mel-defmethod base64-insert-encoded-file ccl)
 
-  (autoload 'base64-ccl-decode-string "mel-ccl"
-    "Decode base64 encoded STRING")
-  (autoload 'base64-ccl-decode-region "mel-ccl"
-    "Decode base64 encoded STRING" t)
-  (autoload 'base64-ccl-write-decoded-region "mel-ccl"
-    "Decode the region from START to END and write out to FILENAME." t)
+    (mel-defmethod quoted-printable-encode-string ccl)
+    (mel-defmethod quoted-printable-encode-region ccl)
+    (mel-defmethod quoted-printable-insert-encoded-file ccl)
+    )
 
-  (unless (and (boundp 'ccl-encoder-eof-block-is-broken)
-               ccl-encoder-eof-block-is-broken)
-    (autoload 'quoted-printable-ccl-encode-string "mel-ccl"
-      "Encode STRING with quoted-printable encoding.")
-    (autoload 'quoted-printable-ccl-encode-region "mel-ccl"
-      "Encode the region from START to END with quoted-printable
-encoding." t)
-    (autoload 'quoted-printable-ccl-insert-encoded-file "mel-ccl"
-      "Encode contents of the file named as FILENAME, and insert it." t))
+  (mel-defmethod base64-decode-string ccl)
+  (mel-defmethod base64-decode-region ccl)
+  (mel-defmethod base64-write-decoded-region ccl)
 
-  (autoload 'quoted-printable-ccl-decode-string "mel-ccl"
-    "Decode quoted-printable encoded STRING.")
-  (autoload 'quoted-printable-ccl-decode-region "mel-ccl"
-    "Decode the region from START to END with quoted-printable
-  encoding.")
-  (autoload 'quoted-printable-ccl-write-decoded-region "mel-ccl"
-    "Decode quoted-printable encoded current region and write out to FILENAME." t)
+  (mel-defmethod quoted-printable-decode-string ccl)
+  (mel-defmethod quoted-printable-decode-region ccl)
+  (mel-defmethod quoted-printable-write-decoded-region ccl)
 
-  (autoload 'q-encoding-ccl-encode-string "mel-ccl"
-    "Encode STRING to Q-encoding of encoded-word, and return the result.
-MODE allows `text', `comment', `phrase' or nil.  Default value is
-`phrase'.")
-  (autoload 'q-encoding-ccl-decode-string "mel-ccl"
-    "Decode Q encoded STRING and return the result.")
+  (mel-defmethod q-encoding-encode-string ccl)
+  (mel-defmethod q-encoding-decode-string ccl)
 
   (unless running-xemacs
-    (autoload 'q-encoding-ccl-encoded-length "mel-ccl")
+    (mel-defmethod q-encoding-encoded-length ccl)
     )
   )
 
-
-;;; @ entrance functions.
-;;;
-
-(cond
- ((fboundp 'base64-dl-encode-string)
-  (defalias 'base64-encode-string 'base64-dl-encode-string))
- ((fboundp 'base64-ccl-encode-string)
-  (defalias 'base64-encode-string 'base64-ccl-encode-string))
- (t
-  (defalias 'base64-encode-string 'base64-internal-encode-string)))
-
-(defun base64-internal-external-decode-string (string)
-  "Decode STRING which is encoded in base64, and return the result.
-This function calls internal base64 decoder if size of STRING is
-smaller than `base64-internal-decoding-limit', otherwise it calls
-external base64 decoder specified by `base64-external-decoder'.  In
-this case, you must install the program (maybe mmencode included in
-metamail or XEmacs package)."
-  (interactive "r")
-  (if (and base64-internal-decoding-limit
-           (> (length string) base64-internal-decoding-limit))
-      (base64-external-decode-string string)
-    (base64-internal-decode-string string)))
-
-(cond
- ((fboundp 'base64-dl-decode-string)
-  (defalias 'base64-decode-string 'base64-dl-decode-string))
- ((fboundp 'base64-ccl-decode-string)
-  (defalias 'base64-decode-string 'base64-ccl-decode-string))
- (t
-  (defalias 'base64-decode-string 'base64-internal-external-decode-string)))
-
-(defun base64-internal-external-encode-region (start end)
-  "Encode current region by base64.
-START and END are buffer positions.
-This function calls internal base64 encoder if size of region is
-smaller than `base64-internal-encoding-limit', otherwise it calls
-external base64 encoder specified by `base64-external-encoder'.  In
-this case, you must install the program (maybe mmencode included in
-metamail or XEmacs package)."
-  (interactive "r")
-  (if (and base64-internal-encoding-limit
-           (> (- end start) base64-internal-encoding-limit))
-      (base64-external-encode-region start end)
-    (base64-internal-encode-region start end)))
-
-(cond
- ((fboundp 'base64-dl-encode-region)
-  (defalias 'base64-encode-region 'base64-dl-encode-region)) ; no fold
- ((fboundp 'base64-ccl-encode-region)
-  (defalias 'base64-encode-region 'base64-ccl-encode-region)) ; LF fold
- (t
-  (defalias 'base64-encode-region 'base64-internal-external-encode-region))) ; LF fold
-
-(defun base64-internal-external-decode-region (start end)
-  "Decode current region by base64.
-START and END are buffer positions.
-This function calls internal base64 decoder if size of region is
-smaller than `base64-internal-decoding-limit', otherwise it calls
-external base64 decoder specified by `base64-external-decoder'.  In
-this case, you must install the program (maybe mmencode included in
-metamail or XEmacs package)."
-  (interactive "r")
-  (if (and base64-internal-decoding-limit
-           (> (- end start) base64-internal-decoding-limit))
-      (base64-external-decode-region start end)
-    (base64-internal-decode-region start end)))
-
-(cond
- ((fboundp 'base64-dl-decode-region)
-  (defalias 'base64-decode-region 'base64-dl-decode-region))
- ((fboundp 'base64-ccl-decode-region)
-  (defalias 'base64-decode-region 'base64-ccl-decode-region))
- (t
-  (defalias 'base64-decode-region 'base64-internal-external-decode-region)))
-
-(defun base64-internal-external-insert-encoded-file (filename)
-  "Encode contents of file FILENAME to base64, and insert the result.
-It calls external base64 encoder specified by
-`base64-external-encoder'.  So you must install the program (maybe
-mmencode included in metamail or XEmacs package)."
-  (interactive (list (read-file-name "Insert encoded file: ")))
-  (if (and base64-internal-encoding-limit
-           (> (nth 7 (file-attributes filename))
-              base64-internal-encoding-limit))
-      (base64-external-insert-encoded-file filename)
-    (base64-internal-insert-encoded-file filename)))
-
-(cond
- ((fboundp 'base64-ccl-insert-encoded-file)
-  (defalias 'base64-insert-encoded-file 'base64-ccl-insert-encoded-file))
- (t
-  (defalias 'base64-insert-encoded-file 'base64-internal-external-insert-encoded-file)))
-
-(defun base64-internal-external-write-decoded-region (start end filename)
-  "Decode and write current region encoded by base64 into FILENAME.
-START and END are buffer positions."
-  (interactive
-   (list (region-beginning) (region-end)
-         (read-file-name "Write decoded region to file: ")))
-  (if (and base64-internal-decoding-limit
-           (> (- end start) base64-internal-decoding-limit))
-      (base64-external-write-decoded-region start end filename)
-    (base64-internal-write-decoded-region start end filename)))
-
-(cond
- ((fboundp 'base64-ccl-write-decoded-region)
-  (defalias 'base64-write-decoded-region 'base64-ccl-write-decoded-region))
- (t
-  (defalias 'base64-write-decoded-region 'base64-internal-external-write-decoded-region)))
-
-(cond
- (t
-  (defalias 'base64-encoded-length 'base64-internal-encoded-length)))
-
-(cond
- ((fboundp 'quoted-printable-ccl-encode-string)
-  (defalias 'quoted-printable-encode-string 'quoted-printable-ccl-encode-string))
- (t
-  (defun quoted-printable-encode-string (string)
-    "Encode STRING to quoted-printable, and return the result."
-    (if (and quoted-printable-internal-encoding-limit
-	     (> (length string) quoted-printable-internal-encoding-limit))
-	(quoted-printable-external-encode-string string)
-      (quoted-printable-internal-encode-string string)))))
-
-(cond
- ((fboundp 'quoted-printable-ccl-decode-string)
-  (defalias 'quoted-printable-decode-string 'quoted-printable-ccl-decode-string))
- (t
-  (defun quoted-printable-decode-string (string)
-    "Decode STRING which is encoded in quoted-printable, and return the result."
-    (if (and quoted-printable-internal-decoding-limit
-	     (> (length string) quoted-printable-internal-decoding-limit))
-	(quoted-printable-external-decode-string string)
-      (quoted-printable-internal-decode-string string)))))
-
-(cond
- ((fboundp 'quoted-printable-ccl-encode-region)
-  (defalias 'quoted-printable-encode-region 'quoted-printable-ccl-encode-region))
- (t
-  (defun quoted-printable-encode-region (start end)
-    "Encode current region by quoted-printable.
-START and END are buffer positions.
-This function calls internal quoted-printable encoder if size of
-region is smaller than `quoted-printable-internal-encoding-limit',
-otherwise it calls external quoted-printable encoder specified by
-`quoted-printable-external-encoder'.  In this case, you must install
-the program (maybe mmencode included in metamail or XEmacs package)."
-    (interactive "r")
-    (if (and quoted-printable-internal-encoding-limit
-	     (> (- end start) quoted-printable-internal-encoding-limit))
-	(quoted-printable-external-encode-region start end)
-      (quoted-printable-internal-encode-region start end)
-      ))))
-
-(cond
- ((fboundp 'quoted-printable-ccl-decode-region)
-  (defalias 'quoted-printable-decode-region 'quoted-printable-ccl-decode-region))
- (t
-  (defun quoted-printable-decode-region (start end)
-    "Decode current region by quoted-printable.
-START and END are buffer positions.
-This function calls internal quoted-printable decoder if size of
-region is smaller than `quoted-printable-internal-decoding-limit',
-otherwise it calls external quoted-printable decoder specified by
-`quoted-printable-external-decoder'.  In this case, you must install
-the program (maybe mmencode included in metamail or XEmacs package)."
-    (interactive "r")
-    (if (and quoted-printable-internal-decoding-limit
-	     (> (- end start) quoted-printable-internal-decoding-limit))
-	(quoted-printable-external-decode-region start end)
-      (quoted-printable-internal-decode-region start end)
-      ))))
-
-(cond
- ((fboundp 'quoted-printable-ccl-insert-encoded-file)
-  (defalias 'quoted-printable-insert-encoded-file 'quoted-printable-ccl-insert-encoded-file))
- (t
-  (defalias 'quoted-printable-insert-encoded-file 'quoted-printable-external-insert-encoded-file)))
-
-(cond
- ((fboundp 'quoted-printable-ccl-write-decoded-region)
-  (defalias 'quoted-printable-write-decoded-region 'quoted-printable-ccl-write-decoded-region))
- (t
-  (defalias 'quoted-printable-write-decoded-region 'quoted-printable-external-write-decoded-region)))
-
-(cond
- ((fboundp 'q-encoding-ccl-encode-string)
-  (defalias 'q-encoding-encode-string 'q-encoding-ccl-encode-string))
- (t
-  (defalias 'q-encoding-encode-string 'q-encoding-internal-encode-string)))
-
-(cond
- ((fboundp 'q-encoding-ccl-decode-string)
-  (defalias 'q-encoding-decode-string 'q-encoding-ccl-decode-string))
- (t
-  (defalias 'q-encoding-decode-string 'q-encoding-internal-decode-string)))
-
-(cond
- ((fboundp 'q-encoding-ccl-encoded-length)
-  (defalias 'q-encoding-encoded-length 'q-encoding-ccl-encoded-length))
- (t
-  (defalias 'q-encoding-encoded-length 'q-encoding-internal-encoded-length)))
-
-(cond
- (t
-  (defalias 'uuencode-encode-region 'uuencode-external-encode-region)))
-
-(cond
- (t
-  (defalias 'uuencode-decode-region 'uuencode-external-decode-region)))
-
-(cond
- (t
-  (defalias 'uuencode-insert-encoded-file 'uuencode-external-insert-encoded-file)))
-
-(cond
- (t
-  (defalias 'uuencode-write-decoded-region 'uuencode-external-write-decoded-region)))
-
-(cond
- (t
-  (defalias 'gzip64-encode-region 'gzip64-external-encode-region)))
-
-(cond
- (t
-  (defalias 'gzip64-decode-region 'gzip64-external-decode-region)))
-
-(cond
- (t
-  (defalias 'gzip64-insert-encoded-file 'gzip64-external-insert-encoded-file)))
-
-(cond
- (t
-  (defalias 'gzip64-write-decoded-region 'gzip64-external-write-decoded-region)))
 
 ;;; @ region
 ;;;
@@ -469,11 +316,29 @@ FUNCTION is region encoder and nil means not to encode.")
 
 ;;;###autoload
 (defvar mime-decoding-method-alist
-  '(("base64"           . base64-decode-region)
+  `(("base64"           . base64-decode-region)
     ("quoted-printable" . quoted-printable-decode-region)
     ("x-uue"            . uuencode-decode-region)
     ("x-uuencode"       . uuencode-decode-region)
     ("x-gzip64"         . gzip64-decode-region)
+    ,@(when (fboundp 'base64-dl-decode-region)
+        '(("base64-dl" . base64-dl-decode-region)))
+    ,@(when (fboundp 'base64-ccl-decode-region)
+        '(("base64-ccl" . base64-ccl-decode-region)))
+    ,@(when (fboundp 'base64-internal-decode-region)
+        '(("base64-internal" . base64-internal-decode-region)))
+    ,@(when (fboundp 'base64-external-decode-region)
+        '(("base64-external" . base64-external-decode-region)))
+    ,@(when (fboundp 'base64-int-ext-decode-region)
+        '(("base64-int-ext" . base64-int-ext-decode-region)))
+    ,@(when (fboundp 'quoted-printable-internal-decode-region)
+        '(("quoted-printable-internal" . quoted-printable-internal-decode-region)))
+    ,@(when (fboundp 'quoted-printable-ccl-decode-region)
+        '(("quoted-printable-ccl" . quoted-printable-ccl-decode-region)))
+    ,@(when (fboundp 'quoted-printable-external-decode-region)
+        '(("quoted-printable-external" . quoted-printable-external-decode-region)))
+    ,@(when (fboundp 'quoted-printable-int-ext-decode-region)
+        '(("quoted-printable-int-ext" . quoted-printable-int-ext-decode-region)))
     )
   "Alist of encoding vs. corresponding method to decode region.
 Each element looks like (STRING . FUNCTION).
@@ -568,13 +433,25 @@ FUNCTION is function to insert encoded file.")
 
 ;;;###autoload
 (defvar mime-file-decoding-method-alist
-  '(("base64"           . base64-write-decoded-region)
+  `(("base64"           . base64-write-decoded-region)
     ("quoted-printable" . quoted-printable-write-decoded-region)
     ("x-uue"            . uuencode-write-decoded-region)
     ("x-gzip64"         . gzip64-write-decoded-region)
     ("7bit"		. write-region-as-binary)
     ("8bit"		. write-region-as-binary)
     ("binary"		. write-region-as-binary)
+    ,@(when (fboundp 'base64-internal-write-decoded-region)
+        '(("base64-internal" . base64-internal-write-decoded-region)))
+    ,@(when (fboundp 'base64-external-write-decoded-region)
+        '(("base64-external" . base64-external-write-decoded-region)))
+    ,@(when (fboundp 'base64-int-ext-write-decoded-region)
+        '(("base64-int-ext" . base64-int-ext-write-decoded-region)))
+    ,@(when (fboundp 'base64-ccl-write-decoded-region)
+        '(("base64-ccl" . base64-ccl-write-decoded-region)))
+    ,@(when (fboundp 'quoted-printable-external-write-decoded-region)
+        '(("quoted-printable-external" . quoted-printable-external-write-decoded-region)))
+    ,@(when (fboundp 'quoted-printable-ccl-write-decoded-region)
+        '(("quoted-printable-ccl" . quoted-printable-ccl-write-decoded-region)))
     )
   "Alist of encoding vs. corresponding method to write decoded region to file.
 Each element looks like (STRING . FUNCTION).

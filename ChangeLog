@@ -1,4 +1,46 @@
-1998-09-01  Tanaka Akira      <akr@jaist.ac.jp>
+1998-09-16  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* FLIM-ELS (flim-modules): Fix `mel-dl' duplication.
+
+	* mel-b.el: Sync up from 1.7 to 1.17.
+	(base64-int-ext-encode-region): Moved from mel.el and renamed
+	from `base64-internal-external-encode-region'.
+	(base64-int-ext-decode-region): Likewise.
+	(base64-int-ext-decode-string): Likewise.
+	(base64-int-ext-insert-encoded-file): Likewise.
+	(base64-int-ext-write-decoded-region): Likewise.
+
+	* mel-ccl.el: Add copyright notice.
+
+	* mel-q.el (quoted-printable-internal-encoding-limit): Moved
+	from mel.el.
+	quoted-printable-internal-decoding-limit): Ditto.
+	(quoted-printable-int-ext-encode-region): Moved from mel.el and
+	renamed from `quoted-printable-internal-external-encode-region'.
+	(quoted-printable-int-ext-decode-region): Likewise.
+
+	* mel.el:
+	  - Move `base64-internal-encoding-limit',
+	  `base64-internal-decoding-limit',
+	  `quoted-printable-internal-encoding-limit',
+	  `quoted-printable-internal-decoding-limit',
+	  `base64-internal-external-decode-string',
+	  `base64-internal-external-encode-region',
+	  `base64-internal-external-decode-region',
+	  `base64-internal-external-insert-encoded-file',
+	  `base64-internal-external-write-decoded-region',
+	  `quoted-printable-encode-region' and
+	  `quoted-printable-decode-region' away. 
+	  - autoloading restructured.
+	(mel-call-next): New function.
+	(mel-defgeneric): New function.
+	(mel-defmodule): New function.
+	(mel-defmethod): New function.
+	(mime-decoding-method-alist): Add implementation specific
+	methods.
+	(mime-file-decoding-method-alist): Ditto.
+
+1998-09-15  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_9_2.
 
