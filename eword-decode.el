@@ -673,7 +673,7 @@ be the result."
 		 (setq i (1+ i))
 		 (if (>= i len)
 		     (throw 'tag (cons
-				  (cons 'error (substring string start))
+				  (cons 'error (substring string from))
 				  len
 				  )))
 		 (setq last-str (concat last-str
@@ -718,7 +718,7 @@ be the result."
 			   from i
 			   last-str "")
 		   (throw 'tag (cons
-				(cons 'error (substring string start))
+				(cons 'error (substring string from))
 				len
 				))))
 		(t
