@@ -1,7 +1,6 @@
 ;;; luna.el --- tiny OOP system kernel
 
-;; Copyright (C) 1999 Electrotechnical Laboratory, JAPAN.
-;; Licensed to the Free Software Foundation.
+;; Copyright (C) 1999,2000 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: OOP
@@ -35,6 +34,10 @@
    (defconst :before ':before)
    (defconst :after ':after)
    (defconst :around ':around)))
+
+
+;;; @ class
+;;;
 
 (defmacro luna-find-class (name)
   "Return the luna-class of the given NAME."
@@ -116,18 +119,6 @@ If SLOTS is specified, TYPE will be defined to have them."
 (defmacro luna-class-slot-index (class slot-name)
   `(get (luna-class-find-member ,class ,slot-name) 'luna-slot-index))
 
-(defmacro luna-slot-index (entity slot-name)
-  `(luna-class-slot-index (luna-find-class (luna-class-name ,entity))
-			  ,slot-name))
-
-(defsubst luna-slot-value (entity slot)
-  "Return the value of SLOT of ENTITY."
-  (aref entity (luna-slot-index entity slot)))
-
-(defsubst luna-set-slot-value (entity slot value)
-  "Store VALUE into SLOT of ENTITY."
-  (aset entity (luna-slot-index entity slot) value))
-
 (defmacro luna-define-method (name &rest definition)
   "Define NAME as a method function of a class.
 
@@ -208,6 +199,35 @@ BODY is the body of method."
       (luna-class-find-parents-functions class service)
       )))
 
+
+;;; @ instance (entity)
+;;;
+
+(defmacro luna-class-name (entity)
+  "Return class-name of the ENTITY."
+  `(aref ,entity 0))
+
+(defmacro luna-set-class-name (entity name)
+  `(aset ,entity 0 ,name))
+
+(defmacro luna-get-obarray (entity)
+  `(aref ,entity 1))
+
+(defmacro luna-set-obarray (entity obarray)
+  `(aset ,entity 1 ,obarray))
+
+(defmacro luna-slot-index (entity slot-name)
+  `(luna-class-slot-index (luna-find-class (luna-class-name ,entity))
+			  ,slot-name))
+
+(defsubst luna-slot-value (entity slot)
+  "Return the value of SLOT of ENTITY."
+  (aref entity (luna-slot-index entity slot)))
+
+(defsubst luna-set-slot-value (entity slot value)
+  "Store VALUE into SLOT of ENTITY."
+  (aset entity (luna-slot-index entity slot) value))
+
 (defmacro luna-find-functions (entity service)
   `(luna-class-find-functions (luna-find-class (luna-class-name ,entity))
 			      ,service))
@@ -251,19 +271,6 @@ LUNA-CURRENT-METHOD-ARGUMENTS is arguments of the MESSAGE."
 		    t))))
     luna-previous-return-value))
 
-(defmacro luna-class-name (entity)
-  "Return class-name of the ENTITY."
-  `(aref ,entity 0))
-
-(defmacro luna-set-class-name (entity name)
-  `(aset ,entity 0 ,name))
-
-(defmacro luna-get-obarray (entity)
-  `(aref ,entity 1))
-
-(defmacro luna-set-obarray (entity obarray)
-  `(aset ,entity 1 ,obarray))
-
 (defun luna-make-entity (type &rest init-args)
   "Make instance of luna-class TYPE and return it.
 If INIT-ARGS is specified, it is used as initial values of the slots.
@@ -274,6 +281,10 @@ It must be plist and each slot name must have prefix `:'."
     (luna-set-obarray v (make-vector 7 0))
     (apply #'luna-send v 'initialize-instance v init-args)
     ))
+
+
+;;; @ interface (generic function)
+;;;
 
 (defsubst luna-arglist-to-arguments (arglist)
   (let (dest)
@@ -300,6 +311,10 @@ ARGS is argument of and DOC is DOC-string."
        )))
 
 (put 'luna-define-generic 'lisp-indent-function 'defun)
+
+
+;;; @ accessor
+;;;
 
 (defun luna-define-internal-accessors (class-name)
   "Define internal accessors for an entity of CLASS-NAME."
@@ -335,6 +350,10 @@ ARGS is argument of and DOC is DOC-string."
 		 ))
 	     )))
      (luna-class-obarray entity-class))))
+
+
+;;; @ standard object
+;;;
 
 (luna-define-class-function 'standard-object)
 

@@ -15,8 +15,8 @@
 		     md5 md5-el md5-dl
 		     sha1 sha1-el sha1-dl
 		     hmac-def hmac-md5 hmac-sha1 hex-util
-		     scram-md5 digest-md5 unique-id
-		     starttls))
+		     scram-md5 unique-id qmtp
+             sasl-cram sasl-digest))
 
 (if (and (fboundp 'base64-encode-string)
 	 (subrp (symbol-function 'base64-encode-string)))
