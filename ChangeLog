@@ -1,5 +1,15 @@
 2000-08-16   Daiki Ueno  <ueno@unixuser.org>
 
+	* FLIM-ELS (flim-modules): Add `closure' and `tram'.
+
+	* smtp.el (smtp-default-transaction-compose-function): Use
+	`tram-compose-transaction'.
+
+	* tram.el: Rename from net-trans.el; require `closure'.
+	(tram-define-transaction): New function.
+
+2000-08-16   Daiki Ueno  <ueno@unixuser.org>
+
 	* smtp.el (smtp-default-commands): Abolish.
 	(smtp-commands): Abolish.
 	(smtp-transaction): Delete slots about package information.
