@@ -95,21 +95,21 @@ It must be a string \(program name\) or list of strings \(name and its args\).")
   (defconst sha1-K3-high 51810)		; (string-to-number "CA62" 16)
   (defconst sha1-K3-low  49622)		; (string-to-number "C1D6" 16)
 
-;;;; original definition of sha1-F0.
-;;;; (defmacro sha1-F0 (B C D)
-;;;;   (` (logior (logand (, B) (, C))
-;;;; 	     (logand (lognot (, B)) (, D)))))
-;;;; a little optimization from GnuPG/cipher/sha1.c.
+;;; original definition of sha1-F0.
+;;; (defmacro sha1-F0 (B C D)
+;;;   (` (logior (logand (, B) (, C))
+;;; 	     (logand (lognot (, B)) (, D)))))
+;;; a little optimization from GnuPG/cipher/sha1.c.
   (defmacro sha1-F0 (B C D)
     (` (logxor (, D) (logand (, B) (logxor (, C) (, D))))))
   (defmacro sha1-F1 (B C D)
     (` (logxor (, B) (, C) (, D))))
-;;;; original definition of sha1-F2.
-;;;; (defmacro sha1-F2 (B C D)
-;;;;   (` (logior (logand (, B) (, C))
-;;;; 	     (logand (, B) (, D))
-;;;; 	     (logand (, C) (, D)))))
-;;;; a little optimization from GnuPG/cipher/sha1.c.
+;;; original definition of sha1-F2.
+;;; (defmacro sha1-F2 (B C D)
+;;;   (` (logior (logand (, B) (, C))
+;;; 	     (logand (, B) (, D))
+;;; 	     (logand (, C) (, D)))))
+;;; a little optimization from GnuPG/cipher/sha1.c.
   (defmacro sha1-F2 (B C D)
     (` (logior (logand (, B) (, C))
 	       (logand (, D) (logior (, B) (, C))))))
