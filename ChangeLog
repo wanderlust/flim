@@ -1,3 +1,9 @@
+2004-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sha1-dl.el: Don't provide the sha1-dl feature twice.
+	(sha1-region): Allow the optional argument `binary'.
+	(sha1): Ditto.
+
 2004-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* smtp.el (smtp-parse-progress-message-format): Fix regexp usage.
