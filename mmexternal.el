@@ -38,44 +38,49 @@
   ;; entity are in the body of the parent entity.
   )
 
-(luna-define-method initialize-instance :after ((entity mime-external-entity)
-						&rest init-args)
-  (or (mime-external-entity-body-file-internal entity)
-      (let* ((ct (mime-entity-content-type
-		  (mime-entity-parent-internal entity)))
-	     (access-type (mime-content-type-parameter ct "access-type")))
-	(if (and access-type
-		 (string= access-type "anon-ftp"))
-	    (let ((site (mime-content-type-parameter ct "site"))
-		  (directory (mime-content-type-parameter ct "directory"))
-		  (name (mime-content-type-parameter ct "name")))
-	      (mime-external-entity-set-body-file-internal
-	       entity
-	       (expand-file-name
-		name
-		(concat "/anonymous@" site ":" directory)))))))
-  entity)
-
 (luna-define-method mime-entity-name ((entity mime-external-entity))
   (concat "child of "
 	  (mime-entity-name
 	   (mime-entity-parent-internal entity))))
 
 
+(defun mmexternal-require-file-name (entity)
+  (condition-case nil
+      (or (mime-external-entity-body-file-internal entity)
+	  (let* ((ct (mime-entity-content-type
+		      (mime-entity-parent-internal entity)))
+		 (access-type
+		  (mime-content-type-parameter ct "access-type")))
+	    (if (and access-type
+		     (string= access-type "anon-ftp"))
+		(let ((site (mime-content-type-parameter ct "site"))
+		      (directory
+		       (mime-content-type-parameter ct "directory"))
+		      (name (mime-content-type-parameter ct "name")))
+		  (mime-external-entity-set-body-file-internal
+		   entity
+		   (expand-file-name
+		    name
+		    (concat "/anonymous@" site ":"
+			    (file-name-as-directory directory))))))))
+    (error (message "Can't make file-name of external-body."))))
+
 (defun mmexternal-require-buffer (entity)
   (unless (and (mime-external-entity-body-buffer-internal entity)
 	       (buffer-live-p
 		(mime-external-entity-body-buffer-internal entity)))
     (condition-case nil
-	(mime-external-entity-set-body-buffer-internal
-	 entity
-	 (with-current-buffer (get-buffer-create
-			       (concat " *Body of "
-				       (mime-entity-name entity)
-				       "*"))
-	   (insert-file-contents-as-binary
-	    (mime-external-entity-body-file-internal entity))
-	   (current-buffer)))
+	(progn
+	  (mmexternal-require-file-name entity)
+	  (mime-external-entity-set-body-buffer-internal
+	   entity
+	   (with-current-buffer (get-buffer-create
+				 (concat " *Body of "
+					 (mime-entity-name entity)
+					 "*"))
+	     (insert-file-contents-as-binary
+	      (mime-external-entity-body-file-internal entity))
+	     (current-buffer))))
       (error (message "Can't get external-body.")))))
 
 

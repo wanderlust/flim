@@ -321,7 +321,7 @@ If MESSAGE is specified, it is regarded as root entity."
 		 (prog1
 		     field-name
 		   (setq field-name (symbol-name field-name)))
-	       (capitalize (capitalize field-name)))))
+	       (intern (capitalize (capitalize field-name))))))
     (cond ((eq sym 'Content-Type)
 	   (mime-entity-content-type entity)
 	   )
