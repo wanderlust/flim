@@ -158,7 +158,7 @@ local $BJQ?t(B <code>mime-message-structure</code> $B$K3JG<$9$k$3$H$K$7$^$9!#
 <node> Message parser
 <p>
 <defun name="mime-parse-message">
-	  <opts> default-ctl default-encoding node-id
+	  <opts> default-ctl node-id
 <p>
 $B8=:_$N(B buffer $B$r(B message $B$H$7$F9=J82r@O$7!"$=$N7k2L$N(B mime-entity $B$rJV(B
 $B$9!#(B
