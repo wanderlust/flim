@@ -324,7 +324,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (list string len rwl)
     ))
 
-(defun tm-eword::encode-rwl (column rwl)
+(defun eword-encode-rword-list (column rwl)
   (let (ret dest ps special str ew-f pew-f)
     (while rwl
       (setq ew-f (nth 2 (car rwl)))
@@ -525,13 +525,13 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 Optional argument COLUMN is start-position of the field.
 Optional argument MODE allows `text', `comment', `phrase' or nil.
 Default value is `phrase'."
-  (car (tm-eword::encode-rwl (or column 0)
-			     (tm-eword::split-string string mode))))
+  (car (eword-encode-rword-list (or column 0)
+				(tm-eword::split-string string mode))))
 
 (defun eword-encode-address-list (string &optional column)
   "Encode header field STRING as list of address, and return the result.
 Optional argument COLUMN is start-position of the field."
-  (car (tm-eword::encode-rwl
+  (car (eword-encode-rword-list
 	(or column 0)
 	(tm-eword::addresses-to-rwl (std11-parse-addresses-string string))
 	)))
@@ -539,7 +539,7 @@ Optional argument COLUMN is start-position of the field."
 (defun eword-encode-structured-field-body (string &optional column)
   "Encode header field STRING as structured field, and return the result.
 Optional argument COLUMN is start-position of the field."
-  (car (tm-eword::encode-rwl
+  (car (eword-encode-rword-list
 	(or column 0)
 	(eword-addr-seq-to-rwl (std11-lexical-analyze string))
 	)))
@@ -547,8 +547,8 @@ Optional argument COLUMN is start-position of the field."
 (defun eword-encode-unstructured-field-body (string &optional column)
   "Encode header field STRING as unstructured field, and return the result.
 Optional argument COLUMN is start-position of the field."
-  (car (tm-eword::encode-rwl (or column 0)
-			     (tm-eword::split-string string 'text))))
+  (car (eword-encode-rword-list (or column 0)
+				(tm-eword::split-string string 'text))))
 
 (defun eword-encode-field (string)
   "Encode header field STRING, and return the result.
