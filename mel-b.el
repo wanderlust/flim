@@ -215,33 +215,33 @@ external decoder is called.")
   (save-excursion
     (save-restriction
       (narrow-to-region beg end)
-      (as-binary-process (apply (function call-process-region)
-				beg end (car base64-external-encoder)
-				t t nil (cdr base64-external-encoder))
-			 )
+      (as-binary-process
+       (apply (function call-process-region)
+	      beg end (car base64-external-encoder)
+	      t t nil (cdr base64-external-encoder)))
       ;; for OS/2
       ;;   regularize line break code
       (goto-char (point-min))
       (while (re-search-forward "\r$" nil t)
-	(replace-match "")
-	)
+	(replace-match ""))
       )))
 
 (defun base64-external-decode-region (beg end)
   (save-excursion
-    (as-binary-process (apply (function call-process-region)
-			      beg end (car base64-external-decoder)
-			      t t nil (cdr base64-external-decoder))
-		       )))
+    (as-binary-process
+     (apply (function call-process-region)
+	    beg end (car base64-external-decoder)
+	    t t nil (cdr base64-external-decoder)))
+    ))
 
 (defun base64-external-decode-string (string)
   (with-temp-buffer
     (insert string)
-    (as-binary-process (apply (function call-process-region)
-			      (point-min) (point-max)
-			      (car base64-external-decoder)
-			      t t nil (cdr base64-external-decoder))
-		       )
+    (as-binary-process
+     (apply (function call-process-region)
+	    (point-min) (point-max)
+	    (car base64-external-decoder)
+	    t t nil (cdr base64-external-decoder)))
     (buffer-string)))
 
 
@@ -257,8 +257,7 @@ metamail or XEmacs package)."
   (if (and base64-internal-encoding-limit
 	   (> (- end start) base64-internal-encoding-limit))
       (base64-external-encode-region start end)
-    (base64-internal-encode-region start end)
-    ))
+    (base64-internal-encode-region start end)))
 
 (defun base64-decode-region (start end)
   "Decode current region by base64.
@@ -272,8 +271,7 @@ metamail or XEmacs package)."
   (if (and base64-internal-decoding-limit
 	   (> (- end start) base64-internal-decoding-limit))
       (base64-external-decode-region start end)
-    (base64-internal-decode-region start end)
-    ))
+    (base64-internal-decode-region start end)))
 
 (defun base64-decode-string (string)
   "Decode STRING which is encoded in base64, and return the result.
@@ -286,8 +284,7 @@ metamail or XEmacs package)."
   (if (and base64-internal-decoding-limit
 	   (> (length string) base64-internal-decoding-limit))
       (base64-external-decode-string string)
-    (base64-internal-decode-string string)
-    ))
+    (base64-internal-decode-string string)))
 
 
 ;;; @ base64 encoder/decoder for file
@@ -299,9 +296,19 @@ It calls external base64 encoder specified by
 `base64-external-encoder'.  So you must install the program (maybe
 mmencode included in metamail or XEmacs package)."
   (interactive (list (read-file-name "Insert encoded file: ")))
-  (apply (function call-process) (car base64-external-encoder)
-	 filename t nil (cdr base64-external-encoder))
-  )
+  (if (and base64-internal-encoding-limit
+	   (> (nth 7 (file-attributes filename))
+	      base64-internal-encoding-limit))
+      (apply (function call-process) (car base64-external-encoder)
+	     filename t nil (cdr base64-external-encoder))
+    (insert
+     (base64-encode-string
+      (with-temp-buffer
+	(insert-file-contents-as-binary filename)
+	(buffer-string))))
+    (or (bolp)
+	(insert "\n"))
+     ))
 
 (defun base64-write-decoded-region (start end filename)
   "Decode and write current region encoded by base64 into FILENAME.
@@ -309,16 +316,20 @@ START and END are buffer positions."
   (interactive
    (list (region-beginning) (region-end)
 	 (read-file-name "Write decoded region to file: ")))
-  (as-binary-process
-   (apply (function call-process-region)
-	  start end (car base64-external-decoder)
-	  nil nil nil
-	  (append (cdr base64-external-decoder)
-		  base64-external-decoder-option-to-specify-file
-		  (list filename))
-	  )))
-
-
+  (if (and base64-internal-decoding-limit
+	   (> (- end start) base64-internal-decoding-limit))
+      (as-binary-process
+       (apply (function call-process-region)
+	      start end (car base64-external-decoder)
+	      nil nil nil
+	      (append (cdr base64-external-decoder)
+		      base64-external-decoder-option-to-specify-file
+		      (list filename))))
+    (let ((str (buffer-substring start end)))
+      (with-temp-buffer
+	(insert (base64-internal-decode-string str))
+	(write-region-as-binary (point-min) (point-max) filename)))))
+       
 ;;; @ etc
 ;;;
 
