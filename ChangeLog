@@ -4,6 +4,7 @@
 
 	* smtp.el (smtp-default-transaction-compose-function): Use
 	`tram-compose-transaction'.
+	(smtp-via-smtp): Don't compile transaction-function.
 
 	* tram.el: Rename from net-trans.el; require `closure'.
 	(tram-define-transaction): New function.
