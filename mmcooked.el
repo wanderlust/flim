@@ -50,6 +50,13 @@
 				   filename encoding)
 	))))
 
+(defun mmcooked-write-entity (entity filename)
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (write-region (mime-entity-point-min entity)
+		  (mime-entity-point-max entity) filename)
+    ))
+
 
 ;;; @ end
 ;;;
