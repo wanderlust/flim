@@ -1,3 +1,15 @@
+1998-04-25  Tanaka Akira  <shuhei-k@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-entire-string): Delete argument
+	`default-charset'. Add argument `code-conversion'.
+	(eword-decode-unstructured): Add argument `code-conversion'.
+	(eword-decode-comment): Add argument `code-conversion'.
+	(eword-decode-quoted-string): Add argument `code-conversion'.
+	(eword-decode-string): Propagate `code-conversion' to
+	`eword-decode-unstructured'.
+	(eword-decode-region): Propagate `code-conversion' to
+	`eword-decode-unstructured'.
+
 1998-04-23  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-ignored-field-list): Add
