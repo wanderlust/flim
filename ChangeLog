@@ -1,5 +1,19 @@
 2000-11-02   Daiki Ueno  <ueno@unixuser.org>
 
+	* sasl.el (sasl-mechanisms): Add `LOGIN' and `ANONYMOUS'.
+	(sasl-mechanism-alist): Likewise.
+	(sasl-error): Define.
+	(sasl-login-continuations): New variable.
+	(sasl-login-response-1): New function.
+	(sasl-login-response-2): New function.
+	(sasl-anonymous-continuations): New variable.
+	(sasl-anonymous-response): New function.
+
+	* smtp.el (smtp-error): Define.
+	(smtp-via-smtp): Use it.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
 	* smtp.el (smtp-via-smtp): Mark as obsolete.
 	(smtp-send-buffer): Rename from `smtp-via-smtp'.
 

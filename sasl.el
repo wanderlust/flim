@@ -30,12 +30,14 @@
 (require 'poe)
 
 (defvar sasl-mechanisms
-  '("CRAM-MD5" "DIGEST-MD5" "PLAIN"))
+  '("CRAM-MD5" "DIGEST-MD5" "PLAIN" "LOGIN" "ANONYMOUS"))
 
 (defvar sasl-mechanism-alist
   '(("CRAM-MD5" sasl-cram)
     ("DIGEST-MD5" sasl-digest)
-    ("PLAIN" sasl-plain)))
+    ("PLAIN" sasl-plain)
+    ("LOGIN" sasl-login)
+    ("ANONYMOUS" sasl-anonymous)))
 
 (defvar sasl-unique-id-function #'sasl-unique-id-function)
 
@@ -59,6 +61,12 @@
 
 (defmacro sasl-principal-server (principal)
   `(aref ,principal 3))
+
+(put 'sasl-error 'error-message "SASL error")
+(put 'sasl-error 'error-conditions '(sasl-error error))
+
+(defun sasl-error (datum)
+  (signal 'sasl-error (list datum)))
 
 (defun sasl-make-authenticator (mechanism continuations)
   "Make an authenticator.
@@ -148,7 +156,7 @@ It contain at least 64 bits of entropy."
 	    (char-to-string (aref "zyxwvutsrqponmlkjihgfedcba9876543210"
 				  (% num 36))))))
 
-;;; PLAIN SASL mechanism (RFC2595 Section 6)
+;;; PLAIN (RFC2595 Section 6)
 (defconst sasl-plain-continuations
   '(sasl-plain-response))
 
@@ -164,6 +172,41 @@ It contain at least 64 bits of entropy."
      (sasl-make-authenticator "PLAIN" sasl-plain-continuations))
 
 (provide 'sasl-plain)
+
+;;; LOGIN (No specification exists)
+(defconst sasl-login-continuations
+  '(ignore				;no initial response
+    sasl-login-response-1
+    sasl-login-response-2))
+
+(defun sasl-login-response-1 (principal challenge)
+  (unless (string= (nth 1 challenge) "Username:")
+    (sasl-error (format "Unexpected response: %s" (nth 1 challenge))))
+  (sasl-principal-name principal))
+
+(defun sasl-login-response-2 (principal challenge)
+  (unless (string= (nth 1 challenge) "Password:")
+    (sasl-error (format "Unexpected response: %s" (nth 1 challenge))))
+  (sasl-read-passphrase
+   (format "LOGIN passphrase for %s: " (sasl-principal-name principal))))
+
+(put 'sasl-login 'sasl-authenticator
+     (sasl-make-authenticator "LOGIN" sasl-login-continuations))
+
+(provide 'sasl-login)
+
+;;; ANONYMOUS (RFC2245)
+(defconst sasl-anonymous-continuations
+  '(identity				;no initial response
+    sasl-anonymous-response))
+
+(defun sasl-anonymous-response (principal challenge)
+  (concat (sasl-principal-name principal)))
+
+(put 'sasl-anonymous 'sasl-authenticator
+     (sasl-make-authenticator "ANONYMOUS" sasl-anonymous-continuations))
+
+(provide 'sasl-anonymous)
 
 (provide 'sasl)
 

@@ -262,7 +262,7 @@ of the host to connect to.  SERVICE is name of the service desired."
       (progn
 	(smtp-send-buffer sender recipients buffer)
 	t)
-    (smtp-response-error)))
+    (smtp-error)))
 
 (make-obsolete 'smtp-via-smtp "It's old API.")
 
@@ -505,8 +505,11 @@ of the host to connect to.  SERVICE is name of the service desired."
     (goto-char (point-max))
     (insert output)))
 
+(put 'smtp-error 'error-message "SMTP error")
+(put 'smtp-error 'error-conditions '(smtp-error error))
+
 (put 'smtp-response-error 'error-message "SMTP response error")
-(put 'smtp-response-error 'error-conditions '(smtp-response-error error))
+(put 'smtp-response-error 'error-conditions '(smtp-response-error smtp-error error))
 
 (defun smtp-response-error (response)
   (signal 'smtp-response-error response))
