@@ -96,8 +96,7 @@ Content-Transfer-Encoding for it."
 
 (mel-define-backend "binary" ("8bit"))
 
-(when (and (fboundp 'base64-encode-string)
-	   (subrp (symbol-function 'base64-encode-string)))
+(when (fboundp 'base64-encode-string)
   (mel-define-backend "base64")
   (mel-define-method-function (mime-encode-string string (nil "base64"))
 			      'base64-encode-string)
