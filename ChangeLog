@@ -1,5 +1,9 @@
 1999-10-23  Kenichi OKADA <okada@opaopa.org>
 
+	* SLIM: Version 1.13.2 released.
+
+1999-10-23  Kenichi OKADA <okada@opaopa.org>
+
 	* smtp.el (smtp-auth-cram-md5): Update to delete
 	insecure sequences at plain.
 	(smtp-auth-login): Update to delete
