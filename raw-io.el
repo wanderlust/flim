@@ -74,6 +74,18 @@ This function ensures that none of these modifications will take place."
 	(coding-system-for-write 'binary))
     (apply #'open-network-stream name buffer host service options)))
 
+(defun binary-start-process (name buffer program &rest program-args)
+  "Like `start-process', q.v., but don't code conversion."
+  (let ((coding-system-for-read 'binary)
+	(coding-system-for-write 'binary))
+    (apply '#start-process name buffer program program-args)))
+
+(defun binary-start-process-shell-command (name buffer &rest args)
+  "Like `start-process-shell-command', q.v., but don't code conversion."
+  (let ((coding-system-for-read 'binary)
+	(coding-system-for-write 'binary))
+    (apply '#start-process-shell-command name buffer args)))
+
 
 (defun raw-text-insert-file-contents (filename
 				      &optional visit beg end replace)
