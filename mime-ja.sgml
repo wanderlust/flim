@@ -53,39 +53,6 @@ RFC 2045 $B$NDj5A$O!"(BMIME message $B$,(B entity $B$rC10L$H$9$kLZ9=B$$G$"$
 <p>
 FLIM $B$O(B entity $B$N>pJs$rI=8=$9$k$?$a$K(B<concept>mime-entity</concept> $B9=(B
 $BB$BN$rMQ$$$^$9!#0J2<$G$OC1$K(B mime-entity $B$H8F$V$3$H$K$7$^$9!#(B
-<p>
-$BA0=R$N$h$&$K!"(Bmessage $BCf$N3F(B entity $B$OLZ$N@a$KEv$?$j$^$9$,!"$3$NLZ$K$O(B
-$B?<$5$HF1$8?<$5$NCf$N=gHV$K=>$C$FHV9f$,IU$1$k$3$H$,$G$-$^$9!#B($A!"(B
-<verb>
-
-                              $B(#(!(!(!($(B
-                              $B("(B  nil $B("(B
-                              $B(&(!(((!(%(B
-              $B(#(!(!(!(!(!(!(!(!(!(+(!(!(!(!(!(!(!(!(!($(B
-            $B(#(*($(B              $B(#(*($(B              $B(#(*($(B
-            $B("#0("(B              $B("#1("(B              $B("#2("(B
-            $B(&(((%(B              $B(&(((%(B              $B(&(((%(B
-              $B("(B        $B(#(!(!(!(!(+(!(!(!(!($(B        $B("(B
-          $B(#(!(*(!($(#(!(*(!($(#(!(*(!($(#(!(*(!($(#(!(*(!($(B
-          $B("(B $B#0(B.$B#0("("(B $B#1(B.$B#0("("(B $B#1(B.$B#1("("(B $B#1(B.$B#2("("(B $B#2(B.$B#0("(B
-          $B(&(!(!(!(%(&(!(!(!(%(&(!(!(!(%(&(!(!(!(%(&(!(!(!(%(B
-
-</verb>
-<p>
-<noindent>$B$N$h$&$K?<$5(B n $B$N@a$K$OD9$5(B n $B$N@0?tNs$N@aHV9f$,?6$l$^$9!#$3$l(B
-$B$r(B <concept>entity-number</concept> $B$H8F$S$^$9!#(Bentity-number $B$O(B S $B<0$H(B
-$B$7$F$O(B <code>(1 2 3)</code> $B$N$h$&$J@0?t$N%j%9%H$H$7$FI=8=$5$l$^$9!#(B
-<p>
-mime-entity $B$G$O!"$3$l$HF1MM$N(B <concept>node-id</concept> $B$rMQ$$$^$9!#(B
-node-id $B$O$A$g$&$I(B entity-number $B$r5U$K$7$?%j%9%H$G!"(Bentity-number
-1.2.3 $B$KBP1~$9$k(B node-id $B$O(B <code>(3 2 1)</code> $B$G$9!#(B
-<p>
-$BA0=R$N$h$&$K!"(BMIME message $B$O(B entity $B$rC10L$H$7$?LZ9=B$$K$J$C$F$$$k$N$G!"(B
-$B$3$N:,$G$"$k(B message $BA4BN$b(B mime-entity $B$GI=8=$9$k$3$H$,$G$-!"(Bbuffer
-local $BJQ?t(B <code>mime-message-structure</code> $B$K3JG<$9$k$3$H$K$7$^$9!#(B
-$B$=$7$F!"(Bentity-number $B$d(B node-id $B$rMQ$$$k$3$H$G(B 
-<code>mime-message-structure</code> $B$K$*$1$k(B entity $B$NAjBPE*$J0LCV4X78$r(B
-$B07$&$3$H$,$G$-$^$9!#(B
 
 
 <h2> Entity $B$N@8@.(B
@@ -119,6 +86,51 @@ node="mm-backend">
 <h2> Entity $B3,AX(B
 <node> Entity hierarchy
 <p>
+MIME message $B$O(B entity $B$rC10L$H$9$kLZ9=B$$K$J$C$F$$$^$9!#(B
+<p>
+$B$3$NLZ$K$*$$$F:,$H$J$k@a$O(B message $BA4BN$rI=$9(B entity $B$G$9!#$3$3$G$O!"(B
+$B$3$l$r(B <concept>root-entity</concept> $B$b$7$/$O(B
+<concept>message</concept> $B$H8F$S$^$9!#(B
+<p>
+root-entity $B0J30$N(B entity $B$O?F$r;}$A$^$9!#$^$?!"(Bentity $B$O;R6!$r;}$D$+(B
+$B$bCN$l$^$;$s!#$3$N?F;R4X78$r9M$($k$3$H$G(B entity $B$NAjBP4X78$r07$&$3$H$,(B
+$B$G$-$^$9!#(B
+<p>
+$B0lJ}!"(Bentity $B$N(B message $B$K$*$1$k0LCV$r9M$($k$3$H$b$G$-$^$9!#(B
+<p>
+entity $B$O$3$NLZ$K$*$1$k@a$H$J$j$^$9$,!"$3$NLZ$K$O?<$5$HF1$8?<$5$NCf$N(B
+$B=gHV$K=>$C$FHV9f$,IU$1$k$3$H$,$G$-$^$9!#B($A!"(B
+<verb>
+
+                              $B(#(!(!(!($(B
+                              $B("(B  nil $B("(B
+                              $B(&(!(((!(%(B
+              $B(#(!(!(!(!(!(!(!(!(!(+(!(!(!(!(!(!(!(!(!($(B
+            $B(#(*($(B              $B(#(*($(B              $B(#(*($(B
+            $B("#0("(B              $B("#1("(B              $B("#2("(B
+            $B(&(((%(B              $B(&(((%(B              $B(&(((%(B
+              $B("(B        $B(#(!(!(!(!(+(!(!(!(!($(B        $B("(B
+          $B(#(!(*(!($(#(!(*(!($(#(!(*(!($(#(!(*(!($(#(!(*(!($(B
+          $B("(B $B#0(B.$B#0("("(B $B#1(B.$B#0("("(B $B#1(B.$B#1("("(B $B#1(B.$B#2("("(B $B#2(B.$B#0("(B
+          $B(&(!(!(!(%(&(!(!(!(%(&(!(!(!(%(&(!(!(!(%(&(!(!(!(%(B
+
+</verb>
+<p>
+<noindent>$B$N$h$&$K?<$5(B n $B$N@a$K$OD9$5(B n $B$N@0?tNs$N@aHV9f$,?6$l$^$9!#$3$l(B
+$B$r(B <concept>entity-number</concept> $B$H8F$S$^$9!#(Bentity-number $B$O(B S $B<0$H(B
+$B$7$F$O(B <code>(1 2 3)</code> $B$N$h$&$J@0?t$N%j%9%H$H$7$FI=8=$5$l$^$9!#(B
+<p>
+mime-entity $B$G$O!"$3$l$HF1MM$N(B <concept>node-id</concept> $B$rMQ$$$^$9!#(B
+node-id $B$O$A$g$&$I(B entity-number $B$r5U$K$7$?%j%9%H$G!"(Bentity-number
+1.2.3 $B$KBP1~$9$k(B node-id $B$O(B <code>(3 2 1)</code> $B$G$9!#(B
+<p>
+$BA0=R$N$h$&$K!"(BMIME message $B$O(B entity $B$rC10L$H$7$?LZ9=B$$K$J$C$F$$$k$N$G!"(B
+$B$3$N:,$G$"$k(B message $BA4BN$b(B mime-entity $B$GI=8=$9$k$3$H$,$G$-!"(Bbuffer
+local $BJQ?t(B <code>mime-message-structure</code> $B$K3JG<$9$k$3$H$K$7$^$9!#(B
+<p>
+<code>mime-message-structure</code> $B$r5/E@$K(B entity-number $B$d(B node-id 
+$B$G<($5$l$k(B entity $B$r<h$j=P$9$3$H$,$G$-$^$9!#(B
+
 <defvar name="mime-message-structure">
 <p>
 $B8=:_$N(B buffer $B$K$*$1$k(B message $BA4BN$N(B mime-entity $B9=B$BN$r3JG<$9$k(B
