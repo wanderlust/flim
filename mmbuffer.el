@@ -37,7 +37,8 @@
   (luna-define-internal-accessors 'mime-buffer-entity)
   )
 
-(mm-define-method initialize-instance ((entity buffer))
+(luna-define-method initialize-instance :after ((entity mime-buffer-entity)
+						&rest init-args)
   (mime-buffer-entity-set-buffer-internal
    entity (mime-entity-location-internal entity))
   (save-excursion
@@ -68,7 +69,8 @@
       (mime-buffer-entity-set-header-end-internal entity header-end)
       (mime-buffer-entity-set-body-start-internal entity body-start)
       (mime-buffer-entity-set-body-end-internal entity body-end)
-      )))
+      ))
+  entity)
 
 (luna-define-method mime-entity-name ((entity mime-buffer-entity))
   (buffer-name (mime-buffer-entity-buffer-internal entity))
