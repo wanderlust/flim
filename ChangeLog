@@ -1,3 +1,9 @@
+2000-12-07  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmexternal.el: Must require `mmgeneric'.
+
+	* sha1.el: Don't use `defun-maybe'.
+
 2000-12-04   Daiki Ueno  <ueno@unixuser.org>
 
 	* luna.el (luna-class-find-functions): Don't quote colon keywords.
