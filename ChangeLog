@@ -3,7 +3,7 @@
 	* mime-parse.el (mime-decode-parameter-value): Allow lowercase.
 	(mime-decode-parameter-plist): Ditto.
 
-2001-04-11  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+2001-04-10  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* std11.el (std11-lexical-analyze): Fix typo.
 
