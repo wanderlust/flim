@@ -6,6 +6,17 @@
 	* md5-el.el (TopLevel): Provide `md5-el' instead of `md5'.
 	* md5.el (TopLevel): Require `md5-el' and `md5-dl'.
 
+2000-07-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmexternal.el (initialize-instance): Deleted.
+	(mmexternal-require-file-name): New function.
+	(mmexternal-require-buffer): Use `mmexternal-require-file-name'.
+
+2000-06-30  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-entity-read-field): Fix a bug when FIELD-NAME is a
+	string.
+
 2000-06-27  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-via-smtp): additional HELO for sendmail warning.
