@@ -1,5 +1,18 @@
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-parse.el, mime-def.el: Move `mime-entity-point-min',
+	`mime-entity-point-max', `mime-entity-media-type',
+	`mime-entity-media-subtype', `mime-entity-parameters' and
+	`mime-entity-type/subtype' from mime-parse.el to mime-def.el.
+
+	* mime-parse.el, mime-def.el: Move `mime-content-disposition'
+	reference functions from mime-parse.el to mime-def.el.
+
+	* mime-parse.el, mime-def.el: Move structure `mime-content-type'
+	from mime-parse.el to mime-def.el.
+
+1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mel-b.el (base64-internal-decode-string): Renamed from
 	`base64-internal-decode-string'.
 	(base64-decode-string): New alias for
