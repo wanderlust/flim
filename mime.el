@@ -403,6 +403,17 @@ ENTITY is used."
 			      (mime-entity-point-max entity) filename)
       )))
 
+(defun mime-write-entity-body (entity filename)
+  "Write body of ENTITY into FILENAME."
+  (save-excursion
+    (set-buffer (mime-entity-buffer entity))
+    (if (mime-entity-cooked-p entity)
+	(write-region (mime-entity-body-start entity)
+		      (mime-entity-body-end entity) filename)
+      (write-region-as-binary (mime-entity-body-start entity)
+			      (mime-entity-body-end entity) filename)
+      )))
+
 
 ;;; @ end
 ;;;
