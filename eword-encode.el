@@ -177,6 +177,26 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		       (cons charset mime-header-default-charset-encoding)))))
 	(list charset encoding))))
 
+;; [tomo:2002-11-05] The following code is a quick-fix for emacsen
+;; which is not depended on the Mule model.  We should redesign
+;; `eword-encode-split-string' to avoid to depend on the Mule model.
+(if (featurep 'utf-2000)
+;; for CHISE Architecture
+(defun tm-eword::words-to-ruled-words (wl &optional mode)
+  (let (mcs)
+    (mapcar (function
+	     (lambda (word)
+	       (setq mcs (detect-mime-charset-string (cdr word)))
+	       (make-ew-rword
+		(cdr word)
+		mcs
+		(cdr (or (assq mcs mime-header-charset-encoding-alist)
+			 (cons mcs mime-header-default-charset-encoding)))
+		mode)
+	       ))
+	    wl)))
+
+;; for legacy Mule
 (defun tm-eword::words-to-ruled-words (wl &optional mode)
   (mapcar (function
 	   (lambda (word)
@@ -184,6 +204,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	       (make-ew-rword (cdr word) (car ret)(nth 1 ret) mode)
 	       )))
 	  wl))
+)
 
 (defun ew-space-process (seq)
   (let (prev a ac b c cc)
