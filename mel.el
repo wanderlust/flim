@@ -51,8 +51,9 @@
 (defvar mime-encoding-method-alist
   '(("base64"           . base64-encode-region)
     ("quoted-printable" . quoted-printable-encode-region)
-    ("x-uue"            . uuencode-encode-region)
-    ("x-gzip64"         . gzip64-encode-region)
+    ;; Not standard, their use is DISCOURAGED.
+    ;; ("x-uue"            . uuencode-encode-region)
+    ;; ("x-gzip64"         . gzip64-encode-region)
     ("7bit")
     ("8bit")
     ("binary")
@@ -129,8 +130,9 @@ FUNCTION is region decoder.")
 (defvar mime-file-encoding-method-alist
   '(("base64"           . base64-insert-encoded-file)
     ("quoted-printable" . quoted-printable-insert-encoded-file)
-    ("x-uue"            . uuencode-insert-encoded-file)
-    ("x-gzip64"         . gzip64-insert-encoded-file)
+    ;; Not standard, their use is DISCOURAGED.
+    ;; ("x-uue"            . uuencode-insert-encoded-file)
+    ;; ("x-gzip64"         . gzip64-insert-encoded-file)
     ("7bit"		. insert-binary-file-contents-literally)
     ("8bit"		. insert-binary-file-contents-literally)
     ("binary"		. insert-binary-file-contents-literally)

@@ -1,7 +1,7 @@
 ;;; mel-g.el: Gzip64 encoder/decoder for GNU Emacs
 
 ;; Copyright (C) 1995,1996,1997 MORIOKA Tomohiko
-;; Copyright (C) 1996 Shuhei KOBAYASHI
+;; Copyright (C) 1996,1997 Shuhei KOBAYASHI
 
 ;; Author: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;;	modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
@@ -10,7 +10,7 @@
 ;; Version: $Id$
 ;; Keywords: Gzip64, base64, gzip, MIME
 
-;; This file is not part of MEL (MIME Encoding Library) yet.
+;; This file is part of MEL (MIME Encoding Library).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -26,6 +26,11 @@
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
+
+;;; Commentary:
+
+;;; NOTE: Gzip64 is an experimental Content-Transfer-Encoding and its
+;;; use is STRONGLY DISCOURAGED except for private communication.
 
 ;;; Code:
 
