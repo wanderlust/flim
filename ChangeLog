@@ -1,3 +1,14 @@
+2000-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM-API.en: Renamed from FLIM-1.14-API.en; reordered and add
+	some sections.
+
+	* mime.el (mime-entity-set-content-type): Add DOC.
+	(mime-entity-set-encoding): Add DOC.
+
+	* mime-def.el (mime-content-type-subtype): Fix DOC.
+	(mime-content-type-parameters): Fix DOC.
+
 2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM-1.14-API.en: New file.
