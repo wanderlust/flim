@@ -1,3 +1,12 @@
+1998-11-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-phrase-route-addr-to-rword-list):
+	Don't delete the front spaces.
+	(eword-encode-addresses-to-rword-list): Don't supplement space;
+	use `nconc' instead of `append'.
+	(eword-encode-msg-id-to-rword-list): Supplement the front space;
+	use `nconc' instead of `append'.
+
 1998-11-02  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* eword-decode.el (mime-field-decoder-cache): New variable.
