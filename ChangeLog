@@ -1,20 +1,26 @@
 1998-08-16  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ChangeLog: Fix typo.
+
+	* ew-parse.el: New file.
+
+1998-08-16  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* FLIM-ELS (flim-modules): Add `closure', `natset', `digraph',
 	`automata', `rx', `lex', `lr-driver', `ew-util', `ew-line',
 	`ew-quote', `ew-unit', `ew-data', `ew-parse', `ew-scan-s',
 	`ew-scan-m', `ew-scan-u' and `ew-dec'.
+
+	* automata.el, closure.el, digraph.el, ew-data.el, ew-dec.el,
+	ew-line.el, ew-quote.el, ew-scan-m.el, ew-scan-s.el,
+	ew-scan-u.el, ew-unit.el, ew-util.el, lex.el, lr-driver.el,
+	natset.el, rx.el: New files.
 
 	* eword-decode.el: Require 'ew-dec.
 	(eword-decode-header): Use `ew-decode-field'.
 	(eword-decode-and-unfold-structure): Ditto.
 	(eword-decode-structured-field-body): Ditto.
 	(eword-decode-unstructured-field-body): Ditto.
-
-	* automata.el, closure.el, digraph.el, ew-data.el, ew-dec.el,
-	ew-line.el, parser, ew-quote.el, ew-scan-m.el, ew-scan-s.el,
-	ew-scan-u.el, ew-unit.el, ew-util.el, lex.el, lr-driver.el,
-	natset.el, rx.el: New files
 
 1998-08-16  Tanaka Akira      <akr@jaist.ac.jp>
 
