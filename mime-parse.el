@@ -24,7 +24,6 @@
 
 ;;; Code:
 
-;;(require 'emu)
 (require 'std11)
 (require 'mime-def)
 
@@ -192,6 +191,24 @@ If is is not found, return DEFAULT-ENCODING."
     (if str
 	(mime-parse-Content-Transfer-Encoding str)
       default-encoding)))
+
+
+;;; @ Content-Id / Message-Id
+;;;
+
+;;;###autoload
+(defun mime-parse-msg-id (tokens)
+  "Parse TOKENS as msg-id of Content-Id or Message-Id field."
+  (car (std11-parse-msg-id tokens)))
+
+;;;###autoload
+(defun mime-uri-parse-cid (string)
+  "Parse STRING as cid URI."
+  (inline
+    (mime-parse-msg-id (cons '(specials . "<")
+			     (nconc
+			      (cdr (cdr (std11-lexical-analyze string)))
+			      '((specials . ">")))))))
 
 
 ;;; @ message parser
