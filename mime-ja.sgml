@@ -153,18 +153,6 @@ local $BJQ?t(B <code>mime-message-structure</code> $B$K3JG<$9$k$3$H$K$7$^$9!#
 <!-- entity $B$N@8@.;R!#(B -->
 <!-- </defun> -->
 
-<!-- <defun name="mime-entity-point-min"> -->
-<!-- 	    <args> entity -->
-<!-- <p> -->
-<!-- entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B entity $B$N@hF,0LCV$rJV$9!#(B -->
-<!-- </defun> -->
-
-<!-- <defun name="mime-entity-point-max"> -->
-<!-- 	    <args> entity -->
-<!-- <p> -->
-<!-- entity $B$NB8:_$9$k(B buffer $B$K$*$1$k(B entity $B$NKvHx0LCV$rJV$9!#(B -->
-<!-- </defun> -->
-
 
 <h2> Message $B$N2r@O4o(B
 <node> Message parser
