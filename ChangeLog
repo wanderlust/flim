@@ -1,3 +1,60 @@
+2001-05-31  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	Merged MIME Parameter Value decoder.
+
+	* mime-parse.el (mime-decode-parameters): Renamed from
+	`mime-decode-parameter-plist'.
+	(mime-decode-parameter-alist): Removed.
+	(mime-decode-alist-to-plist): Ditto.
+
+	* FLIM-API.en (mime-entity-encoding): Abolish optional argument
+	`default-encoding'.
+	(mime-parse-Content-Tranfer-Encoding): Ditto.
+
+2001-05-02  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* eword-decode.el (eword-decode-encoded-word): Don't use `let'.
+
+	* mime-parse.el (mime-decode-parameter-plist): Modified
+	description of return value.
+	(mime-parse-Content-Type): Ditto.
+	(mime-read-Content-Type): Ditto.
+	(mime-parse-Content-Disposition): Ditto.
+	(mime-read-Content-Disposition): Ditto.
+	(mime-parse-Content-Transfer-Encoding): Ditto.
+	(mime-read-Content-Transfer-Encoding): Ditto.
+
+2001-05-01  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-parse-parameters): Don't use `equal' for
+	strings.
+	(mime-parse-Content-Type): Ditto.
+
+2001-04-30  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Use one temporary
+	buffer.
+	(mime-decode-parameter-plist): Changed internal data structure.
+
+2001-04-28  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* eword-decode.el (eword-encoded-word-regexp): Match for language.
+	(eword-decode-region): Refer the 7th parens, not 6th.
+	(eword-decode-encoded-word): Extract language information.
+	(eword-decode-encoded-text): New optional argument `language'.
+
+	* mime-def.el (mime-charset-regexp): Updated for RFC2231.
+
+	* mime-parse.el (mime-decode-parameter-plist): Fix regexp.
+	Use symbol for language information.
+
+	* tests/test-rfc2231.el: Renamed all testcases.
+
+2001-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Don't use
+	`int-char'.
+
 2001-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* mime.el (mime-entity-read-field): Would capitalize twice.
@@ -8,10 +65,87 @@
 
 	* mmgeneric.el (mime-entity-fetch-field): Ditto.
 
+2001-04-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-plist): Modified
+	description of return value.
+	(mime-parse-Content-Type): Ditto.
+	(mime-read-Content-Type): Ditto.
+	(mime-parse-Content-Disposition): Ditto.
+	(mime-read-Content-Disposition): Ditto.
+	(mime-read-Content-Transfer-Encoding): Ditto.
+
+2001-04-25  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-lexical-analyze): Removed comments.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): New
+	implementation; use temporary buffer for conversion.
+	(mime-decode-parameter-encode-segment): Ditto.
+	(mime-decode-parameter-plist): Would put empty language info.
+
+	* test/test-rfc2231.el (test-rfc2231-10, test-rfc2231-11,
+	test-rfc2231-12): New testcases for language info.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el: Fixed comments.
+
+	* test/test-rfc2231.el (test-rfc2231-9): New testcase.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* test/test-rfc2231.el (test-rfc2231-7, test-rfc2231-8):
+	New testcases.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-def.el (mime-content-type-parameter): Expand
+	`mime-content-type-parameters'.
+
+	* mime-parse.el (mime-parse-Content-Disposition): Add
+	description of return value to the docstring.
+	(mime-parse-Content-Transfer-Encoding): Ditto.
+
+	* test/test-rfc2231.el: Made independent of internal
+	representation of Content-Type.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* FLIM-MK (check-flim): Limit filename of test files.
+
+	* test/test-rfc2231.el: New file.
+
+2001-04-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-plist): Shortcut for
+	parameters without extensions.
+
+2001-04-19  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-def.el (make-mime-content-type): Don't reverse parameters.
+	(make-mime-content-disposition): New function.
+
+	* mime-parse.el (mime-decode-parameter-value): Removed comments.
+	(mime-decode-parameter-encode-segment): New function.
+	(mime-decode-parameter-plist): New implementation.
+	Switched from decode-then-concat to concat-then-decode model.
+	(mime-parse-parameters): Strip quoted-pair in quoted-string.
+	(mime-parse-Content-Type): Use `make-mime-content-type'.
+	(mime-parse-Content-Disposition): Use
+	`make-mime-content-disposition'.
+
 2001-04-15  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* eword-decode.el (eword-lexical-analyze-internal):
 	Fix typo. [cf. <emacs-mime-ja:00425>]
+
+2001-04-11  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Allow lowercase.
+	(mime-decode-parameter-plist): Ditto.
 
 2001-04-10  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
@@ -81,6 +215,68 @@
 
 	* mime.el (mime-find-root-entity): Find root recursively.
 
+2001-02-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hmac-md5.el, hmac-sha1.el: Modify comments.
+
+2001-02-25  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* hex-util.el, hmac-def.el, hmac-md5.el, hmac-sha1.el,
+	md5-dl.el, md5.el, sha1-dl.el, sha1-el.el, sha1.el:
+	Update Copyright header.
+
+2001-02-28  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-plist,
+	mime-decode-parameter-alist, mime-decode-parameters):
+	Add doc string.
+
+2001-02-28  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mime-parse.el (mime-decode-parameter-value): Decode MIME charset
+	in multibyte buffer. [cf. <emacs-mime-ja:00817>]
+	(mime-decode-parameter-plist): Downcase attributes.
+	[cf. <emacs-mime-ja:00816>]
+	(mime-decode-parameters): Alias for `mime-decode-parameter-plist'
+	instead of `mime-decode-parameter-alist'.
+	Add autoload cookie.
+	(mime-parse-parameters-from-list): Make obsolete.
+	(mime-parse-parameters): Return results as a plist.
+	(mime-parse-Content-Type, mime-read-Content-Type): Moved type check
+	to the caller side.
+	(mime-parse-Content-Disposition, mime-read-Content-Disposition):
+	Ditto.
+	(mime-parse-Content-Transfer-Encoding,
+	mime-read-Content-Transfer-Encoding): Ditto.
+
+2001-02-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	MIME Parameter Value decoder support.
+	
+	* mime-def.el (std11-quoted-pair-regexp, std11-non-qtext-char-list,
+	std11-qtext-regexp, std11-quoted-string-regexp): Removed.
+	(mime-media-type/subtype-regexp): Ditto.
+	(mime-attribute-char-regexp, mime-language-regexp,
+	mime-encoding-regexp): New constants.
+
+	* mime-parse.el (mime-lexical-analyze): New function.
+	(mime/content-parameter-value-regexp, mime::parameter-regexp):
+	Removed.
+	(mime-parse-parameter): Ditto.
+	(mime-decode-parameter-value, mime-decode-parameter-plist,
+	mime-parse-alist-to-plist, mime-decode-parameter-alist):
+	New functions.
+	(mime-parse-parameters-from-list): New alias for
+	`mime-decode-parameter-plist'.
+	(mime-decode-parameters): New alias for
+	`mime-decode-parameter-alist'.
+	(mime-parse-parameters): New function.
+	(mime-disposition-type-regexp): Removed.
+	(mime-parse-Content-Type, mime-parse-Content-Disposition,
+	mime-parse-Content-Transfer-Encoding): New implementation.
+	(mime-read-Content-Type, mime-read-Content-Disposition,
+	mime-read-Content-Transfer-Encoding): Ditto.
+	
 2001-02-26  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	* hmac-md5.el, hmac-sha1.el: Modify comments.

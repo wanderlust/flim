@@ -200,12 +200,11 @@ ULEVEL specifies implementation level:
   (Usage: SEMI 1.14 MIME-View)
 
 
-[Function] mime-entity-encoding (entity &optional default-encoding)
+[Function] mime-entity-encoding (entity)
   Return content-transfer-encoding of ENTITY.
 
-  If the ENTITY does not have Content-Transfer-Encoding field, this
-  function returns DEFAULT-ENCODING.  If it is nil, "7bit" is used as
-  default value.
+  If the ENTITY does not have valid Content-Transfer-Encoding field,
+  return nil.
 
   [Suggest]
   (Usage: SEMI 1.14 MIME-View)
@@ -905,15 +904,15 @@ and return parsed it.
 
 [Function] mime-parse-Content-Transfer-Encoding (string)
   Parse STRING as field-body of Content-Transfer-Encoding field.
+  If STRING is not a valid Content-Transfer-Encoding field,
+  return nil.
 
   [Suggest]
 
 
-[Function] mime-read-Content-Transfer-Encoding (&optional default-encoding)
+[Function] mime-read-Content-Transfer-Encoding ()
   Read field-body of Content-Transfer-Encoding field from
   current-buffer, and return it.
-
-  If is is not found, return DEFAULT-ENCODING.
 
   [Suggest]
 
