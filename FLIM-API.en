@@ -1,6 +1,6 @@
 	  FLIM (Faithful Library about Internet Message) API
 			     Version 1.14
-			   Draft Release 2
+			   Draft Release 3
 
 * Notation
 
@@ -876,129 +876,122 @@ and return parsed it.
   [Required]<Suggest>
 
 
-* MIME Field parsing
+* MIME Field
 
 ** How to use
 
 (require 'mime)
 
 
-** Level 2 features
+** Parsing
 
 [Variable] mime-field-parser-alist
   Alist to specify field parser.
 
-
-[Function] mime-parse-Content-Type (string)
-  Parse STRING as field-body of Content-Type field.
-
-Return value is
-    (PRIMARY-TYPE SUBTYPE (NAME1 . VALUE1)(NAME2 . VALUE2) ...)
-or nil.  PRIMARY-TYPE and SUBTYPE are symbol and NAME_n and VALUE_n
-are string.
-
-
-[Function] mime-read-Content-Type ()
-  Read field-body of Content-Type field from current-buffer,
-and return parsed it.  Format of return value is as same as
-`mime-parse-Content-Type'.
-
-
-[Function] mime-parse-Content-Disposition (string)
-  Parse STRING as field-body of Content-Disposition field.
-
-
-[Function] mime-read-Content-Disposition ()
-  Read field-body of Content-Disposition field from current-buffer,
-and return parsed it.
-
-
-[Function] mime-parse-Content-Transfer-Encoding (string)
-  Parse STRING as field-body of Content-Transfer-Encoding field.
-
-
-[Function] mime-read-Content-Transfer-Encoding (&optional default-encoding)
-  Read field-body of Content-Transfer-Encoding field from
-current-buffer, and return it.
-
-If is is not found, return DEFAULT-ENCODING.
+  [Suggest]
 
 
 [Function] mime-parse-msg-id (tokens)
   Parse TOKENS as msg-id of Content-Id or Message-Id field.
 
+  [Suggest]
+
 
 [Function] mime-uri-parse-cid (string)
   Parse STRING as cid URI.
 
+  [Suggest]
 
-* STD 11 parsing
+
+[Function] mime-parse-Content-Transfer-Encoding (string)
+  Parse STRING as field-body of Content-Transfer-Encoding field.
+
+  [Suggest]
+
+
+[Function] mime-read-Content-Transfer-Encoding (&optional default-encoding)
+  Read field-body of Content-Transfer-Encoding field from
+  current-buffer, and return it.
+
+  If is is not found, return DEFAULT-ENCODING.
+
+  [Suggest]
+
+
+* STD 11
 
 ** How to use
 
 (require 'std11)
 
 
-** Level 1 features
-
-[Function] std11-fetch-field (name)
-  Return the value of the header field NAME.
-
-The buffer is expected to be narrowed to just the headers of the message.
-
+** Header
 
 [Function] std11-narrow-to-header (&optional boundary)
   Narrow to the message header.
 
-If BOUNDARY is not nil, it is used as message header separator.
+  If BOUNDARY is not nil, it is used as message header separator.
+
+  [Required]
+
+
+** Field
+
+[Function] std11-fetch-field (name)
+  Return the value of the header field NAME.
+
+  The buffer is expected to be narrowed to just the headers of the
+  message.
+
+  [Required]
 
 
 [Function] std11-field-body (name &optional boundary)
   Return the value of the header field NAME.
 
-If BOUNDARY is not nil, it is used as message header separator.
+  If BOUNDARY is not nil, it is used as message header separator.
+
+  [Required]
 
 
 [Function] std11-unfold-string (string)
   Unfold STRING as message header field.
 
+  [Required]
 
-** Level 2 features
+
+** Lexical Analysis
 
 [Function] std11-lexical-analyze (string &optional analyzer start)
   Analyze STRING as lexical tokens of STD 11.
 
+  [Suggest]
+
+
+** Address
 
 [Function] std11-address-string (address)
   Return string of address part from parsed ADDRESS of RFC 822.
+
+  [Suggest]
 
 
 [Function] std11-full-name-string (address)
   Return string of full-name part from parsed ADDRESS of RFC 822.
 
-
-[Function] std11-msg-id-string (msg-id)
-  Return string from parsed MSG-ID of RFC 822.
-
-
-[Function] std11-fill-msg-id-list-string (string &optional column)
-  Fill list of msg-id in STRING, and return the result.
+  [Suggest]
 
 
 [Function] std11-parse-address-string (string)
   Parse STRING as mail address.
 
+  [Suggest]
+
 
 [Function] std11-parse-addresses-string (string)
   Parse STRING as mail address list.
 
-
-[Function] std11-parse-msg-id-string (string)
-  Parse STRING as msg-id.
-
-
-[Function] std11-parse-msg-ids-string (string)
-  Parse STRING as `*(phrase / msg-id)'.
+  [Suggest]
 
 
 [Function] std11-extract-address-components (string)
@@ -1006,6 +999,34 @@ If BOUNDARY is not nil, it is used as message header separator.
 
   Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).  If no
   name can be extracted, FULL-NAME will be nil.
+
+  [Suggest]
+
+
+** Message-ID
+
+[Function] std11-msg-id-string (msg-id)
+  Return string from parsed MSG-ID of RFC 822.
+
+  [Suggest]
+
+
+[Function] std11-parse-msg-id-string (string)
+  Parse STRING as msg-id.
+
+  [Suggest]
+
+
+[Function] std11-parse-msg-ids-string (string)
+  Parse STRING as `*(phrase / msg-id)'.
+
+  [Suggest]
+
+
+[Function] std11-fill-msg-id-list-string (string &optional column)
+  Fill list of msg-id in STRING, and return the result.
+
+  [Suggest]
 
 
 * SMTP
@@ -1025,6 +1046,7 @@ If BOUNDARY is not nil, it is used as message header separator.
   BUFFER may be a buffer or a buffer name which contains mail message.
 
   [Suggest]
+
 
 [Function] smtp-via-smtp (sender recipients buffer)
   Like `smtp-send-buffer', but sucks in any errors.
