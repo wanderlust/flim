@@ -85,6 +85,7 @@ If method is nil, this field will not be encoded."
     (euc-kr		. "B")
     (iso-2022-jp-2	. "B")
     (iso-2022-int-1	. "B")
+    (utf-8		. "B")
     ))
 
 
