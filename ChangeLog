@@ -6,15 +6,15 @@
 	* mel-q.el (quoted-printable-internal-decode-region): Fix
 	sync-mistake.
 
-1998-07-19  Tanaka Akira  <akr@jaist.ac.jp>
+1998-07-19  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: add full automatic testing capability.
 
-1998-07-19  Tanaka Akira  <akr@jaist.ac.jp>
+1998-07-19  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: add quoted-encoded-word description and test.
 
-1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
+1998-07-18  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: add test result by FLIM-FLAM.
 
@@ -22,7 +22,7 @@
 	calling `eword-analyze-encoded-word' after calling
 	`eword-analyze-spaces'.
 
-1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
+1998-07-18  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: add test.
 
@@ -31,77 +31,77 @@
 	(eword-analyze-encoded-word): quote non-atoms string as
 	quoted-string.
 
-1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
+1998-07-18  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Fix character code for ChangeLog.
 
-1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
+1998-07-18  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_8_1 to flim-1_9_0.
 
-1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
+1998-07-18  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: add test driver for FLIM-FLAM.
 
-1998-07-16  Tanaka Akira  <akr@jaist.ac.jp>
+1998-07-16  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: change format to s-exp.
 
-1998-07-13  Tanaka Akira  <akr@jaist.ac.jp>
+1998-07-13  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: add one test.
 
-1998-07-06  Tanaka Akira  <akr@jaist.ac.jp>
+1998-07-06  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_3_0 to flim-1_8_1.
 
-1998-06-08  Tanaka Akira  <akr@jaist.ac.jp>
+1998-06-08  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_2_1 to flim-1_3_0.
 
-1998-05-27  Tanaka Akira  <akr@jaist.ac.jp>
+1998-05-27  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-after-encoded-word-in-phrase-regexp):
 	remove `(' to do not decode encoded word just before comment.
 
-1998-05-27  Tanaka Akira  <akr@jaist.ac.jp>
+1998-05-27  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: New file.
 
-1998-05-22  Tanaka Akira  <akr@jaist.ac.jp>
+1998-05-22  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-analyze-quoted-string): Check
 	`eword-decode-quoted-encoded-word'.
 
-1998-05-14  Tanaka Akira  <akr@jaist.ac.jp>
+1998-05-14  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-analyze-comment): Call
 	`std11-unfold-string'.
 
-1998-05-13  Tanaka Akira  <akr@jaist.ac.jp>
+1998-05-13  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mime-def.el: Fix typo.
 
-1998-05-13  Tanaka Akira  <akr@jaist.ac.jp>
+1998-05-13  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_2_0 to flim-1_2_1.
 
-1998-05-08  Tanaka Akira  <akr@jaist.ac.jp>
+1998-05-08  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_1_0 to flim-1_2_0.
 
-1998-05-06  Tanaka Akira  <akr@jaist.ac.jp>
+1998-05-06  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_0_1 to flim-1_1_0.
 
-1998-04-25  Tanaka Akira  <akr@jaist.ac.jp>
+1998-04-25  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-string): Fix arguments order to
 	calling `eword-decode-unstructured'.
 	(eword-decode-region): Fix arguments order to calling
 	`eword-decode-unstructured'.
 
-1998-04-25  Tanaka Akira  <akr@jaist.ac.jp>
+1998-04-25  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-first-encoded-words): Update
 	DOC-string.
@@ -121,7 +121,7 @@
 	(eword-analyze-comment): Add `default-mime-charset' argument to
 	calling eword-decode-comment.
 
-1998-04-25  Tanaka Akira  <akr@jaist.ac.jp>
+1998-04-25  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-entire-string): Delete argument
 	`default-charset'. Add argument `code-conversion'.
@@ -141,7 +141,7 @@
 	* mel.el (mime-temp-directory): Use TMPDIR, TMP, or TEMP
 	environment variables.
 
-1998-04-23  Tanaka Akira  <akr@jaist.ac.jp>
+1998-04-23  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-encoded-word-prefix-regexp): New
 	constant.
@@ -159,7 +159,7 @@
 	`default-mime-charset'.
 	(eword-decode-header): Refine `code-conversion' treatment.
 
-1998-04-21  Tanaka Akira  <akr@jaist.ac.jp>
+1998-04-21  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el (eword-decode-header): code-conversion is now
 	effective again.
@@ -174,15 +174,15 @@
 	* eword-decode.el (eword-decode-sticked-encoded-word): Use
 	'defcustom.
 
-1998-04-21  Tanaka Akira  <akr@jaist.ac.jp>
+1998-04-21  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* VERSION.FLAM: New file.
 
-1998-04-17  Tanaka Akira  <akr@jaist.ac.jp>
+1998-04-17  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_0_0 to flim-1_0_1.
 
-1998-04-13  Tanaka Akira  <akr@jaist.ac.jp>
+1998-04-13  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el: Copied from AKEMI branch of SEMI.
 
