@@ -70,45 +70,57 @@ external decoder is called."
 ;;; @ internal base64 decoder
 ;;;
 
-(defsubst base64-char-to-num (c)
-  (cond ((and (<= ?A c) (<= c ?Z)) (- c ?A))
-	((and (<= ?a c) (<= c ?z)) (+ (- c ?a) 26))
-	((and (<= ?0 c) (<= c ?9)) (+ (- c ?0) 52))
-	((= c ?+) 62)
-	((= c ?/) 63)
-	((= c ?=) nil)
-	(t (error "not a base64 character %c" c))))
+;; (defsubst base64-char-to-num (c)
+;;   (cond ((and (<= ?A c) (<= c ?Z)) (- c ?A))
+;;         ((and (<= ?a c) (<= c ?z)) (+ (- c ?a) 26))
+;;         ((and (<= ?0 c) (<= c ?9)) (+ (- c ?0) 52))
+;;         ((= c ?+) 62)
+;;         ((= c ?/) 63)
+;;         ((= c ?=) nil)
+;;         (t (error "not a base64 character %c" c))))
+
+(defconst base64-numbers
+  [nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil 63
+   nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
+   nil nil nil nil nil nil nil nil nil nil nil 62  nil nil nil nil
+   52  53  54  55  56  57  58  59  60  61  nil nil nil nil nil nil
+   nil  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14
+   15  16  17  18  19  20  21  22  23  24  25  nil nil nil nil nil
+   nil 26  27  28  29  30  31  32  33  34  35  36  37  38  39  40
+   41  42  43  44  45  46  47  48  49  50  51])
+
+(defmacro base64-char-to-num (c)
+  `(aref base64-numbers ,c))
 
 (defun base64-internal-decode-string (string)
   (let* ((len (length string))
 	 (i 0)
 	 (dest (make-string len 0))
-	 (j 0))
+	 (j 0)
+	 v1 v2 v3)
     (catch 'tag
       (while (< i len)
-	(let ((c (aref string i)))
-	  (setq i (1+ i))
-	  (unless (memq c '(?\x0d ?\x0a))
-	    (let ((v1 (base64-char-to-num c))
-		  (v2 (base64-char-to-num (aref string (prog1 i
-							 (setq i (1+ i))))))
-		  (v3 (base64-char-to-num (aref string (prog1 i
-							 (setq i (1+ i)))))))
-	      (aset dest j (logior (lsh v1 2)(lsh v2 -4)))
-	      (setq j (1+ j))
-	      (if v3
-		  (let ((v4 (base64-char-to-num (aref string i))))
-		    (setq i (1+ i))
-		    (aset dest j (logior (lsh (logand v2 15) 4)(lsh v3 -2)))
-		    (setq j (1+ j))
-		    (if v4
-			(aset dest (prog1 j (setq j (1+ j)))
-			      (logior (logand (lsh (logand v3 15) 6) 255)
-				      v4))
-		      (throw 'tag nil)
-		      ))
-		(throw 'tag nil)
-		))))))
+	(when (prog1 (setq v1 (base64-char-to-num (aref string i)))
+		(setq i (1+ i)))
+	  (setq v2 (base64-char-to-num (aref string i))
+		i (1+ i)
+		v3 (base64-char-to-num (aref string i))
+		i (1+ i))
+	  (aset dest j (logior (lsh v1 2)(lsh v2 -4)))
+	  (setq j (1+ j))
+	  (if v3
+	      (let ((v4 (base64-char-to-num (aref string i))))
+		(setq i (1+ i))
+		(aset dest j (logior (lsh (logand v2 15) 4)(lsh v3 -2)))
+		(setq j (1+ j))
+		(if v4
+		    (aset dest (prog1 j (setq j (1+ j)))
+			  (logior (logand (lsh (logand v3 15) 6) 255)
+				  v4))
+		  (throw 'tag nil)
+		  ))
+	    (throw 'tag nil)
+	    ))))
     (substring dest 0 j)
     ))
 
