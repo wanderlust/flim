@@ -6,7 +6,7 @@
 
 (setq flim-modules '(std11
 		     mime-def
-		     mel mel-b mel-q mel-u mel-g
+		     mel mel-b-el mel-q mel-u mel-g
 		     eword-decode eword-encode
 		     mime mime-parse mmgeneric mmbuffer mmcooked
 		     mailcap))

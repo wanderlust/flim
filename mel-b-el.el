@@ -1,4 +1,4 @@
-;;; mel-b.el: Base64 encoder/decoder for GNU Emacs
+;;; mel-b-el.el: Base64 encoder/decoder for GNU Emacs
 
 ;; Copyright (C) 1992,1995,1996,1997,1998 Free Software Foundation, Inc.
 
@@ -378,7 +378,7 @@ START and END are buffer positions."
 
 (defun pack-sequence (seq size)
   "Split sequence SEQ into SIZE elements packs,
-and return list of packs. [mel-b; tl-seq function]"
+and return list of packs. [mel-b-el; tl-seq function]"
   (let ((len (length seq)) (p 0) obj
 	unit (i 0)
 	dest)
@@ -404,6 +404,6 @@ and return list of packs. [mel-b; tl-seq function]"
 ;;; @ end
 ;;;
 
-(provide 'mel-b)
+(provide 'mel-b-el)
 
-;;; mel-b.el ends here.
+;;; mel-b-el.el ends here.

@@ -138,7 +138,7 @@ mmencode included in metamail or XEmacs package)."
 	 (module-installed-p 'mel-ccl)
 	 )))
 
-(mel-use-module 'mel-b '("base64" "B"))
+(mel-use-module 'mel-b-el '("base64" "B"))
 (mel-use-module 'mel-q '("quoted-printable" "Q"))
 (mel-use-module 'mel-g '("x-gzip64"))
 (mel-use-module 'mel-u '("x-uue" "x-uuencode"))
