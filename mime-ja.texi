@@ -108,12 +108,6 @@ local 変数 @code{mime-message-structure} に格納することにします。
 扱うことができます。
 
 
-
-
-
-
-
-
 @menu
 * Entity creation::             Entity の生成
 * Entity hierarchy::            Entity 階層
@@ -121,6 +115,7 @@ local 変数 @code{mime-message-structure} に格納することにします。
 * Entity-header::               Entity header の情報
 * Entity-content::              Entity の内容
 * Entity buffer::               Entity の buffer による表現
+* mm-backend::                  Entity の表現と実現
 @end menu
 
 @node Entity creation, Entity hierarchy, Entity, Entity
@@ -327,7 +322,7 @@ Write body of @var{entity} into @var{filename}.
 
 
 
-@node Entity buffer,  , Entity-content, Entity
+@node Entity buffer, mm-backend, Entity-content, Entity
 @section Entity の buffer による表現
 
 @defun mime-entity-buffer entity
@@ -377,6 +372,58 @@ Write body of @var{entity} into @var{filename}.
 す。
 @end defun
 
+
+
+@node mm-backend,  , Entity buffer, Entity
+@section Entity の表現と実現
+@cindex mm-backend
+@cindex entity 処理 method
+@cindex representation-type
+
+Entity は抽象化されたデータ表現で、実際のデータ表現としては用途に応じて
+さまざまなものが利用できるように設計されています。@refill
+
+ここで、entity がどういう種類の表現を行っているかを示すのが
+@strong{representation-type} で、entity を生成する時にはこれを指定します。
+(cf. @ref{Entity Creation}) @refill
+
+前節までに述べて来た entity に対する処理は、entity に対してその処理を依
+頼することによって実現されています。Entity は自分の representation-type 
+を知っており、その representation-type に応じて実際の処理を行う関数を呼
+び出します。このような関数を @strong{entity 処理method} と呼びます。また、
+representation-type 毎にこのような関数をまとめたものを 
+@strong{mm-backend} と呼びます。@refill
+
+mm-backend は representation-type の名前の先頭に @code{mm} という
+接頭辞を付けた関数名からなる module で、その module 名は同様に
+representation-type の名前の先頭に @code{mm} を付けたものになって
+います。この module は representation-type の entity が最初に生成される
+時に自動的に require されます。
+
+
+@menu
+* Request for entity::          Entity への便り
+* mm-backend module::           mm-backend の作り方
+@end menu
+
+@node Request for entity, mm-backend module, mm-backend, mm-backend
+@subsection Entity への便り
+
+@defun mime-entity-send entity message  &rest  args
+
+@var{entity} に @var{message} を送る。@refill
+
+@var{args} は @var{message} の引数である。
+@end defun
+
+
+
+@node mm-backend module,  , Request for entity, mm-backend
+@subsection mm-backend の作り方
+
+（すみません。そのうち書きます (^_^;）@refill
+
+（とりあえず、mm*.el を参考にしてください）
 
 
 @node Content-Type, Content-Disposition, Entity, Top
