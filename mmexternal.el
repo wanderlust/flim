@@ -78,7 +78,7 @@
 				 (concat " *Body of "
 					 (mime-entity-name entity)
 					 "*"))
-	     (binary-insert-file-contents
+	     (binary-insert-encoded-file
 	      (mime-external-entity-body-file-internal entity))
 	     (current-buffer))))
       (error (message "Can't get external-body.")))))
@@ -120,7 +120,7 @@
 					    filename)
   (mmexternal-require-buffer entity)
   (with-current-buffer (mime-external-entity-body-buffer-internal entity)
-    (binary-write-region (point-min) (point-max) filename)))
+    (binary-write-decoded-region (point-min) (point-max) filename)))
 
 
 ;;; @ entity content
