@@ -63,6 +63,7 @@
 
 ;;; Code:
 
+(require 'poem)
 (require 'md4)
 
 ;;;
@@ -81,7 +82,6 @@ is not given."
 	(request-flags (concat (make-string 1 7) (make-string 1 178)
 			       (make-string 2 0)))
 					;0x07 0xb2 0x00 0x00
-	(request-bufIndex 0)
 	lu ld off-d off-u)
     (when (string-match "@" user)
       (unless domain
@@ -112,18 +112,15 @@ the NTLM based server for the user USER and the password hash list
 PASSWORD-HASHES.  NTLM uses two hash values which are represented
 by PASSWORD-HASHES.  PASSWORD-HASHES should be a return value of
  (list (smb-passwd-hash password) (ntlm-md4hash password))"
-  (let* ((rchallenge (if (functionp 'string-as-unibyte)
-			 (string-as-unibyte challenge)
-		       challenge))
+  (let* ((rchallenge (string-as-unibyte challenge))
 	 ;; get fields within challenge struct
-	 (ident (substring rchallenge 0 8))	;ident, 8 bytes
-	 (msgType (substring rchallenge 8 12))	;msgType, 4 bytes
+	 ;;(ident (substring rchallenge 0 8))	;ident, 8 bytes
+	 ;;(msgType (substring rchallenge 8 12))	;msgType, 4 bytes
 	 (uDomain (substring rchallenge 12 20))	;uDomain, 8 bytes
 	 (flags (substring rchallenge 20 24))	;flags, 4 bytes
 	 (challengeData (substring rchallenge 24 32)) ;challengeData, 8 bytes
 	 uDomain-len uDomain-offs
 	 ;; response struct and its fields
-	 response
 	 lmRespData			;lmRespData, 24 bytes
 	 ntRespData			;ntRespData, 24 bytes
 	 domain				;ascii domain string
