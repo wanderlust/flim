@@ -1,5 +1,9 @@
 2000-01-21  Kenichi OKADA <okada@opaopa.org>
 
+	* scram-md5.el (sasl-scram-md5-client-security-info): Eval when compile.
+
+2000-01-21  Kenichi OKADA <okada@opaopa.org>
+
 	* digest-md5.el (TopLevel): Delete `digest-md5-nonce-count'.
 	(digest-md5-build-response-value): Add `realm', `nonce' and `nonce-count'.
 	(digest-md5-digest-response): Add options as RFC.

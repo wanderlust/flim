@@ -60,7 +60,7 @@
   (autoload 'starttls-negotiate "starttls")
   (autoload 'digest-md5-parse-digest-challenge "digest-md5")
   (autoload 'digest-md5-digest-response "digest-md5")
-  (autoload 'scram-make-security-info "scram-md5")
+;  (autoload 'scram-make-security-info "scram-md5")
   (autoload 'scram-md5-make-salted-pass "scram-md5")
   (autoload 'scram-md5-parse-server-msg-1 "scram-md5")
   (autoload 'scram-md5-make-client-msg-1 "scram-md5"))
@@ -83,8 +83,9 @@
   (concat authorid "\0" authenid "\0" passphrase))
 
 ;;; SCRAM-MD5
-(defvar sasl-scram-md5-client-security-info
-  (scram-make-security-info nil t 0))
+(eval-when-compile
+  (defvar sasl-scram-md5-client-security-info
+    (scram-make-security-info nil t 0)))
 
 (defun sasl-scram-md5-make-salted-pass (server-msg-1 passphrase)
   (scram-md5-make-salted-pass
