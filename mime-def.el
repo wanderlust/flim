@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-spadework-module-version-string
-  "FLIM 1.0.1 - \"Ky-Dòto\"-A ")
+  "FLIM-FLAM 1.0.0 - \"$(BAIK'(B\" 2.5R3.0/3.0")
 
 (require 'custom)
 
