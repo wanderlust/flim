@@ -1,5 +1,7 @@
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime.el (mime-write-entity-body): New function.
+
 	* mime.el (mime-write-entity): New function.
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
