@@ -1,3 +1,11 @@
+2000-07-12  Kenichi OKADA <okada@opaopa.org>
+
+	* md5-dl.el (TopLevel): Define-maybe
+	`md5-string', `dynamic-link' and `dynamic-call'.
+	* sha1-dl.el (TopLevel): Define-maybe `dynamic-link' and `dynamic-call'.
+	* md5-el.el (TopLevel): Provide `md5-el' instead of `md5'.
+	* md5.el (TopLevel): Require `md5-el' and `md5-dl'.
+
 2000-06-27  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-via-smtp): additional HELO for sendmail warning.
