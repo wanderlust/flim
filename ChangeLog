@@ -1,5 +1,15 @@
 2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
+	* mime-parse.el: (mime-decode-parameter-value): New
+	implementation; use temporary buffer for conversion.
+	(mime-decode-parameter-encode-segment): Ditto.
+	(mime-decode-parameter-plist): Would put empty language info.
+
+	* test/test-rfc2231.el (test-rfc2231-10, test-rfc2231-11,
+	test-rfc2231-12): New testcases for language info.
+
+2001-04-22  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
 	* mime-parse.el: Fixed comments.
 
 	* test/test-rfc2231.el (test-rfc2231-9): New testcase.
