@@ -148,6 +148,7 @@ Each field name must be symbol."
 (defcustom eword-decode-structured-field-list
   '(Reply-To Resent-Reply-To From Resent-From Sender Resent-Sender
 	     To Resent-To Cc Resent-Cc Bcc Resent-Bcc Dcc
+	     Mail-Followup-To
 	     Mime-Version Content-Type Content-Transfer-Encoding
 	     Content-Disposition User-Agent)
   "*List of field-names to decode as structured field.
