@@ -373,9 +373,9 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (list dest column)
     ))
 
-(defun tm-eword::encode-string (column str &optional mode)
-  (tm-eword::encode-rwl column (tm-eword::split-string str mode))
-  )
+;; (defun tm-eword::encode-string (column str &optional mode)
+;;   (tm-eword::encode-rwl column (tm-eword::split-string str mode))
+;;   )
 
 
 ;;; @ converter
@@ -530,6 +530,10 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ application interfaces
 ;;;
 
+(defun eword-encode-string (str &optional column mode)
+  (car (tm-eword::encode-rwl (or column 0) (tm-eword::split-string str mode)))
+  )
+
 (defun eword-encode-field (string)
   "Encode header field STRING, and return the result.
 A lexical token includes non-ASCII character is encoded as MIME
@@ -556,14 +560,18 @@ encoded-word.  ASCII token is not encoded."
 				     (+ (length field-name) 2) field-body))
 			       )
 			      (t
-			       (car (tm-eword::encode-string
-				     (1+ (length field-name))
-				     field-body 'text))
+                               ;; (car (tm-eword::encode-string
+                               ;;       (1+ (length field-name))
+                               ;;       field-body 'text))
+			       (eword-encode-string field-body
+						    (1+ (length field-name))
+						    'text)
 			       ))
 			)
 		  (concat field-name ": " ret)
 		)))
-	(car (tm-eword::encode-string 0 string))
+	;; (car (tm-eword::encode-string 0 string))
+	(eword-encode-string string 0)
 	)))
 
 (defun eword-in-subject-p ()
@@ -621,10 +629,6 @@ It refer variable `eword-field-encoding-method-alist'."
 		 ))
 	  ))
       )))
-
-(defun eword-encode-string (str &optional column mode)
-  (car (tm-eword::encode-rwl (or column 0) (tm-eword::split-string str mode)))
-  )
 
 
 ;;; @ end
