@@ -119,7 +119,7 @@ charset algorithm cipher-opts auth-param)."
 	       sasl-digest-md5-nonce-count))
 	 (qop
 	  (or (sasl-client-property client 'qop)
-	      (setq qop "auth")))
+	      "auth"))
 	 (digest-uri
 	  (sasl-digest-md5-digest-uri
 	   (sasl-client-service client)(sasl-client-server client)))
