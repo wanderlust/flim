@@ -131,7 +131,7 @@ variable `uuencode-external-encoder'."
   )
 
 (mel-define-method mime-write-decoded-region (start end filename
-						    (nil "x-gzip64"))
+						    (nil "x-uue"))
   "Decode and write current region encoded by uuencode into FILENAME.
 START and END are buffer positions."
   (interactive
