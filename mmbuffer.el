@@ -158,16 +158,6 @@
 		       (mime-buffer-entity-body-end-internal entity))
      (mime-entity-encoding entity))))
 
-(luna-define-method mime-insert-text-content ((entity mime-buffer-entity))
-  (insert
-   (decode-mime-charset-string (mime-entity-content entity)
-			       (or (mime-content-type-parameter
-				    (mime-entity-content-type entity)
-				    "charset")
-				   default-mime-charset)
-			       'CRLF)
-   ))
-
 ;;; redefine to speed up
 
 (mm-define-method entity-point-min ((entity buffer))
