@@ -77,7 +77,7 @@ START and END are buffer positions."
   (if (string-match (eval-when-compile
 		      (concat "\\`" B-encoded-text-regexp "\\'"))
 		    string)
-      (decode-base64-string string)
+      (base64-decode-string string)
     (error "Invalid encoded-text %s" string)))
 
 
