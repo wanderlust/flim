@@ -26,12 +26,11 @@
 ;;; Code:
 
 (require 'emu)
+(require 'mime-def)
 
 
 ;;; @ Quoted-Printable encoder
 ;;;
-
-(defconst quoted-printable-hex-chars "0123456789ABCDEF")
 
 (defsubst quoted-printable-quote-char (character)
   (concat
@@ -187,10 +186,6 @@ It calls external quoted-printable encoder specified by
 			(t (char-to-string chr))
 			)))
 	       string "")))
-
-(defconst quoted-printable-octet-regexp
-  (concat "=[" quoted-printable-hex-chars
-	  "][" quoted-printable-hex-chars "]"))
 
 (defun quoted-printable-internal-decode-region (start end)
   (save-excursion
