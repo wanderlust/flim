@@ -1,3 +1,7 @@
+2000-03-03  Keiichi Suzuki  <keiichi@nanap.org>
+
+	* mime.el (mime-entity-node-id): Change to function.
+
 2000-03-03  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mmdbuffer.el, mmbuffer.el (initialize-instance): Don't setup
