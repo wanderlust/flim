@@ -3,6 +3,8 @@
 ;; Copyright (C) 1999 Shuhei KOBAYASHI
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;;	Kenichi OKADA <okada@opaopa.org>
+;; Maintainer: Kenichi OKADA <okada@opaopa.org>
 ;; Keywords: SHA1, FIPS 180-1
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -38,6 +40,8 @@
 
 ;;; Code:
 
+(require 'hex-util)
+
 (defvar sha1-dl-module
   (if (and (fboundp 'sha1-string)
 	   (subrp (symbol-function 'sha1-string)))
@@ -54,8 +58,16 @@
  (t
   (require 'sha1-el)))
 
-(defalias 'sha1-encode 'sha1-string)
-(defalias 'sha1-encode-binary 'sha1-string)
+;; compatibility for another sha1.el by Keiichi Suzuki.
+(defun sha1-encode (string)
+  (decode-hex-string 
+   (sha1-string string)))
+(defun sha1-encode-binary (string)
+  (decode-hex-string
+   (sha1-string string)))
+
+(make-obsolete 'sha1-encode "It's old API.")
+(make-obsolete 'sha1-encode-binary "It's old API.")
 
 (provide 'sha1)
 
