@@ -473,9 +473,9 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
       (let ((phrase (nth 1 phrase-route-addr))
 	    (route (nth 2 phrase-route-addr))
 	    dest)
-	(if (eq (car (car phrase)) 'spaces)
-	    (setq phrase (cdr phrase))
-	  )
+        ;; (if (eq (car (car phrase)) 'spaces)
+        ;;     (setq phrase (cdr phrase))
+        ;;   )
 	(setq dest (eword-encode-phrase-to-rword-list phrase))
 	(if dest
 	    (setq dest (append dest '((" " nil nil))))
@@ -506,7 +506,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		      '((" " nil nil)
 			("(" nil nil))
 		      (eword-encode-split-string comment 'comment)
-		      '((")" nil nil))
+		      (list '(")" nil nil))
 		      )))
     dest))
 
@@ -515,18 +515,19 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     (if dest
 	(while (setq addresses (cdr addresses))
 	  (setq dest
-		(append dest
-			'(("," nil nil))
-			'((" " nil nil))
-			(eword-encode-mailbox-to-rword-list (car addresses))
-			))
+		(nconc dest
+		       (list '("," nil nil))
+		       ;; (list '(" " nil nil))
+		       (eword-encode-mailbox-to-rword-list (car addresses))
+		       ))
 	  ))
     dest))
 
 (defsubst eword-encode-msg-id-to-rword-list (msg-id)
-  (cons '("<" nil nil)
-	(append (eword-encode-addr-seq-to-rword-list (cdr msg-id))
-		'((">" nil nil)))))
+  (cons '(" " nil nil)
+	(cons '("<" nil nil)
+	      (nconc (eword-encode-addr-seq-to-rword-list (cdr msg-id))
+		     '((">" nil nil))))))
 
 (defsubst eword-encode-in-reply-to-to-rword-list (in-reply-to)
   (let (dest)

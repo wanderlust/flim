@@ -5,7 +5,7 @@
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
 
-;; This file is part of MU (Message Utilities).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -24,8 +24,8 @@
 
 ;;; Code:
 
-(autoload 'buffer-substring-no-properties "emu")
-(autoload 'member "emu")
+(or (fboundp 'buffer-substring-no-properties)
+    (require 'poe))
 
 
 ;;; @ field
@@ -737,9 +737,26 @@ represents addr-spec of RFC 822. [std11.el]"
 	      )
 	    )))))
 
+(defun std11-comment-value-to-string (value)
+  (if (stringp value)
+      (std11-strip-quoted-pair value)
+    (let ((dest ""))
+      (while value
+	(setq dest
+	      (concat dest
+		      (if (stringp (car value))
+			  (car value)
+			(concat "("
+				(std11-comment-value-to-string
+				 (cdr (car value)))
+				")")
+			))
+	      value (cdr value))
+	)
+      dest)))
+
 (defun std11-full-name-string (address)
-  "Return string of full-name part from parsed ADDRESS of RFC 822.
-\[std11.el]"
+  "Return string of full-name part from parsed ADDRESS of RFC 822."
   (cond ((eq (car address) 'group)
 	 (mapconcat (function
 		     (lambda (token)
@@ -761,10 +778,10 @@ represents addr-spec of RFC 822. [std11.el]"
 				  (std11-strip-quoted-pair (cdr token))
 				  )
 				 ((eq type 'comment)
-				  (concat
-				   "("
-				   (std11-strip-quoted-pair (cdr token))
-				   ")")
+				  (concat "("
+					  (std11-comment-value-to-string
+					   (cdr token))
+					  ")")
 				  )
 				 (t
 				  (cdr token)
@@ -772,7 +789,7 @@ represents addr-spec of RFC 822. [std11.el]"
 		      (nth 1 addr) ""))
 	     )
 	   (cond ((> (length phrase) 0) phrase)
-		 (comment (std11-strip-quoted-pair comment))
+		 (comment (std11-comment-value-to-string comment))
 		 )
 	   ))))
 

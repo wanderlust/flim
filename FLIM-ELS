@@ -29,7 +29,7 @@
                      ew-compat
 		     mime mime-parse mmgeneric mmbuffer mmcooked
 		     mailcap
-                     ))
+		     smtp smtpmail))
 
 (unless (and (fboundp 'base64-encode-string)
 	     (subrp (symbol-function 'base64-encode-string)))
@@ -39,11 +39,8 @@
   (setq flim-modules (cons 'mel-b-el flim-modules))
   )
 
-(if (and (featurep 'mule)
-	 (not (or (and (boundp 'MULE) MULE)
-		  (and (featurep 'xemacs) (< emacs-major-version 21))
-		  )))
-    (setq flim-modules (cons 'mel-b-ccl (cons 'mel-q-ccl flim-modules)))
-  )
+(require 'pccl)
+(unless-broken ccl-usable
+  (setq flim-modules (cons 'mel-b-ccl (cons 'mel-q-ccl flim-modules))))
 
 ;;; FLIM-ELS ends here

@@ -27,7 +27,7 @@
 (require 'mcharset)
 
 (eval-and-compile
-  (defconst mime-library-product ["FLAM-DOODLE" (1 11 2) "真朱 2.5R4.5/10.0"]
+  (defconst mime-library-product ["FLAM-DOODLE" (1 12 0) "檜皮 2.0YR3.5/4.0"]
     "Product name, version number and code name of MIME-library package.")
   )
 
@@ -71,12 +71,6 @@
 
 ;;; @ required functions
 ;;;
-
-(defsubst eliminate-top-spaces (string)
-  "Eliminate top sequence of space or tab in STRING."
-  (if (string-match "^[ \t]+" string)
-      (substring string (match-end 0))
-    string))
 
 (defsubst regexp-* (regexp)
   (concat regexp "*"))
@@ -402,13 +396,27 @@ specialized parameter.  (car (car ARGS)) is name of variable and (nth
 	 ))))
 
 (put 'mm-define-method 'lisp-indent-function 'defun)
-(def-edebug-spec mm-define-method
-  (&define name ((arg symbolp)
-		 [&rest arg]
-		 [&optional ["&optional" arg &rest arg]]
-		 &optional ["&rest" arg]
-		 )
-	   def-body))
+
+(eval-when-compile
+  (defmacro eval-module-depended-macro (module definition)
+    (condition-case nil
+	(progn
+	  (require (eval module))
+	  definition)
+      (error `(eval-after-load ,(symbol-name (eval module)) ',definition))
+      ))
+  )
+
+(eval-module-depended-macro
+ 'edebug
+ (def-edebug-spec mm-define-method
+   (&define name ((arg symbolp)
+		  [&rest arg]
+		  [&optional ["&optional" arg &rest arg]]
+		  &optional ["&rest" arg]
+		  )
+	    def-body))
+ )
 
 (defsubst mm-arglist-to-arguments (arglist)
   (let (dest)

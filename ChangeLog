@@ -1,5 +1,12 @@
 1999-01-04  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* Sync up to flim-1_12_1 from flim-1_11_3.
+
+	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
+	1.12.0.
+
+1999-01-04  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-var.el (ew-decode-field-syntax-alist): Add `x-face-version',
 	`x-pgp-sig-version', `x-pgp-key-info' and `x-info'.
 
@@ -1268,9 +1275,201 @@
 	* eword-decode.el: Copied from AKEMI branch of SEMI.
 
 
-1998-10-27  Tanaka Akira  <akr@jaist.ac.jp>
+1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-        * eword-encode.el (eword-encode-field-body): Unfold `field-body'.
+	* FLIM: Version 1.12.1 (Nishinoky-Dò)-A released.
+
+1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* smtpmail.el (smtpmail-send-it): Add autoload cookie; use
+	`smtpmail-do-bcc' instead of `smtp-do-bcc'; modify for interface
+	change of `smtp-via-smtp'.
+	(smtpmail-do-bcc): New function (moved and renamed from
+	`smtp-do-bcc' of smtp.el).
+
+1998-08-06  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* lisp/smtp.el: Do not insert empty line at the end of message.
+
+1998-06-18  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* lisp/smtp.el (smtp-use-8bitmime): New variable.
+	(smtp-debug-info): Internal variable, now.
+	(smtp-make-fqdn): Renamed from `smtp-fqdn'.
+	(smtp-via-smtp): New implementation.
+	(smtp-send-command): Treat "PASS" as usual.
+	(smtp-do-bcc): Removed.
+
+1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* smtpmail.el: New module (copied from Semi-gnus 6.8).
+
+	* smtp.el: New module (copied from Semi-gnus 6.8).
+
+	* FLIM-ELS: Add smtp.el and smtpmail.el.
+
+1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el: Abolish function `eliminate-top-spaces' because it
+	is not used in FLIM.
+
+1998-11-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-mailbox-to-rword-list): Fix
+	problem in `eword-encode-addresses-to-rword-list'.
+
+1998-11-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* std11.el (std11-full-name-string): fixed.
+
+	* std11.el (std11-comment-value-to-string): fixed.
+
+1998-11-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* NEWS (Changes in FLIM 1.12): New section.
+
+1998-11-25  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* std11.el (std11-comment-value-to-string): New function.
+	(std11-full-name-string): Use `std11-comment-value-to-string'.
+
+	* eword-decode.el (eword-parse-comment): New function.
+	(eword-analyze-comment): New implementation; use
+	`eword-parse-comment'; change representation.
+	(eword-decode-token): Modify for representation change of comment.
+
+
+1998-11-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.12.0 (Amagatsuji) was released.
+
+1998-11-14  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* mel-b-ccl.el (ccl-cascading-read): Check consistency.
+
+1998-11-13  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-structured-field-body): Abolish
+	non-used local variable.
+
+1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* mel-b-ccl.el (mel-ccl-decode-b): Check `ccl-cascading-read' to
+	select implementation.
+
+1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): workaround 
+	for mule-2.3@19.34.
+
+1998-11-12  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* mel.el (mel-b-builtin): New variable.
+
+1998-11-10  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* FLIM-ELS: require 'pccl.
+	(flim-modules): Check CCL availability by broken facility.
+
+1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-decode-structured-field-body): New
+	implementation; abolish optional argument `must-unfold'; delete
+	DOC-string.
+	(eword-decode-and-unfold-structured-field-body): Renamed from
+	`eword-decode-and-unfold-structured-field'; delete DOC-string.
+	(eword-decode-and-fold-structured-field-body): Renamed from
+	`eword-decode-and-fold-structured-field'; abolish optional
+	argument `must-unfold'; delete DOC-string.
+	(eword-decode-unstructured-field-body): Abolish optional argument
+	`must-unfold'; delete DOC-string.
+	(eword-decode-and-unfold-unstructured-field-body): Renamed from
+	`eword-decode-and-unfold-unstructured-field'; delete DOC-string.
+	(eword-decode-unfolded-unstructured-field-body): New function.
+
+1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Use
+	`mime-find-field-presentation-method' and
+	`mime-find-field-decoder-internal'.
+
+	* eword-decode.el (mime-find-field-presentation-method): New
+	macro.
+	(mime-find-field-decoder-internal): New function.
+	(mime-find-field-decoder): New implementation (use
+	mime-find-field-decoder-internal).
+	(mime-decode-header-in-region): Use
+	`mime-find-field-presentation-method' and
+	`mime-find-field-decoder-internal'.
+
+1998-11-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Rename
+	field-presentation-mode `folding' to `wide'.
+
+	* eword-decode.el: Rename field-presentation-modes from `native',
+	`folding', `unfolding', `unfolding-xover' to `plain', `wide',
+	`summary', `nov'.
+
+1998-11-07  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (mime-set-field-decoder): Add mode `unfolding-xover'.
+	(mime-find-field-decoder): Ditto.
+
+1998-11-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-encode.el (eword-encode-phrase-route-addr-to-rword-list):
+	Don't delete the front spaces.
+	(eword-encode-addresses-to-rword-list): Don't supplement space;
+	use `nconc' instead of `append'.
+	(eword-encode-msg-id-to-rword-list): Supplement the front space;
+	use `nconc' instead of `append'.
+
+1998-11-02  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el (mime-field-decoder-cache): New variable.
+	(mime-find-field-decoder): Use `mime-field-decoder-cache'.
+	(mime-update-field-decoder-cache): New variable.
+	(mime-update-field-decoder-cache): New function.
+	(mime-decode-header-in-region): Use `mime-field-decoder-cache'.
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Use
+	`mime-field-decoder-cache'.
+
+1998-11-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (mime-decode-header-in-region): New function.
+	(mime-decode-header-in-buffer): Use function
+	`mime-decode-header-in-region'.
+
+1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Refer
+	`mime-field-decoder-alist' instead of hard-coding.
+
+	* mime.el (mime-read-field): Use `mime-decode-field-body'.
+
+	* eword-decode.el (eword-decode-and-unfold-structured-field): Add
+	optional dummy argument `start-column' and `max-column'.
+	(eword-decode-structured-field-body): Change interface.
+	(eword-decode-unstructured-field-body): Change interface to add
+	optional dummy argument `start-column' and `max-column'.
+	(eword-decode-and-unfold-unstructured-field): Add optional dummy
+	argument `start-column' and `max-column'.
+	(mime-field-decoder-alist): New variable; abolish user option
+	`eword-decode-ignored-field-list' and
+	`eword-decode-structured-field-list'.
+	(mime-set-field-decoder): New function.
+	(mime-find-field-decoder): New function.
+	(mime-decode-field-body): New function; abolish function
+	`eword-decode-field-body'.
+	(mime-decode-header-in-buffer): Renamed from
+	`eword-decode-header'; refer `mime-field-decoder-alist' instead of
+	hard-coding; add obsolete alias `eword-decode-header'.
+
+1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el: Avoid compile error when edebug is missing.
 
 
 1998-10-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
