@@ -168,11 +168,11 @@ charset algorithm cipher-opts auth-param)."
 	  (sasl-digest-md5-ha1
 	   (sasl-client-name client) realm nonce cnonce (plist-get plist 'authzid))))
     (sasl-client-set-property client 'nonce-count (1+ nonce-count))
-    (when (member qop '("auth-int" "auth-conf"))
-      (sasl-client-set-encoder
-       client (sasl-digest-md5-make-integrity-encoder ha1))
-      (sasl-client-set-decoder
-       client (sasl-digest-md5-make-integrity-decoder ha1)))
+;;;    (when (member qop '("auth-int" "auth-conf"))
+;;;      (sasl-client-set-encoder
+;;;       client (sasl-digest-md5-make-integrity-encoder ha1))
+;;;      (sasl-client-set-decoder
+;;;       client (sasl-digest-md5-make-integrity-decoder ha1)))
     (concat
      "username=\"" (sasl-client-name client) "\","
      "realm=\"" realm "\","

@@ -385,10 +385,11 @@ of the host to connect to.  SERVICE is name of the service desired."
 	 (if (sasl-step-data step)
 	     (base64-encode-string (sasl-step-data step) t)
 	   ""))))
-    (smtp-connection-set-encoder-internal
-     connection (sasl-client-encoder client))
-    (smtp-connection-set-decoder-internal
-     connection (sasl-client-decoder client))))
+;;;    (smtp-connection-set-encoder-internal
+;;;     connection (sasl-client-encoder client))
+;;;    (smtp-connection-set-decoder-internal
+;;;     connection (sasl-client-decoder client))
+    ))
 
 (defun smtp-primitive-starttls (package)
   (let* ((connection

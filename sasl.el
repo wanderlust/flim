@@ -36,6 +36,8 @@
 
 ;;; Code:
 
+(require 'luna)
+
 (defvar sasl-mechanisms
   '("CRAM-MD5" "DIGEST-MD5" "PLAIN" "LOGIN" "ANONYMOUS"))
 
@@ -57,84 +59,95 @@
 ;;; @ SASL client
 ;;;
 
+(eval-and-compile
+  (luna-define-class sasl-client ()
+		     (mechanism
+		      name
+		      service
+		      server
+		      properties))
+
+  (luna-define-internal-accessors 'sasl-client))
+
 (defun sasl-make-client (mechanism name service server)
   "Return a newly allocated SASL client.
 NAME is name of the authorization.  SERVICE is name of the service desired.
 SERVER is the fully qualified host name of the server to authenticate to."
-  (vector mechanism name service server (make-symbol "sasl-client-properties")
-	  nil nil))
+  (luna-make-entity 'sasl-client
+		    :mechanism mechanism
+		    :name name
+		    :service service
+		    :server server))
 
 (defun sasl-client-mechanism (client)
   "Return the authentication mechanism driver of CLIENT."
-  (aref client 0))
+  (sasl-client-mechanism-internal client))
 
 (defun sasl-client-name (client)
   "Return the authorization name of CLIENT, a string."
-  (aref client 1))
+  (sasl-client-name-internal client))
 
 (defun sasl-client-service (client)
   "Return the service name of CLIENT, a string."
-  (aref client 2))
+  (sasl-client-service-internal client))
 
 (defun sasl-client-server (client)
   "Return the server name of CLIENT, a string."
-  (aref client 3))
+  (sasl-client-server-internal client))
 
 (defun sasl-client-set-properties (client plist)
   "Destructively set the properties of CLIENT.
 The second argument PLIST is the new property list."
-  (setplist (aref client 4) plist))
+  (sasl-client-set-properties-internal client plist))
 
 (defun sasl-client-set-property (client property value)
   "Add the given property/value to CLIENT."
-  (put (aref client 4) property value))
+  (sasl-client-set-properties-internal
+   client (plist-put (sasl-client-properties-internal client) property value)))
 
 (defun sasl-client-property (client property)
   "Return the value of the PROPERTY of CLIENT."
-  (get (aref client 4) property))
+  (plist-get (sasl-client-properties-internal client) property))
 
 (defun sasl-client-properties (client)
   "Return the properties of CLIENT."
-  (symbol-plist (aref client 4)))
-
-(defun sasl-client-set-encoder (client encoder)
-  "Set integrity encoder of CLIENT."
-  (aset client 5 encoder))
-
-(defun sasl-client-set-decoder (client decoder)
-  "Set integrity decoder of CLIENT."
-  (aset client 6 decoder))
-
-(defun sasl-client-encoder (client)
-  "Return the integrity encoder of CLIENT."
-  (aref client 5))
-
-(defun sasl-client-decoder (client)
-  "Retrun the integrity decoder of CLIENT."
-  (aref client 6))
+  (sasl-client-properties-internal client))
 
 ;;; @ SASL mechanism
 ;;;
+
+(eval-and-compile
+  (luna-define-class sasl-mechanism ()
+		     (name
+		      steps))
+
+  (luna-define-internal-accessors 'sasl-mechanism))
+
+(luna-define-method initialize-instance :after ((mechanism sasl-mechanism)
+						&rest init-args)
+  (sasl-mechanism-set-steps-internal
+   mechanism
+   (mapcar
+    (lambda (step)
+      (let ((symbol (make-symbol (symbol-name step))))
+	(fset symbol (symbol-function step))
+	symbol))
+    (sasl-mechanism-steps-internal mechanism)))
+  mechanism)
 
 (defun sasl-make-mechanism (name steps)
   "Make an authentication mechanism.
 NAME is a IANA registered SASL mechanism name.
 STEPS is list of continuation function."
-  (vector name
-	  (mapcar
-	   (lambda (step)
-	     (let ((symbol (make-symbol (symbol-name step))))
-	       (fset symbol (symbol-function step))
-	       symbol))
-	   steps)))
+  (luna-make-entity 'sasl-mechanism :name name :steps steps))
 
 (defun sasl-mechanism-name (mechanism)
   "Return name of MECHANISM, a string."
-  (aref mechanism 0))
+  (sasl-mechanism-name-internal mechanism))
 
 (defun sasl-mechanism-steps (mechanism)
   "Return the authentication steps of MECHANISM, a list of functions."
-  (aref mechanism 1))
+  (sasl-mechanism-steps-internal mechanism))
 
 (defun sasl-find-mechanism (mechanisms)
   "Retrieve an apropriate mechanism object from MECHANISMS hints."
@@ -153,13 +166,21 @@ STEPS is list of continuation function."
 ;;; @ SASL authentication step
 ;;;
 
+(eval-and-compile
+  (luna-define-class sasl-step ()
+		     (continuation
+		      data))
+		      
+
+  (luna-define-internal-accessors 'sasl-step))
+
 (defun sasl-step-data (step)
   "Return the data which STEP holds, a string."
-  (aref step 1))
+  (sasl-step-data-internal step))
 
 (defun sasl-step-set-data (step data)
   "Store DATA string to STEP."
-  (aset step 1 data))
+  (sasl-step-set-data-internal step data))
 
 (defun sasl-next-step (client step)
   "Evaluate the challenge and prepare an appropriate next response.
@@ -168,13 +189,15 @@ opaque authentication step which holds the reference to the next action
 and the current challenge.  At the first time STEP should be set to nil."
   (let* ((steps
 	  (sasl-mechanism-steps
-	   (sasl-client-mechanism client)))
+	   (sasl-client-mechanism-internal client)))
 	 (function
-	  (if (vectorp step)
-	      (nth 1 (memq (aref step 0) steps))
-	    (car steps))))
+	  (if (null step)
+	      (car steps)
+	    (nth 1 (memq (sasl-step-continuation-internal step) steps)))))
     (if function
-	(vector function (funcall function client step)))))
+	(luna-make-entity 'sasl-step
+			  :continuation function
+			  :data (funcall function client step)))))
 
 (defvar sasl-read-passphrase nil)
 (defun sasl-read-passphrase (prompt)
