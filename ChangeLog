@@ -1,3 +1,7 @@
+1998-04-13  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el: Copied from AKEMI branch of SEMI.
+
 1998-04-13  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.0.0 was released.
