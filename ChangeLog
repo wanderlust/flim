@@ -1,3 +1,12 @@
+2001-02-20  Kenichi OKADA <okada@opaopa.org>
+
+	* tests/test-sasl.el(test-sasl-ntlm-imap): Change name.
+	Delete wrong lines.
+
+2001-02-20  Taro Kawagishi <taro.kawagishi@nokia.com>
+
+	* tests/test-sasl.el(test-sasl-digest-ntlm-imap): New test.
+
 2001-02-17  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl-ntlm.el(sasl-ntlm-response): self-Hash.
