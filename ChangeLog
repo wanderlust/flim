@@ -1,3 +1,7 @@
+2000-03-01  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* Chao: Version 1.14.0 (Momoyama) released.
+
 2000-01-05  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* Makefile, mime-en.sgml, mime-ja.sgml: Update for the new CVS

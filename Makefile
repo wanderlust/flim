@@ -26,7 +26,7 @@ FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 VERSION	= $(API).$(RELEASE)
 ARC_DIR = /ftp/pub/mule/flim/flim-$(API)
-SEMI_ARC_DIR = /ftp/pub/mule/semi/semi-1.13-for-flim-$(API)
+SEMI_ARC_DIR = /ftp/pub/mule/semi/semi-1.14-for-flim-$(API)
 
 elc:
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
