@@ -98,20 +98,17 @@ Open an entity and return it.
 depended on representation-type.
 </defun>
 
-<defun name="mime-parse-message">
-	  <opts> default-ctl node-id
-<p>
-Parse current buffer as message, and return the result as mime-entity.
-</defun>
-
 <defun name="mime-parse-buffer">
-	  <opts> buffer
+	  <opts> buffer representation-type
 <p>
 Parse <var>buffer</var> as message, and set the result to buffer local
 variable <code>mime-message-structure</code> of <var>buffer</var> as
 mime-entity.
 <p>
 If <var>buffer</var> is omitted, current buffer is used.
+<p>
+<var>representation-type</var> is representation-type of created
+mime-entity.  Default value is <var>buffer</var>.
 </defun>
 
 
