@@ -27,10 +27,7 @@
 ;;; Code:
 
 (provide 'sha1-dl)			; beware of circular dependency.
-(eval-when-compile
-  (require 'sha1)			; sha1-dl-module.
-  (defun-maybe dynamic-link (a))
-  (defun-maybe dynamic-call (a b)))
+(eval-when-compile (require 'sha1))	; sha1-dl-module.
 
 (defvar sha1-dl-handle
   (and (stringp sha1-dl-module)

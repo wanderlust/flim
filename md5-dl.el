@@ -26,19 +26,8 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (defun-maybe md5-string (a))
-  (defun-maybe dynamic-link (a))
-  (defun-maybe dynamic-call (a b)))
-
-(defvar md5-dl-module
-  (if (and (fboundp 'md5-string)
-	   (subrp (symbol-function 'md5-string)))
-      nil
-    (if (fboundp 'dynamic-link)
-	(let ((path (expand-file-name "md5.so" exec-directory)))
-	  (and (file-exists-p path)
-	       path)))))
+(provide 'md5-dl)
+(eval-when-compile (require 'md5))	; md5-dl-module.
 
 (defvar md5-dl-handle
   (and (stringp md5-dl-module)
@@ -49,7 +38,6 @@
 (dynamic-call "emacs_md5_init" md5-dl-handle)
 
 (defun md5-region (beg end)
-  (interactive "r")
   (md5-string (buffer-substring-no-properties beg end)))
 
 ;;; Note that XEmacs built-in version takes two more args: CODING and NOERROR.
@@ -65,6 +53,4 @@ hash of a portion of OBJECT."
       (set-buffer object)
       (md5-region (or beg (point-min)) (or end (point-max))))))
 
-(provide 'md5-dl)
-
-;;; md5-dl.el ends here.
+;;; md5-dl.el ends here

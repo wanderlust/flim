@@ -49,14 +49,17 @@
 
 ;;; Code:
 
+(defvar md5-dl-module
+  (if (and (fboundp 'md5)
+	   (subrp (symbol-function 'md5)))
+      nil
+    (if (fboundp 'dynamic-link)
+	(let ((path (expand-file-name "md5.so" exec-directory)))
+	  (and (file-exists-p path)
+	       path)))))
+
 (cond
- ((and (fboundp 'md5)
-       (subrp (symbol-function 'md5)))
-  ;; recent XEmacs has `md5' as a built-in function.
-  ;; (and 'md5 is already provided.)
-  )
- ((and (fboundp 'dynamic-link)
-       (file-exists-p (expand-file-name "md5.so" exec-directory)))
+ (md5-dl-module
   ;; Emacs with DL patch.
   (require 'md5-dl))
  (t
