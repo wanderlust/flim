@@ -1,3 +1,7 @@
+1999-11-12  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mel-q-ccl.el (q-encoding-ccl-encoded-length): Removed comment.
+
 1999-10-21  Tsukamoto Tetsuo  <czkmt@remus.dti.ne.jp>
 
 	* eword-decode.el (mime-set-field-decoder): Doc string typo.
