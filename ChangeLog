@@ -1,5 +1,7 @@
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* FLIM: Version 1.0.1 (Ky,Dr(Bto) was released.
+
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
 
