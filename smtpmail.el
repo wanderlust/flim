@@ -226,10 +226,9 @@ This is relative to `smtpmail-queue-dir'.")
 	  ; Send or queue
 	  (if (not smtpmail-queue-mail)
 	      (if smtpmail-recipient-address-list
-		  (if (not (smtp-via-smtp user-mail-address
-					  smtpmail-recipient-address-list
-					  tembuf))
-		      (error "Sending failed; SMTP protocol error"))
+		  (smtp-send-buffer user-mail-address
+				    smtpmail-recipient-address-list
+				    tembuf)
 		(error "Sending failed; no recipients"))
 	    (let* ((file-data (convert-standard-filename
 			       (concat
@@ -284,9 +283,8 @@ This is relative to `smtpmail-queue-dir'.")
 	(load file-msg)
 	(setq tembuf (find-file-noselect-as-binary file-msg))
 	(if smtpmail-recipient-address-list
-	    (if (not (smtp-via-smtp user-mail-address
-				    smtpmail-recipient-address-list tembuf))
-		(error "Sending failed; SMTP protocol error"))
+	    (smtp-send-buffer user-mail-address
+			      smtpmail-recipient-address-list tembuf)
 	  (error "Sending failed; no recipients"))  
 	(delete-file file-msg)
 	(delete-file (concat file-msg ".el"))
