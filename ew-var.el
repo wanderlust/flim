@@ -123,19 +123,29 @@
 ;;; constants.
 
 (defconst ew-token-regexp "[-!#-'*+0-9A-Z^-~]+")
-(defconst ew-encoded-text-regexp "[!->@-~]*")
+(defconst ew-encoded-text-regexp0 "[!->@-~]*")
+(defconst ew-encoded-text-regexp1 "[!->@-~]+")
 
-(defconst ew-encoded-word-regexp
+(defconst ew-encoded-word-regexp0
   (concat (regexp-quote "=?")
           "\\(" ew-token-regexp "\\)"
           (regexp-quote "?")
           "\\(" ew-token-regexp "\\)"
           (regexp-quote "?")
-          "\\(" ew-encoded-text-regexp "\\)"
+          "\\(" ew-encoded-text-regexp0 "\\)"
+          (regexp-quote "?=")))
+
+(defconst ew-encoded-word-regexp1
+  (concat (regexp-quote "=?")
+          "\\(" ew-token-regexp "\\)"
+          (regexp-quote "?")
+          "\\(" ew-token-regexp "\\)"
+          (regexp-quote "?")
+          "\\(" ew-encoded-text-regexp1 "\\)"
           (regexp-quote "?=")))
 
 (defconst ew-anchored-encoded-word-regexp
-  (concat "\\`" ew-encoded-word-regexp "\\'"))
+  (concat "\\`" ew-encoded-word-regexp0 "\\'"))
 
 (defconst ew-b-regexp
   (eval-when-compile
@@ -165,7 +175,7 @@
           (regexp-quote "?")
           "\\(" ew-token-regexp "\\)"
           (regexp-quote "?")
-          "\\(" ew-encoded-text-regexp "\\)"
+          "\\(" ew-encoded-text-regexp0 "\\)"
           (regexp-quote "?")
           "\\'"))
 

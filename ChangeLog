@@ -1,5 +1,25 @@
 1998-09-01  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* TESTPAT: Add 16 tests.
+
+	* ew-data.el (ew-separate-eword): Check
+	`ew-permit-null-encoded-text'.
+
+	* ew-quote.el (ew-quote-concat): Use `ew-encoded-word-regexp0'
+	instead of `ew-encoded-word-regexp'.
+	(ew-quote-sole): Ditto.
+
+	* ew-var.el (ew-encoded-text-regexp): Abolished.
+	(ew-encoded-text-regexp0): Renamed from `ew-encoded-text-regexp'.
+	(ew-encoded-text-regexp1): New constant.
+	(ew-encoded-word-regexp): Abolished.
+	(ew-encoded-word-regexp0): Renamed from `ew-encoded-word-regexp'.
+	(ew-encoded-word-regexp1): New constant.
+	(ew-anchored-encoded-word-regexp): Use `ew-encoded-word-regexp0'.
+	(ew-type2-regexp): Use `ew-encoded-word-regexp0'.
+
+1998-09-01  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* Sync up with flim-1_9_1.
 
 	* mime-def.el (mime-library-version-string): bump up to

@@ -988,6 +988,25 @@
  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
  =?ISO-2022-JP?B?GyRCJCIbKEI=?=)(=?ISO-2022-JP?B?GyRCJCIbKEI=?=)")
 
+(encode
+"Subject: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ?ㄱ?"
+"Subject: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa =?EUC-KR?B?P6ShPw==?=")
+
+(encode
+"Subject: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ?ㄱ?"
+"Subject: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa =?EUC-KR?B?P6Sh?=\r
+ =?US-ASCII?Q?=3F?=")
+
+(encode
+"Subject: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ?ㄱ?"
+"Subject: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa =?EUC-KR?B?P6Sh?=\r
+ =?US-ASCII?Q?=3F?=")
+
+(encode
+"Subject: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ?ㄱ?"
+"Subject: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
+ =?EUC-KR?B?P6ShPw==?=")
+
 ;----------------------------------------------------------------------------
 
 ;;; Section 6: Encoding melancholic inputs.
@@ -1098,6 +1117,96 @@
  =?ISO-2022-JP?B?GyRCJCgbKEI=?= <foo@bar>"
 'separate-sticked-special)
 
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaa <akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6ShPw==?=()aaaaa\r
+ <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaa <akr@jaist.ac.jp>"
+'("From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
+ =?US-ASCII?Q?=3F?=()aaaaa <akr@jaist.ac.jp>"
+  "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
+ =?EUC-KR?B?pKE/?=()aaaaa <akr@jaist.ac.jp>")
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaa <akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=
+ =?US-ASCII?Q?=3F?=()aaaaa <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'("From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
+ =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+  "From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
+ =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>")
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
+ =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
+ =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
+ =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
+ =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
+ <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
+ =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
+ <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From:
+ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
+ =?US-ASCII?Q?=3F?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
+ <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+"From:
+ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?US-ASCII?Q?=3F?=\r
+ =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
+ <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()?ㄱ?()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <akr@jaist.ac.jp>"
+'("From:
+ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()=?EUC-KR?B?P6Sh?=\r
+ =?US-ASCII?Q?=3F?=()=?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?=\r
+ =?US-ASCII?Q?aaaaaaaaaaaaaaaa?= <akr@jaist.ac.jp>"
+  "From: =?US-ASCII?Q?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?=
+ =?US-ASCII?Q?aa?=()=?US-ASCII?Q?=3F?=\r 
+ =?EUC-KR?B?pKE/?=()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r
+ <akr@jaist.ac.jp>")
+'permit-sticked-comment)
+
+;----------------------------------------------------------------------------
+
 ;;; Section 7: Using embedded-encoded-words.
 ;;
 ;; embedded-encoded-word 表現
@@ -1139,7 +1248,7 @@
 ;;    1/3 (小数点以下切捨て)にして、最後の = を取り除いた文字列
 ;;
 ;;  =?c?e?t?=?c?e?t?=... というように、パターンの先頭の = と 末尾の = 
-;;  重なる場合、奇数番目のものに対して上記のルールを適用する。
+;;  が重なる場合、奇数番目のものに対して上記のルールを適用する。
 ;;
 ;; NOTE: + を embedded-encoded-word 表現の quote 文字と呼ぶ。
 ;;
