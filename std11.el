@@ -267,15 +267,16 @@ If BOUNDARY is not nil, it is used as message header separator.
 
 (eval-and-compile
   (defconst std11-space-chars " \t\n")
+  (defconst std11-special-char-list '(?\] ?\[
+					  ?\( ?\) ?< ?> ?@
+					  ?, ?\; ?: ?\\ ?\"
+					  ?.))
   )
 ;; (defconst std11-spaces-regexp
 ;;   (eval-when-compile (concat "[" std11-space-chars "]+")))
-(defconst std11-special-char-list '(?\] ?\[
-					?\( ?\) ?< ?> ?@
-					?, ?\; ?: ?\\ ?\"
-					?.))
 (defconst std11-atom-regexp
-  (` (, (concat "^[^" std11-special-char-list std11-space-chars "]+"))))
+  (eval-when-compile
+    (concat "^[^" std11-special-char-list std11-space-chars "]+")))
 
 (defun std11-analyze-spaces (string)
   (if (and (string-match
