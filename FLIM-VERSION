@@ -3,25 +3,25 @@
 1.0.0	-----
 
 ;;-------------------------------------------------------------------------
-;;	Kinki Nippon Railway
-;;			$(B6a5&F|K\E4F;(B	http://www.kintetsu.co.jp/
-;;	Ky-Dòto-A Line	$(B5~ET@~(B
+;;	Kinki Nippon Railway	$(B6a5&F|K\E4F;(B	http://www.kintetsu.co.jp/
+;;	Ky-Dòto-A Line		$(B5~ET@~(B
 ;;-------------------------------------------------------------------------
-1.0.1	Ky-Dòto-A		$(B5~ET(B		; <=> JR
-1.1.0	T-Dòji-A		$(BEl;{(B
-1.2.0	J-Dþjò-A		$(B==>r(B
-1.2.1	Kamitobaguchi	$(B>eD;1)8}(B
-1.2.2	Takeda		$(BC]ED(B		; = $(B5~ET;T8rDL6I(B $(B1(4]@~(B
-1.3.0	Fushimi		$(BIz8+(B
+1.0.1	Ky-Dòto-A			$(B5~ET(B		; <=> JR
+1.1.0	T-Dòji-A			$(BEl;{(B
+1.2.0	J-Dþjò-A			$(B==>r(B
+1.2.1	Kamitobaguchi		$(B>eD;1)8}(B
+1.2.2	Takeda			$(BC]ED(B		; = $(B5~ET;T8rDL6I(B $(B1(4]@~(B
+1.3.0	Fushimi			$(BIz8+(B
+1.3.1	Kintetsu-Tanbabashi	$(B6aE4C0GH66(B
 
 
 [Chao Version names]
 
 ;;-------------------------------------------------------------------------
 ;;	Kyoto Municipal Transfer Bureau
-;;			$(B5~ET;T8rDL6I(B
-;;				http://www.city.kyoto.jp/kotsu/main.htm
-;;	Karasuma Line	$(B1(4]@~(B
+;;				$(B5~ET;T8rDL6I(B
+;;		http://www.city.kyoto.jp/kotsu/main.htm
+;;	Karasuma Line		$(B1(4]@~(B
 ;;-------------------------------------------------------------------------
-1.2.0	Takeda		$(BC]ED(B		; = $(B6aE4(B $(B5~ET@~(B
-1.3.0	Kuinabashi	$(B$/$$$J66(B
+1.2.0	Takeda			$(BC]ED(B		; = $(B6aE4(B $(B5~ET@~(B
+1.3.0	Kuinabashi		$(B$/$$$J66(B
