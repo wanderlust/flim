@@ -1,3 +1,8 @@
+1998-12-22  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* README.en (Installation): Modify for APEL 9.12.
+	* README.ja (Installation): Likewise.
+
 1998-12-14  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* mel-b-ccl.el (base64-ccl-insert-encoded-file): Call
