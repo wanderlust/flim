@@ -2,8 +2,8 @@
 # Makefile for FLIM.
 #
 
-PACKAGE = flim
-VERSION = 1.11.3
+PACKAGE = chao
+VERSION = 1.12.0
 
 TAR	= tar
 RM	= /bin/rm -f
