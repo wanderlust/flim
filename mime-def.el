@@ -249,6 +249,19 @@ If method is nil, this field will not be encoded."
 ;;; @ message structure
 ;;;
 
+(static-condition-case nil
+    :symbol-for-testing-whether-colon-keyword-is-available-or-not
+  (void-variable
+   (defconst :location ':location)
+   (defconst :content-type ':content-type)
+   (defconst :parent ':parent)
+   (defconst :node-id ':node-id)
+   (defconst :buffer ':buffer)
+   (defconst :header-start ':header-start)
+   (defconst :header-end ':header-end)
+   (defconst :body-start ':body-start)
+   (defconst :body-end ':body-end)))
+
 (defvar mime-message-structure nil
   "Information about structure of message.
 Please use reference function `mime-entity-SLOT' to get value of SLOT.
