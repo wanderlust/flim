@@ -1,0 +1,20 @@
+* You should byte-compile(make).
+Because DOODLE uses very complex macro.
+
+Especialy ew-line.el, ew-scan-m.el, ew-scan-s.el and ew-scan-u.el that are require 'lex.
+(lex is scanner generator.)
+
+* Multiline field-bodies fetched from XOVER is already concatinated,
+you should set ew-ignore-76bytes-limit to true.
+
+(setq gnus-unstructured-field-decoder
+  (lambda (string)
+    (let ((ew-ignore-76bytes-limit t))
+      (eword-decode-unstructured-field-body
+        (std11-unfold-string string)
+        (quote must-unfold)))))
+
+(setq gnus-structured-field-decoder
+  (lambda (string)
+    (let ((ew-ignore-76bytes-limit t))
+      (eword-decode-and-unfold-structured-field string))))

@@ -1,3 +1,26 @@
+1998-08-17  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* DOODLE-TIPS: New file.
+
+	* TESTPAT: Separator of field-name and field-body is now not special.
+
+	* ew-data.el (ew-special-frag-p): Separator of field-name and
+	field-body is now not special.
+
+	* ew-line.el (ew-cut-generic): New function.
+	(ew-cut-cr-lf): Use `ew-cut-generic'.
+	(ew-cut-cr): New function.
+	(ew-cut-lf): New function.
+	(ew-crlf-line-generic): Renamed from `ew-line-generic'
+	(ew-crlf-line-convert): Renamed from `ew-line-convert'
+	(ew-lf-line-generic): New function.
+	(ew-lf-line-convert): New function.
+
+	* eword-decode.el (eword-decode-and-fold-structured-field): Use
+	`ew-decode-field'.
+	(eword-decode-and-unfold-structured-field): Use
+	`ew-decode-field'.
+
 1998-08-16  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* TESTPAT: Add a driver for `ew-decode-field'.

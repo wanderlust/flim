@@ -121,18 +121,17 @@
 	    ew:raw-cm-qpair-tok)))
 
 (defun ew-special-frag-p (frag)
-  (or (eq frag (get frag 'anchor))
-      (member (get frag 'type)
-	      '(ew:raw-lt-tok
-		ew:raw-gt-tok
-		ew:raw-at-tok
-		ew:raw-comma-tok
-		ew:raw-semicolon-tok
-		ew:raw-colon-tok
-		ew:raw-dot-tok
-		ew:raw-qs-begin-tok
-		ew:raw-qs-end-tok
-		ew:raw-dl-begin-tok
-		ew:raw-dl-end-tok
-		ew:raw-cm-begin-tok
-		ew:raw-cm-end-tok))))
+  (member (get frag 'type)
+	  '(ew:raw-lt-tok
+	    ew:raw-gt-tok
+	    ew:raw-at-tok
+	    ew:raw-comma-tok
+	    ew:raw-semicolon-tok
+	    ew:raw-colon-tok
+	    ew:raw-dot-tok
+	    ew:raw-qs-begin-tok
+	    ew:raw-qs-end-tok
+	    ew:raw-dl-begin-tok
+	    ew:raw-dl-end-tok
+	    ew:raw-cm-begin-tok
+	    ew:raw-cm-end-tok)))

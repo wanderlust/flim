@@ -712,32 +712,34 @@ such as a version of Net$cape)."
 	       (list string start-column max-column must-unfold))
   (or max-column
       (setq max-column fill-column))
-  (let ((c start-column)
-	(tokens (eword-lexical-analyze string must-unfold))
-	(result "")
-	token)
-    (while (and (setq token (car tokens))
-		(setq tokens (cdr tokens)))
-      (let* ((type (car token)))
-	(if (eq type 'spaces)
-	    (let* ((next-token (car tokens))
-		   (next-str (eword-decode-token next-token))
-		   (next-len (string-width next-str))
-		   (next-c (+ c next-len 1)))
-	      (if (< next-c max-column)
-		  (setq result (concat result " " next-str)
-			c next-c)
-		(setq result (concat result "\n " next-str)
-		      c (1+ next-len)))
-	      (setq tokens (cdr tokens))
-	      )
-	  (let* ((str (eword-decode-token token)))
-	    (setq result (concat result str)
-		  c (+ c (string-width str)))
-	    ))))
-    (if token
-	(concat result (eword-decode-token token))
-      result)))
+  (let* ((ew-decode-field-default-syntax '(ew-scan-unibyte-std11))
+	 (decoded (ew-decode-field (make-string (1- start-column) ?X)
+				   (ew-lf-crlf-to-crlf string)
+				   (if must-unfold 'ew-cut-cr-lf)))
+	 column)
+    (setq decoded (ew-crlf-to-lf decoded))
+    (setq column 0)
+    (ew-lf-line-convert decoded
+      (lambda (line)
+	(if (<= (length line) max-column)
+	    line
+	  (let ((start 0) index)
+	    (catch 'loop
+	      (while (< (+ column start) max-column)
+		(if (string-match " " decoded start)
+		    (progn
+		      (setq start (match-end 0))
+		      (when (< (match-beginning 0) max-column)
+			(setq index (match-beginning 0))))
+		  (throw 'loop nil)))
+	      (setq index (string-match " " decoded start)))
+	    (if index
+		(concat (substring decoded 0 index)
+			"\n"
+			(substring decoded index))
+	      decoded))))
+      (lambda (str) (setq column 1) str)
+      (lambda (str) (setq column 0) str))))
 
 (defun eword-decode-and-unfold-structured-field (string)
   "Decode and unfold STRING as structured field body.
@@ -749,18 +751,11 @@ If an encoded-word is broken or your emacs implementation can not
 decode the charset included in it, it is not decoded."
   (rotate-memo args-eword-decode-and-unfold-structured-field
 	       (list string))
-  (let ((tokens (eword-lexical-analyze string 'must-unfold))
-	(result ""))
-    (while tokens
-      (let* ((token (car tokens))
-	     (type (car token)))
-	(setq tokens (cdr tokens))
-	(setq result
-	      (if (eq type 'spaces)
-		  (concat result " ")
-		(concat result (eword-decode-token token))
-		))))
-    result))
+  (let* ((ew-decode-field-default-syntax '(ew-scan-unibyte-std11))
+	 (decoded (ew-decode-field ""
+				   (ew-lf-crlf-to-crlf string)
+				   'ew-cut-cr-lf)))
+    (ew-cut-cr-lf decoded)))
 
 (defun eword-decode-structured-field-body (string &optional must-unfold
 						  start-column max-column)

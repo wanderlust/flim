@@ -2,8 +2,10 @@
 (require 'ew-util)
 (provide 'ew-line)
 
-(put 'ew-line-generic 'lisp-indent-function 1)
-(put 'ew-line-convert 'lisp-indent-function 1)
+(put 'ew-crlf-line-generic 'lisp-indent-function 1)
+(put 'ew-crlf-line-convert 'lisp-indent-function 1)
+(put 'ew-lf-line-generic 'lisp-indent-function 1)
+(put 'ew-lf-line-convert 'lisp-indent-function 1)
 
 (defun ew-lf-to-crlf (str)
   (let ((i 0) (j 0) (l (length str)) result)
@@ -94,10 +96,10 @@
                     (substring str i))))
     (apply 'concat (nreverse result))))
 
-(defun ew-cut-cr-lf (str)
+(defun ew-cut-generic (str chars)
   (let ((i 0) (j 0) (l (length str)) result)
     (while (< j l)
-      (when (member (aref str j) '(?\r ?\n))
+      (when (member (aref str j) chars)
         (setq result (ew-rcons*
                       result
                       (substring str i j))
@@ -109,7 +111,11 @@
                     (substring str i))))
     (apply 'concat (nreverse result))))
 
-(defmacro ew-line-generic-define ()
+(defun ew-cut-cr-lf (str)  (ew-cut-generic str '(?\r ?\n)))
+(defun ew-cut-cr (str) (ew-cut-generic str '(?\r)))
+(defun ew-cut-lf (str) (ew-cut-generic str '(?\n)))
+
+(defmacro ew-crlf-line-generic-define ()
   (let ((str (make-symbol "str"))
 	(others-fun (make-symbol "others-fun"))
 	(fold-fun (make-symbol "fold-fun"))
@@ -119,7 +125,7 @@
 	(p (make-symbol "p"))
 	(q (make-symbol "q"))
 	(r (make-symbol "r")))
-    `(defun ew-line-generic
+    `(defun ew-crlf-line-generic
        (,str ,others-fun ,fold-fun ,crlf-fun ,bare-cr-fun ,bare-lf-fun)
        (let ((,p 0) (,q (length ,str)) ,r)
 	 (while (< ,p ,q)
@@ -133,9 +139,9 @@
 	     (() (error "something wrong"))))
 	 ,q))))
 
-(ew-line-generic-define)
+(ew-crlf-line-generic-define)
 
-(defmacro ew-line-convert-define ()
+(defmacro ew-crlf-line-convert-define ()
   (let ((str (make-symbol "str"))
 	(others-fun (make-symbol "others-fun"))
 	(fold-fun (make-symbol "fold-fun"))
@@ -146,10 +152,10 @@
 	(result (make-symbol "result"))
 	(start (make-symbol "starx"))
 	(end (make-symbol "end")))
-    `(defun ew-line-convert
+    `(defun ew-crlf-line-convert
        (,str ,others-fun ,fold-fun ,crlf-fun ,bare-cr-fun ,bare-lf-fun)
        (let ((,index 0) ,result)
-	 (when (> (ew-line-generic
+	 (when (> (ew-crlf-line-generic
 		      ,str
 		    ,@(mapcar
 		       (lambda (fun)
@@ -171,4 +177,62 @@
 			    (substring ,str ,index))))
 	 (apply 'concat (nreverse ,result))))))
 
-(ew-line-convert-define)
+(ew-crlf-line-convert-define)
+
+(defmacro ew-lf-line-generic-define ()
+  (let ((str (make-symbol "str"))
+	(others-fun (make-symbol "others-fun"))
+	(fold-fun (make-symbol "fold-fun"))
+	(lf-fun (make-symbol "lf-fun"))
+	(p (make-symbol "p"))
+	(q (make-symbol "q"))
+	(r (make-symbol "r")))
+    `(defun ew-lf-line-generic
+       (,str ,others-fun ,fold-fun ,lf-fun)
+       (let ((,p 0) (,q (length ,str)) ,r)
+	 (while (< ,p ,q)
+	   (setq ,r ,p)
+	   (lex-scan-unibyte ,str ,p ,q
+	     ((+ [^ "\n"]) (when ,others-fun (funcall ,others-fun ,r ,p)))
+	     ((?\n [" \t"]) (when ,fold-fun (funcall ,fold-fun ,r ,p)))
+	     ((?\n) (when ,lf-fun (funcall ,lf-fun ,r ,p)))
+	     (() (error "something wrong"))))
+	 ,q))))
+
+(ew-lf-line-generic-define)
+
+(defmacro ew-lf-line-convert-define ()
+  (let ((str (make-symbol "str"))
+	(others-fun (make-symbol "others-fun"))
+	(fold-fun (make-symbol "fold-fun"))
+	(lf-fun (make-symbol "lf-fun"))
+	(index (make-symbol "index"))
+	(result (make-symbol "result"))
+	(start (make-symbol "starx"))
+	(end (make-symbol "end")))
+    `(defun ew-lf-line-convert
+       (,str ,others-fun ,fold-fun ,lf-fun)
+       (let ((,index 0) ,result)
+	 (when (> (ew-lf-line-generic
+		      ,str
+		    ,@(mapcar
+		       (lambda (fun)
+			 `(when ,fun
+			    (lambda (,start ,end)
+			      (when (< ,index ,start)
+				(setq ,result
+				      (ew-rcons* ,result
+						 (substring ,str ,index ,start))))
+			      (setq ,result
+				    (ew-rcons* ,result
+					       (funcall ,fun
+							(substring ,str ,start ,end)))
+				    ,index ,end))))
+		       (list others-fun fold-fun lf-fun)))
+		  ,index)
+	   (setq ,result
+		 (ew-rcons* ,result
+			    (substring ,str ,index))))
+	 (apply 'concat (nreverse ,result))))))
+
+(ew-lf-line-convert-define)
