@@ -1,3 +1,17 @@
+2000-08-12	Kenichi OKADA   <okada@opaopa.org>
+
+	* SLIM: Version 1.14.1 released.
+
+2000-08-12	Kenichi OKADA   <okada@opaopa.org>
+
+	* starttls.el (starttls-open-stream): Put `starttls-extra-args' on
+	the last arg.
+
+2000-08-11	Kenichi OKADA   <okada@opaopa.org>
+
+	* starttls.el (starttls-open-ssl-stream): New function.
+	(starttls-open-stream): Move `starttls-extra-args'.
+
 2000-07-12  Kenichi OKADA <okada@opaopa.org>
 
 	* mime-def.el (mime-library-product): Up.

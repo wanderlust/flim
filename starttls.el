@@ -74,6 +74,11 @@ specifying a port number to connect to."
     (process-kill-without-query process)
     process))
 
+(defun starttls-open-ssl-stream (name buffer host service)
+  (let* ((starttls-extra-args
+	  (cons "--force" starttls-extra-args)))
+    (starttls-open-stream name buffer host service)))
+
 (provide 'starttls)
 
 ;;; starttls.el ends here
