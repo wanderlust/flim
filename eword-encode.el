@@ -184,18 +184,18 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 (defmacro ew-rword-type (rword)
   (` (car (cdr (cdr (cdr (, rword)))))))
 
-(defun tm-eword::find-charset-rule (charsets)
+(defun ew-find-charset-rule (charsets)
   (if charsets
-      (let* ((charset (charsets-to-mime-charset charsets))
-	     (encoding (cdr (assq charset eword-charset-encoding-alist)))
-	     )
+      (let* ((charset (find-mime-charset-by-charsets charsets))
+	     (encoding (cdr (or (assq charset eword-charset-encoding-alist)
+				'(nil . "Q")))))
 	(list charset encoding)
 	)))
 
 (defun tm-eword::words-to-ruled-words (wl &optional mode)
   (mapcar (function
 	   (lambda (word)
-	     (let ((ret (tm-eword::find-charset-rule (car word))))
+	     (let ((ret (ew-find-charset-rule (car word))))
 	       (make-ew-rword (cdr word) (car ret)(nth 1 ret) mode)
 	       )))
 	  wl))
@@ -399,7 +399,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	     (setq dest
 		   (append dest
 			   (list
-			    (let ((ret (tm-eword::find-charset-rule
+			    (let ((ret (ew-find-charset-rule
 					(find-non-ascii-charset-string str))))
 			      (make-ew-rword
 			       str (car ret)(nth 1 ret) 'phrase)
