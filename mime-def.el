@@ -191,8 +191,7 @@ If method is nil, this field will not be encoded."
 (defsubst make-mime-content-type (type subtype &optional parameters)
   (cons (cons 'type type)
 	(cons (cons 'subtype subtype)
-	      ;; parameters are not order sensitive. should we reverse it?
-	      (nreverse parameters))))
+	      parameters)))
 
 (defsubst mime-content-type-primary-type (content-type)
   "Return primary-type of CONTENT-TYPE."
@@ -221,6 +220,10 @@ If method is nil, this field will not be encoded."
 
 ;;; @ Content-Disposition
 ;;;
+
+(defsubst make-mime-content-disposition (type &optional parameters)
+  (cons (cons 'type type)
+	parameters))
 
 (defsubst mime-content-disposition-type (content-disposition)
   "Return disposition-type of CONTENT-DISPOSITION."
