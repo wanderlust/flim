@@ -1,3 +1,8 @@
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* raw-io.el (start-process): New function.
+	(binary-start-process-shell-command): New function.
+
 2000-12-17  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mel-g.el (gzip64-external-encode-region): Don't use
