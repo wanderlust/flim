@@ -34,6 +34,7 @@
 (require 'pces)
 (require 'pcustom)
 (require 'mail-utils)			; mail-strip-quoted-names
+(require 'sasl)
 
 (defgroup smtp nil
   "SMTP protocol for sending mail."
@@ -355,12 +356,6 @@ of the host to connect to.  SERVICE is name of the service desired."
     (if (/= (car response) 250)
 	(smtp-response-error response))))
 
-(eval-and-compile
-  (autoload 'sasl-make-instantiator "sasl")
-  (autoload 'sasl-find-authenticator "sasl")
-  (autoload 'sasl-authenticator-mechanism "sasl")
-  (autoload 'sasl-evaluate-challenge "sasl"))
-
 (defun smtp-primitive-auth (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
@@ -370,47 +365,42 @@ of the host to connect to.  SERVICE is name of the service desired."
 	  (cdr (assq 'auth (smtp-connection-extensions connection))))
 	 (sasl-mechanisms
 	  (or smtp-sasl-mechanisms sasl-mechanisms))
-	 (authenticator
-	  (sasl-find-authenticator mechanisms))
-	 instantiator
-	 mechanism
-	 sasl-response
+	 (mechanism
+	  (sasl-find-mechanism mechanisms))
+	 client
+	 name
+	 continuation
 	 response)
-    (unless authenticator
+    (unless mechanism
       (error "No authentication mechanism available"))
-    (setq instantiator
-	  (sasl-make-instantiator
-	   smtp-sasl-user-name "smtp" (smtp-connection-server connection)))
+    (setq client (sasl-make-client mechanism smtp-sasl-user-name "smtp"
+				   (smtp-connection-server connection)))
     (if smtp-sasl-user-realm
-	(sasl-instantiator-set-property
-	 instantiator 'realm smtp-sasl-user-realm))
-    (setq mechanism (sasl-authenticator-mechanism authenticator)
+	(sasl-client-set-property client 'realm smtp-sasl-user-realm))
+    (setq name (sasl-mechanism-name mechanism)
 	  ;; Retrieve the initial response
-	  sasl-response (sasl-evaluate-challenge authenticator instantiator))
+	  continuation (sasl-next-step client nil))
     (smtp-send-command
      process
-     (if (nth 1 sasl-response)
-	 (format "AUTH %s %s" mechanism (base64-encode-string (nth 1 sasl-response) t))
-       (format "AUTH %s" mechanism)))
+     (if (nth 1 continuation)
+	 (format "AUTH %s %s" name (base64-encode-string (nth 1 continuation) t))
+       (format "AUTH %s" name)))
     (catch 'done
       (while t
 	(setq response (smtp-read-response process))
 	(when (= (car response) 235)
 	  ;; The authentication process is finished.
-	  (setq sasl-response
-		(sasl-evaluate-challenge authenticator instantiator sasl-response))
-	  (if (null sasl-response)
+	  (setq continuation (sasl-next-step client continuation))
+	  (if (null continuation)
 	      (throw 'done nil))
 	  (smtp-response-error response)) ;Bogus server?
 	(if (/= (car response) 334)
 	    (smtp-response-error response))
-	(setcar (cdr sasl-response) (base64-decode-string (nth 1 response)))
-	(setq sasl-response
-	      (sasl-evaluate-challenge
-	       authenticator instantiator sasl-response))
+	(setcar (cdr continuation) (base64-decode-string (nth 1 response)))
+	(setq continuation (sasl-next-step client continuation))
 	(smtp-send-command
-	 process (if (nth 1 sasl-response)
-		     (base64-encode-string (nth 1 sasl-response) t)
+	 process (if (nth 1 continuation)
+		     (base64-encode-string (nth 1 continuation) t)
 		   ""))))))
 
 (defun smtp-primitive-starttls (package)

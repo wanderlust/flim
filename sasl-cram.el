@@ -28,25 +28,23 @@
 (require 'sasl)
 (require 'hmac-md5)
 
-(defvar sasl-cram-md5-authenticator nil)
-
-(defconst sasl-cram-md5-continuations
+(defconst sasl-cram-md5-steps
   '(ignore				;no initial response
     sasl-cram-md5-response))
 
-(defun sasl-cram-md5-response (instantiator challenge)
+(defun sasl-cram-md5-response (client continuation)
   (let ((passphrase
 	 (sasl-read-passphrase
 	  (format "CRAM-MD5 passphrase for %s: "
-		  (sasl-instantiator-name instantiator)))))
+		  (sasl-client-name client)))))
     (unwind-protect
-	(concat (sasl-instantiator-name instantiator) " "
+	(concat (sasl-client-name client) " "
 		(encode-hex-string
-		 (hmac-md5 (nth 1 challenge) passphrase)))
+		 (hmac-md5 (nth 1 continuation) passphrase)))
       (fillarray passphrase 0))))
 
-(put 'sasl-cram 'sasl-authenticator
-     (sasl-make-authenticator "CRAM-MD5" sasl-cram-md5-continuations))
+(put 'sasl-cram 'sasl-mechanism
+     (sasl-make-mechanism "CRAM-MD5" sasl-cram-md5-steps))
 
 (provide 'sasl-cram)
 

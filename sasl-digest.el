@@ -35,8 +35,6 @@
 (require 'sasl)
 (require 'hmac-md5)
 
-(defvar sasl-digest-md5-authenticator nil)
-
 (defvar sasl-digest-md5-challenge nil)
 (defvar sasl-digest-md5-nonce-count 1)
 (defvar sasl-digest-md5-unique-id-function
@@ -49,7 +47,7 @@
     table)
   "A syntax table for parsing digest-challenge attributes.")
 
-(defconst sasl-digest-md5-continuations
+(defconst sasl-digest-md5-steps
   '(ignore				;no initial response
     sasl-digest-md5-response
     ignore))				;""
@@ -147,28 +145,28 @@ charset algorithm cipher-opts auth-param)."
 		  '(charset qop maxbuf cipher authzid)))
     ",")))
 
-(defun sasl-digest-md5-response (instantiator challenge)
-  (sasl-digest-md5-parse-digest-challenge (nth 1 challenge))
+(defun sasl-digest-md5-response (client continuation)
+  (sasl-digest-md5-parse-digest-challenge (nth 1 continuation))
   (let ((passphrase
 	 (sasl-read-passphrase
 	  (format "DIGEST-MD5 passphrase for %s: "
-		  (sasl-instantiator-name instantiator)))))
+		  (sasl-client-name client)))))
     (unwind-protect
 	(sasl-digest-md5-build-response-value
-	 (sasl-instantiator-name instantiator)
-	 (or (sasl-instantiator-property instantiator 'realm)
+	 (sasl-client-name client)
+	 (or (sasl-client-property client 'realm)
 	     (sasl-digest-md5-challenge 'realm))	;need to check
 	 passphrase
 	 (sasl-digest-md5-challenge 'nonce)
 	 (sasl-digest-md5-cnonce)
 	 sasl-digest-md5-nonce-count
 	 (sasl-digest-md5-digest-uri
-	  (sasl-instantiator-service instantiator)
-	  (sasl-instantiator-server instantiator)))
+	  (sasl-client-service client)
+	  (sasl-client-server client)))
       (fillarray passphrase 0))))
 
-(put 'sasl-digest 'sasl-authenticator
-     (sasl-make-authenticator "DIGEST-MD5" sasl-digest-md5-continuations))
+(put 'sasl-digest 'sasl-mechanism
+     (sasl-make-mechanism "DIGEST-MD5" sasl-digest-md5-steps))
 
 (provide 'sasl-digest)
 

@@ -36,8 +36,6 @@
 
 ;;; Code:
 
-(require 'poe)
-
 (defvar sasl-mechanisms
   '("CRAM-MD5" "DIGEST-MD5" "PLAIN" "LOGIN" "ANONYMOUS"))
 
@@ -56,69 +54,73 @@
 (defun sasl-error (datum)
   (signal 'sasl-error (list datum)))
 
-;;; @ SASL instantiator
+;;; @ SASL client
 ;;;
 
-(defun sasl-make-instantiator (name service server)
-  "Return a newly allocated SASL instantiator.
+(defun sasl-make-client (mechanism name service server)
+  "Return a newly allocated SASL client.
 NAME is name of the authorization.  SERVICE is name of the service desired.
 SERVER is the fully qualified host name of the server to authenticate to."
-  (vector name service server (make-symbol "sasl-instantiator-properties")))
+  (vector mechanism name service server (make-symbol "sasl-client-properties")))
 
-(defun sasl-instantiator-name (instantiator)
-  "Return the authorization name of INSTANTIATOR, a string."
-  (aref instantiator 0))
+(defun sasl-client-mechanism (client)
+  "Return the authentication mechanism driver of CLIENT."
+  (aref client 0))
 
-(defun sasl-instantiator-service (instantiator)
-  "Return the service name of INSTANTIATOR, a string."
-  (aref instantiator 1))
+(defun sasl-client-name (client)
+  "Return the authorization name of CLIENT, a string."
+  (aref client 1))
 
-(defun sasl-instantiator-server (instantiator)
-  "Return the server name of INSTANTIATOR, a string."
-  (aref instantiator 2))
+(defun sasl-client-service (client)
+  "Return the service name of CLIENT, a string."
+  (aref client 2))
 
-(defun sasl-instantiator-set-properties (instantiator plist)
-  "Destructively set the properties of INSTANTIATOR.
+(defun sasl-client-server (client)
+  "Return the server name of CLIENT, a string."
+  (aref client 3))
+
+(defun sasl-client-set-properties (client plist)
+  "Destructively set the properties of CLIENT.
 The second argument PLIST is the new property list."
-  (setplist (aref instantiator 3) plist))
+  (setplist (aref client 4) plist))
 
-(defun sasl-instantiator-set-property (instantiator property value)
-  "Add the given property/value to INSTANTIATOR."
-  (put (aref instantiator 3) property value))
+(defun sasl-client-set-property (client property value)
+  "Add the given property/value to CLIENT."
+  (put (aref client 4) property value))
 
-(defun sasl-instantiator-property (instantiator property)
-  "Return the value of the PROPERTY of INSTANTIATOR."
-  (get (aref instantiator 3) property))
+(defun sasl-client-property (client property)
+  "Return the value of the PROPERTY of CLIENT."
+  (get (aref client 4) property))
 
-(defun sasl-instantiator-properties (instantiator)
-  "Return the properties of INSTANTIATOR."
-  (symbol-plist (aref instantiator 3)))
+(defun sasl-client-properties (client)
+  "Return the properties of CLIENT."
+  (symbol-plist (aref client 4)))
 
-;;; @ SASL authenticator
+;;; @ SASL mechanism
 ;;;
 
-(defun sasl-make-authenticator (mechanism continuations)
+(defun sasl-make-mechanism (name steps)
   "Make an authenticator.
-MECHANISM is a IANA registered SASL mechanism name.
-CONTINUATIONS is list of continuation function."
-  (vector mechanism
+NAME is a IANA registered SASL mechanism name.
+STEPS is list of continuation function."
+  (vector name
 	  (mapcar
-	   (lambda (continuation)
-	     (let ((symbol (make-symbol (symbol-name continuation))))
-	       (fset symbol (symbol-function continuation))
+	   (lambda (step)
+	     (let ((symbol (make-symbol (symbol-name step))))
+	       (fset symbol (symbol-function step))
 	       symbol))
-	   continuations)))
+	   steps)))
 
-(defun sasl-authenticator-mechanism (authenticator)
-  "Return name of the mechanism AUTHENTICATOR supports, a string."
-  (aref authenticator 0))
+(defun sasl-mechanism-name (mechanism)
+  "Return name of MECHANISM, a string."
+  (aref mechanism 0))
 
-(defun sasl-authenticator-continuations (authenticator)
-  "Return continuation steps of AUTHENTICATOR, a list of functions."
-  (aref authenticator 1))
+(defun sasl-mechanism-steps (mechanism)
+  "Return the authentication steps of MECHANISM, a list of functions."
+  (aref mechanism 1))
 
-(defun sasl-find-authenticator (mechanisms)
-  "Retrieve an apropriate authenticator object from MECHANISMS hints."
+(defun sasl-find-mechanism (mechanisms)
+  "Retrieve an apropriate mechanism object from MECHANISMS hints."
   (let* ((sasl-mechanisms sasl-mechanisms)
 	 (mechanism
 	  (catch 'done
@@ -127,26 +129,24 @@ CONTINUATIONS is list of continuation function."
 		  (throw 'done (nth 1 (assoc (car sasl-mechanisms)
 					     sasl-mechanism-alist))))
 	      (setq sasl-mechanisms (cdr sasl-mechanisms))))))
-    (when mechanism
-      (require mechanism)
-      (get mechanism 'sasl-authenticator))))
+    (if mechanism
+	(require mechanism))
+    (get mechanism 'sasl-mechanism)))
 
-(defun sasl-evaluate-challenge (authenticator instantiator &optional challenge)
+(defun sasl-next-step (client continuation)
   "Evaluate the challenge and prepare an appropriate next response.
-The data type of the value and optional 3rd argument CHALLENGE is nil or
-a cons cell of the form \(CONTINUATION STRING).
-At the first time CONTINUATION should be set to nil.
-
-Argument AUTHENTICATOR is the current evaluator.
-Argument INSTANTIATOR is the instantiator instantiator."
-  (let* ((continuations
-	  (sasl-authenticator-continuations authenticator))
+The data type of the value and optional 3rd argument CONTINUATION is nil or
+a cons cell of the form \(STEP RESPONSE-OR-CHALLENGE).
+At the first time STEP should be set to nil."
+  (let* ((steps
+	  (sasl-mechanism-steps
+	   (sasl-client-mechanism client)))
 	 (function
-	  (if (car challenge)
-	      (nth 1 (memq (car challenge) continuations))
-	    (car continuations))))
+	  (if (car continuation)
+	      (nth 1 (memq (car continuation) steps))
+	    (car steps))))
     (if function
-	(list function (funcall function instantiator challenge)))))
+	(list function (funcall function client continuation)))))
 
 (defvar sasl-read-passphrase nil)
 (defun sasl-read-passphrase (prompt)
@@ -194,64 +194,62 @@ It contain at least 64 bits of entropy."
 				  (% num 36))))))
 
 ;;; PLAIN (RFC2595 Section 6)
-(defconst sasl-plain-continuations
+(defconst sasl-plain-steps
   '(sasl-plain-response))
 
-(defun sasl-plain-response (instantiator challenge)
+(defun sasl-plain-response (client continuation)
   (let ((passphrase
 	 (sasl-read-passphrase
-	  (format "PLAIN passphrase for %s: "
-		  (sasl-instantiator-name instantiator))))
-	(authentication-name
-	 (sasl-instantiator-property
-	  instantiator 'authentication-name))
-	(name (sasl-instantiator-name instantiator)))
+	  (format "PLAIN passphrase for %s: " (sasl-client-name client))))
+	(authenticator-name
+	 (sasl-client-property
+	  client 'authenticator-name))
+	(name (sasl-client-name client)))
     (unwind-protect
-	(if (and authentication-name
-		 (not (string= authentication-name name)))
-	    (concat authentication-name "\0" name "\0" passphrase)
+	(if (and authenticator-name
+		 (not (string= authenticator-name name)))
+	    (concat authenticator-name "\0" name "\0" passphrase)
 	  (concat "\0" name "\0" passphrase))
       (fillarray passphrase 0))))
 
-(put 'sasl-plain 'sasl-authenticator
-     (sasl-make-authenticator "PLAIN" sasl-plain-continuations))
+(put 'sasl-plain 'sasl-mechanism
+     (sasl-make-mechanism "PLAIN" sasl-plain-steps))
 
 (provide 'sasl-plain)
 
 ;;; LOGIN (No specification exists)
-(defconst sasl-login-continuations
+(defconst sasl-login-steps
   '(ignore				;no initial response
     sasl-login-response-1
     sasl-login-response-2))
 
-(defun sasl-login-response-1 (instantiator challenge)
-  (unless (string= (nth 1 challenge) "Username:")
-    (sasl-error (format "Unexpected response: %s" (nth 1 challenge))))
-  (sasl-instantiator-name instantiator))
+(defun sasl-login-response-1 (client continuation)
+  (or (string= (nth 1 continuation) "Username:")
+      (sasl-error (format "Unexpected response: %s" (nth 1 continuation))))
+  (sasl-client-name client))
 
-(defun sasl-login-response-2 (instantiator challenge)
-  (unless (string= (nth 1 challenge) "Password:")
-    (sasl-error (format "Unexpected response: %s" (nth 1 challenge))))
+(defun sasl-login-response-2 (client continuation)
+  (or (string= (nth 1 continuation) "Password:")
+      (sasl-error (format "Unexpected response: %s" (nth 1 continuation))))
   (sasl-read-passphrase
-   (format "LOGIN passphrase for %s: " (sasl-instantiator-name instantiator))))
+   (format "LOGIN passphrase for %s: " (sasl-client-name client))))
 
-(put 'sasl-login 'sasl-authenticator
-     (sasl-make-authenticator "LOGIN" sasl-login-continuations))
+(put 'sasl-login 'sasl-mechanism
+     (sasl-make-mechanism "LOGIN" sasl-login-steps))
 
 (provide 'sasl-login)
 
 ;;; ANONYMOUS (RFC2245)
-(defconst sasl-anonymous-continuations
+(defconst sasl-anonymous-steps
   '(identity				;no initial response
     sasl-anonymous-response))
 
-(defun sasl-anonymous-response (instantiator challenge)
-  (or (sasl-instantiator-property
-       instantiator 'trace)
-      (sasl-instantiator-name instantiator)))
+(defun sasl-anonymous-response (client continuation)
+  (or (sasl-client-property client 'trace)
+      (sasl-client-name client)))
 
-(put 'sasl-anonymous 'sasl-authenticator
-     (sasl-make-authenticator "ANONYMOUS" sasl-anonymous-continuations))
+(put 'sasl-anonymous 'sasl-mechanism
+     (sasl-make-mechanism "ANONYMOUS" sasl-anonymous-steps))
 
 (provide 'sasl-anonymous)
 

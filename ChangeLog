@@ -1,5 +1,14 @@
 2000-11-04   Daiki Ueno  <ueno@unixuser.org>
 
+	* sasl.el: Don't require 'poe'
+	- Rename `sasl-*instantiator*' to `sasl-*client*'.
+	- Rename `sasl-*authenticator*' to `sasl-*mechanism*'.
+	- Rename `sasl-*continuations*' to `sasl-*steps*'.
+	(sasl-make-client): Accept 1st argument `mechanism'.
+	(sasl-next-step): Rename from `sasl-evaluate-challenge'.
+
+2000-11-04   Daiki Ueno  <ueno@unixuser.org>
+
 	* sasl.el (sasl-make-instantiator): Define as function.
 	(sasl-instantiator-name): Ditto.
 	(sasl-instantiator-service): Ditto.
