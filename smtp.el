@@ -27,7 +27,7 @@
 
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
@@ -61,7 +61,7 @@ called from `smtp-via-smtp' with arguments SENDER and RECIPIENTS."
 (defcustom smtp-service "smtp"
   "SMTP service port number.  \"smtp\" or 25."
   :type '(choice (integer :tag "25" 25)
-                 (string :tag "smtp" "smtp"))
+		 (string :tag "smtp" "smtp"))
   :group 'smtp)
 
 (defcustom smtp-local-domain nil
@@ -296,8 +296,13 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	   (smtp-primitive-helo package)))
 	(if smtp-use-starttls
 	    (progn
-	    (smtp-primitive-starttls package)
-	    (smtp-primitive-ehlo package)))
+	      (unless
+		  (assq 'starttls
+			(smtp-connection-extensions-internal
+			 (smtp-find-connection (current-buffer))))
+		(error "STARTTLS is not supported on this server"))
+	      (smtp-primitive-starttls package)
+	      (smtp-primitive-ehlo package)))
 	(if smtp-use-sasl
 	    (smtp-primitive-auth package))
 	(smtp-primitive-mailfrom package)

@@ -1,3 +1,7 @@
+2001-09-21  Kenichi OKADA  <okada@opaopa.org>
+
+	* smtp.el(smtp-submit-package): Check extensions for starttls.
+
 2001-07-30  AMAKAWA Shuhei <sa264@cam.ac.uk>
 
 	* smtp.el(smtp-submit-package): Send EHLO after starttls.
