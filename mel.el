@@ -34,8 +34,6 @@
   :group 'mime
   :type '(repeat string))
 
-(defvar mel-encoding-module-alist nil)
-
 (defun mime-encoding-list (&optional service)
   "Return list of Content-Transfer-Encoding.
 If SERVICE is specified, it returns available list of
@@ -74,36 +72,23 @@ Content-Transfer-Encoding for it."
       )))
 
 (defsubst mel-find-function (service encoding)
-  (let* ((oba (symbol-value (intern (format "%s-obarray" service))))
-	 (f (intern-soft encoding oba)))
-    (or f
-	(let ((rest (cdr (assoc encoding mel-encoding-module-alist))))
-	  (while (and rest
-		      (progn
-			(require (car rest))
-			(null (setq f (intern-soft encoding oba)))
-			))
-	    (setq rest (cdr rest))
-	    )
-	  f))))
+  (mel-find-function-from-obarray
+   (symbol-value (intern (format "%s-obarray" service))) encoding))
 
 
 ;;; @ setting for modules
 ;;;
 
-(defvar base64-dl-module
-  (and (fboundp 'dynamic-link)
-       (let ((path (expand-file-name "base64.so" exec-directory)))
-	 (and (file-exists-p path)
-	      path))))
-
+(defvar mel-ccl-module
+  (and (featurep 'mule)
+       (module-installed-p 'mel-ccl)))
 
 (mel-use-module 'mel-b '("base64" "B"))
 (mel-use-module 'mel-q '("quoted-printable" "Q"))
 (mel-use-module 'mel-g '("x-gzip64"))
 (mel-use-module 'mel-u '("x-uue" "x-uuencode"))
 
-(if (featurep 'mule)
+(if mel-ccl-module
     (mel-use-module 'mel-ccl '("base64" "quoted-printable" "B" "Q"))
   )
 
@@ -111,6 +96,7 @@ Content-Transfer-Encoding for it."
     (mel-use-module 'mel-b-dl '("base64" "B"))
   )
 
+(mel-define-backend "7bit")
 (mel-define-method-function (mime-encode-string string (nil "7bit"))
 			    'identity)
 (mel-define-method-function (mime-decode-string string (nil "7bit"))
@@ -123,29 +109,9 @@ Content-Transfer-Encoding for it."
 			     start end filename (nil "7bit"))
 			    'write-region-as-binary)
 
-(mel-define-method-function (mime-encode-string string (nil "8bit"))
-			    'identity)
-(mel-define-method-function (mime-decode-string string (nil "8bit"))
-			    'identity)
-(mel-define-method mime-encode-region (start end (nil "8bit")))
-(mel-define-method mime-decode-region (start end (nil "8bit")))
-(mel-define-method-function (mime-insert-encoded-file filename (nil "8bit"))
-			    'insert-file-contents-as-binary)
-(mel-define-method-function (mime-write-decoded-region
-			     start end filename (nil "8bit"))
-			    'write-region-as-binary)
+(mel-define-backend "8bit" ("7bit"))
 
-(mel-define-method-function (mime-encode-string string (nil "binary"))
-			    'identity)
-(mel-define-method-function (mime-decode-string string (nil "binary"))
-			    'identity)
-(mel-define-method mime-encode-region (start end (nil "binary")))
-(mel-define-method mime-decode-region (start end (nil "binary")))
-(mel-define-method-function (mime-insert-encoded-file filename (nil "binary"))
-			    'insert-file-contents-as-binary)
-(mel-define-method-function (mime-write-decoded-region
-			     start end filename (nil "binary"))
-			    'write-region-as-binary)
+(mel-define-backend "binary" ("8bit"))
 
 
 ;;; @ region

@@ -3,7 +3,7 @@
 #
 
 PACKAGE = flim-chao
-VERSION = 1.11.1
+VERSION = 1.11.2
 
 TAR	= tar
 RM	= /bin/rm -f
