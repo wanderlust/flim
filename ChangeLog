@@ -1,3 +1,7 @@
+1999-06-23  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* FLIM-CFG: Delete code to detect APEL 7.3 or later.
+
 1999-06-16  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* smtpmail.el (smtpmail-send-it): Extend the search bound to the
