@@ -605,14 +605,15 @@ Return nil if Content-Disposition field is not found.
 <h1> Encoding Method
 <node> Content-Transfer-Encoding
 <p>
-<concept>Content-Transfer-Encoding 欄</concept> は entity の符号化法を記
-述するためのものです。
+<concept>Content-Transfer-Encoding field</concept> is a header field
+to indicate body encoding of a entity.
 <p>
-FLIM では Content-Transfer-Encoding 欄を構文解析する関数を提供します。こ
-れらの関数は Content-Transfer-Encoding 欄の情報は文字列で表現します。
+FLIM provides parser functions for Content-Transfer-Encoding field.
+They represent information of Content-Transfer-Encoding field as
+string.
 <p>
-また、Content-Transfer-Encoding に基づいて符号化・復号化を行う関数も提
-供されます。
+In addition, FLIM provides encoder/decoder functions by
+Content-Transfer-Encoding.
 
 
 <h2> Parser
