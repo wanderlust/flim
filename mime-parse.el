@@ -181,7 +181,7 @@ If is is not found, return DEFAULT-ENCODING."
 	(setq ncb (match-end 0))
 	(save-restriction
 	  (narrow-to-region cb ce)
-	  (setq ret (mime-parse-message dc-ctl "7bit" (cons i node-id)))
+	  (setq ret (mime-parse-message dc-ctl (cons i node-id)))
 	  )
 	(setq children (cons ret children))
 	(goto-char (setq cb ncb))
@@ -190,7 +190,7 @@ If is is not found, return DEFAULT-ENCODING."
       (setq ce (point-max))
       (save-restriction
 	(narrow-to-region cb ce)
-	(setq ret (mime-parse-message dc-ctl "7bit" (cons i node-id)))
+	(setq ret (mime-parse-message dc-ctl (cons i node-id)))
 	)
       (setq children (cons ret children))
       )
@@ -204,12 +204,12 @@ If is is not found, return DEFAULT-ENCODING."
      (narrow-to-region (mime-entity-body-start-internal entity)
 		       (mime-entity-body-end-internal entity))
      (list (mime-parse-message
-	    nil nil (cons 0 (mime-entity-node-id-internal entity))))
+	    nil (cons 0 (mime-entity-node-id-internal entity))))
      ))
   entity)
 
 ;;;###autoload
-(defun mime-parse-message (&optional default-ctl default-encoding node-id)
+(defun mime-parse-message (&optional default-ctl node-id)
   "Parse current-buffer as a MIME message.
 DEFAULT-CTL is used when an entity does not have valid Content-Type
 field.  Its format must be as same as return value of
@@ -218,9 +218,7 @@ mime-{parse|read}-Content-Type."
 	header-end
 	body-start
 	(body-end (point-max))
-	content-type encoding
-	primary-type
-	entity)
+	content-type primary-type entity)
     (goto-char header-start)
     (if (re-search-forward "^$" nil t)
 	(setq header-end (match-end 0)
@@ -236,17 +234,12 @@ mime-{parse|read}-Content-Type."
 				   (mime-parse-Content-Type str)
 				 ))
 			     default-ctl)
-	    encoding (let ((str (std11-fetch-field
-				 "Content-Transfer-Encoding")))
-		       (if str
-			   (mime-parse-Content-Transfer-Encoding str)
-			 default-encoding))
 	    primary-type (mime-content-type-primary-type content-type))
       )
     (setq entity
 	  (make-mime-entity-internal
 	   (current-buffer) header-start header-end body-start body-end
-	   node-id content-type encoding nil))
+	   node-id content-type))
     (cond ((eq primary-type 'multipart)
 	   (mime-parse-multipart entity)
 	   )
