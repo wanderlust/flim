@@ -1,5 +1,10 @@
 1999-10-19  Kenichi OKADA <okada@opaopa.org>
 
+	* sasl.el (sasl-plain): Renamed from plain-encode.
+	* sasl.el (sasl-cram-md5): Renamed from cram-md5-encode.
+
+1999-10-19  Kenichi OKADA <okada@opaopa.org>
+
 	* hmac-md5.el (hmac-md5): fixed for XEmacs's md5.
 
 1999-10-19  Kenichi OKADA <okada@opaopa.org>

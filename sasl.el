@@ -27,12 +27,12 @@
 (require 'hmac-md5)
 (require 'hmac-util)
 
-(defun cram-md5-encode (user passphrase response)
+(defun sasl-cram-md5 (user passphrase response)
   (concat user " "
 	  (hmac-hex-string
 	   (hmac-md5 response passphrase))))
 
-(defun plain-encode (authorid authenid passphrase)
+(defun sasl-plain (authorid authenid passphrase)
   (concat authorid "\0" authenid "\0" passphrase))
 
 (provide 'sasl)
