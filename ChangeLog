@@ -1,5 +1,12 @@
 1998-04-25  Tanaka Akira  <akr@jaist.ac.jp>
 
+	* eword-decode.el (eword-decode-string): Fix arguments order to calling
+	`eword-decode-unstructured'.
+	(eword-decode-region): Fix arguments order to calling
+	`eword-decode-unstructured'.
+
+1998-04-25  Tanaka Akira  <akr@jaist.ac.jp>
+
 	* eword-decode.el (eword-decode-first-encoded-words): Update DOC-string.
 	(eword-decode-first-encoded-words): Update DOC-string.
 	(eword-decode-unstructured): Argument `code-conversion' is now required.

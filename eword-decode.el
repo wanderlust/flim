@@ -333,8 +333,8 @@ mime-charset, it decodes non-ASCII bit patterns as the mime-charset.
 Otherwise it decodes non-ASCII bit patterns as the
 default-mime-charset."
   (eword-decode-unstructured
-    code-conversion
     (std11-unfold-string string)
+    code-conversion
     must-unfold))
 
 
@@ -363,8 +363,8 @@ default-mime-charset."
 	  (eword-decode-unfold)
 	)
       (let ((str (eword-decode-unstructured
-		   code-conversion
 		   (buffer-substring (point-min) (point-max))
+		   code-conversion
 		   must-unfold)))
 	(delete-region (point-min) (point-max))
 	(insert str)))))
