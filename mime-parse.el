@@ -128,6 +128,7 @@ and return parsed it."
 ;;; @ Content-Transfer-Encoding
 ;;;
 
+;;;###autoload
 (defun mime-parse-Content-Transfer-Encoding (string)
   "Parse STRING as field-body of Content-Transfer-Encoding field."
   (if (string-match "[ \t\n\r]+$" string)
@@ -135,6 +136,7 @@ and return parsed it."
     )
   (downcase string))
 
+;;;###autoload
 (defun mime-read-Content-Transfer-Encoding (&optional default-encoding)
   "Read field-body of Content-Transfer-Encoding field from
 current-buffer, and return it.
@@ -147,20 +149,6 @@ If is is not found, return DEFAULT-ENCODING."
 
 ;;; @ message parser
 ;;;
-
-(defalias 'mime-entity-point-min 'mime-entity-header-start)
-(defalias 'mime-entity-point-max 'mime-entity-body-end)
-
-(defsubst mime-entity-media-type (entity)
-  (mime-content-type-primary-type (mime-entity-content-type entity)))
-(defsubst mime-entity-media-subtype (entity)
-  (mime-content-type-subtype (mime-entity-content-type entity)))
-(defsubst mime-entity-parameters (entity)
-  (mime-content-type-parameters (mime-entity-content-type entity)))
-
-(defsubst mime-entity-type/subtype (entity-info)
-  (mime-type/subtype-string (mime-entity-media-type entity-info)
-			    (mime-entity-media-subtype entity-info)))
 
 (defun mime-parse-multipart (header-start header-end body-start body-end
 					  content-type content-disposition
@@ -212,6 +200,7 @@ If is is not found, return DEFAULT-ENCODING."
 		      (nreverse children))
     ))
 
+;;;###autoload
 (defun mime-parse-message (&optional default-ctl default-encoding node-id)
   "Parse current-buffer as a MIME message.
 DEFAULT-CTL is used when an entity does not have valid Content-Type
@@ -303,6 +292,7 @@ message/rfc822, `mime-entity' structures of them are included in
 `children', so the `mime-entity' structure become a tree.")
 (make-variable-buffer-local 'mime-message-structure)
 
+;;;###autoload
 (defun mime-parse-buffer (&optional buffer)
   "Parse BUFFER as a MIME message.
 If buffer is omitted, it parses current-buffer."
