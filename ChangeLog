@@ -1,3 +1,7 @@
+2001-07-30  AMAKAWA Shuhei <sa264@cam.ac.uk>
+
+	* smtp.el(smtp-submit-package): Send EHLO after starttls.
+
 2001-06-01  Kenichi OKADA  <okada@opaopa.org>
 
 	* SLIM: Version 1.14.7 released.

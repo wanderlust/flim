@@ -295,7 +295,9 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	  (smtp-response-error
 	   (smtp-primitive-helo package)))
 	(if smtp-use-starttls
-	    (smtp-primitive-starttls package))
+	    (progn
+	    (smtp-primitive-starttls package)
+	    (smtp-primitive-ehlo package)))
 	(if smtp-use-sasl
 	    (smtp-primitive-auth package))
 	(smtp-primitive-mailfrom package)
@@ -405,9 +407,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     (setq response (smtp-read-response connection))
     (if (/= (car response) 220)
 	(smtp-response-error response))
-    (starttls-negotiate (smtp-connection-process-internal connection))
-    ;; for sendmail warning XXX
-    (smtp-primitive-helo package)))
+    (starttls-negotiate (smtp-connection-process-internal connection))))
 
 (defun smtp-primitive-mailfrom (package)
   (let* ((connection
