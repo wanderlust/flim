@@ -301,8 +301,7 @@ such as a version of Net$cape)."
 (defun mime-set-field-decoder (field &rest specs)
   "Set decoder of FILED.
 SPECS must be like `MODE1 DECODER1 MODE2 DECODER2 ...'.
-Each mode must be `nil', `native', `folding', `unfolding' or
-`unfolding-xover'.
+Each mode must be `nil', `plain', `wide', `summary' or `nov'.
 If mode is `nil', corresponding decoder is set up for every modes."
   (when specs
     (let ((mode (pop specs))
@@ -319,10 +318,10 @@ If mode is `nil', corresponding decoder is set up for every modes."
 	    (apply (function mime-set-field-decoder) field specs)
 	    )
 	(mime-set-field-decoder field
-				'native function
-				'folding function
-				'unfolding function
-				'unfolding-xover function)
+				'plain function
+				'wide function
+				'summary function
+				'nov function)
 	))))
 
 (defvar mime-field-decoder-cache nil)
@@ -330,14 +329,13 @@ If mode is `nil', corresponding decoder is set up for every modes."
 ;;;###autoload
 (defun mime-find-field-decoder (field &optional mode)
   "Return function to decode field-body of FIELD in MODE.
-Optional argument MODE must be `native', `folding', `unfolding' or
-`unfolding-xover'.
-Default value of MODE is `unfolding'."
-  (let ((p (assq (or mode 'unfolding) mime-field-decoder-cache)))
+Optional argument MODE must be `plain', `wide', `summary' or `nov'.
+Default value of MODE is `summary'."
+  (let ((p (assq (or mode 'summary) mime-field-decoder-cache)))
     (if (and p (setq p (assq field (cdr p))))
         (cdr p)
       (cdr (funcall mime-update-field-decoder-cache
-                    field (or mode 'unfolding))))))
+                    field (or mode 'summary))))))
 
 (defvar mime-update-field-decoder-cache 'mime-update-field-decoder-cache
   "*Field decoder cache update function.")
@@ -350,7 +348,7 @@ Default value of MODE is `unfolding'."
      (setq function nil))
     ((null function)
      (let ((decoder-alist
-            (cdr (assq (or mode 'unfolding) mime-field-decoder-alist))))
+            (cdr (assq (or mode 'summary) mime-field-decoder-alist))))
        (setq function (cdr (or (assq field decoder-alist)
                                (assq t decoder-alist)))))))
   (let ((cell (assq mode mime-field-decoder-cache))
@@ -400,30 +398,29 @@ Default value of MODE is `unfolding'."
     (setq field (pop fields))
     (mime-set-field-decoder
      field
-     'native	#'eword-decode-structured-field-body
-     'folding	#'eword-decode-and-fold-structured-field
-     'unfolding	#'eword-decode-and-unfold-structured-field
-     'unfolding-xover	#'eword-decode-and-unfold-structured-field)
+     'plain	#'eword-decode-structured-field-body
+     'wide	#'eword-decode-and-fold-structured-field
+     'summary	#'eword-decode-and-unfold-structured-field
+     'nov	#'eword-decode-and-unfold-structured-field)
     ))
 
 ;; unstructured fields (default)
 (mime-set-field-decoder
  t
- 'native	#'eword-decode-unstructured-field-body
- 'folding	#'eword-decode-unstructured-field-body
- 'unfolding	#'eword-decode-and-unfold-unstructured-field
- 'unfolding-xover	#'eword-decode-and-unfold-unstructured-field)
+ 'plain #'eword-decode-unstructured-field-body
+ 'wide #'eword-decode-unstructured-field-body
+ 'summary #'eword-decode-and-unfold-unstructured-field
+ 'nov #'eword-decode-and-unfold-unstructured-field)
 
 ;;;###autoload
 (defun mime-decode-field-body (field-body field-name
 					  &optional mode max-column)
   "Decode FIELD-BODY as FIELD-NAME in MODE, and return the result.
-Optional argument MODE must be `unfolding', `folding', `native' or
-`unfolding-xover'.
-Default mode is `unfolding'.
+Optional argument MODE must be `plain', `wide', `summary' or `nov'.
+Default mode is `summary'.
 
-If MODE is `folding' and MAX-COLUMN is non-nil, the result is folded
-with MAX-COLUMN.
+If MODE is `wide' and MAX-COLUMN is non-nil, the result is folded with
+MAX-COLUMN.
 
 Non MIME encoded-word part in FILED-BODY is decoded with
 `default-mime-charset'."
@@ -437,7 +434,7 @@ Non MIME encoded-word part in FILED-BODY is decoded with
     (if decoder
 	(funcall decoder field-body len max-column)
       ;; Don't decode
-      (if (eq mode 'unfolding)
+      (if (eq mode 'summary)
 	  (std11-unfold-string field-body)
 	field-body)
       )))
@@ -461,7 +458,7 @@ default-mime-charset."
 		    default-mime-charset))))
 	(if default-charset
 	    (let ((decoder-alist
-		   (cdr (assq 'folding mime-field-decoder-cache)))
+		   (cdr (assq 'wide mime-field-decoder-cache)))
 		  beg p end field-name len field-decoder)
 	      (goto-char (point-min))
 	      (while (re-search-forward std11-field-head-regexp nil t)
@@ -475,9 +472,9 @@ default-mime-charset."
                                  (prog1
                                      (funcall
                                        mime-update-field-decoder-cache
-                                       field-name 'folding)
+                                       field-name 'wide)
                                    (setq decoder-alist
-                                         (cdr (assq 'folding
+                                         (cdr (assq 'wide
                                                     mime-field-decoder-cache))))
                                      )))
 		(when field-decoder
