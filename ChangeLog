@@ -186,6 +186,11 @@
 	* eword-encode.el (mime-encode-header-in-buffer):
 	Do not eliminate white spaces.
 
+2002-11-05  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el (tm-eword::words-to-ruled-words): New
+	implementation for UTF-2000 implementations.
+
 
 2002-12-27  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 

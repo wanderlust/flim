@@ -63,6 +63,17 @@
 
 (defvar mime-header-default-charset-encoding "Q")
 
+(defvar mime-header-encode-method-alist
+  '((eword-encode-address-list
+     . (Reply-To
+	From Sender
+	Resent-Reply-To Resent-From
+	Resent-Sender To Resent-To
+	Cc Resent-Cc Bcc Resent-Bcc
+	Dcc))
+    (eword-encode-in-reply-to . (In-Reply-To))
+    (eword-encode-structured-field-body . (Mime-Version User-Agent))
+    (eword-encode-unstructured-field-body)))
 
 ;;; @ encoded-text encoder
 ;;;
@@ -168,6 +179,26 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		       (cons charset mime-header-default-charset-encoding)))))
 	(list charset encoding))))
 
+;; [tomo:2002-11-05] The following code is a quick-fix for emacsen
+;; which is not depended on the Mule model.  We should redesign
+;; `eword-encode-split-string' to avoid to depend on the Mule model.
+(if (featurep 'utf-2000)
+;; for CHISE Architecture
+(defun tm-eword::words-to-ruled-words (wl &optional mode)
+  (let (mcs)
+    (mapcar (function
+	     (lambda (word)
+	       (setq mcs (detect-mime-charset-string (cdr word)))
+	       (make-ew-rword
+		(cdr word)
+		mcs
+		(cdr (or (assq mcs mime-header-charset-encoding-alist)
+			 (cons mcs mime-header-default-charset-encoding)))
+		mode)
+	       ))
+	    wl)))
+
+;; for legacy Mule
 (defun tm-eword::words-to-ruled-words (wl &optional mode)
   (mapcar (function
 	   (lambda (word)
@@ -175,6 +206,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	       (make-ew-rword (cdr word) (car ret)(nth 1 ret) mode)
 	       )))
 	  wl))
+)
 
 (defun ew-space-process (seq)
   (let (prev a ac b c cc)
@@ -518,14 +550,14 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
      (list (list ";" nil nil))))))
 
 (defsubst eword-encode-addresses-to-rword-list (addresses)
-  (let ((dest (eword-encode-mailbox-to-rword-list (car addresses))))
+  (let ((dest (eword-encode-address-to-rword-list (car addresses))))
     (if dest
 	(while (setq addresses (cdr addresses))
 	  (setq dest
 		(nconc dest
 		       (list '("," nil nil))
 		       ;; (list '(" " nil nil))
-		       (eword-encode-mailbox-to-rword-list (car addresses))))))
+		       (eword-encode-address-to-rword-list (car addresses))))))
     dest))
 
 (defsubst eword-encode-msg-id-to-rword-list (msg-id)
@@ -605,25 +637,22 @@ encoded-word.  ASCII token is not encoded."
   (setq field-body (std11-unfold-string field-body))
   (if (string= field-body "")
       ""
-    (let (start)
+    (let ((method-alist mime-header-encode-method-alist)
+	  start ret)
       (if (symbolp field-name)
 	  (setq start (1+ (length (symbol-name field-name))))
 	(setq start (1+ (length field-name))
 	      field-name (intern (capitalize field-name))))
-      (cond ((memq field-name
-		   '(Reply-To
-		     From Sender
-		     Resent-Reply-To Resent-From
-		     Resent-Sender To Resent-To
-		     Cc Resent-Cc Bcc Resent-Bcc
-		     Dcc))
-	     (eword-encode-address-list field-body start))
-	    ((eq field-name 'In-Reply-To)
-	     (eword-encode-in-reply-to field-body start))
-	    ((memq field-name '(Mime-Version User-Agent))
-	     (eword-encode-structured-field-body field-body start))
-	    (t
-	     (eword-encode-unstructured-field-body field-body start))))))
+      (while (car method-alist)
+	(if (or (not (cdr (car method-alist)))
+		(memq field-name
+		      (cdr (car method-alist))))
+	    (progn
+	      (setq ret
+		    (apply (caar method-alist) (list field-body start)))
+	      (setq method-alist nil)))
+	(setq method-alist (cdr method-alist)))
+      ret)))
 (defalias 'eword-encode-field-body 'mime-encode-field-body)
 (make-obsolete 'eword-encode-field-body 'mime-encode-field-body)
 
