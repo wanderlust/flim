@@ -86,66 +86,73 @@ be the result."
   (let* ((lrl (std11-lexical-analyze str mime-lexical-analyzer))
 	 (token (car lrl))
 	 rest name val)
-    (catch 'parse-error
-      (while (and token
-		  (eq (car token) 'tpecials)
-		  (string= (cdr token) ";")
-		  )
-	(setq token nil)
-	(when (and (setq lrl (mime-parse-parameters-skip-to-next-token
-			      (cdr lrl)
-			      ))
-		   (setq name (cdar lrl))
-		   (setq lrl (mime-parse-parameters-skip-to-next-token
-			      (cdr lrl)
-			      ))
-		   (string= (cdar lrl) "=")
-		   (setq lrl (mime-parse-parameters-skip-to-next-token
-			      (cdr lrl)
-			      ))
-		   (setq val (cdar lrl)))
-	  (when (string-match "^\\([^*]+\\)\\(\\*\\([0-9]+\\)\\)?\\(\\*\\)?"
-			      name)
-	    (let ((number (if (match-beginning 3)
-			      (string-to-int (substring name
-							(match-beginning 3)
-							(match-end 3)
-							))
-			    0))
-		  (encoded (if (match-beginning 4) t nil))
-		  parm)
-	      (setq name (substring name (match-beginning 1) (match-end 1))
-		    parm (or (assoc name rest)
-			     (car (setq rest
-					(cons (make-mime-parameter name)
-					      rest)))))
-	      (when (and (eq number 0)
-			 encoded
-			 (string-match "^\\([^']*\\)'\\([^']*\\)'\\(.*\\)"
-				       val))
-		(when (< (match-beginning 1) (match-end 1))
-		  (mime-parameter-set-charset
-		   parm
-		   (intern (downcase (substring val
-						(match-beginning 1)
-						(match-end 1)
-						)))))
-		(when (< (match-beginning 2) (match-end 2))
-		  (mime-parameter-set-language
-		   parm
-		   (intern (downcase (substring val
-						(match-beginning 2)
-						(match-end 2)
-						)))))
-		(setq val (substring val (match-beginning 3)))
+    (while (and token
+		(eq (car token) 'tpecials)
+		(string= (cdr token) ";")
 		)
-	      (mime-parameter-append-raw-value parm number encoded val)
-	      (setq lrl (mime-parse-parameters-skip-to-next-token
-			 (cdr lrl)
-			 )
-		    token (car lrl)
-		    ))))))
-    rest))
+      (if (and (setq lrl (mime-parse-parameters-skip-to-next-token
+			  (cdr lrl)
+			  ))
+	       (setq name (cdar lrl))
+	       (setq lrl (mime-parse-parameters-skip-to-next-token
+			  (cdr lrl)
+			  ))
+	       (string= (cdar lrl) "=")
+	       (setq lrl (mime-parse-parameters-skip-to-next-token
+			  (cdr lrl)
+			  ))
+	       (setq val (cdar lrl)))
+	  (setq lrl (mime-parse-parameters-skip-to-next-token (cdr lrl))
+		token (car lrl)
+		rest (cons val rest)
+		rest (cons name rest)
+		)
+	(setq token nil)))
+    (mime-parse-parameters-from-list rest)))
+
+(defun mime-parse-parameters-from-list (list)
+  (let (rest name val)
+    (while list
+      (let ((name (car list))
+	    (val (cadr list)))
+	(setq list (cddr list))
+	(when (string-match "^\\([^*]+\\)\\(\\*\\([0-9]+\\)\\)?\\(\\*\\)?"
+			    name)
+	  (let ((number (if (match-beginning 3)
+			    (string-to-int (substring name
+						      (match-beginning 3)
+						      (match-end 3)))
+			  0))
+		(encoded (if (match-beginning 4) t nil))
+		(parm (progn
+			(setq name (substring name
+					      (match-beginning 1)
+					      (match-end 1)))
+			(or (assoc name rest)
+			    (car (setq rest
+				       (cons (make-mime-parameter name)
+					     rest)))))))
+	    (when (and (eq number 0)
+		       encoded
+		       (string-match "^\\([^']*\\)'\\([^']*\\)'\\(.*\\)" val))
+	      (when (< (match-beginning 1) (match-end 1))
+		(mime-parameter-set-charset
+		 parm
+		 (intern (downcase (substring val
+					      (match-beginning 1)
+					      (match-end 1)
+					      )))))
+	      (when (< (match-beginning 2) (match-end 2))
+		(mime-parameter-set-language
+		 parm
+		 (intern (downcase (substring val
+					      (match-beginning 2)
+					      (match-end 2)
+					      )))))
+	      (setq val (substring val (match-beginning 3)))
+	      )
+	    (mime-parameter-append-raw-value parm number encoded val)))))
+      rest))
 
 ;;; @ Content-Type
 ;;;
