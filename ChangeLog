@@ -1,3 +1,11 @@
+1999-06-10  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* luna.el (luna-define-class-function): Bind member variables
+	statically for old Emacsen.
+	(TopLevel): Require `static'; bind `:before', `:after' and
+	`:around' statically for old Emacsen. [cf. <tm-ja:4593>]
+
+
 1999-06-01  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* Chao: Version 1.13.0 (JR Fujinomori) released.
