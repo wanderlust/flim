@@ -1,3 +1,7 @@
+1998-10-22  Yoshiki Hayashi   <g740685@komaba.ecc.u-tokyo.ac.jp>
+
+	* README.ja: New file.
+
 1998-10-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-def.el: Require mcharset.
