@@ -1,4 +1,8 @@
-2000-06-23  Kenichi OKADA <okada@opaopa.org>
+2000-06-24  Kenichi OKADA <okada@opaopa.org>
+
+	* mime-def.el (mime-library-product): Fix.
+
+2000-06-24  Kenichi OKADA <okada@opaopa.org>
 
 	* mime-def.el (mime-library-product): Up.
 

@@ -1,4 +1,4 @@
-;;; mime-def.el --- definition module about MIME -*- coding: iso-8859-4; -*-
+;;; mime-def.el --- definition module about MIME -*- coding: iso-2022-jp; -*-
 
 ;; Copyright (C) 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 
@@ -36,7 +36,7 @@
   )
 
 (eval-and-compile
-  (defconst mime-library-product ["SLIM" (1 14 0) "安部なつみ"]
+  (defconst mime-library-product ["SLIM" (1 14 0) "安倍なつみ"]
     "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)
