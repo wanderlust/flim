@@ -1,3 +1,9 @@
+2002-02-01  Kenichi OKADA  <okada@opaopa.org>
+
+	* eword-encode.el (mime-header-encode-method-alist): New variable.
+	(mime-encode-field-body): Use `mime-header-encode-method-alist'.
+	(mime-encode-header-in-buffer): Error if cannot encode.
+
 2001-11-19  Kenichi OKADA  <okada@opaopa.org>
 
 	* smtp.el (smtp-find-server): Fix.
