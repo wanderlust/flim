@@ -1,5 +1,9 @@
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama)-A released.
+
+1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* NEWS (Function `std11-parse-in-reply-to'): New subsection.
 	(New function `std11-parse-msg-id-string'): Likewise.
 	(New function `std11-parse-msg-ids-string'): Likewise.
