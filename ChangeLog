@@ -3,6 +3,11 @@
 	* sasl.el (sasl-login-response-1): Fix.
 	(sasl-login-response-2): Fix.
 
+2000-11-07   Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-sasl-properties): New user option.
+	(smtp-sasl-user-realm): Abolish.
+
 2000-11-05   Daiki Ueno  <ueno@unixuser.org>
 
 	* qmtp.el (qmtp-send-package): Don't check "K" reply per recipient.
