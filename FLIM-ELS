@@ -1,11 +1,13 @@
 ;;; -*-Emacs-Lisp-*-
-;;;
-;;; $Id$
-;;;
+
+;; FLIM-ELS: list of FLIM modules to install
+
+;;; Code:
 
 (setq flim-modules '(std11 std11-parse
 			   mel mel-dl mel-b mel-q mel-u mel-g
 			   mime-def eword-decode eword-encode
+			   mailcap
 			   ))
 
 (if (fboundp 'dynamic-link)
