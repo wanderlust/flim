@@ -58,12 +58,6 @@
 ;;; @ Content-Type
 ;;;
 
-(defsubst make-mime-content-type (type subtype &optional parameters)
-  (list* (cons 'type type)
-	 (cons 'subtype subtype)
-	 (nreverse parameters))
-  )
-
 (defun mime-parse-Content-Type (string)
   "Parse STRING as field-body of Content-Type field.
 Return value is
@@ -95,22 +89,6 @@ and return parsed it.  Format of return value is as same as
     (if str
 	(mime-parse-Content-Type str)
       )))
-
-(defsubst mime-content-type-primary-type (content-type)
-  "Return primary-type of CONTENT-TYPE."
-  (cdr (car content-type)))
-
-(defsubst mime-content-type-subtype (content-type)
-  "Return primary-type of CONTENT-TYPE."
-  (cdr (cadr content-type)))
-
-(defsubst mime-content-type-parameters (content-type)
-  "Return primary-type of CONTENT-TYPE."
-  (cddr content-type))
-
-(defsubst mime-content-type-parameter (content-type parameter)
-  "Return PARAMETER value of CONTENT-TYPE."
-  (cdr (assoc parameter (mime-content-type-parameters content-type))))
 
 
 ;;; @ Content-Disposition
