@@ -1,3 +1,12 @@
+1998-06-20  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-q.el (q-encoding-decode-string): Use
+	`quoted-printable-hex-char-to-num'.
+
+	* mel-q.el (quoted-printable-hex-char-to-num): New function.
+	(quoted-printable-decode-string): Use
+	`quoted-printable-hex-char-to-num'.
+
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mime-def.el, mime-parse.el: Move `mime-message-structure' from
