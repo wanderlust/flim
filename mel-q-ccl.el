@@ -281,7 +281,6 @@ abcdefghijklmnopqrstuvwxyz\
 	(after-wsp 'r5)
 	(column 'r6)
 	(type 'r3)
-	(current 'r0)
 	(type-raw 0)
 	(type-enc 1)
 	(type-wsp 2)

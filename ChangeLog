@@ -1,3 +1,8 @@
+2000-03-15  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mel-q-ccl.el (mel-ccl-encode-quoted-printable-generic): Remove a
+	unnecessary variable binding.
+
 2000-01-05  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* Makefile, mime-en.sgml, mime-ja.sgml: Update for the new CVS
