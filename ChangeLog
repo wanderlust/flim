@@ -1,3 +1,8 @@
+2003-11-13  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* FLIM-ELS (flim-modules): Install mel-b-el also for
+	mel-b-builtin case. (from Tatsuya Kinoshita)
+
 2003-09-18  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* FLIM-ELS (flim-modules): Don't install smtpmail.
