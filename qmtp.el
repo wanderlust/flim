@@ -34,6 +34,7 @@
 ;;; Code:
 
 (require 'custom)
+(require 'mel) ; binary-funcall
 
 (defgroup qmtp nil
   "QMTP protocol for sending mail."
