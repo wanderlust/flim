@@ -231,7 +231,7 @@ code-converted.
 <var>entity</var> が省略された場合は、
 <code>mime-message-structure</code> の値を用いる。
 <p>
-<var>field-name</var> 欄が存在しない場合は nil を返す。
+<var>field-name</var> 欄が存在しない場合は <code>nil</code> を返す。
 </defun>
 
 <defun name="mime-read-field">
