@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defconst mime-library-version
-  '("FLIM" "K,Dr(Bdo" 1 10 0)
+  '("FLIM" "K.DŽòdo" 1 10 0)
   "Implementation name, version name and numbers of MIME-library package.")
 
 (defconst mime-library-version-string
@@ -309,6 +309,9 @@ message/rfc822, `mime-entity' structures of them are included in
 (defvar mime-entity-implementation-alist nil)
 
 (defmacro mm-define-backend (type &optional parents)
+  "Define mm-backend TYPE.
+If PARENTS is specified, TYPE inherits PARENTS.
+Each parent must be backend name (symbol)."
   (if parents
       `(let ((rest ',(reverse parents)))
 	 (while rest
@@ -321,6 +324,11 @@ message/rfc822, `mime-entity' structures of them are included in
 	   ))))
 
 (defmacro mm-define-method (name args &rest body)
+  "Define NAME as a method function of (nth 1 (car ARGS)) backend.
+
+ARGS is like an argument list of lambda, but (car ARGS) must be
+specialized parameter.  (car (car ARGS)) is name of variable and (nth
+1 (car ARGS)) is name of backend."
   (let* ((specializer (car args))
 	 (class (nth 1 specializer))
 	 (self (car specializer)))
