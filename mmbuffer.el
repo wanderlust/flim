@@ -42,7 +42,7 @@
 						&rest init-args)
   (or (mime-buffer-entity-buffer-internal entity)
       (mime-buffer-entity-set-buffer-internal
-       entity (mime-entity-location-internal entity)))
+       entity (get-buffer (mime-entity-location-internal entity))))
   (save-excursion
     (set-buffer (mime-buffer-entity-buffer-internal entity))
     (let ((header-start
