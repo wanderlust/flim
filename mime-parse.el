@@ -1,8 +1,9 @@
 ;;; mime-parse.el --- MIME message parser
 
-;; Copyright (C) 1994,1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95,96,97,98,99,2001 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: parse, MIME, multimedia, mail, news
 
 ;; This file is part of SEMI (Spadework for Emacs MIME Interfaces).
@@ -57,161 +58,357 @@ be the result."
 (defun mime-analyze-tspecial (string start)
   (if (and (> (length string) start)
 	   (memq (aref string start) mime-tspecial-char-list))
-      (cons (cons 'tpecials (substring string start (1+ start)))
-	    (1+ start))
-    ))
+      (cons (cons 'tspecials (substring string start (1+ start)))
+	    (1+ start))))
 
 (defun mime-analyze-token (string start)
   (if (and (string-match mime-token-regexp string start)
 	   (= (match-beginning 0) start))
       (let ((end (match-end 0)))
 	(cons (cons 'mime-token (substring string start end))
-	      ;;(substring string end)
-	      end)
-	)))
+	      end))))
+
+;;; This hard-coded analyzer is much faster.
+;;; (defun mime-lexical-analyze (string)
+;;;   "Analyze STRING as lexical tokens of MIME."
+;;;   (let ((len (length string))
+;;;         (start 0)
+;;; 	chr pos dest)
+;;;     (while (< start len)
+;;;       (setq chr (aref string start))
+;;;       (cond
+;;;        ;; quoted-string
+;;;        ((eq chr ?\")
+;;; 	(if (setq pos (std11-check-enclosure string ?\" ?\" nil start))
+;;; 	    (setq dest (cons (cons 'quoted-string
+;;; 				   (substring string (1+ start) pos))
+;;; 			     dest)
+;;; 		  start (1+ pos))
+;;; 	(setq dest (cons (cons 'error
+;;; 			       (substring string start))
+;;; 			 dest)
+;;; 	      start len)))
+;;;        ;; comment
+;;;        ((eq chr ?\()
+;;; 	(if (setq pos (std11-check-enclosure string ?\( ?\) t start))
+;;; 	    (setq start (1+ pos))
+;;; 	  (setq dest (cons (cons 'error
+;;; 				 (substring string start))
+;;; 			   dest)
+;;; 		start len)))
+;;;        ;; spaces
+;;;        ((memq chr std11-space-char-list)
+;;; 	(setq pos (1+ start))
+;;; 	(while (and (< pos len)
+;;; 		    (memq (aref string pos) std11-space-char-list))
+;;; 	  (setq pos (1+ pos)))
+;;; 	(setq start pos))
+;;;        ;; tspecials
+;;;        ((memq chr mime-tspecial-char-list)
+;;; 	(setq dest (cons (cons 'tspecials
+;;; 			       (substring string start (1+ start)))
+;;; 			 dest)
+;;; 	      start (1+ start)))
+;;;        ;; token
+;;;        ((eq (string-match mime-token-regexp string start)
+;;; 	    start)
+;;; 	(setq pos (match-end 0)
+;;; 	      dest (cons (cons 'mime-token
+;;; 			       (substring string start pos))
+;;; 			 dest)
+;;; 	      start pos))))
+;;;     (nreverse dest)))
+(defun mime-lexical-analyze (string)
+  "Analyze STRING as lexical tokens of MIME."
+  (let ((ret (std11-lexical-analyze string mime-lexical-analyzer))
+        prev tail)
+    ;; skip leading linear-white-space.
+    (while (memq (car (car ret)) '(spaces comment))
+      (setq ret (cdr ret)))
+    (setq prev ret
+          tail (cdr ret))
+    ;; remove linear-white-space.
+    (while tail
+      (if (memq (car (car tail)) '(spaces comment))
+          (progn
+            (setcdr prev (cdr tail))
+            (setq tail (cdr tail)))
+        (setq prev (cdr prev)
+              tail (cdr tail))))
+    ret))
 
 
 ;;; @ field parser
 ;;;
 
-(defconst mime/content-parameter-value-regexp
-  (concat "\\("
-	  std11-quoted-string-regexp
-	  "\\|[^; \t\n]*\\)"))
+(defun mime-decode-parameter-value (text charset language)
+  (let ((start 0))
+    (while (string-match "%[0-9A-F][0-9A-F]" text start)
+      (setq text (replace-match
+		  (char-to-string
+		   (string-to-int (substring text
+					     (1+ (match-beginning 0))
+					     (match-end 0))
+				  16))
+		  t t text)
+	    start (1+ (match-beginning 0))))
+    ;; convert byte-string to character-string.
+    ;; (setq text (decode-mime-charset-string text (or charset 'us-ascii)))
+    (when charset
+      (setq text (decode-mime-charset-string text charset)))
+    (when language
+      (put-text-property 0 (length text) 'mime-language language text))
+    text))
 
-(defconst mime::parameter-regexp
-  (concat "^[ \t]*\;[ \t]*\\(" mime-token-regexp "\\)"
-	  "[ \t]*=[ \t]*\\(" mime/content-parameter-value-regexp "\\)"))
+(defun mime-decode-parameter-plist (params)
+  (let ((len (/ (length params) 2))
+        dest eparams)
+    (while params
+      (if (string-match (eval-when-compile
+                          (concat "^\\(" mime-attribute-char-regexp "+\\)"
+				  "\\(\\*\\([0-9]+\\)\\)?\\(\\*\\)?$"))
+                        (car params))
+          (let* ((attribute (substring (car params) 0 (match-end 1)))
+                 (section (if (match-beginning 3)
+			      (string-to-int
+			       (substring (car params)
+					  (match-beginning 3)(match-end 3)))
+			    0))
+		 ;; EPARAM := (ATTRIBUTE . VALUES)
+		 ;; VALUES := [1*V-ELT] ; vector of (length params) elements.
+		 ;; V-ELT  := (VALUE CHARSET LANGUAGE) ; extended-initial-value
+		 ;;         | (VALUE t) ; extended-other-values
+		 ;;         | (VALUE)   ; regular-parameter-values
+                 (eparam (assoc attribute eparams)))
+            (unless eparam
+              (setq eparam (cons attribute (make-vector len nil))
+                    eparams (cons eparam eparams)))
+	    (setq params (cdr params))
+	    ;; if parameter-name ends with "*", it is an extended-parameter.
+            (if (match-beginning 4)
+                (if (zerop section)
+		    ;; extended-initial-value contains charset/language info.
+		    (if (string-match (eval-when-compile
+					(concat
+					 "^\\("
+					 mime-charset-regexp
+					 "\\)?"
+					 "\\('\\("
+					 mime-language-regexp
+					 "\\)?'\\)"
+					 "\\("
+					 mime-attribute-char-regexp
+					 "\\|%[0-9A-F][0-9A-F]\\)+$"))
+				      (car params))
+			(aset (cdr eparam)
+			      0		; section == 0.
+			      (list
+			       ;; text
+			       (substring (car params)
+					  (match-end 2))
+			       ;; charset
+			       (substring (car params)
+					  0 (match-beginning 2))
+			       ;; language
+			       (substring (car params)
+					  (1+ (match-beginning 2))
+					  (1- (match-end 2)))))
+		      ;; invalid encoding.
+		      (aset (cdr eparam) section
+			    (list (std11-strip-quoted-string
+				   (car params)))))
+		  ;; extended-other-values
+		  (if (string-match (eval-when-compile
+				      (concat
+				       "^\\("
+				       mime-attribute-char-regexp
+				       "\\|%[0-9A-F][0-9A-F]\\)+$"))
+				    (car params))
+		      (aset (cdr eparam) section
+			    (list (car params) t))
+		    ;; invalid encoding.
+		    (aset (cdr eparam) section
+			  (list (std11-strip-quoted-string
+				 (car params))))))
+	      ;; regular-parameter-name
+              (aset (cdr eparam) section
+		    (list (std11-strip-quoted-string
+			   (car params))))))
+        ;; no parameter value extensions used, or invalid attribute-name.
+        (setq dest (cons (cons (car params)
+			       (std11-strip-quoted-string
+				(car (cdr params))))
+			 dest)
+	      params (cdr params)))
+      (setq params (cdr params)))
+    ;; decode and concat parameters.
+    (while eparams
+      (let* ((attribute (car (car eparams)))
+             (values    (cdr (car eparams)))
+             (charset   (nth 1 (aref values 0)))
+             (language  (nth 2 (aref values 0))))
+        (setq dest (cons (cons attribute
+			       (mapconcat
+				(lambda (elt)
+				  (if (car (cdr elt))
+				      (mime-decode-parameter-value
+				       (car elt) charset language)
+				    ;; this value is not encoded.
+				    ;; should we decode encoded-words here?
+				    (car elt)))
+				values ""))
+			 dest)
+              eparams (cdr eparams))))
+    dest))
 
-(defun mime-parse-parameter (str)
-  (if (string-match mime::parameter-regexp str)
-      (let ((e (match-end 2)))
-	(cons
-	 (cons (downcase (substring str (match-beginning 1) (match-end 1)))
-	       (std11-strip-quoted-string
-		(substring str (match-beginning 2) e))
-	       )
-	 (substring str e)
-	 ))))
+;;; for compatibility with flim-1_13-rfc2231 API.
+(defalias 'mime-parse-parameters-from-list 'mime-decode-parameter-plist)
+
+(defun mime-parse-alist-to-plist (alist)
+  (let ((plist alist)
+        head tail key value)
+    (while alist
+      (setq head (car alist)
+            tail (cdr alist)
+            key   (car head)
+            value (cdr head))
+      (setcar alist key)
+      (setcar head value)
+      (setcdr head tail)
+      (setcdr alist head)
+      (setq alist tail))
+    plist))
+
+(defun mime-decode-parameter-alist (params)
+  (mime-decode-parameter-plist
+   (mime-parse-alist-to-plist params)))
+
+(defalias 'mime-decode-parameters 'mime-decode-parameter-alist)
+
+;;; (defun mime-parse-parameters (tokens)
+;;;   (let (params attribute)
+;;;     (while (setq tokens (cdr (member '(tspecials . ";") tokens)))
+;;;       (when (and (eq (car (car tokens)) 'mime-token)
+;;; 		 (progn
+;;; 		   (setq attribute (downcase (cdr (car tokens))))
+;;; 		   (setq tokens (cdr tokens)))
+;;; 		 (equal (car tokens) '(tspecials . "="))
+;;; 		 (setq tokens (cdr tokens))
+;;; 		 (memq (car (car tokens)) '(mime-token quoted-string)))
+;;; 	(setq params (cons (cons attribute (cdr (car tokens)))
+;;; 			   params))))
+;;;     ;; mime-decode-parameters will reverse this list to the right order.
+;;;     ;; (nreverse params)
+;;;     params))
+(defun mime-parse-parameters (tokens)
+  (let (params attribute)
+    (while (and tokens
+		(equal (car tokens) '(tspecials . ";"))
+		(setq tokens (cdr tokens))
+		(eq (car (car tokens)) 'mime-token)
+		(progn
+		  (setq attribute (downcase (cdr (car tokens))))
+		  (setq tokens (cdr tokens)))
+		(equal (car tokens) '(tspecials . "="))
+		(setq tokens (cdr tokens))
+		(memq (car (car tokens)) '(mime-token quoted-string)))
+      (setq params (cons (cons attribute (cdr (car tokens)))
+			 params)
+	    tokens (cdr tokens)))
+    params))
 
 
-;;; @ Content-Type
+;;; @@ Content-Type
 ;;;
 
 ;;;###autoload
-(defun mime-parse-Content-Type (string)
-  "Parse STRING as field-body of Content-Type field.
+(defun mime-parse-Content-Type (field-body)
+  "Parse FIELD-BODY as Content-Type field.  FIELD-BODY is a string.
+
 Return value is
-    (PRIMARY-TYPE SUBTYPE (NAME1 . VALUE1)(NAME2 . VALUE2) ...)
-or nil.  PRIMARY-TYPE and SUBTYPE are symbol and NAME_n and VALUE_n
-are string."
-  (setq string (std11-unfold-string string))
-  (if (string-match `,(concat "^\\(" mime-token-regexp
-			      "\\)/\\(" mime-token-regexp "\\)") string)
-      (let* ((type (downcase
-		    (substring string (match-beginning 1) (match-end 1))))
-	     (subtype (downcase
-		       (substring string (match-beginning 2) (match-end 2))))
-	     ret dest)
-	(setq string (substring string (match-end 0)))
-	(while (setq ret (mime-parse-parameter string))
-	  (setq dest (cons (car ret) dest)
-		string (cdr ret))
-	  )
-	(make-mime-content-type (intern type)(intern subtype)
-				(nreverse dest))
-	)))
+
+    ((type . PRIMARY-TYPE)
+     (subtype. SUBTYPE)
+     (ATTRIBUTE1 . VALUE1)(ATTRIBUTE2 . VALUE2) ...)
+
+or nil.
+
+PRIMARY-TYPE and SUBTYPE are symbols, and other elements are strings."
+  (when (stringp field-body)
+    (let ((tokens (mime-lexical-analyze field-body)))
+      (when (eq (car (car tokens)) 'mime-token)
+	(let ((primary-type (cdr (car tokens))))
+	  (setq tokens (cdr tokens))
+	  (when (and (equal (car tokens) '(tspecials . "/"))
+		     (setq tokens (cdr tokens))
+		     (eq (car (car tokens)) 'mime-token))
+	    (cons (cons 'type (intern (downcase primary-type)))
+		  (cons (cons 'subtype
+			      (intern (downcase (cdr (car tokens)))))
+			(mime-decode-parameters
+			 (mime-parse-parameters (cdr tokens)))))))))))
 
 ;;;###autoload
 (defun mime-read-Content-Type ()
-  "Read field-body of Content-Type field from current-buffer,
-and return parsed it.  Format of return value is as same as
-`mime-parse-Content-Type'."
-  (let ((str (std11-field-body "Content-Type")))
-    (if str
-	(mime-parse-Content-Type str)
-      )))
+  "Parse field-body of Content-Type field of current-buffer.
+Format of return value is same as that of `mime-parse-Content-Type'."
+  (mime-parse-Content-Type
+   (std11-field-body "Content-Type")))
 
 
-;;; @ Content-Disposition
+;;; @@ Content-Disposition
 ;;;
 
-(eval-and-compile
-  (defconst mime-disposition-type-regexp mime-token-regexp)
-  )
-
 ;;;###autoload
-(defun mime-parse-Content-Disposition (string)
-  "Parse STRING as field-body of Content-Disposition field."
-  (setq string (std11-unfold-string string))
-  (if (string-match (eval-when-compile
-		      (concat "^" mime-disposition-type-regexp)) string)
-      (let* ((e (match-end 0))
-	     (type (downcase (substring string 0 e)))
-	     ret dest)
-	(setq string (substring string e))
-	(while (setq ret (mime-parse-parameter string))
-	  (setq dest (cons (car ret) dest)
-		string (cdr ret))
-	  )
-	(cons (cons 'type (intern type))
-	      (nreverse dest))
-	)))
+(defun mime-parse-Content-Disposition (field-body)
+  "Parse FIELD-BODY as Content-Disposition field.  FIELD-BODY is a string."
+  (when (stringp field-body)
+    (let ((tokens (mime-lexical-analyze field-body)))
+      (when (eq (car (car tokens)) 'mime-token)
+	(cons (cons 'type (intern (downcase (cdr (car tokens)))))
+	      (mime-decode-parameters
+	       (mime-parse-parameters (cdr tokens))))))))
 
 ;;;###autoload
 (defun mime-read-Content-Disposition ()
-  "Read field-body of Content-Disposition field from current-buffer,
-and return parsed it."
-  (let ((str (std11-field-body "Content-Disposition")))
-    (if str
-	(mime-parse-Content-Disposition str)
-      )))
+  "Parse field-body of Content-Disposition field of current-buffer."
+  (mime-parse-Content-Disposition
+   (std11-field-body "Content-Disposition")))
 
 
-;;; @ Content-Transfer-Encoding
+;;; @@ Content-Transfer-Encoding
 ;;;
 
 ;;;###autoload
-(defun mime-parse-Content-Transfer-Encoding (string)
-  "Parse STRING as field-body of Content-Transfer-Encoding field."
-  (let ((tokens (std11-lexical-analyze string mime-lexical-analyzer))
-	token)
-    (while (and tokens
-		(setq token (car tokens))
-		(std11-ignored-token-p token))
-      (setq tokens (cdr tokens)))
-    (if token
-	(if (eq (car token) 'mime-token)
-	    (downcase (cdr token))
-	  ))))
+(defun mime-parse-Content-Transfer-Encoding (field-body)
+  "Parse FIELD-BODY as Content-Transfer-Encoding field.  FIELD-BODY is a string."
+  (when (stringp field-body)
+    (let ((tokens (mime-lexical-analyze field-body)))
+      (when (eq (car (car tokens)) 'mime-token)
+	(downcase (cdr (car tokens)))))))
 
 ;;;###autoload
-(defun mime-read-Content-Transfer-Encoding (&optional default-encoding)
-  "Read field-body of Content-Transfer-Encoding field from
-current-buffer, and return it.
-If is is not found, return DEFAULT-ENCODING."
-  (let ((str (std11-field-body "Content-Transfer-Encoding")))
-    (if str
-	(mime-parse-Content-Transfer-Encoding str)
-      default-encoding)))
+(defun mime-read-Content-Transfer-Encoding ()
+  "Parse field-body of Content-Transfer-Encoding field of current-buffer."
+  (mime-parse-Content-Transfer-Encoding
+   (std11-field-body "Content-Transfer-Encoding")))
 
 
-;;; @ Content-Id / Message-Id
+;;; @@ Content-ID / Message-ID
 ;;;
 
 ;;;###autoload
 (defun mime-parse-msg-id (tokens)
-  "Parse TOKENS as msg-id of Content-Id or Message-Id field."
+  "Parse TOKENS as msg-id of Content-ID or Message-ID field."
   (car (std11-parse-msg-id tokens)))
 
 ;;;###autoload
 (defun mime-uri-parse-cid (string)
   "Parse STRING as cid URI."
-  (inline
-    (mime-parse-msg-id (cons '(specials . "<")
-			     (nconc
-			      (cdr (cdr (std11-lexical-analyze string)))
-			      '((specials . ">")))))))
+  (mime-parse-msg-id (cons '(specials . "<")
+			   (nconc
+			    (cdr (cdr (std11-lexical-analyze string)))
+			    '((specials . ">"))))))
 
 
 ;;; @ message parser
