@@ -55,7 +55,7 @@ information of entity.  In this document, it is called simply
 <node> Entity creation
 <p>
 <defun name="mime-open-entity">
-	  <opts> type location
+	  <args> type location
 <p>
 Open an entity and return it.
 <p>
@@ -1290,11 +1290,11 @@ be interpreted as us-ascii.
 <node> Bug report
 <p>
 If you write bug-reports and/or suggestions for improvement, please
-send them to the EMACS-MIME Mailing List:
+send them to the tm Mailing List:
 
 <ul>
-<li> English <mail>emacs-mime-en@m17n.org</mail>
-<li> Japanese <mail>emacs-mime-ja@m17n.org</mail>
+<li> Japanese <mail>bug-tm-ja@chamonix.jaist.ac.jp</mail>
+<li> English <mail>bug-tm-en@chamonix.jaist.ac.jp</mail>
 </ul>
 
 <p>
@@ -1311,16 +1311,16 @@ to send backtrace is very important. <cf file="emacs" node="Bugs">
 Bug may not appear only your environment, but also in a lot of
 environment (otherwise it might not bug).  Therefor if you send mail
 to author directly, we must write a lot of mails.  So please send mail
-to address for EMACS-MIME Mailing List instead of author.
+to address for tm bugs instead of author.
 
 <p>
-Via the EMACS-MIME ML, you can report FLIM bugs, obtain the latest
-release of FLIM, and discuss future enhancements to FLIM.  To join the
-EMACS-MIME ML, send an empty e-mail to:
+Via the tm ML, you can report FLIM bugs, obtain the latest release of
+FLIM, and discuss future enhancements to FLIM.  To join the tm ML,
+send empty e-mail to:
 
 <ul>
-<li> English  <mail>emacs-mime-en-ctl@m17n.org</mail>
-<li> Japanese <mail>emacs-mime-ja-ctl@m17n.org</mail>
+<li> Japanese <mail>tm-ja-help@chamonix.jaist.ac.jp</mail>
+<li> English  <mail>tm-en-help@chamonix.jaist.ac.jp</mail>
 </ul>
 
 
@@ -1333,13 +1333,14 @@ FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K
 <verb>
 (0) cvs login
 
-    % cvs -d :pserver:anonymous@cvs.m17n.org:/cvs/root login
+    % cvs -d :pserver:anonymous@chamonix.jaist.ac.jp:/hare/cvs/root \
+	login
 
     CVS password: [CR] # NULL string
 
 (1) checkout
 
-    % cvs -d :pserver:anonymous@cvs.m17n.org:/cvs/root \
+    % cvs -d :pserver:anonymous@chamonix.jaist.ac.jp:/hare/cvs/root \
 	checkout [-r TAG] flim
 </verb>
 
@@ -1347,12 +1348,16 @@ FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K
 CVS $B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
 
 <ul>
-<li> <mail>cvs@cvs.m17n.org</mail>
+<li> <mail>cvs@chamonix.jaist.ac.jp</mail>
 </ul>
 
 <noindent>
-$B$^$G!"(Baccount $BL>$H(B UNIX $B$N(B passwd $B$HF1$87A<0$N(B crypt $B2=$5$l$?(B password
-$B$r1h$($F8fO"Mm$/$@$5$$!#(B
+$B$^$G!"%"%+%&%s%HL>$H(B ssh $B$N8x3+80$rAw$C$F$/$@$5$$!#(Bssh $B7PM3$G$O!"(B
+cvsroot $B$O(B :ext:cvs@cvs.m17n.org:/cvs/root $B$H$J$j$^$9!#(B
+<p>
+$B$I$&$7$F$b(B ssh $B$,;H$($J$$>l9g!"(Bpserver $B7PM3$G$b3+H/$K;22C$G$-$^$9!#(B
+$B$3$N>l9g!"(BUNIX $B$N(B /etc/passwd $BMM<0$G0E9f2=$5$l$?%Q%9%o!<%I$rAw$C$F2<$5$$!#(B
+$B$3$N>l9g(B cvsroot $B$O(B :pserver:<$B%"%+%&%s%HL>(B>@cvs.m17n.org:/cvs/root $B$H$J$j$^$9!#(B
 
 
 <h2> History of FLIM

@@ -1292,8 +1292,8 @@ Internet message $B$K$*$1$kI8=`$N(B<a node="Coded character set">$BId9f2=J8(
 FLIM $B$N%P%0$r8+$D$1$?$i!"0J2<$N(B address $B$K(B mail $B$rAw$C$F$/$@$5$$!'(B
 
 <ul>
-<li> $B1Q8l(B <mail>emacs-mime-en@m17n.org</mail>
-<li> $BF|K\8l(B <mail>emacs-mime-ja@m17n.org</mail>
+<li> $BF|K\8l(B <mail>bug-tm-ja@chamonix.jaist.ac.jp</mail>
+<li> $B1Q8l(B <mail>bug-tm-en@chamonix.jaist.ac.jp</mail>
 </ul>
 
 <p>
@@ -1312,12 +1312,12 @@ file="emacs" node="Bugs">
 $B$F$/$@$5$$!#(B
 
 <p>
-EMACS-MIME ML $B$G$O(B FLIM $B$N%P%0>pJs$N8r49$d:G?7HG$NG[I[!"(BFLIM $B$N2~NI$K(B
-$B4X$9$k5DO@$r9T$J$C$F$$$^$9!#(BEMACS-MIME ML $B$K;22C$7$?$$J}$O(B
+tm ML $B$G$O(B FLIM $B$N%P%0>pJs$N8r49$d:G?7HG$NG[I[!"(BFLIM $B$N2~NI$K4X$9$k5D(B
+$BO@$r9T$J$C$F$$$^$9!#(Btm ML $B$K;22C$7$?$$J}$O(B
 
 <ul>
-<li> $B1Q8l(B <mail>emacs-mime-en-ctl@m17n.org</mail>
-<li> $BF|K\8l(B <mail>emacs-mime-ja-ctl@m17n.org</mail>
+<li> $BF|K\8l(B <mail>tm-ja-help@chamonix.jaist.ac.jp</mail>
+<li> $B1Q8l(B <mail>tm-en-help@chamonix.jaist.ac.jp</mail>
 </ul>
 
 <noindent>
@@ -1333,13 +1333,14 @@ FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K
 <verb>
 (0) cvs login
 
-    % cvs -d :pserver:anonymous@cvs.m17n.org:/cvs/root login
+    % cvs -d :pserver:anonymous@chamonix.jaist.ac.jp:/hare/cvs/root \
+	login
 
     CVS password: [CR] # NULL string
 
 (1) checkout
 
-    % cvs -d :pserver:anonymous@cvs.m17n.org:/cvs/root \
+    % cvs -d :pserver:anonymous@chamonix.jaist.ac.jp:/hare/cvs/root \
 	checkout [-r TAG] flim
 </verb>
 
@@ -1347,12 +1348,16 @@ FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K
 CVS $B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
 
 <ul>
-<li> <mail>cvs@cvs.m17n.org</mail>
+<li> <mail>cvs@chamonix.jaist.ac.jp</mail>
 </ul>
 
 <noindent>
-$B$^$G!"(Baccount $BL>$H(B UNIX $B$N(B passwd $B$HF1$87A<0$N(B crypt $B2=$5$l$?(B password
-$B$r1h$($F8fO"Mm$/$@$5$$!#(B
+$B$^$G!"%"%+%&%s%HL>$H(B ssh $B$N8x3+80$rAw$C$F$/$@$5$$!#(Bssh $B7PM3$G$O!"(B
+cvsroot $B$O(B :ext:cvs@cvs.m17n.org:/cvs/root $B$H$J$j$^$9!#(B
+<p>
+$B$I$&$7$F$b(B ssh $B$,;H$($J$$>l9g!"(Bpserver $B7PM3$G$b3+H/$K;22C$G$-$^$9!#(B
+$B$3$N>l9g!"(BUNIX $B$N(B /etc/passwd $BMM<0$G0E9f2=$5$l$?%Q%9%o!<%I$rAw$C$F2<$5$$!#(B
+$B$3$N>l9g(B cvsroot $B$O(B :pserver:<$B%"%+%&%s%HL>(B>@cvs.m17n.org:/cvs/root $B$H$J$j$^$9!#(B
 
 
 <h2> $BNr;K(B
