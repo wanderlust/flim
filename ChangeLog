@@ -1,5 +1,17 @@
 1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-bq.el (ew-ccl-decode-base64): Abolished.
+	(ew-ccl-decode-b-bit-ex): New compile time function.
+	(ew-ccl-decode-b-0-table): New compile time constant.
+	(ew-ccl-decode-b-1-table): Ditto.
+	(ew-ccl-decode-b-2-table): Ditto.
+	(ew-ccl-decode-b-3-table): Ditto.
+	(ew-ccl-decode-b): New CCL program.
+	(ew-ccl-b): Use `ew-ccl-decode-b'.
+	(ew-ccl-base64): Use `ew-ccl-decode-b'.
+
+1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-bq.el (ew-ccl-untrusted-eof-block): Set boolean value. 
 
 1998-08-25  Tanaka Akira      <akr@jaist.ac.jp>
@@ -7,7 +19,7 @@
 	* ew-bq.el (ew-ccl-use-symbol): New variable.
 	(ew-ccl-untrusted-eof-block): New variable.
 	(ew-make-ccl-coding-system): New function.
-	(ew-ccl-decode-base64): New ccl program renamed from `ew-ccl-decode-b'.
+	(ew-ccl-decode-base64): New CCL program renamed from `ew-ccl-decode-b'.
 	(ew-ccl-encode-b-is-broken): Abolished.
 	(ew-ccl-uq): Use `ew-make-ccl-coding-system' to define.
 	(ew-ccl-cq): Ditto.

@@ -267,51 +267,141 @@
        (write r0 ,ew-ccl-low-table)
        (repeat)))))
 
-(define-ccl-program ew-ccl-decode-base64
-  (eval-when-compile
-    `(1
-      (loop
-       (loop
-	(read-branch
-	 r1
-	 ,@(mapcar
-	    (lambda (v)
-	      (cond
-	       ((or (eq v nil) (eq v t)) '(repeat))
-	       (t `((r0 = ,(lsh v 2)) (break)))))
-	    ew-ccl-256-to-64-table)))
-       (loop
-	(read-branch
-	 r1
-	 ,@(mapcar
-	    (lambda (v)
-	      (cond
-	       ((or (eq v nil) (eq v t)) '(repeat))
-	       ((= (lsh v -4) 0) `((write r0) (r0 = ,(lsh (logand v 15) 4)) (break)))
-	       (t `((write (r0 | ,(lsh v -4))) (r0 = ,(lsh (logand v 15) 4)) (break)))))
-	    ew-ccl-256-to-64-table)))
-       (loop
-	(read-branch
-	 r1
-	 ,@(mapcar
-	    (lambda (v)
-	      (cond
-	       ((eq v nil) '(repeat))
-	       ((eq v t) '(end))
-	       ((= (lsh v -2) 0) `((write r0) (r0 = ,(lsh (logand v 3) 6)) (break)))
-	       (t `((write (r0 | ,(lsh v -2))) (r0 = ,(lsh (logand v 3) 6)) (break)))))
-	    ew-ccl-256-to-64-table)))
-       (loop
-	(read-branch
-	 r1
-	 ,@(mapcar
-	    (lambda (v)
-	      (cond
-	       ((eq v nil) '(repeat))
-	       ((eq v t) '(end))
-	       (t `((write (r0 | ,v)) (break)))))
-	    ew-ccl-256-to-64-table)))
-       (repeat)))))
+(eval-when-compile
+(defun ew-ccl-decode-b-bit-ex (v)
+  (logior
+   (lsh (logand v (lsh 255 16)) -16)
+   (logand v (lsh 255 8))
+   (lsh (logand v 255) 16)))
+
+(defconst ew-ccl-decode-b-0-table
+  (vconcat
+   (mapcar
+    (lambda (v)
+      (cond
+       ((eq v t) (lsh 1 24))
+       (v (ew-ccl-decode-b-bit-ex (lsh v 18)))
+       (t (lsh 1 24))))
+    ew-ccl-256-to-64-table)))
+
+(defconst ew-ccl-decode-b-1-table
+  (vconcat
+   (mapcar
+    (lambda (v)
+      (cond
+       ((eq v t) (lsh 1 25))
+       (v (ew-ccl-decode-b-bit-ex (lsh v 12)))
+       (t (lsh 1 25))))
+    ew-ccl-256-to-64-table)))
+
+(defconst ew-ccl-decode-b-2-table
+  (vconcat
+   (mapcar
+    (lambda (v)
+      (cond
+       ((eq v t) (lsh 1 26))
+       (v (ew-ccl-decode-b-bit-ex (lsh v 6)))
+       (t (lsh 1 26))))
+    ew-ccl-256-to-64-table)))
+
+(defconst ew-ccl-decode-b-3-table
+  (vconcat
+   (mapcar
+    (lambda (v)
+      (cond
+       ((eq v t) (lsh 1 27))
+       (v (ew-ccl-decode-b-bit-ex v))
+       (t (lsh 1 27))))
+    ew-ccl-256-to-64-table)))
+)
+
+(define-ccl-program ew-ccl-decode-b
+  `(1
+    (loop
+     (read r0 r1 r2 r3)
+     (r4 = r0 ,ew-ccl-decode-b-0-table)
+     (r5 = r1 ,ew-ccl-decode-b-1-table)
+     (r4 |= r5)
+     (r5 = r2 ,ew-ccl-decode-b-2-table)
+     (r4 |= r5)
+     (r5 = r3 ,ew-ccl-decode-b-3-table)
+     (r4 |= r5)
+     (if (r4 & ,(lognot (1- (lsh 1 24))))
+	 ((loop
+	   (if (r4 & ,(lsh 1 24))
+	       ((r0 = r1) (r1 = r2) (r2 = r3) (read r3)
+		(r4 >>= 1) (r4 &= ,(logior (lsh 7 24)))
+		(r5 = r3 ,ew-ccl-decode-b-3-table)
+		(r4 |= r5)
+		(repeat))
+	     (break)))
+	  (loop
+	   (if (r4 & ,(lsh 1 25))
+	       ((r1 = r2) (r2 = r3) (read r3)
+		(r4 >>= 1) (r4 &= ,(logior (lsh 7 24)))
+		(r5 = r3 ,ew-ccl-decode-b-3-table)
+		(r4 |= r5)
+		(repeat))
+	     (break)))
+	  (loop
+	   (if (r2 != ?=)
+	       (if (r4 & ,(lsh 1 26))
+		   ((r2 = r3) (read r3)
+		    (r4 >>= 1) (r4 &= ,(logior (lsh 7 24)))
+		    (r5 = r3 ,ew-ccl-decode-b-3-table)
+		    (r4 |= r5)
+		    (repeat))
+		 ((r6 = 0)
+		  (break)))
+	     ((r6 = 1)
+	      (break))))
+	  (loop
+	   (if (r3 != ?=)
+	       (if (r4 & ,(lsh 1 27))
+		   ((read r3)
+		    (r4 = r3 ,ew-ccl-decode-b-3-table)
+		    (repeat))
+		 (break))
+	     ((r6 |= 2)
+	      (break))))
+	  (r4 = r0 ,ew-ccl-decode-b-0-table)
+	  (r5 = r1 ,ew-ccl-decode-b-1-table)
+	  (r4 |= r5)
+	  (branch
+	   r6
+	   ;; BBBB
+	   ((r5 = r2 ,ew-ccl-decode-b-2-table)
+	    (r4 |= r5)
+	    (r5 = r3 ,ew-ccl-decode-b-3-table)
+	    (r4 |= r5)
+	    (r4 >8= 0)
+	    (write r7)
+	    (r4 >8= 0)
+	    (write r7)
+	    (r4 >8= 0)
+	    (write-repeat r7))
+	   ;; error: BB=B 
+	   ((r4 >8= 0)
+	    (write r7)
+	    (end))
+	   ;; BBB=
+	   ((r5 = r2 ,ew-ccl-decode-b-2-table)
+	    (r4 |= r5)
+	    (r4 >8= 0)
+	    (write r7)
+	    (r4 >8= 0)
+	    (write r7)
+	    (end))
+	   ;; BB==
+	   ((r4 >8= 0)
+	    (write r7)
+	    (end))))
+       ((r4 >8= 0)
+	(write r7)
+	(r4 >8= 0)
+	(write r7)
+	(r4 >8= 0)
+	(write-repeat r7))))))
 
 ;; ew-ccl-encode-b works only 20.3 or later because CCL_EOF_BLOCK
 ;; is not executed on 20.2 (or former?).
@@ -814,7 +904,7 @@
 
 (ew-make-ccl-coding-system
  'ew-ccl-b ?B "MIME B-encoding"
- 'ew-ccl-decode-base64 'ew-ccl-encode-b)
+ 'ew-ccl-decode-b 'ew-ccl-encode-b)
 
 (ew-make-ccl-coding-system
  'ew-ccl-quoted-printable ?Q "MIME Quoted-Printable-encoding"
@@ -822,7 +912,7 @@
 
 (ew-make-ccl-coding-system
  'ew-ccl-base64 ?B "MIME Base64-encoding"
- 'ew-ccl-decode-base64 'ew-ccl-encode-base64)
+ 'ew-ccl-decode-b 'ew-ccl-encode-base64)
 
 ;;;
 (require 'mel)
@@ -888,4 +978,36 @@
     (setq i (1- i))
     (q-encoding-decode-string
      "=00=1F_!=22#$%&'=28=29*+,-./09:;<=3D>=3F@AZ[=5C]^=5F`az{|}~=7F=80=FF")))
+
+(let (a b) ; CCL
+  (setq a (current-time))
+  (let ((i 1000))
+    (while (< 0 i)
+      (setq i (1- i))
+      (ew-decode-b
+       "AB8gISIjJCUmJygpKissLS4vMDk6Ozw9Pj9AQVpbXF1eX2Bhent8fX5/gP8=")))
+  (setq b (current-time))
+  (elp-elapsed-time a b))
+
+(let (a b) ; Emacs Lisp
+  (setq a (current-time))
+  (let ((i 1000))
+    (while (< 0 i)
+      (setq i (1- i))
+      (base64-decode-string
+       "AB8gISIjJCUmJygpKissLS4vMDk6Ozw9Pj9AQVpbXF1eX2Bhent8fX5/gP8=")))
+  (setq b (current-time))
+  (elp-elapsed-time a b))
+
+(let (a b) ; DL
+  (setq a (current-time))
+  (let ((i 1000))
+    (while (< 0 i)
+      (setq i (1- i))
+      (decode-base64-string
+       "AB8gISIjJCUmJygpKissLS4vMDk6Ozw9Pj9AQVpbXF1eX2Bhent8fX5/gP8=")))
+  (setq b (current-time))
+  (elp-elapsed-time a b))
+
+
 )
