@@ -1,3 +1,51 @@
+2000-06-21  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mmgeneric.el (mime-entity-children): Deleted.
+
+	* mmbuffer.el (mime-insert-entity-body): New method.
+	(mmbuffer-parse-multipart): New function.
+	(mmbuffer-parse-encapsulated): New function.
+	(mime-entity-children): New function.
+
+2000-06-21  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-find-root-entity): New function.
+	(mime-entity-header-buffer): Comment out.
+	(mime-goto-header-start-point): Likewise.
+	(mime-entity-header-start-point): Likewise.
+	(mime-entity-header-end-point): Likewise.
+	(mime-entity-body-buffer): Likewise.
+	(mime-goto-body-start-point): Likewise.
+	(mime-goto-body-end-point): Likewise.
+	(mime-entity-body-start-point): Likewise.
+	(mime-entity-body-end-point): Likewise.
+	(mime-entity-body-start): Likewise.
+	(mime-entity-body-end): Likewise.
+	(mime-entity-buffer): Likewise.
+	(mime-entity-point-min): Likewise.
+	(mime-entity-point-max): Likewise.
+	(mime-insert-entity-body): New generic function.
+	(mime-entity-uu-filename): Use `mime-insert-entity-body'.
+	(mime-entity-set-content-type): New function.
+	(mime-entity-set-encoding): New function.
+
+	* mime-parse.el (mime-parse-multipart): Comment out.
+	(mime-parse-encapsulated): Likewise.
+	(mime-parse-external): Likewise.
+
+	* mmbuffer.el (mime-entity-header-buffer): Comment out.
+	(mime-goto-header-start-point): Likewise.
+	(mime-entity-header-start-point): Likewise.
+	(mime-entity-header-end-point): Likewise.
+	(mime-entity-body-buffer): Likewise.
+	(mime-goto-body-start-point): Likewise.
+	(mime-goto-body-end-point): Likewise.
+	(mime-entity-body-start-point): Likewise.
+	(mime-entity-body-end-point): Likewise.
+	(mime-entity-buffer): Likewise.
+	(mime-entity-point-min): Likewise.
+	(mime-entity-point-max): Likewise.
+
 2000-05-30  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* eword-encode.el (eword-charset-encoding-alist): Add
