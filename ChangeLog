@@ -1,3 +1,19 @@
+1998-08-19  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* mime-def.el (mime-library-version-string): bump up to FLAM-DOODLE 1.9.1.
+
+1998-08-18  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* COLORS: New file.
+
+	* ew-data.el (ew-add-frag): Change defun to defsubst.
+
+	* ew-scan-m.el (ew-scan-mime): Refine to fit inlining `ew-add-frag'.
+
+	* ew-scan-s.el (ew-scan-std11): Ditto.
+
+	* ew-scan-u.el (ew-scan-unstructured): Ditto.
+
 1998-08-17  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* ew-data.el:
@@ -145,7 +161,7 @@
 
 1998-08-16  Tanaka Akira      <akr@jaist.ac.jp>
 
-	* mime-def.el (mime-library-version-string): bump up to 1.9.1.
+	* mime-def.el (mime-library-version-string): bump up to FLIM-FLAM 1.9.1.
 
 1998-07-22  Tanaka Akira      <akr@jaist.ac.jp>
 

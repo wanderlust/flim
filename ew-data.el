@@ -19,7 +19,7 @@
       (put frag 'line-length line-length)
       (setq frag (get frag 'prev-frag)))))
 
-(defun ew-add-frag (anchor start end type)
+(defsubst ew-add-frag (anchor start end type)
   (let ((frag (make-symbol (substring (symbol-name anchor) start end))))
     (put frag 'anchor anchor)
     (put frag 'type type)
