@@ -1,7 +1,7 @@
 2003-12-14  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
 
 	* eword-encode.el (mime-header-charset-encoding-alist): Add
-	entry for iso-8859-15.
+	entry for iso-8859-1[45].
 
 2003-11-13  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
