@@ -227,7 +227,7 @@ local 変数。
 
 @defun mime-find-entity-from-content-id cid  &optional  message
 
-@var{message</var> から、<var>cid} の entity を返します。@refill
+@var{message} から、@var{cid} の entity を返します。@refill
 
 @var{message} が指定されていない場合は、
 @code{mime-message-structure} が使われます。
