@@ -740,6 +740,8 @@
 			    `(r2 = 0)	; nop
 			    ))
 			ew-ccl-256-table))
+                    ;; '=' [\t ]* [0-9A-F] r1:[^0-9A-F]
+                    ;; invalid input
 		    (write ?=)
 		    (write r0 ,(vconcat ew-ccl-16-to-256-table))
 		    (write r1)
@@ -783,7 +785,7 @@
 (make-coding-system 'ew-ccl-base64 4 ?B "MIME Base64-encoding"
 		    (cons ew-ccl-decode-b ew-ccl-encode-base64))
 
-(make-coding-system 'ew-ccl-quoted-printable 4 ?B
+(make-coding-system 'ew-ccl-quoted-printable 4 ?Q
 		    "MIME Quoted-Printable-encoding"
 		    (cons ew-ccl-decode-quoted-printable
 			  ew-ccl-encode-quoted-printable))

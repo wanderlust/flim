@@ -1,5 +1,9 @@
 1998-08-24  Tanaka Akira      <akr@jaist.ac.jp>
 
+	* ew-bq.el (ew-ccl-quoted-printable): Change mnemonic B to Q.
+
+1998-08-24  Tanaka Akira      <akr@jaist.ac.jp>
+
 	* ew-bq.el (ew-ccl-encode-quoted-printable): Complete behaviour at column 73 with bare CR.
 
 1998-08-24  Tanaka Akira      <akr@jaist.ac.jp>
