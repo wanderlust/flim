@@ -1,6 +1,7 @@
 2000-12-15   Daiki Ueno  <ueno@unixuser.org>
 
-	* smtp.el (smtp-send-buffer): Pass the BUFFER argument.
+	* smtp.el (smtp-send-buffer): Pass the BUFFER argument to
+	`buffer-disable-undo'.
 
 2000-12-15  Katsumi Yamaoka   <yamaoka@jpl.org>
 
