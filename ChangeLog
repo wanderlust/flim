@@ -1,4 +1,13 @@
-1998-04-17  MORIOKA Tomohiko  <morioka@mousai.jaist.ac.jp>
+1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mime-def.el (mime-spadework-module-version-string): New
+ 	constant.
+
+	* eword-encode.el: Abolish constant 'eword-encode-version.
+
+	* eword-decode.el: Abolish constant 'eword-decode-version.
+
+1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* eword-encode.el (eword-encode-divide-into-charset-words): Use
 	'char-length or 'char-next-index instead of 'char-bytes.
