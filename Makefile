@@ -25,9 +25,11 @@ GOMI	= *.elc \
 FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 VERSION	= $(API).$(RELEASE)
-ARC_DIR_PREFIX = /home/kanji/tomo/public_html/comp/emacsen/lisp
+ARC_DIR_PREFIX = /home/kanji/tomo/public_html/lemi/dist
 ARC_DIR = $(ARC_DIR_PREFIX)/flim/flim-$(API)
 SEMI_ARC_DIR = $(ARC_DIR_PREFIX)/semi/semi-1.14-for-flim-$(API)
+
+CVS_HOST = cvs.m17n.org
 
 elc:
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
@@ -56,7 +58,7 @@ tar:
 	cvs commit
 	sh -c 'cvs tag -R $(PACKAGE)-`echo $(VERSION) | tr . _`; \
 	cd /tmp; \
-	cvs -d :pserver:anonymous@cvs.m17n.org:/cvs/root \
+	cvs -d :pserver:anonymous@$(CVS_HOST):/cvs/root \
 		export -d $(PACKAGE)-$(VERSION) \
 		-r $(PACKAGE)-`echo $(VERSION) | tr . _` \
 		flim'
