@@ -1,3 +1,8 @@
+1999-07-21  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mime-parse.el (mime-parse-buffer): Fixed.
+
+
 1999-07-16  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* FLIM: Version 1.13.0 (Iwami) released.
