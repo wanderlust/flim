@@ -31,22 +31,19 @@
 ;;
 ;; (luna-define-class silly-test-case (lunit-test-case))
 ;;
-;; (luna-define-method silly-test-1 ((case silly-test-case))
+;; (luna-define-method test-1 ((case silly-test-case))
 ;;   (lunit-assert (integerp "a")))
 ;;
-;; (luna-define-method silly-test-2 ((case silly-test-case))
+;; (luna-define-method test-2 ((case silly-test-case))
 ;;   (lunit-assert (stringp "b")))
 ;;
-;; (lunit
-;;  (lunit-make-test-suite
-;;   (lunit-make-test-case 'silly-test-case 'silly-test-1)
-;;   (lunit-make-test-case 'silly-test-case 'silly-test-2)))
+;; (lunit-class 'silly-test-case)
 ;; ______________________________________________________________________
-;; Starting test silly-test-1
+;; Starting test `test-1'
 ;; failure: (integerp "a")
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;; ______________________________________________________________________
-;; Starting test silly-test-2
+;; Starting test `test-2'
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;; 2 total, 1 failures, 0 errors
 
@@ -254,6 +251,7 @@ TESTS holds a number of instances of `lunit-test'."
        (signal 'lunit-failure (list ',condition-expr)))))
 
 (defvar lunit-test-results-buffer "*Lunit Results*")
+(defvar lunit-test-method-regexp "^test-")
 
 (luna-define-class lunit-test-printer (lunit-test-listener))
 
@@ -268,13 +266,26 @@ TESTS holds a number of instances of `lunit-test'."
 (luna-define-method lunit-test-listener-start ((printer lunit-test-printer) case)
   (princ (format "\
 ______________________________________________________________________
-Starting test %S
+Starting test `%S'
 " (lunit-test-name-internal case))))
 
 (luna-define-method lunit-test-listener-end ((printer lunit-test-printer) case)
   (princ "\
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 "))
+
+(defun lunit-class (class)
+  "Run all test methods of the CLASS and display the result."
+  (let (tests)
+    (mapatoms
+     (lambda (symbol)
+       (if (and (fboundp symbol)
+		(null (get symbol 'luna-method-qualifier))
+		(string-match lunit-test-method-regexp (symbol-name symbol)))
+	   (push (lunit-make-test-case class symbol) tests)))
+     (luna-class-obarray (luna-find-class class)))
+    (lunit
+     (apply #'lunit-make-test-suite tests))))
 
 (defun lunit (test)
   "Run TEST and display the result."
