@@ -37,7 +37,7 @@ FLIM とは？
 導入 (install)
 ==============
 
-(0) 導入 (install) する前に、APEL (9.19 以降) を導入してください。APEL 
+(0) 導入 (install) する前に、APEL (9.12 以降) を導入してください。APEL 
     は以下のところで取得できます:
 
 	ftp://ftp.etl.go.jp/pub/mule/apel/
