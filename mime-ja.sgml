@@ -154,9 +154,20 @@ local $BJQ?t(B <code>mime-message-structure</code> $B$K3JG<$9$k$3$H$K$7$^$9!#
 <!-- </defun> -->
 
 
-<h2> Message $B$N2r@O4o(B
-<node> Message parser
+<h2> Entity $B$N@8@.(B
+<node> Entity creation
 <p>
+<defun name="mime-open-entity">
+	  <opts> type location
+<p>
+Open an entity and return it.
+<p>
+<var>type</var> is representation-type.
+<p>
+<var>location</var> is location of entity.  Specification of it is
+depended on representation-type.
+</defun>
+
 <defun name="mime-parse-message">
 	  <opts> default-ctl node-id
 <p>
@@ -365,6 +376,13 @@ Entity $B$N(B file $BL>$rJV$9!#(B
 node="Content-Transfer-Encoding">
 </defun>
 
+<defun name="mime-entity-cooked-p">
+	    <args> entity
+<p>
+Return non-nil if contents of <var>entity</var> has been already
+code-converted.
+</defun>
+
 
 <h2> Entity $B$NFbMF(B
 <node> Entity-content
@@ -373,6 +391,24 @@ node="Content-Transfer-Encoding">
 	    <args> entity
 <p>
 <var>entity</var> $B$NFbMF$N(B byte $BNs$rJV$9!#(B
+</defun>
+
+<defun name="mime-write-entity-content">
+	    <args> entity filename
+<p>
+Write content of <var>entity</var> into <var>filename</var>.
+</defun>
+
+<defun name="mime-write-entity">
+	    <args> entity filename
+<p>
+Write representation of <var>entity</var> into <var>filename</var>.
+</defun>
+
+<defun name="mime-write-entity-body">
+	    <args> entity filename
+<p>
+Write body of <var>entity</var> into <var>filename</var>.
 </defun>
 
 
