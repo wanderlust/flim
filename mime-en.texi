@@ -973,7 +973,8 @@ If @var{separator} is not @code{nil}, it is used as header separator.
 Encode header fields to network representation, such as MIME
 encoded-word.@refill
 
-It refer variable @code{eword-field-encoding-method-alist}.
+Each field is encoded as corresponding method specified by variable
+@code{eword-field-encoding-method-alist}.
 @end defun
 
 
