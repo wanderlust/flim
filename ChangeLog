@@ -1,9 +1,14 @@
 1999-12-01  Kenichi OKADA <okada@opaopa.org>
 
-        * SLIM-VERSION: Fix.
+	* smtp.el (smtp-auth-anonymous): New function.
+	(smtp-authentication-method-alist): Add anonymous.
+
+1999-12-01  Kenichi OKADA <okada@opaopa.org>
+
+	* SLIM-VERSION: Fix.
 	* smtp.el: Fix Author.
 	* sasl.el (sasl-cram-md5): Update to delete
-        insecure sequences at plain.
+	insecure sequences.
 
 1999-11-28  Kenichi OKADA <okada@opaopa.org>
 
@@ -68,9 +73,8 @@
 1999-10-23  Kenichi OKADA <okada@opaopa.org>
 
 	* smtp.el (smtp-auth-cram-md5): Update to delete
-	insecure sequences at plain.
-	(smtp-auth-login): Update to delete
-	insecure sequences at plain.
+	insecure sequences.
+	(smtp-auth-login): Ditto.
 
 1999-11-23  Kenichi OKADA <okada@opaopa.org>
 

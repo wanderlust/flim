@@ -99,6 +99,7 @@ don't define this value."
   '((cram-md5 smtp-auth-cram-md5)
     (plain smtp-auth-plain)
     (login smtp-auth-login)
+    (anonymous smtp-auth-anonymous)
     ))
 
 (defcustom smtp-connection-type nil
@@ -503,14 +504,14 @@ don't define this value."
     (smtp-send-command
      process
      (setq secure-word (unwind-protect
-			(sasl-plain "" smtp-authentication-user secure-word)
-		      (fillarray secure-word 0))
+			   (sasl-plain "" smtp-authentication-user secure-word)
+			 (fillarray secure-word 0))
 	   secure-word (unwind-protect
-			(base64-encode-string secure-word)
-		      (fillarray secure-word 0))
+			   (base64-encode-string secure-word)
+			 (fillarray secure-word 0))
 	   secure-word (unwind-protect
-			(concat "AUTH PLAIN " secure-word)
-		      (fillarray secure-word 0))))
+			   (concat "AUTH PLAIN " secure-word)
+			 (fillarray secure-word 0))))
     (fillarray secure-word 0)
     (setq response (smtp-read-response process))
     (if (or (null (car response))
@@ -532,9 +533,29 @@ don't define this value."
     (smtp-send-command
      process
      (setq secure-word (unwind-protect
-			(base64-encode-string secure-word)
-		      (fillarray secure-word 0))))
+			   (base64-encode-string secure-word)
+			 (fillarray secure-word 0))))
     (fillarray secure-word 0)
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response))))))
+
+(defun smtp-auth-anonymous (process &optional token)
+  (let (response)
+    (smtp-send-command
+     process "AUTH ANONYMOUS")
+    (setq response (smtp-read-response process))
+    (if (or (null (car response))
+	    (not (integerp (car response)))
+	    (>= (car response) 400))
+	(throw 'done (car (cdr response))))
+    (smtp-send-command process
+		       (base64-encode-string 
+			(or token
+			    user-mail-address
+			    "")))
     (setq response (smtp-read-response process))
     (if (or (null (car response))
 	    (not (integerp (car response)))
