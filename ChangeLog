@@ -1,3 +1,10 @@
+1998-10-14  Tanaka Akira      <akr@jaist.ac.jp>
+
+	* Sync up to flim-1_10_5 from flim-1_10_2.
+
+	* mime-def.el (mime-library-product): Bump up to FLAM-DOODLE
+	1.10.2.
+
 1998-10-09  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* mime-def.el (mime-library-product): Fix typo.
@@ -1198,6 +1205,99 @@
 1998-04-13  Tanaka Akira      <akr@jaist.ac.jp>
 
 	* eword-decode.el: Copied from AKEMI branch of SEMI.
+
+
+1998-10-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.10.5 (Kizugawadai) was released.
+
+	* mel.el: Must require poem.
+
+
+1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.10.4 (Shin-H-Dòsono)-A was released.
+
+1998-10-12  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* README.en: Add explanation about `VERSION_SPECIFIC_LISPDIR'.
+
+	* Makefile (install): Add new arg `VERSION_SPECIFIC_LISPDIR'.
+	(elc): Likewise.
+
+	* FLIM-MK (config-flim): Refer to `VERSION_SPECIFIC_LISPDIR'.
+
+	* FLIM-CFG (VERSION_SPECIFIC_LISPDIR): New variable.
+
+1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel.el (mel-ccl-module): Require path-util when the running
+	emacs has MULE.
+
+	* mel.el: Don't require emu.
+
+1998-10-11  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM-ELS: Don't install mel-ccl in anything older than XEmacs 21
+	with MULE.
+
+
+1998-10-10  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* FLIM: Version 1.10.3 (Komada) was released.
+
+	* mel-ccl.el (base64-ccl-write-decoded-region): bind
+	`jka-compr-compression-info-list' with nil.
+
+	* mel-b.el (base64-internal-decoding-limit): Switch default value
+	between XEmacs-mule and other emacsen.
+	Abolish function `base64-decode-string!'.
+	(base64-internal-decode-region): New implementation.
+	(base64-insert-encoded-file): New function.
+	(mime-insert-encoded-file): Use `base64-insert-encoded-file'.
+	(base64-write-decoded-region): New function.
+	(mime-write-decoded-region): Use `base64-write-decoded-region'.
+
+	* mel-b-dl.el (decode-base64-region): Renamed from
+	`base64-decode-region'.
+	(mime-insert-encoded-file): Change temporary-buffer to unibyte
+	representation.  Abolish method `mime-write-decoded-region'
+	because it is slower than CCL based implementation.
+
+1998-10-09  Tanaka Akira <akr@jaist.ac.jp>
+
+	* mel-ccl.el: Check `ccl-execute-eof-block-on-decoding-some'
+	facility instead of `ccl-execute-eof-block-on-encoding-some'.
+
+1998-10-09  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64-characters): Enclose with `eval-and-compile'.
+
+	* eword-decode.el (eword-encoded-text-regexp): Enclose with
+	`eval-and-compile'.
+	(eword-encoded-word-regexp): Use `eval-when-compile'.
+
+1998-10-09  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* eword-decode.el (eword-max-size-to-decode): New user option.
+	(eword-decode-and-fold-structured-field): Do nothing if size of
+	input is bigger than `eword-max-size-to-decode'.
+
+1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mel-b.el (base64-numbers): Use `eval-when-compile'.
+
+1998-10-09  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* FLIM-CFG: Use `add-latest-path' instead of `add-path' for adding
+	"custom" to load-path.
+
+1998-10-09  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mime-def.el (mime-library-product): Enclose with
+	`eval-and-compile'.
+
+	* FLIM-CFG: Add "custom" to load-path.
 
 
 1998-10-08  MORIOKA Tomohiko  <morioka@jaist.ac.jp>

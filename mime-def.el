@@ -24,8 +24,10 @@
 
 ;;; Code:
 
-(defconst mime-library-product ["FLAM-DOODLE" (1 10 1) "朽葉 10YR7.5/10.0"]
-  "Product name, version number and code name of MIME-library package.")
+(eval-and-compile
+  (defconst mime-library-product ["FLAM-DOODLE" (1 10 2) "赤白橡 5.0YR8.0/6.0"]
+    "Product name, version number and code name of MIME-library package.")
+  )
 
 (defmacro mime-product-name (product)
   `(aref ,product 0))

@@ -3,7 +3,7 @@
 #
 
 PACKAGE = flim
-VERSION = 1.10.2
+VERSION = 1.10.5
 
 TAR	= tar
 RM	= /bin/rm -f
@@ -17,6 +17,7 @@ FLAGS_CURDIR   = $(FLAGS) -eval '(setq load-path (cons "." load-path))'
 PREFIX = NONE
 LISPDIR = NONE
 PACKAGEDIR = NONE
+VERSION_SPECIFIC_LISPDIR = NONE
 
 GOMI	= *.elc \
 	  *.cp *.cps *.ky *.kys *.fn *.fns *.vr *.vrs \
@@ -25,10 +26,12 @@ FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 
 elc: ew-parse.el
-	$(EMACS) $(FLAGS) -l FLIM-MK -f compile-flim $(PREFIX) $(LISPDIR)
+	$(EMACS) $(FLAGS) -l FLIM-MK -f compile-flim $(PREFIX) $(LISPDIR) \
+		$(VERSION_SPECIFIC_LISPDIR)
 
 install:	elc
-	$(EMACS) $(FLAGS) -l FLIM-MK -f install-flim $(PREFIX) $(LISPDIR)
+	$(EMACS) $(FLAGS) -l FLIM-MK -f install-flim $(PREFIX) $(LISPDIR) \
+		$(VERSION_SPECIFIC_LISPDIR)
 
 
 package:
@@ -56,7 +59,7 @@ tar:
 	sed "s/VERSION/$(VERSION)/" < ftp.in > ftp
 
 release:
-	-$(RM) /pub/GNU/elisp/apel/$(PACKAGE)-$(VERSION).tar.gz
+	-$(RM) /pub/GNU/elisp/flim/$(PACKAGE)-$(VERSION).tar.gz
 	mv /tmp/$(PACKAGE)-$(VERSION).tar.gz /pub/GNU/elisp/flim/
 	cd /pub/GNU/elisp/semi/ ; \
 		ln -s ../flim/$(PACKAGE)-$(VERSION).tar.gz .
