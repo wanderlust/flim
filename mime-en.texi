@@ -103,7 +103,8 @@ mime-entity.@refill
 If @var{buffer} is omitted, current buffer is used.@refill
 
 @var{type} is representation-type of created
-mime-entity. (cf. @ref{mm-backend}) Default value is @var{buffer}.
+mime-entity. (cf. @ref{mm-backend})
+ Default value is @var{buffer}.
 @end defun
 
 
@@ -626,14 +627,14 @@ Return value of @var{parameter} of @var{content-type}.
 
 @defun mime-parse-Content-Type string
 
-Parse @var{string} as field-body of Content-Type field.
+Parse @var{string} as a field-body of Content-Type field.
 @end defun
 
 
 @defun mime-read-Content-Type
 
-Read field-body of Content-Type field from current-buffer, and return
-parsed it.@refill
+Parse Content-Type field of the current buffer, and return the
+result.@refill
 
 Return @code{nil} if Content-Type field is not found.
 @end defun
@@ -765,17 +766,18 @@ Content-Transfer-Encoding.
 
 @defun mime-parse-Content-Transfer-Encoding string
 
-@var{string} を content-transfer-encoding として解析した結果を返す。
+Parse @var{string} as a field-body of Content-Transfer-Encoding field,
+and return the result.
 @end defun
 
 
 @defun mime-read-Content-Transfer-Encoding &optional default-encoding
 
-現在の buffer の Content-Transfer-Encoding 欄を読み取り、解析した結果を
-返す。@refill
+Parse Content-Transfer-Encoding field of the current buffer, and return
+the result.@refill
 
-Content-Transfer-Encoding 欄が存在しない場合は@var{default-encoding} を
-返す。
+Return @var{default-encoding} if Content-Transfer-Encoding field is not
+found.  If it is not specified, @code{nil} is used as the default value.
 @end defun
 
 
