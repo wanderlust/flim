@@ -86,7 +86,8 @@
 
 (defsubst mailcap-look-at-schar ()
   (let ((chr (char-after (point))))
-    (if (and (>= chr ? )
+    (if (and chr
+	     (>= chr ? )
 	     (/= chr ?\;)
 	     (/= chr ?\\)
 	     )
