@@ -121,7 +121,8 @@ Represented as four 16-bit numbers, least significant first.")
   "Encodes MESSAGE using the MD5 message digest algorithm.
 MESSAGE must be a string or an array of bytes.
 Returns a vector of 16 bytes containing the message digest."
-  (if (<= (length message) md5-maximum-internal-length)
+  (if (or (null md5-maximum-internal-length)
+	   (<= (length message) md5-maximum-internal-length))
       (progn
 	(md5-init)
 	(md5-update message)
@@ -387,7 +388,8 @@ hash of a portion of OBJECT."
 		      object)))
 	   (t nil))
 	  (prog1
-	      (if (<= (point-max) md5-maximum-internal-length)
+	      (if (or (null md5-maximum-internal-length)
+		      (<= (point-max) md5-maximum-internal-length))
 		  (mapconcat
 		   (function (lambda (node) (format "%02x" node)))
 		   (md5-encode (buffer-string))

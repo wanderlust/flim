@@ -1,6 +1,8 @@
 2000-01-23  Kenichi OKADA <okada@opaopa.org>
 
-	* sha1.el (TopLevel): Defun-maybe `sha1-string' when compile.
+	* md5-el.el (md5-encode): If `md5-maximum-internal-length' is nil,
+	don't use external md5-program.
+	(md5): Ditto.
 
 2000-01-23  Kenichi OKADA <okada@opaopa.org>
 
