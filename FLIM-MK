@@ -1,0 +1,34 @@
+;;; -*-Emacs-Lisp-*-
+;;;
+;;; $Id$
+;;;
+
+(defun config-flim ()
+  (let (prefix lisp-dir)
+    (and (setq prefix (car command-line-args-left))
+	 (or (string-equal "NONE" prefix)
+	     (defvar PREFIX prefix)
+	     ))
+    (setq command-line-args-left (cdr command-line-args-left))
+    (and (setq lisp-dir (car command-line-args-left))
+	 (or (string-equal "NONE" lisp-dir)
+	     (defvar LISPDIR lisp-dir)
+	     ))
+    (setq command-line-args-left (cdr command-line-args-left))
+    (load-file "FLIM-CFG")
+    (load-file "FLIM-ELS")
+    (princ (format "PREFIX=%s
+LISPDIR=%s\n" PREFIX LISPDIR))
+    ))
+
+(defun compile-flim ()
+  (config-flim)
+  (compile-elisp-modules flim-modules ".")
+  )
+
+(defun install-flim ()
+  (config-flim)
+  (install-elisp-modules flim-modules "./" FLIM_DIR)
+  )
+
+;;; FLIM-MK ends here
