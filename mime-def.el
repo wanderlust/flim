@@ -255,6 +255,42 @@ message/rfc822, `mime-entity' structures of them are included in
 (make-variable-buffer-local 'mime-message-structure)
 
 
+;;; @ for mm-backend
+;;;
+
+(defvar mime-entity-implementation-alist nil)
+
+(defmacro mm-define-backend (type &optional parents)
+  (if parents
+      `(let ((rest ',(reverse parents)))
+	 (while rest
+	   (set-alist 'mime-entity-implementation-alist
+		      ',type
+		      (cdr (assq (car rest)
+				 mime-entity-implementation-alist)))
+	   (setq rest (cdr rest))
+	   ))))
+
+(defmacro mm-define-method (name args &rest body)
+  (let* ((specializer (car args))
+	 (class (nth 1 specializer))
+	 (self (car specializer)))
+    `(let ((imps (cdr (assq ',class mime-entity-implementation-alist)))
+	   (func (lambda ,(if self
+			      (cons self (cdr args))
+			    (cdr args))
+		   ,@body)))
+       (if imps
+	   (set-alist 'mime-entity-implementation-alist
+		      ',class (put-alist ',name func imps))
+	 (set-alist 'mime-entity-implementation-alist
+		    ',class
+		    (list (cons ',name func)))
+	 ))))
+
+(put 'mm-define-method 'lisp-indent-function 'defun)
+
+
 ;;; @ end
 ;;;
 
