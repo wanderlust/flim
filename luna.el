@@ -77,13 +77,14 @@ If SLOTS is specified, TYPE will be defined to have them."
     (while rest
       (setq parent (pop rest)
 	    b (- i 2))
-      (mapatoms (lambda (sym)
-		  (when (setq j (get sym 'luna-slot-index))
-		    (setq name (symbol-name sym))
-		    (unless (intern-soft name oa)
-		      (put (intern name oa) 'luna-slot-index (+ j b))
-		      (setq i (1+ i))
-		      )))
+      (mapatoms (function
+		 (lambda (sym)
+		   (when (setq j (get sym 'luna-slot-index))
+		     (setq name (symbol-name sym))
+		     (unless (intern-soft name oa)
+		       (put (intern name oa) 'luna-slot-index (+ j b))
+		       (setq i (1+ i))
+		       ))))
 		(luna-class-obarray (luna-find-class parent)))
       )
     (setq rest slots)
@@ -158,10 +159,11 @@ BODY is the body of method."
     (setq specializer (car args)
 	  class (nth 1 specializer)
 	  self (car specializer))
-    (` (let ((func (lambda (, (if self
-				  (cons self (cdr args))
-				(cdr args)))
-		     (,@ definition)))
+    (` (let ((func (function
+		    (lambda (, (if self
+				   (cons self (cdr args))
+				 (cdr args)))
+		      (,@ definition))))
 	     (sym (luna-class-find-or-make-member
 		   (luna-find-class '(, class)) '(, name))))
 	 (fset sym func)
@@ -308,34 +310,35 @@ ARGS is argument of and DOC is DOC-string."
   (let ((entity-class (luna-find-class class-name))
 	parents parent-class)
     (mapatoms
-     (lambda (slot)
-       (if (luna-class-slot-index entity-class slot)
-	   (catch 'derived
-	     (setq parents (luna-class-parents entity-class))
-	     (while parents
-	       (setq parent-class (luna-find-class (car parents)))
-	       (if (luna-class-slot-index parent-class slot)
-		   (throw 'derived nil))
-	       (setq parents (cdr parents))
-	       )
-	     (eval
-	      `(progn
-		 (defmacro ,(intern (format "%s-%s-internal"
-					    class-name slot))
-		   (entity)
-		   (list 'aref entity
-			 ,(luna-class-slot-index entity-class
-						 (intern (symbol-name slot)))
-			 ))
-		 (defmacro ,(intern (format "%s-set-%s-internal"
-					    class-name slot))
-		   (entity value)
-		   (list 'aset entity
-			 ,(luna-class-slot-index
-			   entity-class (intern (symbol-name slot)))
-			 value))
-		 ))
-	     )))
+     (function
+      (lambda (slot)
+	(if (luna-class-slot-index entity-class slot)
+	    (catch 'derived
+	      (setq parents (luna-class-parents entity-class))
+	      (while parents
+		(setq parent-class (luna-find-class (car parents)))
+		(if (luna-class-slot-index parent-class slot)
+		    (throw 'derived nil))
+		(setq parents (cdr parents))
+		)
+	      (eval
+	       `(progn
+		  (defmacro ,(intern (format "%s-%s-internal"
+					     class-name slot))
+		    (entity)
+		    (list 'aref entity
+			  ,(luna-class-slot-index entity-class
+						  (intern (symbol-name slot)))
+			  ))
+		  (defmacro ,(intern (format "%s-set-%s-internal"
+					     class-name slot))
+		    (entity value)
+		    (list 'aset entity
+			  ,(luna-class-slot-index
+			    entity-class (intern (symbol-name slot)))
+			  value))
+		  ))
+	      ))))
      (luna-class-obarray entity-class))))
 
 (luna-define-class-function 'standard-object)
