@@ -1,5 +1,9 @@
 1999-10-19  Kenichi OKADA <okada@opaopa.org>
 
+	* hmac-md5.el (hmac-md5): fixed for XEmacs's md5.
+
+1999-10-19  Kenichi OKADA <okada@opaopa.org>
+
 	* md5.el: New file. (import from hmac package)
 	* md5-el.el: New file. (import from hmac package)
 	* md5-dl.el: New file. (import from hmac package)
@@ -10,6 +14,8 @@
 	* hmac-util.el: New file. (import from hmac package)
 	* hmac-md5.el: New file. (import from hmac package)
 	* hmac-sha1.el: New file. (import from hmac package)
+	* FLIM-ELS (flim-modules): Add `md5 md5-el md5-dl sha1 sha1-el
+	sha1-dl hmac-def hmac-util hmac-md5 hmac-sha1'.
 
 1999-10-19  Kenichi OKADA <okada@opaopa.org>
 
@@ -19,7 +25,7 @@
 1999-10-19  Kenichi OKADA <okada@opaopa.org>
 
 	* sasl.el: New file.
-	* smtp.el: (smtp-via-smtp): Use sasl.el for SASL.
+	* smtp.el (smtp-via-smtp): Use sasl.el for SASL.
 	* FLIM-ELS (flim-modules): Add `sasl'.
 
 1999-08-17  MORIOKA Tomohiko  <tomo@m17n.org>

@@ -63,7 +63,22 @@
 (eval-when-compile (require 'hmac-def))
 (require 'md5)				; expects (md5 STRING)
 
-(define-hmac-function hmac-md5 md5 64 16) ; => (hmac-md5 TEXT KEY)
+(cond
+ ((and (fboundp 'md5)
+       (subrp (symbol-function 'md5)))
+  ;; recent XEmacs has `md5' as a built-in function.
+  ;; and default CODING is 'undecided.
+  ;; 
+  (define-hmac-function hmac-md5 
+    (lambda
+      (object &optional start end)
+      (md5 object start end 'binary)) 64 16)
+  )
+ (t
+  (define-hmac-function hmac-md5 md5 64 16)
+  ))
+; => (hmac-md5 TEXT KEY)
+
 ;; (define-hmac-function hmac-md5-96 md5 64 16 96)
 ;;  => (hmac-md5-96 TEXT KEY)
 
