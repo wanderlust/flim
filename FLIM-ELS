@@ -12,6 +12,7 @@
 		     mmbuffer mmcooked mmexternal
 		     mime-conf
 		     sasl sasl-cram sasl-digest
+		     md4 ntlm sasl-ntlm sasl-scram
 		     smtp qmtp smtpmail))
 
 (setq flim-version-specific-modules nil)
