@@ -312,6 +312,40 @@ mime-{parse|read}-Content-Type."
     ))
 
 
+;;; @ for buffer
+;;;
+
+(defvar mime-message-structure nil
+  "Information about structure of message.
+Please use reference function `mime-entity-SLOT' to get value of SLOT.
+
+Following is a list of slots of the structure:
+
+buffer			buffer includes this entity (buffer).
+node-id			node-id (list of integers)
+header-start		minimum point of header in raw-buffer
+header-end		maximum point of header in raw-buffer
+body-start		minimum point of body in raw-buffer
+body-end		maximum point of body in raw-buffer
+content-type		content-type (content-type)
+content-disposition	content-disposition (content-disposition)
+encoding		Content-Transfer-Encoding (string or nil)
+children		entities included in this entity (list of entity)
+
+If an entity includes other entities in its body, such as multipart or
+message/rfc822, `mime-entity' structures of them are included in
+`children', so the `mime-entity' structure become a tree.")
+(make-variable-buffer-local 'mime-message-structure)
+
+(defun mime-parse-buffer (&optional buffer)
+  "Parse BUFFER as a MIME message.
+If buffer is omitted, it parses current-buffer."
+  (save-excursion
+    (if buffer (set-buffer buffer))
+    (setq mime-message-structure (mime-parse-message))
+    ))
+
+
 ;;; @ utilities
 ;;;
 
