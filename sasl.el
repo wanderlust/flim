@@ -100,7 +100,7 @@ The second argument PLIST is the new property list."
 ;;;
 
 (defun sasl-make-mechanism (name steps)
-  "Make an authenticator.
+  "Make an authentication mechanism.
 NAME is a IANA registered SASL mechanism name.
 STEPS is list of continuation function."
   (vector name
