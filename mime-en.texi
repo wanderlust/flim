@@ -806,7 +806,8 @@ Decode region @var{start} to @var{end} of current buffer using
 
 @defun mime-decode-string string encoding
 
-@var{string} を @var{encoding} として復号した結果を返します。
+Decode @var{string} which is encoded in @var{encoding}, and return the
+result.
 @end defun
 
 
