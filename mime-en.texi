@@ -330,10 +330,9 @@ value.
 
 @defvar default-mime-charset
 
-Symbol to indicate default value of MIME-charset
-(@ref{MIME-charset}).@refill
+Symbol to indicate default value of MIME charset (@ref{MIME charset}).@refill
 
-It is used when MIME-charset is not specified.@refill
+It is used when MIME charset is not specified.@refill
 
 It is originally variable of APEL.
 @end defvar
