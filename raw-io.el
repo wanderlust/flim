@@ -48,7 +48,7 @@
        (apply (function start-process-shell-command) name buffer args))
     (as-binary-process
      (start-process name buffer shell-file-name shell-command-switch
-		 (mapconcat #'identity args " ")))))
+		 (mapconcat (function identity) args " ")))))
 
 (defalias 'raw-text-insert-file-contents 'insert-file-contents-as-raw-text)
 

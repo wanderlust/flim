@@ -1,5 +1,10 @@
 2000-12-22  Katsumi Yamaoka   <yamaoka@jpl.org>
 
+	* raw-io.el (binary-start-process-shell-command): Replace #' with
+	`function'.
+
+2000-12-22  Katsumi Yamaoka   <yamaoka@jpl.org>
+
 	* raw-io.el: Require `pces'
 	(binary-insert-file-contents): Alias to
 	`insert-file-contents-as-binary'.
