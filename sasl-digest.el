@@ -131,27 +131,17 @@ charset algorithm cipher-opts auth-param)."
      "cnonce=\"" cnonce "\","
      (format "nc=%08x," nonce-count)
      "digest-uri=\"" digest-uri "\","
-     "response=\""
+     "response="
      (sasl-digest-md5-response-value
       (sasl-client-name client)
       realm
       (plist-get plist 'nonce)
       cnonce
       nonce-count
-      (or (plist-get plist 'qop)
+      (or (sasl-client-property client 'qop)
 	  "auth")
       digest-uri
-      (plist-get plist 'authzid))
-     "\","
-     (mapconcat 
-      #'identity
-      (delq nil 
-	    (mapcar (lambda (prop)
-		      (let ((value (sasl-client-property client prop)))
-			(if value
-			    (format "%s=%s" prop value))))
-		    '(maxbuf charset cipher authzid)))
-      ","))))
+      (plist-get plist 'authzid)))))
 
 (put 'sasl-digest 'sasl-mechanism
      (sasl-make-mechanism "DIGEST-MD5" sasl-digest-md5-steps))
