@@ -39,13 +39,13 @@
 ;;
 ;; (lunit-class 'silly-test-case)
 ;; ______________________________________________________________________
-;; Starting test `test-1'
+;; Starting test `silly-test-case#test-1'
 ;; failure: (integerp "a")
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;; ______________________________________________________________________
-;; Starting test `test-2'
+;; Starting test `silly-test-case#test-2'
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;; 2 total, 1 failures, 0 errors
+;; 2 runs, 1 failures, 0 errors
 
 ;;; Code:
 
@@ -251,7 +251,6 @@ TESTS holds a number of instances of `lunit-test'."
        (signal 'lunit-failure (list ',condition-expr)))))
 
 (defvar lunit-test-results-buffer "*Lunit Results*")
-(defvar lunit-test-method-regexp "^test-")
 
 (luna-define-class lunit-test-printer (lunit-test-listener))
 
@@ -266,8 +265,9 @@ TESTS holds a number of instances of `lunit-test'."
 (luna-define-method lunit-test-listener-start ((printer lunit-test-printer) case)
   (princ (format "\
 ______________________________________________________________________
-Starting test `%S'
-" (lunit-test-name-internal case))))
+Starting test `%S#%S'\n"
+		 (luna-class-name case)
+		 (lunit-test-name-internal case))))
 
 (luna-define-method lunit-test-listener-end ((printer lunit-test-printer) case)
   (princ "\
@@ -280,8 +280,7 @@ Starting test `%S'
     (mapatoms
      (lambda (symbol)
        (if (and (fboundp symbol)
-		(null (get symbol 'luna-method-qualifier))
-		(string-match lunit-test-method-regexp (symbol-name symbol)))
+		(null (get symbol 'luna-method-qualifier)))
 	   (push (lunit-make-test-case class symbol) tests)))
      (luna-class-obarray (luna-find-class class)))
     (lunit
