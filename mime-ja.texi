@@ -228,7 +228,7 @@ used.
 
 @defun mime-entity-filename entity
 
-Entity の file 名を返す。
+@var{entity} の file 名を返す。
 @end defun
 
 
