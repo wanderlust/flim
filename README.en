@@ -22,9 +22,12 @@ What's FLIM
 	mel-g.el  --- unofficial module for gzip64
 
     eword: encoded-word encoder/decoder
-
 	eword-decode.el --- encoded-word decoder
 	eword-encode.el --- encoded-word encoder
+
+    mime-lib.el --- MIME entity library
+
+    mime-parse.el --- MIME parser
 
     mailcap.el	--- mailcap parser and utility
 
