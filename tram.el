@@ -56,8 +56,15 @@
 (defun tram-compose-&& (left right)
   "Multiplicative combinator which composes LEFT and RIGHT operations."
   `(lambda (trans)
-     (let ((next (closure-call ',left trans)))
-       (closure-call ',right next))))
+     (let ((next
+	    ,(macroexpand
+	      (if (functionp left)
+		  `(closure-call #',left trans)
+		`(closure-call ',left trans)))))
+       ,(macroexpand
+	 (if (functionp right)
+	     `(closure-call #',right next)
+	   `(closure-call ',right next))))))
 
 (defun tram-compose-|| (left right)
   "Additive combinator which composes LEFT and RIGHT operations."
@@ -65,10 +72,17 @@
      (let (next error)
        (setq error
 	     (catch (tram-stream-error-name trans)
-	       (setq next (closure-call ',left trans))
+	       (setq next
+		     ,(macroexpand
+		       (if (functionp left)
+			   `(closure-call #',left trans)
+			 `(closure-call ',left trans))))
 	       nil))
        (if error
-	   (closure-call ',right trans)
+	   ,(macroexpand
+	     (if (functionp right)
+		 `(closure-call #',right next)
+	       `(closure-call ',right next)))
 	 next))))
 
 (defun tram-fold-left (function accu sequence)
