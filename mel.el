@@ -183,9 +183,9 @@ region by its value."
     ;; Not standard, their use is DISCOURAGED.
     ;; ("x-uue"            . uuencode-insert-encoded-file)
     ;; ("x-gzip64"         . gzip64-insert-encoded-file)
-    ("7bit"		. insert-binary-file-contents-literally)
-    ("8bit"		. insert-binary-file-contents-literally)
-    ("binary"		. insert-binary-file-contents-literally)
+    ("7bit"		. insert-binary-file-contents)
+    ("8bit"		. insert-binary-file-contents)
+    ("binary"		. insert-binary-file-contents)
     )
   "Alist of encoding vs. corresponding method to insert encoded file.
 Each element looks like (STRING . FUNCTION).
