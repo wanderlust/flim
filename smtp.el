@@ -68,7 +68,11 @@ don't define this value."
   :type '(choice (const nil) string)
   :group 'smtp)
 
-(defvar smtp-debug-info nil)
+(defcustom smtp-debug-info nil
+  "*smtp debug info printout. messages and process buffer."
+  :type 'boolean
+  :group 'smtp)
+
 (defvar smtp-read-point nil)
 
 (defun smtp-make-fqdn ()
