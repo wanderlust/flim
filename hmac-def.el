@@ -1,4 +1,4 @@
-;;; hmac-def.el --- Functions/macros for defining HMAC functions.
+;;; hmac-def.el --- A macro for defining HMAC functions.
 
 ;; Copyright (C) 1999 Shuhei KOBAYASHI
 
@@ -24,71 +24,62 @@
 
 ;;; Commentary:
 
-;; See RFC 2104, "HMAC: Keyed-Hashing for Message Authentication"
-;; for definition of HMAC.
+;; This program is implemented from RFC 2104,
+;; "HMAC: Keyed-Hashing for Message Authentication".
 
 ;;; Code:
 
-(require 'hmac-util)
-
-(defmacro hmac-unhex-string-macro (string length)
-  (let* ((len (eval length))
-         (dst (make-string (/ len 2) 0)))
-    `(let ((str ,string)
-           (dst ,dst)
-           (idx 0)(pos 0))
-       (while (< pos ,len)
-	 (aset dst idx (+ (* (hmac-hex-to-int (aref str pos)) 16)
-			  (hmac-hex-to-int (aref str (1+ pos)))))
-	 (setq idx (1+ idx)
-	       pos (+ 2 pos)))
-       dst)))
-
-;; Note that H, B, and L will be evaluated multiple times.  They are
-;; usually constants, so I don't want to bother to bind them locally.
 (defmacro define-hmac-function (name H B L &optional bit)
-  "Define a function NAME which computes HMAC with hash function H.
+  "Define a function NAME(TEXT KEY) which computes HMAC with function H.
 
-HMAC function is H\(KEY XOR opad, H\(KEY XOR ipad, TEXT\)\):
+HMAC function is H(KEY XOR opad, H(KEY XOR ipad, TEXT)):
 
 H is a cryptographic hash function, such as SHA1 and MD5, which takes
-a string and return a digest of it \(in hexadecimal form\).
-B is a byte-length of a block size of H. \(B=64 for both SHA1 and MD5.\)
-L is a byte-length of hash outputs. \(L=16 for MD5, L=20 for SHA1.\)
+a string and return a digest of it (in binary form).
+B is a byte-length of a block size of H. (B=64 for both SHA1 and MD5.)
+L is a byte-length of hash outputs. (L=16 for MD5, L=20 for SHA1.)
 If BIT is non-nil, truncate output to specified bits."
-  `(defun ,name (text key)
-     ,(concat "Compute " (upcase (symbol-name name)) " over TEXT with KEY.")
-     (let ((key-xor-ipad (make-string ,B ?\x36))
-           (key-xor-opad (make-string ,B ?\x5C))
-           (len (length key))
-           (pos 0))
-       (when (> len ,B)
-         (setq key (hmac-unhex-string-macro (,H key) ,(* L 2)))
-	 (setq len ,L))
-       (while (< pos len)
-         (aset key-xor-ipad pos (logxor (aref key pos) ?\x36))
-         (aset key-xor-opad pos (logxor (aref key pos) ?\x5C))
-         (setq pos (1+ pos)))
-       ;; If outer `hmac-unhex-string-macro' is removed, return value
-       ;; will be in hexadecimal form.  It is useful for test.
-       ,(if (and bit (< (/ bit 8) L))
-	    `(substring
-	      (hmac-unhex-string-macro
-	       (,H
-		(concat key-xor-opad
-			(hmac-unhex-string-macro
-			 (,H (concat key-xor-ipad text))
-			 ,(* L 2))))
-	       ,(* L 2))
-	      0 ,(/ bit 8))
-	  `(hmac-unhex-string-macro
-	    (,H
-	     (concat key-xor-opad
-		     (hmac-unhex-string-macro
-		      (,H (concat key-xor-ipad text))
-		      ,(* L 2))))
-	    ,(* L 2))))))
+  (` (defun (, name) (text key)
+       (, (concat "Compute "
+		  (upcase (symbol-name name))
+		  " over TEXT with KEY."))
+       (let ((key-xor-ipad (make-string (, B) ?\x36))
+	     (key-xor-opad (make-string (, B) ?\x5C))
+	     (len (length key))
+	     (pos 0))
+	 (unwind-protect
+	     (progn
+	       ;; if `key' is longer than the block size, apply hash function
+	       ;; to `key' and use the result as a real `key'.
+	       (if (> len (, B))
+		   (setq key ((, H) key)
+			 len (, L)))
+	       (while (< pos len)
+		 (aset key-xor-ipad pos (logxor (aref key pos) ?\x36))
+		 (aset key-xor-opad pos (logxor (aref key pos) ?\x5C))
+		 (setq pos (1+ pos)))
+	       (setq key-xor-ipad (unwind-protect
+				      (concat key-xor-ipad text)
+				    (fillarray key-xor-ipad 0))
+		     key-xor-ipad (unwind-protect
+				      ((, H) key-xor-ipad)
+				    (fillarray key-xor-ipad 0))
+		     key-xor-opad (unwind-protect
+				      (concat key-xor-opad key-xor-ipad)
+				    (fillarray key-xor-opad 0))
+		     key-xor-opad (unwind-protect
+				      ((, H) key-xor-opad)
+				    (fillarray key-xor-opad 0)))
+	       ;; now `key-xor-opad' contains
+	       ;; H(KEY XOR opad, H(KEY XOR ipad, TEXT)).
+	       (, (if (and bit (< (/ bit 8) L))
+		      (` (substring key-xor-opad 0 (, (/ bit 8))))
+		    ;; return a copy of `key-xor-opad'.
+		    (` (concat key-xor-opad)))))
+	   ;; cleanup.
+	   (fillarray key-xor-ipad 0)
+	   (fillarray key-xor-opad 0))))))
 
 (provide 'hmac-def)
 
-;;; hmac-def.el ends here.
+;;; hmac-def.el ends here

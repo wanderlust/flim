@@ -1,5 +1,17 @@
 1999-10-20  Kenichi OKADA <okada@opaopa.org>
 
+	* smtp.el (smtp-via-smtp): Update to delete
+	insecure sequences at plain.
+	* SLIM-VERION: Add code name.
+	* mime-def.el (mime-library-product): Up.
+
+1999-10-20  Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+
+	* hmac-def.el (define-hmac-function): Update to delete
+	insecure sequences.
+
+1999-10-20  Kenichi OKADA <okada@opaopa.org>
+
 	* SLIM: Version 1.13.0 released.
 
 1999-10-20  Kenichi OKADA <okada@opaopa.org>

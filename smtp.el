@@ -177,11 +177,19 @@ don't define this value."
 			 (throw 'done (car (cdr response)))))
 
 		    ((string= "plain" auth)
-                     (smtp-send-command
-                      process
-                      (concat "AUTH PLAIN "
-                              (base64-encode-string
-                               (plain-encode "" user passphrase))))
+		     (let ((enc-word (copy-sequence passphrase)))
+		       (smtp-send-command
+			process
+			(setq enc-word (unwind-protect
+					   (sasl-plain "" user enc-word)
+					 (fillarray enc-word 0))
+			      enc-word (unwind-protect
+					   (base64-encode-string enc-word)
+					 (fillarray enc-word 0))
+			      enc-word (unwind-protect
+					   (concat "AUTH PLAIN " enc-word)
+					 (fillarray enc-word 0))))
+		       (fillarray enc-word 0))
 		     (setq response (smtp-read-response process))
 		     (if (or (null (car response))
 			     (not (integerp (car response)))
