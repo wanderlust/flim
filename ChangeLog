@@ -1,5 +1,18 @@
 1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mel-b.el (base64): New group.
+	(base64-external-encoder): Now a user option.
+	(base64-external-decoder): Now a user option.
+	(base64-external-decoder-option-to-specify-file): Now a user
+	option.
+	(base64-internal-encoding-limit): Now a user option.
+	(base64-internal-decoding-limit): Now a user option.
+
+	* mel-b.el (base64-internal-decode-string): New implementation;
+	abolish function `base64-decode-unit'.
+
+1998-09-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* README.en (Installation): Fix typo.
 
 
