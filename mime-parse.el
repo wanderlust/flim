@@ -116,6 +116,13 @@ be the result."
 ;;; 	      dest (cons (cons 'mime-token
 ;;; 			       (substring string start pos))
 ;;; 			 dest)
+;;; 	      start pos))
+;;;        ;; error
+;;;        (t
+;;; 	(setq pos len
+;;; 	      dest (cons (cons 'error
+;;; 			       (substring string start pos))
+;;; 			 dest)
 ;;; 	      start pos))))
 ;;;     (nreverse dest)))
 (defun mime-lexical-analyze (string)
