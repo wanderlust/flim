@@ -9,7 +9,7 @@ What's FLIM
 
     std11.el	--- STD 11 (RFC 822) parser and utility
 
-    mime.el	--- MIME library
+    mime.el	--- to provide various services about MIME-entities
 
       mime-def.el --- Definitions about MIME format
 
@@ -18,14 +18,16 @@ What's FLIM
       mel.el --- MIME encoder/decoder
 	mel-b-dl.el --- base64 (B-encoding) encoder/decoder
 			(for Emacs 20 with dynamic loading support)
-	mel-b.el    --- base64 (B-encoding) encoder/decoder
+	mel-b-ccl.el --- base64 (B-encoding) encoder/decoder
+			 (using CCL)
+	mel-b-en.el --- base64 (B-encoding) encoder/decoder
 			(for other emacsen)
+	mel-q-ccl.el --- quoted-printable and Q-encoding
+			 encoder/decoder (using CCL)
 	mel-q.el    --- quoted-printable and Q-encoding
 		    	encoder/decoder
-	mel-ccl.el  --- base64 (B-encoding), quoted-printable and
-		    	Q-encoding encoder/decoder using CCL
-	mel-u.el    --- unofficial module for uuencode
-	mel-g.el    --- unofficial module for gzip64
+	mel-u.el    --- unofficial backend for uuencode
+	mel-g.el    --- unofficial backend for gzip64
 
       eword-decode.el --- encoded-word decoder
       eword-encode.el --- encoded-word encoder
@@ -67,7 +69,7 @@ Installation
   If `EMACS=...' is omitted, EMACS=emacs is used.
 
   You can specify the prefix of the directory tree for Emacs Lisp
-  programs and shell scripts, for example:
+  programs, for example:
 
 	% make install PREFIX=~/
 
@@ -93,6 +95,11 @@ Installation
 
 	% make install VERSION_SPECIFIC_LISPDIR=~/elisp
 
+  Following make target is available to find what files are parts of
+  emu / APEL package, and where are directories to install them:
+
+    % make what-where LISPDIR=~/elisp VERSION_SPECIFIC_LISPDIR=~/elisp
+
   You can specify other optional settings by editing the file
   FLIM-CFG.  Please read comments in it.
 
@@ -103,7 +110,7 @@ Installation
 
 	% make install-package
 
-  You can specify the emacs command name, for example
+  You can specify the XEmacs command name, for example
 
 	% make install-package XEMACS=xemacs-21
 
