@@ -27,6 +27,9 @@
 (require 'poe)
 
 (defvar sasl-mechanisms
+  '("CRAM-MD5" "DIGEST-MD5" "PLAIN"))
+
+(defvar sasl-mechanism-alist
   '(("CRAM-MD5" sasl-cram)
     ("DIGEST-MD5" sasl-digest)
     ("PLAIN" sasl-plain)))
@@ -59,12 +62,14 @@
 
 (defun sasl-find-authenticator (mechanisms)
   "Retrieve an apropriate authenticator object from MECHANISMS hints."
-  (let (mechanism)
-    (while mechanisms
-      (if (setq mechanism (assoc (car mechanisms) sasl-mechanisms))
-	  (setq mechanism (nth 1 mechanism)
-		mechanisms nil))
-      (setq mechanisms (cdr mechanisms)))
+  (let* ((sasl-mechanisms sasl-mechanisms)
+	 (mechanism
+	  (catch 'done
+	    (while sasl-mechanisms
+	      (if (member (car sasl-mechanisms) mechanisms)
+		  (throw 'done (nth 1 (assoc (car sasl-mechanisms)
+					     sasl-mechanism-alist))))
+	      (setq sasl-mechanisms (cdr sasl-mechanisms))))))
     (when mechanism
       (require mechanism)
       (get mechanism 'sasl-authenticator))))

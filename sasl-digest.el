@@ -51,8 +51,8 @@
 
 (defconst sasl-digest-md5-continuations
   '(ignore				;no initial response
-    sasl-digest-md5-response
-    ignore))				;""
+    sasl-digest-md5-response-1
+    sasl-digest-md5-response-2))	;""
 
 (unless (get 'sasl-digest 'sasl-authenticator)
   (put 'sasl-digest 'sasl-authenticator
@@ -74,20 +74,21 @@
 (defun sasl-digest-md5-parse-digest-challenge (digest-challenge)
   "Return a property list parsed DIGEST-CHALLENGE.
 The value is a cons cell of the form \(realm nonce qop-options stale maxbuf
-charset algorithm cipher-opts auth-param)".
-  (with-temp-buffer
-    (set-syntax-table sasl-digest-md5-parse-digest-challenge-syntax-table)
-    (insert digest-challenge)
-    (goto-char (point-min))
-    (insert "(")
-    (while (progn (forward-sexp) (not (eobp)))
-      (delete-char 1)
-      (insert " "))
-    (insert ")")
-    (condition-case nil
-	(setplist 'sasl-digest-md5-challenge (read (point-min-marker)))
-      (end-of-file
-       (error "Parse error in digest-challenge.")))))
+charset algorithm cipher-opts auth-param)."
+  (save-excursion
+    (with-temp-buffer
+      (set-syntax-table sasl-digest-md5-parse-digest-challenge-syntax-table)
+      (insert digest-challenge)
+      (goto-char (point-min))
+      (insert "(")
+      (while (progn (forward-sexp) (not (eobp)))
+	(delete-char 1)
+	(insert " "))
+      (insert ")")
+      (condition-case nil
+	  (setplist 'sasl-digest-md5-challenge (read (point-min-marker)))
+	(end-of-file
+	 (error "Parse error in digest-challenge."))))))
 
 (defun sasl-digest-md5-digest-uri (serv-type host &optional serv-name)
   (concat serv-type "/" host
@@ -136,7 +137,7 @@ charset algorithm cipher-opts auth-param)".
    "cnonce=\"" cnonce "\","
    "digest-uri=\"" digest-uri "\","
    "response=" 
-   (sasl-digest-md5-build-response-value
+   (sasl-digest-md5-build-response-value-1
     username realm passwd nonce cnonce nonce-count digest-uri
     (or qop "auth"))
    ","
@@ -150,7 +151,7 @@ charset algorithm cipher-opts auth-param)".
 		  '(charset qop maxbuf cipher authzid)))
     ",")))
 
-(defun sasl-digest-md5-digest-response (principal challenge)
+(defun sasl-digest-md5-response-1 (principal challenge)
   (sasl-digest-md5-parse-digest-challenge (nth 1 challenge))
   (let ((passphrase
 	 (sasl-read-passphrase
@@ -169,6 +170,8 @@ charset algorithm cipher-opts auth-param)".
 	  (sasl-principal-service-internal principal)
 	  (sasl-principal-server-internal principal)))
       (fillarray passphrase 0))))
+
+(defalias 'sasl-digest-md5-response-2 'ignore)
 
 (provide 'sasl-digest)
 

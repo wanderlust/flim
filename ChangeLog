@@ -1,5 +1,20 @@
 2000-11-02   Daiki Ueno  <ueno@unixuser.org>
 
+	* sasl-digest.el (sasl-digest-md5-response-1): Rename from
+	`sasl-digest-md5-digest-response'.
+	(sasl-digest-md5-response-2): New alias.
+	(sasl-digest-md5-parse-digest-challenge): Save excursion.
+
+	* sasl.el (sasl-mechanism-alist): Rename from `sasl-mechanisms'.
+	(sasl-mechanisms): New variable.
+	(sasl-find-authenticator): Check `sasl-mechanisms' rather than
+	`sasl-mechanism-alist'.
+
+	* smtp.el (smtp-submit-package): Use `smtp-primitive-ehlo'.
+	(smtp-primitive-auth): Check authenticator.
+
+2000-11-02   Daiki Ueno  <ueno@unixuser.org>
+
 	* FLIM-ELS (hmac-modules): New variable.
 	(flim-modules): Move HMAC modules to `hmac-modules'
 	- Add `sasl-digest'.

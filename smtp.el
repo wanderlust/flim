@@ -260,7 +260,10 @@ or `smtp-local-domain' correctly."))))))
   (unwind-protect
       (progn
 	(smtp-primitive-greeting package)
-	(smtp-primitive-helo package)
+	(condition-case nil
+	    (smtp-primitive-ehlo package)
+	  (smtp-response-error
+	   (smtp-primitive-helo package)))
 	(if smtp-use-starttls
 	    (smtp-primitive-starttls package))
 	(if smtp-use-sasl
@@ -336,13 +339,14 @@ or `smtp-local-domain' correctly."))))))
 	   "smtp" (smtp-connection-server-internal connection)
 	   smtp-sasl-principal-realm))
 	 (authenticator
-	  (sasl-find-authenticator mechanisms))
-	 (mechanism
-	  (sasl-authenticator-mechanism-internal authenticator))
-	 ;; Retrieve the initial response
-	 (sasl-response
-	  (sasl-evaluate-challenge authenticator principal))
-	 response)
+	  (let ((sasl-mechanisms smtp-sasl-mechanisms))
+	    (sasl-find-authenticator mechanisms)))
+	 mechanism sasl-response response)
+    (unless authenticator
+      (error "No authentication mechanism available."))
+    (setq mechanism (sasl-authenticator-mechanism-internal authenticator)
+	  ;; Retrieve the initial response
+	  sasl-response (sasl-evaluate-challenge authenticator principal))
     (smtp-send-command
      process
      (if (nth 1 sasl-response)
@@ -365,8 +369,10 @@ or `smtp-local-domain' correctly."))))))
 	(setq sasl-response
 	      (sasl-evaluate-challenge
 	       authenticator principal sasl-response))
-	(smtp-send-command process (base64-encode-string
-				    (nth 1 sasl-response) t))))))
+	(smtp-send-command
+	 process (if (nth 1 sasl-response)
+		     (base64-encode-string (nth 1 sasl-response) t)
+		   ""))))))
 
 (defun smtp-primitive-starttls (package)
   (let* ((connection
