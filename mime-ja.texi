@@ -997,12 +997,12 @@ Header 中の encoded-word を復号する。@refill
 
 Header を network 表現に符号化する。@refill
 
-各 field は @code{eword-field-encoding-method-alist} で指定された方式で
+各 field は @code{mime-field-encoding-method-alist} で指定された方式で
 符号化される。
 @end defun
 
 
-@defvar eword-field-encoding-method-alist
+@defvar mime-field-encoding-method-alist
 
 Field を符号化する方法を指定する連想 list。各 element は (FIELD
 . METHOD) の様になっている。@refill
@@ -1030,18 +1030,6 @@ MIME 関連機能に関する group.@refill
 
 @code{mail} と @code{news} に属する。
 @end deffn
-
-
-@defvar mime-temp-directory
-
-MIME 機能に関する実装が一時的に使用する file を作成する 
-directory.@refill
-
-環境変数 @code{MIME_TMP_DIR}, @code{TM_TMP_DIR}, @code{TMPDIR},
-@code{TMP} もしくは @code{TEMP} が設定されていた場合、それを初期値として
-用いる。何も設定されていない場合、@code{"/tmp/"} を用いる。
-@end defvar
-
 
 
 @node Appendix, Concept Index, custom, Top
@@ -1561,8 +1549,8 @@ CVS を用いた開発に参加したい方は
 @end itemize
 
 @noindent
-まで、account 名と UNIX の passwd と同じ形式の crypt 化された password
-を沿えて御連絡ください。
+まで、アカウント名と ssh の公開鍵を送ってください。ssh 経由では、
+cvsroot は :ext:cvs@@cvs.m17n.org:/cvs/root となります。
 
 
 @node History,  , CVS, Appendix
