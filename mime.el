@@ -94,11 +94,8 @@ representation-type."
   "Return entity-number of ENTITY."
   (reverse (mime-entity-node-id-internal entity)))
 
-(defun mime-find-entity-from-number (entity-number &optional message)
-  "Return entity from ENTITY-NUMBER in MESSAGE.
-If MESSAGE is not specified, `mime-message-structure' is used."
-  (or message
-      (setq message mime-message-structure))
+(defun mime-find-entity-from-number (entity-number message)
+  "Return entity from ENTITY-NUMBER in MESSAGE."
   (let ((sn (car entity-number)))
     (if (null sn)
 	message
@@ -108,16 +105,12 @@ If MESSAGE is not specified, `mime-message-structure' is used."
 	  ))
       )))
 
-(defun mime-find-entity-from-node-id (entity-node-id &optional message)
-  "Return entity from ENTITY-NODE-ID in MESSAGE.
-If MESSAGE is not specified, `mime-message-structure' is used."
+(defun mime-find-entity-from-node-id (entity-node-id message)
+  "Return entity from ENTITY-NODE-ID in MESSAGE."
   (mime-find-entity-from-number (reverse entity-node-id) message))
 
-(defun mime-find-entity-from-content-id (cid &optional message)
-  "Return entity from CID in MESSAGE.
-If MESSAGE is not specified, `mime-message-structure' is used."
-  (or message
-      (setq message mime-message-structure))
+(defun mime-find-entity-from-content-id (cid message)
+  "Return entity from CID in MESSAGE."
   (if (equal cid (mime-entity-read-field message "Content-Id"))
       message
     (let ((children (mime-entity-children message))
@@ -209,16 +202,16 @@ If MESSAGE is specified, it is regarded as root entity."
 (luna-define-generic mime-entity-fetch-field (entity field-name)
   "Return the value of the ENTITY's header field whose type is FIELD-NAME.")
 
-(defun mime-fetch-field (field-name &optional entity)
-  "Return the value of the ENTITY's header field whose type is FIELD-NAME."
-  (if (symbolp field-name)
-      (setq field-name (symbol-name field-name))
-    )
-  (or entity
-      (setq entity mime-message-structure))
-  (mime-entity-fetch-field entity field-name)
-  )
-(make-obsolete 'mime-fetch-field 'mime-entity-fetch-field)
+;; (defun mime-fetch-field (field-name &optional entity)
+;;   "Return the value of the ENTITY's header field whose type is FIELD-NAME."
+;;   (if (symbolp field-name)
+;;       (setq field-name (symbol-name field-name))
+;;     )
+;;   (or entity
+;;       (setq entity mime-message-structure))
+;;   (mime-entity-fetch-field entity field-name)
+;;   )
+;; (make-obsolete 'mime-fetch-field 'mime-entity-fetch-field)
 
 (defun mime-entity-content-type (entity)
   (or (mime-entity-content-type-internal entity)
@@ -308,12 +301,12 @@ If MESSAGE is specified, it is regarded as root entity."
 		      entity (put-alist sym field header))
 		     field))))))))
 
-(defun mime-read-field (field-name &optional entity)
-  (or entity
-      (setq entity mime-message-structure))
-  (mime-entity-read-field entity field-name)
-  )
-(make-obsolete 'mime-read-field 'mime-entity-read-field)
+;; (defun mime-read-field (field-name &optional entity)
+;;   (or entity
+;;       (setq entity mime-message-structure))
+;;   (mime-entity-read-field entity field-name)
+;;   )
+;; (make-obsolete 'mime-read-field 'mime-entity-read-field)
 
 (luna-define-generic mime-insert-header (entity &optional invisible-fields
 						visible-fields)
