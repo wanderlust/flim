@@ -12,10 +12,10 @@
 <abstract>
 <p>
 This file documents MIME features of FLIM, a fundamental library to
-process Internet Messages for GNU Emacs / XEmacs.
+process Internet Messages for GNU Emacsen.
 <p>
-GNU Emacs / XEmacs 用の Internet Message 処理のための基礎 library であ
-る FLIM の MIME 機能に関して説明します。
+GNU Emacsen 用の Internet Message 処理のための基礎 library である FLIM 
+の MIME 機能に関して説明します。
 </abstract>
 
 
