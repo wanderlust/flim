@@ -119,11 +119,6 @@ ENTITY is used."
 (defalias 'mime-entity-header-start 'mime-entity-header-start-internal)
 (defalias 'mime-entity-header-end   'mime-entity-header-end-internal)
 
-(defalias 'mime-entity-content-type	'mime-entity-content-type-internal)
-(defalias 'mime-entity-content-disposition
-  'mime-entity-content-disposition-internal)
-(defalias 'mime-entity-encoding		'mime-entity-encoding-internal)
-
 (defun mime-fetch-field (field-name &optional entity)
   (or (symbolp field-name)
       (setq field-name (intern (capitalize (capitalize field-name)))))
@@ -145,6 +140,20 @@ ENTITY is used."
 	       entity (put-alist field-name field-body header))
 	    )
 	  field-body))))
+
+(defalias 'mime-entity-content-type 'mime-entity-content-type-internal)
+
+(defun mime-entity-content-disposition (entity)
+  (or (mime-entity-content-disposition-internal entity)
+      (let ((ret (mime-fetch-field 'Content-Disposition entity)))
+	(if ret
+	    (let ((disposition (mime-parse-Content-Disposition ret)))
+	      (when disposition
+		(mime-entity-set-content-disposition-internal
+		 entity disposition)
+		disposition))))))
+
+(defalias 'mime-entity-encoding 'mime-entity-encoding-internal)
 
 (defun mime-read-field (field-name &optional entity)
   (or (symbolp field-name)
