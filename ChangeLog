@@ -1,5 +1,10 @@
 1999-12-21  Kenichi OKADA <okada@opaopa.org>
 
+	* sasl.el (TopLevel): Autoload `digest-md5' and `scram-md5'.
+
+
+1999-12-21  Kenichi OKADA <okada@opaopa.org>
+
 	* SLIM: Version 1.13.5 released.
 
 1999-12-20  Katsumi Yamaoka   <yamaoka@jpl.org>
