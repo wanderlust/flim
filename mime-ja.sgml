@@ -708,9 +708,9 @@ using <var>encoding</var>.
 
 
 <defun name="mime-decode-string">
-	      <args> string encoding
+	    <args> string encoding
 <p>
-<var>string</var> を <var>encoding</var> として復号した結果を返します。
+<var>string</var> を <var>encoding</var> として復号した結果を返す。
 </defun>
 
 
@@ -850,23 +850,26 @@ FLIM はこれらを符号化・復号化する機能を提供します。
 <defun name="eword-decode-header">
 	    <opts> code-conversion separator
 <p>
-Decode MIME encoded-words in header fields.
+Header 中の encoded-word を復号する。
 <p>
-If <var>code-conversion</var> is <code>nil</code>, it decodes only
-encoded-words.  If it is mime-charset, it decodes non-ASCII bit
-patterns as the mime-charset.  Otherwise it decodes non-ASCII bit
-patterns as the default-mime-charset.
+もし <var>code-conversion</var> が <code>nil</code> なら、encoded-word 
+だけが復号される。もし、<var>code-conversion</var> が <dref>MIME
+charset</dref> なら、非 ASCII bit patterns はその MIME charset として
+復号される。これ以外の場合、非 ASCII bit patterns は
+<code>default-mime-charset</code>. として復号される。<cf node="entity
+formatting">
 <p>
-If <var>separator</var> is not nil, it is used as header separator.
+もし <var>separator</var> が <code>nil</code> でなければ、その値が
+header separator として用いられる。
 </defun>
 
 <defun name="eword-encode-header">
-	      <opts> code-conversion
+	    <opts> code-conversion
 <p>
-Encode header fields to network representation, such as MIME
-encoded-word.
+Header を network 表現に符号化する。
 <p>
-It refer variable <code>eword-field-encoding-method-alist</code>.
+各 field は <code>eword-field-encoding-method-alist</code> で指定され
+た方式で符号化される。
 </defun>
 
 
