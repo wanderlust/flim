@@ -7,7 +7,7 @@
 ;; Created: 1995/6/25
 ;; Keywords: MIME, Base64, Quoted-Printable, uuencode, gzip64
 
-;; This file is part of MEL (MIME Encoding Library).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -29,51 +29,23 @@
 (require 'emu)
 
 
-;;; @ variable
-;;;
-
-(defvar base64-dl-module
-  (and (fboundp 'dynamic-link)
-       (let ((path (expand-file-name "base64.so" exec-directory)))
-	 (and (file-exists-p path)
-	      path))))
-
-
 ;;; @ autoload
 ;;;
 
-(cond (base64-dl-module
-       (autoload 'base64-encode-string "mel-dl"
-	 "Encode STRING to base64, and return the result.")
-       (autoload 'base64-decode-string "mel-dl"
-	 "Decode STRING which is encoded in base64, and return the result.")
-       (autoload 'base64-encode-region "mel-dl"
-	 "Encode current region by base64." t)
-       (autoload 'base64-decode-region "mel-dl"
-	 "Decode current region by base64." t)
-       (autoload 'base64-insert-encoded-file "mel-dl"
-	 "Encode contents of file to base64, and insert the result." t)
-       (autoload 'base64-write-decoded-region "mel-dl"
-	 "Decode and write current region encoded by base64 into FILENAME." t)
-       ;; for encoded-word
-       (autoload 'base64-encoded-length "mel-dl")
-       )
-      (t
-       (autoload 'base64-encode-string "mel-b"
-	 "Encode STRING to base64, and return the result.")
-       (autoload 'base64-decode-string "mel-b"
-	 "Decode STRING which is encoded in base64, and return the result.")
-       (autoload 'base64-encode-region "mel-b"
-	 "Encode current region by base64." t)
-       (autoload 'base64-decode-region "mel-b"
-	 "Decode current region by base64." t)
-       (autoload 'base64-insert-encoded-file "mel-b"
-	 "Encode contents of file to base64, and insert the result." t)
-       (autoload 'base64-write-decoded-region "mel-b"
-	 "Decode and write current region encoded by base64 into FILENAME." t)
-       ;; for encoded-word
-       (autoload 'base64-encoded-length "mel-b")
-       ))
+(autoload 'base64-encode-string "mel-b"
+  "Encode STRING to base64, and return the result.")
+(autoload 'base64-decode-string "mel-b"
+  "Decode STRING which is encoded in base64, and return the result.")
+(autoload 'base64-encode-region "mel-b"
+  "Encode current region by base64." t)
+(autoload 'base64-decode-region "mel-b"
+  "Decode current region by base64." t)
+(autoload 'base64-insert-encoded-file "mel-b"
+  "Encode contents of file to base64, and insert the result." t)
+(autoload 'base64-write-decoded-region "mel-b"
+  "Decode and write current region encoded by base64 into FILENAME." t)
+;; for encoded-word
+(autoload 'base64-encoded-length "mel-b")
 
 (autoload 'quoted-printable-encode-string "mel-q"
   "Encode STRING to quoted-printable, and return the result.")
