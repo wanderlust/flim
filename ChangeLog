@@ -1,5 +1,9 @@
 1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
 
+	* Fix character code for ChangeLog.
+
+1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
+
 	* Sync up with flim-1_8_1 to flim-1_9_0.
 
 1998-07-18  Tanaka Akira  <akr@jaist.ac.jp>
@@ -138,6 +142,11 @@
 
 	* Sync up with flim-1_0_0 to flim-1_0_1.
 
+1998-04-13  Tanaka Akira  <akr@jaist.ac.jp>
+
+	* eword-decode.el: Copied from AKEMI branch of SEMI.
+
+
 1998-07-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* FLIM: Version 1.9.0 (Terada) was released.
@@ -786,7 +795,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J.DN~NjNrN) was released.*B
+	* FLIM: Version 1.2.0 (J.DN~jNr) was released.*B
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -837,7 +846,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T.DNrNji) was released.*B
+	* FLIM: Version 1.1.0 (T.DNrji) was released.*B
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -873,7 +882,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky.DNrNto) was released.*B
+	* FLIM: Version 1.0.1 (Ky.DNrto) was released.*B
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
@@ -892,10 +901,6 @@
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mel.el (base64-dl-module): Must check base64.so actually exists.
-
-1998-04-13  Tanaka Akira  <akr@jaist.ac.jp>
-
-	* eword-decode.el: Copied from AKEMI branch of SEMI.
 
 
 1998-04-13  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
