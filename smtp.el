@@ -3,10 +3,10 @@
 ;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
-;;         Simon Leinen <simon@switch.ch> (ESMTP support)
-;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
-;;         Kenichi OKADA <okada@opaopa.org> (SASL support)
-;;         Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
+;;	Simon Leinen <simon@switch.ch> (ESMTP support)
+;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;;	Kenichi OKADA <okada@opaopa.org> (SASL support)
+;;	Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
 ;; Maintainer: Kenichi OKADA <okada@opaopa.org>
 ;; Keywords: SMTP, mail, SASL
 

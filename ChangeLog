@@ -1,3 +1,10 @@
+1999-12-01  Kenichi OKADA <okada@opaopa.org>
+
+        * SLIM-VERSION: Fix.
+	* smtp.el: Fix Author.
+	* sasl.el (sasl-cram-md5): Update to delete
+        insecure sequences at plain.
+
 1999-11-28  Kenichi OKADA <okada@opaopa.org>
 
 	* mime-def.el (mime-library-product): Up.

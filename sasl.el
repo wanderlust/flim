@@ -27,10 +27,17 @@
 (require 'hmac-md5)
 
 (defun sasl-cram-md5 (username passphrase challenge)
-  (concat username " "
-	  (encode-hex-string
-	   (hmac-md5 challenge passphrase))))
-
+  (let ((secure-word (copy-sequence passphrase)))
+    (setq secure-word (unwind-protect
+			  (hmac-md5 challenge secure-word)
+			(fillarray secure-word 0))
+	  secure-word (unwind-protect
+			  (encode-hex-string secure-word)
+			(fillarray secure-word 0))
+	  secure-word (unwind-protect
+			  (concat username " " secure-word)
+			(fillarray secure-word 0)))))
+		
 (defun sasl-plain (authorid authenid passphrase)
   (concat authorid "\0" authenid "\0" passphrase))
 
