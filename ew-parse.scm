@@ -15,6 +15,7 @@ tag-phrase-msg-id*
 ;; S : STD11 structured field
 ;; M : MIME structured field
 ;; U : Unstructured field
+;; N : Non-scanning field
 
 lt              ; S/M
 gt              ; S/M
@@ -63,6 +64,8 @@ fold            ; S/M
 us-texts        ; U
 us-wsp          ; U
 us-fold         ; U
+
+n-body          ; N
 
 ; Productions
 (start (tag-mailbox gap mailbox)                  : ()

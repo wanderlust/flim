@@ -54,6 +54,7 @@
 (defconst ew:us-texts	47)
 (defconst ew:us-wsp	48)
 (defconst ew:us-fold	49)
+(defconst ew:n-body	50)
 
 (defconst ew:token-defs
   (list 
@@ -107,6 +108,7 @@
    (cons 47 "us-texts")
    (cons 48 "us-wsp")
    (cons 49 "us-fold")
+   (cons 50 "n-body")
   ))
 
 ; *** Action Table ***

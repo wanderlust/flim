@@ -4,6 +4,7 @@
 (require 'ew-scan-s)
 (require 'ew-scan-m)
 (require 'ew-scan-u)
+(require 'ew-scan-n)
 (require 'ew-parse)
 (provide 'ew-dec)
 

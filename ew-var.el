@@ -46,6 +46,10 @@
   (content-description  ew-scan-unibyte-unstructured)
   (content-disposition  ew-scan-unibyte-mime)
   (approved             ew-scan-unibyte-std11 . ew:tag-address+)
+  (newsgroups           ew-scan-unibyte-none)
+  (path                 ew-scan-unibyte-none)
+  (lines                ew-scan-unibyte-none)
+  (xref                 ew-scan-unibyte-none)
 ))
 
 (defvar ew-decode-field-default-syntax '(ew-scan-unibyte-unstructured))

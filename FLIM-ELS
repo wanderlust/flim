@@ -22,6 +22,7 @@
                      ew-scan-s
                      ew-scan-m
                      ew-scan-u
+                     ew-scan-n
                      ew-dec
 		     std11
 		     eword-decode eword-encode
