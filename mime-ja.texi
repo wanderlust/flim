@@ -114,6 +114,7 @@ local 変数 @code{mime-message-structure} に格納することにします。
 * Entity as node in message::   Entity の位置関係に関する機能
 * Entity-header::               Entity header の情報
 * Entity-content::              Entity の内容
+* Entity Attributes::           Entity の属性
 @end menu
 
 @node mime-entity, Message parser, Entity, Entity
@@ -326,12 +327,22 @@ used.
 
 
 
-@node Entity-content,  , Entity-header, Entity
+@node Entity-content, Entity Attributes, Entity-header, Entity
 @section Entity の内容
 
 @defun mime-entity-content entity
 
 @var{entity} の内容の byte 列を返す。
+@end defun
+
+
+
+@node Entity Attributes,  , Entity-content, Entity
+@section Entity の属性
+
+@defun mime-entity-filename entity
+
+Entity の file 名を返す。
 @end defun
 
 
