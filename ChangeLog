@@ -1,3 +1,10 @@
+1999-11-27  Keiichi Suzuki  <keiichi@nanap.org>
+
+	* mime-parse.el (mime-parse-parameters): Strip `quoted-pair'.
+
+	* mime-def.el (mime-parameter-value): Fix `replace-match' error
+	at decoding `ext-octet'. And fix typo.
+
 1999-11-24  Keiichi Suzuki  <keiichi@nanap.org>
 
 	* mime-parse.el (mime-parse-parameters-from-list): Downcase
