@@ -297,7 +297,7 @@ property of the decoded-value."
     plist))
 
 (defun mime-decode-parameter-alist (params)
-  "Decode PARAMS as an alist list of MIME parameter values.
+  "Decode PARAMS as an association list of MIME parameter values.
 See `mime-decode-parameter-plist' for more information."
   (mime-decode-parameter-plist
    (mime-parse-alist-to-plist params)))
