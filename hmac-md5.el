@@ -5,6 +5,8 @@
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: HMAC, RFC 2104, HMAC-MD5, MD5, KEYED-MD5, CRAM-MD5
 
+;; This file is part of FLIM (Faithful Library about Internet Message).
+
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2, or
@@ -64,8 +66,8 @@
 (require 'md5)				; expects (md5 STRING)
 
 (cond
- ((and (fboundp 'md5)
-       (subrp (symbol-function 'md5)))
+ ((and (featurep 'xemacs)
+       (>= (function-max-args 'md5) 4))
   ;; recent XEmacs has `md5' as a built-in function.
   ;; and default CODING is 'undecided.
   ;; 
