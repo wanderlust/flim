@@ -433,9 +433,38 @@ representation-type の名前の先頭に @code{mm} を付けたものになって
 @node mm-backend module,  , Request for entity, mm-backend
 @subsection mm-backend の作り方
 
-（すみません。そのうち書きます (^_^;）@refill
+@defmac mm-define-backend type &optional  parents
 
-（とりあえず、mm*.el を参考にしてください）
+Define mm-backend @var{type}.@refill
+
+If @var{PARENTS} is specified, @var{type} inherits parents.  Each parent
+must be representation-type.@refill
+
+Example:@refill
+
+@lisp
+(mm-define-backend chao (generic))
+@end lisp
+@end defmac
+
+
+@defmac mm-define-method name args  &rest  body
+
+Define @var{name} as a method function of (nth 1 (car @var{args}))
+backend.@refill
+
+@var{args} is like an argument list of lambda, but (car @var{args}) must
+be specialized parameter.  (car (car @var{args})) is name of variable
+and (nth 1 (car @var{args})) is name of backend
+(representation-type).@refill
+
+Example:@refill
+
+@lisp
+(mm-define-method entity-cooked-p ((entity chao)) nil)
+@end lisp
+@end defmac
+
 
 
 @node Content-Type, Content-Disposition, Entity, Top
