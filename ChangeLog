@@ -1,5 +1,11 @@
 1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* std11.el (std11-fetch-field): Don't define as inline function.
+	(std11-field-body): Enclose `std11-narrow-to-header' and
+	`std11-fetch-field' by `inline'.
+
+1999-01-15  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* std11.el (std11-special-char-list): Evaluate when it is
 	compiled.
 	(std11-atom-regexp): Use `eval-when-compile'.
