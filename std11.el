@@ -1,6 +1,6 @@
 ;;; std11.el --- STD 11 functions for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,01,02 Free Software Foundation, Inc.
 
 ;; Author:   MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: mail, news, RFC 822, STD 11
