@@ -33,6 +33,11 @@ FLIM とは？
 
     mailcap.el	--- mailcap の解析処理等
 
+  以下の環境で動作します：
+
+	Emacs 20.5 以降
+	XEmacs 20.4 以降
+
 
 導入 (install)
 ==============
@@ -78,10 +83,11 @@ FLIM とは？
   `PREFIX=...' が省略されると、指定された emacs コマンドのディレクトリー
   木の接頭辞が使用されます (おそらく /usr/local です)。
 
-  例えば、PREFIX=/usr/local と Emacs 19.34 が指定されれば、以下のディレ
+  例えば、PREFIX=/usr/local と Emacs 20.7 が指定されれば、以下のディレ
   クトリー木が作成されます。
 
 	/usr/local/share/emacs/site-lisp/flim/	--- FLIM
+	/usr/local/share/emacs/20.7/site-lisp/flim/	--- FLIM
 
   Emacs Lisp プログラムのための lisp ディレクトリーを指定することがで
   きます。例えば、:
@@ -132,20 +138,6 @@ FLIM とは？
 
   ［注意］XEmacs のパッケージ・システムは XEmacs 21.0 かそれ以降が必要
 	  です。
-
-
-load-path (Emacs と MULE 用)
-=============================
-
-  Emacs か Mule を使っているなら、FLIM のディレクトリーを load-path に
-  追加してください。初期設定のまま導入したなら、次のように subdirs.el 
-  を書くことができます。例:
-
-  --------------------------------------------------------------------
-  (normal-top-level-add-to-load-path '("apel" "flim"))
-  --------------------------------------------------------------------
-
-  XEmacs を使っているなら、load-path を設定する必要はありません。
 
 
 バグ報告

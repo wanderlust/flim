@@ -35,6 +35,11 @@ What's FLIM
 
     mailcap.el	--- mailcap parser and utility
 
+  This library should work on:
+
+	Emacs 20.5 and up
+	XEmacs 20.4 and up
+
 
 Installation
 ============
@@ -125,21 +130,6 @@ Installation
   directory is used.
 
   Notice that XEmacs package system requires XEmacs 21.0 or later.
-
-
-load-path (for Emacs or MULE)
-=============================
-
-  If you are using Emacs or Mule, please add directory of FLIM to
-  load-path.  If you install by default setting, you can write
-  subdirs.el for example:
-
-  --------------------------------------------------------------------
-  (normal-top-level-add-to-load-path '("apel" "flim"))
-  --------------------------------------------------------------------
-
-  If you are using XEmacs, there are no need of setting about
-  load-path.
 
 
 Bug reports

@@ -162,13 +162,13 @@ BODY is the body of method."
 (defun luna-class-find-functions (class service)
   (let ((sym (luna-class-find-member class service)))
     (if (fboundp sym)
-	(cond ((eq (get sym 'luna-method-qualifier) ':before)
+	(cond ((eq (get sym 'luna-method-qualifier) :before)
 	       (cons (symbol-function sym)
 		     (luna-class-find-parents-functions class service)))
-	      ((eq (get sym 'luna-method-qualifier) ':after)
+	      ((eq (get sym 'luna-method-qualifier) :after)
 	       (nconc (luna-class-find-parents-functions class service)
 		      (list (symbol-function sym))))
-	      ((eq (get sym 'luna-method-qualifier) ':around)
+	      ((eq (get sym 'luna-method-qualifier) :around)
 	       (cons sym (luna-class-find-parents-functions class service)))
 	      (t
 	       (list (symbol-function sym))))
@@ -221,7 +221,7 @@ LUNA-CURRENT-METHOD-ARGUMENTS is arguments of the MESSAGE."
 			       luna-current-method-arguments))
 		  (if (symbolp luna-current-method)
 		      (not (eq (get luna-current-method
-				    'luna-method-qualifier) ':around))
+				    'luna-method-qualifier) :around))
 		    t))))
     luna-previous-return-value))
 
@@ -241,7 +241,7 @@ LUNA-CURRENT-METHOD-ARGUMENTS is arguments of the MESSAGE."
 			       luna-current-method-arguments))
 		  (if (symbolp luna-current-method)
 		      (not (eq (get luna-current-method
-				    'luna-method-qualifier) ':around))
+				    'luna-method-qualifier) :around))
 		    t))))
     luna-previous-return-value))
 
