@@ -26,35 +26,35 @@
 
 ;; Test cases from RFC 2202, "Test Cases for HMAC-MD5 and HMAC-SHA-1".
 ;;
-;; (hmac-hex-string (hmac-sha1 "Hi There" (make-string 20 ?\x0b)))
+;; (encode-hex-string (hmac-sha1 "Hi There" (make-string 20 ?\x0b)))
 ;;  => "b617318655057264e28bc0b6fb378c8ef146be00"
 ;;
-;; (hmac-hex-string (hmac-sha1 "what do ya want for nothing?" "Jefe"))
+;; (encode-hex-string (hmac-sha1 "what do ya want for nothing?" "Jefe"))
 ;;  => "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79"
 ;;
-;; (hmac-hex-string (hmac-sha1 (make-string 50 ?\xdd) (make-string 20 ?\xaa)))
+;; (encode-hex-string (hmac-sha1 (make-string 50 ?\xdd) (make-string 20 ?\xaa)))
 ;;  => "125d7342b9ac11cd91a39af48aa17b4f63f175d3"
 ;;
-;; (hmac-hex-string
+;; (encode-hex-string
 ;;  (hmac-sha1
 ;;   (make-string 50 ?\xcd)
-;;   (hmac-unhex-string "0102030405060708090a0b0c0d0e0f10111213141516171819")))
+;;   (decode-hex-string "0102030405060708090a0b0c0d0e0f10111213141516171819")))
 ;;  => "4c9007f4026250c6bc8414f9bf50c86c2d7235da"
 ;;
-;; (hmac-hex-string
+;; (encode-hex-string
 ;;  (hmac-sha1 "Test With Truncation" (make-string 20 ?\x0c)))
 ;;  => "4c1a03424b55e07fe7f27be1d58bb9324a9a5a04"
-;; (hmac-hex-string
+;; (encode-hex-string
 ;;  (hmac-sha1-96 "Test With Truncation" (make-string 20 ?\x0c)))
 ;;  => "4c1a03424b55e07fe7f27be1"
 ;;
-;; (hmac-hex-string
+;; (encode-hex-string
 ;;  (hmac-sha1
 ;;   "Test Using Larger Than Block-Size Key - Hash Key First"
 ;;   (make-string 80 ?\xaa)))
 ;;  => "aa4ae5e15272d00e95705637ce8a3b55ed402112"
 ;;
-;; (hmac-hex-string
+;; (encode-hex-string
 ;;  (hmac-sha1
 ;;   "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data"
 ;;   (make-string 80 ?\xaa)))
@@ -63,12 +63,18 @@
 ;;; Code:
 
 (eval-when-compile (require 'hmac-def))
+(require 'hex-util)			; (decode-hex-string STRING)
 (require 'sha1)				; expects (sha1 STRING)
 
-(define-hmac-function hmac-sha1 sha1 64 20) ; => (hmac-sha1 TEXT KEY)
-;; (define-hmac-function hmac-sha1-96 sha1 64 20 96)
-;;  => (hmac-sha1-96 TEXT KEY)
+;;; For consintency with hmac-md5.el, we define this function here.
+(or (fboundp 'sha1-binary)
+    (defun sha1-binary (string)
+      "Return the SHA1 of STRING in binary form."
+      (decode-hex-string (sha1 string))))
+
+(define-hmac-function hmac-sha1 sha1-binary 64 20) ; => (hmac-sha1 TEXT KEY)
+;; (define-hmac-function hmac-sha1-96 sha1-binary 64 20 96)
 
 (provide 'hmac-sha1)
 
-;;; hmac-sha1.el ends here.
+;;; hmac-sha1.el ends here

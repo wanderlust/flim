@@ -38,25 +38,22 @@
 
 ;;; Code:
 
-(cond
- ((and (fboundp 'dynamic-link)
-       (file-exists-p (expand-file-name "sha1.so" exec-directory)))
-  ;; Emacs with DL patch.
-  (require 'sha1 "sha1-dl"))
- (t
-  (require 'sha1 "sha1-el")
-  (defun sha1 (object &optional beg end)
-    "Return the SHA1 (Secure Hash Algorithm) of an object.
-OBJECT is either a string or a buffer.
-Optional arguments BEG and END denote buffer positions for computing the
-hash of a portion of OBJECT."
-    (if (stringp object)
-	(sha1-encode object)
-      (save-excursion
-	(set-buffer object)
-	(sha1-encode
-	 (buffer-substring-no-properties
-	   (or beg (point-min)) (or end (point-max)))))))
-  ))
+(defvar sha1-dl-module
+  (if (and (fboundp 'sha1-string)
+	   (subrp (symbol-function 'sha1-string)))
+      nil
+    (if (fboundp 'dynamic-link)
+	(let ((path (expand-file-name "sha1.so" exec-directory)))
+	  (and (file-exists-p path)
+	       path)))))
 
-;;; sha1.el ends here.
+(cond
+ (sha1-dl-module
+  ;; Emacs with DL patch.
+  (require 'sha1-dl))
+ (t
+  (require 'sha1-el)))
+
+(provide 'sha1)
+
+;;; sha1.el ends here

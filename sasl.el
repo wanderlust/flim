@@ -25,11 +25,10 @@
 ;;; Code:
 
 (require 'hmac-md5)
-(require 'hmac-util)
 
 (defun sasl-cram-md5 (user passphrase response)
   (concat user " "
-	  (hmac-hex-string
+	  (encode-hex-string
 	   (hmac-md5 response passphrase))))
 
 (defun sasl-plain (authorid authenid passphrase)
@@ -37,4 +36,4 @@
 
 (provide 'sasl)
 
-;;; smtp.el ends here
+;;; sasl.el ends here

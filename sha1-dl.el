@@ -26,28 +26,20 @@
 
 ;;; Code:
 
-(defvar sha1-dl-module
-  (if (and (fboundp 'sha1-string)
-	   (subrp (symbol-function 'sha1-string)))
-      nil
-    (if (fboundp 'dynamic-link)
-	(let ((path (expand-file-name "sha1.so" exec-directory)))
-	  (and (file-exists-p path)
-	       path)))))
+(provide 'sha1-dl)			; beware of circular dependency.
+(eval-when-compile (require 'sha1))	; sha1-dl-module.
 
 (defvar sha1-dl-handle
   (and (stringp sha1-dl-module)
        (file-exists-p sha1-dl-module)
        (dynamic-link sha1-dl-module)))
 
-;;; sha1-dl-module provides `sha1-string'.
+;;; sha1-dl-module provides `sha1-string' and `sha1-binary'.
 (dynamic-call "emacs_sha1_init" sha1-dl-handle)
 
 (defun sha1-region (beg end)
-  (interactive "r")
   (sha1-string (buffer-substring-no-properties beg end)))
 
-;;;###autoload
 (defun sha1 (object &optional beg end)
   "Return the SHA1 (Secure Hash Algorithm) of an object.
 OBJECT is either a string or a buffer.
@@ -60,6 +52,5 @@ hash of a portion of OBJECT."
       (sha1-region (or beg (point-min)) (or end (point-max))))))
 
 (provide 'sha1-dl)
-(provide 'sha1)
 
-;;; sha1-dl.el ends here.
+;;; sha1-dl.el ends here

@@ -1,5 +1,39 @@
 1999-10-23  Kenichi OKADA <okada@opaopa.org>
 
+	* SLIM: Version 1.13.3 released.
+
+1999-10-23  Tsunehiko Baba <tbaba@mtl.t.u-tokyo.ac.jp>
+
+	* sasl.el: Don't require `hmac-util'.
+	(sasl-cram-md5): Update to use encode-hex-string.
+
+1999-10-23  Kenichi OKADA <okada@opaopa.org>
+
+	* sha1.el: Update.
+	* sha1-el.el: Update.
+	* sha1-dl.el: Update.
+	* hmac-sha1.el: Update.
+
+1999-06-23  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* sha1-el.el (sha1-string-external): Don't use `with-temp-buffer'.
+
+1999-06-21  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* sha1-el.el: Added external program support.
+	(sha1-maximum-internal-length, sha1-program): New variables.
+	(sha1-string-external, sha1-region-external): New functions.
+	(sha1-region, sha1-string): Use above.
+
+1999-06-20  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* md5-dl.el (md5-region): Not interactive.
+	sha1-dl.el (sha1-region): Ditto.
+	sha1-el.el (sha1-region-internal): Ditto.
+
+
+1999-10-23  Kenichi OKADA <okada@opaopa.org>
+
 	* SLIM: Version 1.13.2 released.
 
 1999-10-23  Kenichi OKADA <okada@opaopa.org>
