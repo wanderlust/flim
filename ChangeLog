@@ -1,5 +1,10 @@
 1998-06-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* mime-def.el: Move definition of structure `mime-entity' from
+	SEMI layer.
+
+1998-06-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* eword-decode.el (eword-decode-ignored-field-list): Capitalize
 	default value.
 	(eword-decode-structured-field-list): Capitalize default value.
