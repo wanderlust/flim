@@ -1,3 +1,11 @@
+1998-07-16  Tanaka Akira  <akr@jaist.ac.jp>
+
+       * (TESTPAT): change format to s-exp.
+
+1998-07-13  Tanaka Akira  <akr@jaist.ac.jp>
+
+       * (TESTPAT): add one test.
+
 1998-07-06  Tanaka Akira  <akr@jaist.ac.jp>
 
 	* Sync up with flim-1_3_0 to flim-1_8_1.

@@ -1,74 +1,340 @@
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= =?ISO-2022-JP?B?GyRCJCQbKEI=?=
- <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=
+;----------------------------------------------------------------------------
+;-------- This sequece of hyphens is 76 bytes long. -------------------------
+;----------------------------------------------------------------------------
+(decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+"From: あ <akr@jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= =?ISO-2022-JP?B?GyRCJCQbKEI=?=
+ <akr@jaist.ac.jp>"
+"From: あい <akr@jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=
  =?ISO-2022-JP?B?GyRCJCQbKEI=?=
- <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ <akr@jaist.ac.jp>"
+"From: あい <akr@jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=
 	=?ISO-2022-JP?B?GyRCJCQbKEI=?=
- <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?==?ISO-2022-JP?B?GyRCJCQbKEI=?=
- <akr@jaist.ac.jp>
-From: akr@jaist.ac.jp
- (=?ISO-2022-JP?B?GyRCJCIbKEI=?=\a=?ISO-2022-JP?B?GyRCJCQbKEI=?=)
-From: akr@jaist.ac.jp
- (=?ISO-2022-JP?B?GyRCJCIbKEI=?=a=?ISO-2022-JP?B?GyRCJCQbKEI=?=)
-From: akr@jaist.ac.jp
- (=?ISO-2022-JP?B?GyRCJCIbKEI=?=(=?ISO-2022-JP?B?GyRCJCQbKEI=?=)=?ISO-2022-JP?B?GyRCJCYbKEI=?=)
- (Ignore 76bytes/line limit.)
-From: a=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=b <akr@jaist.ac.jp>
-From: "=?ISO-2022-JP?B?GyRCJCIbKEI=?=" <akr@jaist.ac.jp>
-From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>
-From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>
-From: "a"=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?="b" <akr@jaist.ac.jp>
-From: "a"=?ISO-2022-JP?B?GyRCJCIbKEI=?="b" <akr@jaist.ac.jp>
-From: "\"\\" =?ISO-2022-JP?B?GyRCJCIbKEI=?= "\"\\" <akr@jaist.ac.jp>
-From: < =?ISO-2022-JP?B?GyRCJCIbKEI=?= @jaist.ac.jp>
-From: =?ISO-2022-JP?Q?=1B=24BAA=1B=28B?= <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?Q?=1B$BAA=1B(B?= ) <akr@jaist.ac.jp>
-Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=
-Subject: a=?ISO-2022-JP?B?GyRCJCIbKEI=?=
-Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=b
-Subject: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=(b)
-Subject: "a"=?ISO-2022-JP?B?GyRCJCIbKEI=?="b"
-Subject: (Re: =?ISO-2022-JP?B?GyRCJCIbKEI=?=)
-Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:
-Subject: =?ISO-2022-JP?B??=
-Subject: =?ISO-2022-JP?B?DQoNCgo=?=
+ <akr@jaist.ac.jp>"
+"From: あい <akr@jaist.ac.jp>")
 
-From: あ <akr@jaist.ac.jp>
-From: あい <akr@jaist.ac.jp>
-From: あい <akr@jaist.ac.jp>
-From: あい <akr@jaist.ac.jp> 
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?==?ISO-2022-JP?B?GyRCJCQbKEI=?=
- <akr@jaist.ac.jp>
-From: akr@jaist.ac.jp (あ(い)う) (Ignore 76bytes/line limit.)
-From: akr@jaist.ac.jp (あaい)
-From: akr@jaist.ac.jp
- (=?ISO-2022-JP?B?GyRCJCIbKEI=?=a=?ISO-2022-JP?B?GyRCJCQbKEI=?=)
-From: a=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=b <akr@jaist.ac.jp>
-From: "=?ISO-2022-JP?B?GyRCJCIbKEI=?=" <akr@jaist.ac.jp>
-From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>
-From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>
-From: "a"=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?B?GyRCJCIbKEI=?="b" <akr@jaist.ac.jp>
-From: "a"=?ISO-2022-JP?B?GyRCJCIbKEI=?="b" <akr@jaist.ac.jp>
-From: "\"\\" あ "\"\\" <akr@jaist.ac.jp>
-From: < =?ISO-2022-JP?B?GyRCJCIbKEI=?= @jaist.ac.jp>
-From: 疏 <akr@jaist.ac.jp>
-From: =?ISO-2022-JP?Q?=1B$BAA=1B(B?= ) <akr@jaist.ac.jp>
-Subject: あ
-Subject: a=?ISO-2022-JP?B?GyRCJCIbKEI=?=
-Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=b
-Subject: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=(b)
-Subject: "a"=?ISO-2022-JP?B?GyRCJCIbKEI=?="b"
-Subject: (Re: =?ISO-2022-JP?B?GyRCJCIbKEI=?=)
-Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:
-Subject: =?ISO-2022-JP?B??=
-Subject: 
+(decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?==?ISO-2022-JP?B?GyRCJCQbKEI=?=
+ <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?==?ISO-2022-JP?B?GyRCJCQbKEI=?= <akr@jaist.ac.jp>")
 
+(decode
+"From: akr@jaist.ac.jp
+ (=?ISO-2022-JP?B?GyRCJCIbKEI=?=\\a=?ISO-2022-JP?B?GyRCJCQbKEI=?=)"
+"From: akr@jaist.ac.jp (あ\\aい)")
+
+(decode
+"From: akr@jaist.ac.jp
+ (=?ISO-2022-JP?B?GyRCJCIbKEI=?=a=?ISO-2022-JP?B?GyRCJCQbKEI=?=)"
+"From: akr@jaist.ac.jp
+ (=?ISO-2022-JP?B?GyRCJCIbKEI=?=a=?ISO-2022-JP?B?GyRCJCQbKEI=?=)")
+
+(decode
+"From: akr@jaist.ac.jp
+ (=?ISO-2022-JP?B?GyRCJCIbKEI=?=(=?ISO-2022-JP?B?GyRCJCQbKEI=?=)=?ISO-2022-JP?B?GyRCJCYbKEI=?=)"
+"From: akr@jaist.ac.jp (=?ISO-2022-JP?B?GyRCJCIbKEI=?=(=?ISO-2022-JP?B?GyRCJCQbKEI=?=)=?ISO-2022-JP?B?GyRCJCYbKEI=?=)")
+
+(decode
+"From: akr@jaist.ac.jp
+ (=?ISO-2022-JP?B?GyRCJCIbKEI=?=(=?ISO-2022-JP?B?GyRCJCQbKEI=?=)=?ISO-2022-JP?B?GyRCJCYbKEI=?=)"
+"From: akr@jaist.ac.jp (あ(い)う)"
+'ignore-76bytes-limit)
+
+(decode
+"From: akr@jaist.ac.jp (=?ISO-2022-JP?B?GyRCJCIbKEI=?=
+ =?ISO-2022-JP?B?GyhC?=(=?ISO-2022-JP?B?GyRCJCQbKEI=?=
+ =?ISO-2022-JP?B?GyhC?=)=?ISO-2022-JP?B?GyRCJCYbKEI=?=)"
+"From: akr@jaist.ac.jp (あ(い)う)")
+
+(decode
+"From: a=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+"From: a=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=b <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=b <akr@jaist.ac.jp>")
+
+(decode
+"From: a=?ISO-2022-JP?B?GyRCJCIbKEI=?=b <akr@jaist.ac.jp>"
+"From: a=?ISO-2022-JP?B?GyRCJCIbKEI=?=b <akr@jaist.ac.jp>")
+
+(decode
+"From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+"From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>")
+
+(decode
+"From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>"
+"From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>")
+
+(decode
+"From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+"From: (a)あ <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>"
+"From: あ(b) <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(decode
+"From: (a)あ(b) <akr@jaist.ac.jp>"
+"From: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=(b) <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(decode
+"From: \"a\"=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+"From: \"a\"=?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=\"b\" <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=\"b\" <akr@jaist.ac.jp>")
+
+(decode
+"From: \"a\"=?ISO-2022-JP?B?GyRCJCIbKEI=?=\"b\" <akr@jaist.ac.jp>"
+"From: \"a\"=?ISO-2022-JP?B?GyRCJCIbKEI=?=\"b\" <akr@jaist.ac.jp>")
+
+(decode
+"From: \"=?ISO-2022-JP?B?GyRCJCIbKEI=?=\" <akr@jaist.ac.jp>"
+"From: \"=?ISO-2022-JP?B?GyRCJCIbKEI=?=\" <akr@jaist.ac.jp>")
+
+(decode
+"From: \"\\\"\\\\\" =?ISO-2022-JP?B?GyRCJCIbKEI=?= \"\\\"\\\\\" <akr@jaist.ac.jp>"
+"From: \"\\\"\\\\\" あ \"\\\"\\\\\" <akr@jaist.ac.jp>")
+
+(decode
+"From: < =?ISO-2022-JP?B?GyRCJCIbKEI=?= @jaist.ac.jp>"
+"From: < =?ISO-2022-JP?B?GyRCJCIbKEI=?= @jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?Q?=1B=24BAA=1B=28B?= <akr@jaist.ac.jp>"
+"From: 疏 <akr@jaist.ac.jp>")
+
+(decode
+"From: =?ISO-2022-JP?Q?=1B$BAA=1B(B?= ) <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?Q?=1B$BAA=1B(B?= ) <akr@jaist.ac.jp>")
+
+(decode
+"From: (=?US-ASCII?Q?(?=)foo@bar.baz(=?US-ASCII?Q?))baz@bar.foo(?=)"
+"From: (=?US-ASCII?Q?(?=)foo@bar.baz(=?US-ASCII?Q?))baz@bar.foo(?=)")
+
+(decode
+"From: =?ISO-2022-JP?B?GyRCJCIbKEIoGyRCJCIbKEIp?= <akr@jaist.ac.jp>"
+"From: \"あ(あ)\" <akr@jaist.ac.jp>")
+
+(encode
+"From: あ(あ) <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?GyRCJCIbKEIoGyRCJCIbKEIp?= <akr@jaist.ac.jp>"
+'encode-sticked-comment-as-atom)
+
+(encode
+"From: あ(あ) <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(=?ISO-2022-JP?B?GyRCJCIbKEI=?=)
+ <akr@jaist.ac.jp>"
+'permit-sticked-comment)
+
+(encode
+"From: あ(あ) <akr@jaist.ac.jp>"
+"From: =?ISO-2022-JP?B?GyRCJCIbKEI=?= (=?ISO-2022-JP?B?GyRCJCIbKEI=?=)
+ <akr@jaist.ac.jp>"
+'separate-sticked-comment)
+
+(decode
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>")
+
+(decode
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
+"To: あ<akr@jaist.ac.jp>"
+'permit-sticked-special)
+
+(encode
+"To: あ<akr@jaist.ac.jp>"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
+'permit-sticked-special)
+
+(encode
+"To: あ<akr@jaist.ac.jp>"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+'separate-sticked-special)
+
+(decode
+"To: <akr@jaist.ac.jp>,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
+"To: <akr@jaist.ac.jp>,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>")
+
+(decode
+"To: <akr@jaist.ac.jp>,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
+"To: <akr@jaist.ac.jp>,あ<akr@jaist.ac.jp>"
+'permit-sticked-special)
+
+(encode
+"To: <akr@jaist.ac.jp>,あ<akr@jaist.ac.jp>"
+"To: <akr@jaist.ac.jp>,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
+'permit-sticked-special)
+
+(encode
+"To: <akr@jaist.ac.jp>,あ<akr@jaist.ac.jp>"
+"To: <akr@jaist.ac.jp>, =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+'separate-sticked-special)
+
+(decode
+"To: akr@jaist.ac.jp,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
+"To: akr@jaist.ac.jp,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>")
+
+(decode
+"To: akr@jaist.ac.jp,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
+"To: akr@jaist.ac.jp,あ<akr@jaist.ac.jp>"
+'permit-sticked-special)
+
+(encode
+"To: akr@jaist.ac.jp,あ<akr@jaist.ac.jp>"
+"To: akr@jaist.ac.jp,=?ISO-2022-JP?B?GyRCJCIbKEI=?=<akr@jaist.ac.jp>"
+'permit-sticked-special)
+
+(encode
+"To: akr@jaist.ac.jp,あ<akr@jaist.ac.jp>"
+"To: akr@jaist.ac.jp, =?ISO-2022-JP?B?GyRCJCIbKEI=?= <akr@jaist.ac.jp>"
+'separate-sticked-special)
+
+(decode
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:akr@jaist.ac.jp;"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:akr@jaist.ac.jp;")
+
+(decode
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:akr@jaist.ac.jp;"
+"To: あ:akr@jaist.ac.jp;"
+'permit-sticked-special)
+
+(encode
+"To: あ:akr@jaist.ac.jp;"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:akr@jaist.ac.jp;"
+'permit-sticked-special)
+
+(encode
+"To: あ:akr@jaist.ac.jp;"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?= :akr@jaist.ac.jp;"
+'separate-sticked-special)
+
+(decode
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<akr@jaist.ac.jp>;"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<akr@jaist.ac.jp>;")
+
+(decode
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<akr@jaist.ac.jp>;"
+"To: あ:い<akr@jaist.ac.jp>;"
+'ignore-76bytes-limit 'permit-sticked-special)
+
+(encode
+"To: あ:い<akr@jaist.ac.jp>;"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<akr@jaist.ac.jp>;"
+'ignore-76bytes-limit 'permit-sticked-special)
+
+(encode
+"To: あ:い<akr@jaist.ac.jp>;"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=
+ =?ISO-2022-JP?B?GyhC?=<akr@jaist.ac.jp>;"
+'zero-characters-encoded-word-hack 'permit-sticked-special)
+
+(encode
+"To: あ:い<akr@jaist.ac.jp>;"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?= : =?ISO-2022-JP?B?GyRCJCQbKEI=?=
+ <akr@jaist.ac.jp>;"
+'separate-sticked-special)
+
+(decode
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<foo@bar>,=?ISO-2022-JP?B?GyRCJCYbKEI=?=<foo@bar>;,=?ISO-2022-JP?B?GyRCJCgbKEI=?=<foo@bar>"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<foo@bar>,=?ISO-2022-JP?B?GyRCJCYbKEI=?=<foo@bar>;,=?ISO-2022-JP?B?GyRCJCgbKEI=?=<foo@bar>")
+
+(decode
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<foo@bar>,=?ISO-2022-JP?B?GyRCJCYbKEI=?=<foo@bar>;,=?ISO-2022-JP?B?GyRCJCgbKEI=?=<foo@bar>"
+"To: あ:い<foo@bar>,う<foo@bar>;,え<foo@bar>"
+'ignore-76bytes-limit 'permit-sticked-special)
+
+(encode
+"To: あ:い<foo@bar>,う<foo@bar>;,え<foo@bar>"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=<foo@bar>,=?ISO-2022-JP?B?GyRCJCYbKEI=?=<foo@bar>;,=?ISO-2022-JP?B?GyRCJCgbKEI=?=<foo@bar>"
+'ignore-76bytes-limit 'permit-sticked-special)
+
+(encode
+"To: あ:い<foo@bar>,う<foo@bar>;,え<foo@bar>"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:=?ISO-2022-JP?B?GyRCJCQbKEI=?=
+ =?ISO-2022-JP?B?GyhC?=<foo@bar>,=?ISO-2022-JP?B?GyRCJCYbKEI=?=
+ =?ISO-2022-JP?B?GyhC?=<foo@bar>;,=?ISO-2022-JP?B?GyRCJCgbKEI=?=<foo@bar>"
+'zero-characters-encoded-word-hack 'permit-sticked-special)
+
+(encode
+"To: あ:い<foo@bar>,う<foo@bar>;,え<foo@bar>"
+"To: =?ISO-2022-JP?B?GyRCJCIbKEI=?= : =?ISO-2022-JP?B?GyRCJCQbKEI=?=
+ <foo@bar>, =?ISO-2022-JP?B?GyRCJCYbKEI=?= <foo@bar>;,
+ =?ISO-2022-JP?B?GyRCJCgbKEI=?= <foo@bar>"
+'separate-sticked-special)
+
+(decode
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?="
+"Subject: あ")
+
+(decode
+"Subject: a=?ISO-2022-JP?B?GyRCJCIbKEI=?="
+"Subject: a=?ISO-2022-JP?B?GyRCJCIbKEI=?=")
+
+(decode
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=b"
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=b")
+
+(decode
+"Subject: a=?ISO-2022-JP?B?GyRCJCIbKEI=?=b"
+"Subject: a=?ISO-2022-JP?B?GyRCJCIbKEI=?=b")
+
+(decode
+"Subject: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?="
+"Subject: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=")
+
+(decode
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(b)"
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=(b)")
+
+(decode
+"Subject: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=(b)"
+"Subject: (a)=?ISO-2022-JP?B?GyRCJCIbKEI=?=(b)")
+
+(decode
+"Subject: \"a\"=?ISO-2022-JP?B?GyRCJCIbKEI=?="
+"Subject: \"a\"=?ISO-2022-JP?B?GyRCJCIbKEI=?=")
+
+(decode
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=\"b\""
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=\"b\"")
+
+(decode
+"Subject: \"a\"=?ISO-2022-JP?B?GyRCJCIbKEI=?=\"b\""
+"Subject: \"a\"=?ISO-2022-JP?B?GyRCJCIbKEI=?=\"b\"")
+
+(decode
+"Subject: (Re: =?ISO-2022-JP?B?GyRCJCIbKEI=?=)"
+"Subject: (Re: =?ISO-2022-JP?B?GyRCJCIbKEI=?=)")
+
+(decode
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:"
+"Subject: =?ISO-2022-JP?B?GyRCJCIbKEI=?=:")
+
+(decode
+"Subject: =?ISO-2022-JP?B??="
+"Subject: =?ISO-2022-JP?B??=")
+
+(decode
+"Subject: =?ISO-2022-JP?B?DQoNCg==?="
+"Subject: ")
+
+;----------------------------------------------------------------------------
