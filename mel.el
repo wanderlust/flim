@@ -29,6 +29,12 @@
 (require 'emu)
 (require 'mime-def)
 
+(defcustom mime-content-transfer-encoding-list
+  '("7bit" "8bit" "binary" "base64" "quoted-printable")
+  "List of Content-Transfer-Encoding.  Each encoding must be string."
+  :group 'mime
+  :type '(repeat string))
+
 (defvar mel-encoding-module-alist nil)
 
 (defsubst mel-use-module (name encodings)
@@ -121,13 +127,11 @@
 ;;;###autoload
 (defun mime-encode-region (start end encoding)
   "Encode region START to END of current buffer using ENCODING.
-ENCODING must be string.  If ENCODING is found in
-`mime-encoding-method-alist' as its key, this function encodes the
-region by its value."
+ENCODING must be string."
   (interactive
    (list (region-beginning) (region-end)
 	 (completing-read "encoding: "
-			  mel-encoding-module-alist
+			  (mapcar #'list mime-content-transfer-encoding-list)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-encode-region encoding) start end)
   )
@@ -136,13 +140,11 @@ region by its value."
 ;;;###autoload
 (defun mime-decode-region (start end encoding)
   "Decode region START to END of current buffer using ENCODING.
-ENCODING must be string.  If ENCODING is found in
-`mime-decoding-method-alist' as its key, this function decodes the
-region by its value."
+ENCODING must be string."
   (interactive
    (list (region-beginning) (region-end)
 	 (completing-read "encoding: "
-			  mel-encoding-module-alist
+			  (mapcar #'list mime-content-transfer-encoding-list)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-decode-region encoding)
 	   start end))
@@ -208,7 +210,7 @@ ENCODING must be string.")
   (interactive
    (list (read-file-name "Insert encoded file: ")
 	 (completing-read "encoding: "
-			  mime-encoding-method-alist
+			  (mapcar #'list mime-content-transfer-encoding-list)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-insert-encoded-file encoding)
 	   filename))
@@ -222,7 +224,7 @@ START and END are buffer positions."
    (list (region-beginning) (region-end)
 	 (read-file-name "Write decoded region to file: ")
 	 (completing-read "encoding: "
-			  mime-file-decoding-method-alist
+			  (mapcar #'list mime-content-transfer-encoding-list)
 			  nil t "base64")))
   (funcall (mel-find-function 'mime-write-decoded-region encoding)
 	   start end filename))
