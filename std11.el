@@ -683,6 +683,21 @@ If BOUNDARY is not nil, it is used as message header separator.
 	      (cdr ret))
       )))
 
+(defun std11-parse-in-reply-to (tokens)
+  "Parse lexical TOKENS as In-Reply-To field, and return the result."
+  (let ((ret (or (std11-parse-msg-id tokens)
+		 (std11-parse-phrase tokens))))
+    (if ret
+	(let ((dest (list (car ret))))
+	  (setq tokens (cdr ret))
+	  (while (setq ret (or (std11-parse-msg-id tokens)
+			       (std11-parse-phrase tokens)))
+	    (setq dest (cons (car ret) dest))
+	    (setq tokens (cdr ret))
+	    )
+	  (nreverse dest)
+	  ))))
+
 
 ;;; @ composer
 ;;;
