@@ -70,6 +70,54 @@
   :type '(repeat string))
 
 
+;;; @@ for encoded-word
+;;;
+
+(defgroup mime-header nil
+  "Header representation, specially encoded-word"
+  :group 'mime)
+
+;;; @@@ decoding
+;;;
+
+(defcustom mime-field-decoding-max-size 1000
+  "*Max size to decode header field."
+  :group 'mime-header
+  :type '(choice (integer :tag "Limit (bytes)")
+		 (const :tag "Don't limit" nil)))
+
+;;; @@@ encoding
+;;;
+
+(defcustom mime-field-encoding-method-alist
+  '(("X-Nsubject" . iso-2022-jp-2)
+    ("Newsgroups" . nil)
+    ("Message-ID" . nil)
+    (t            . mime)
+    )
+  "*Alist to specify field encoding method.
+Its key is field-name, value is encoding method.
+
+If method is `mime', this field will be encoded into MIME format.
+
+If method is a MIME-charset, this field will be encoded as the charset
+when it must be convert into network-code.
+
+If method is `default-mime-charset', this field will be encoded as
+variable `default-mime-charset' when it must be convert into
+network-code.
+
+If method is nil, this field will not be encoded."
+  :group 'mime-header
+  :type '(repeat (cons (choice :tag "Field"
+			       (string :tag "Name")
+			       (const :tag "Default" t))
+		       (choice :tag "Method"
+			       (const :tag "MIME conversion" mime)
+			       (symbol :tag "non-MIME conversion")
+			       (const :tag "no-conversion" nil)))))
+
+
 ;;; @ required functions
 ;;;
 

@@ -112,7 +112,7 @@ don't define this value."
   :group 'smtp-extensions)
 
 (defvar sasl-mechanisms)
-
+;;;###autoload
 (defvar smtp-open-connection-function (function open-network-stream))
 
 (defvar smtp-read-point nil)

@@ -1,0 +1,503 @@
+* MIME entity
+
+** How to use
+
+(require 'mime)
+
+
+** Level 1 features
+
+[Function] mime-open-entity (type location)
+  Open an entity and return it.
+
+TYPE is representation-type.
+
+LOCATION is location of entity.  Specification of it is depended on
+representation-type.
+
+
+[Function] mime-entity-children (entity)
+  Return list of entities included in the ENTITY.
+
+
+[Function] mime-entity-node-id (entity)
+  Return node-id of ENTITY.
+
+
+[Function] mime-find-entity-from-node-id (entity-node-id message)
+  Return entity from ENTITY-NODE-ID in MESSAGE.
+  (mime-find-entity-from-number (reverse entity-node-id) message))
+
+
+[Function] mime-find-entity-from-content-id (cid message)
+  Return entity from CID in MESSAGE.
+
+
+[Function] mime-insert-entity (entity)
+  Insert header and body of ENTITY at point.
+
+
+[Function] mime-write-entity (entity filename)
+  Write header and body of ENTITY into FILENAME.
+
+
+[Function] mime-entity-body (entity)
+  Return network representation of ENTITY body.
+
+
+[Function] mime-insert-entity-body (entity)
+  Insert network representation of ENTITY body at point.
+
+
+[Function] mime-write-entity-body (entity filename)
+  Write body of ENTITY into FILENAME.
+
+
+[Function] mime-entity-content (entity)
+  Return content of ENTITY as byte sequence (string).
+
+
+[Function] mime-insert-entity-content (entity)
+  Insert content of ENTITY at point.
+
+
+[Function] mime-write-entity-content (entity filename)
+  Write content of ENTITY into FILENAME.
+
+
+[Function] mime-insert-text-content (entity)
+  Insert decoded text body of ENTITY.
+
+
+[Function] mime-entity-fetch-field (entity field-name)
+  Return the value of the ENTITY's header field whose type is
+FIELD-NAME.
+
+
+** Level 2 features
+
+[Function] mime-entity-content-type (entity)
+  Return content-type of ENTITY.
+
+
+[Function] mime-entity-content-disposition (entity)
+  Return content-disposition of ENTITY.
+
+
+[Function] mime-entity-encoding (entity &optional default-encoding)
+  Return content-transfer-encoding of ENTITY.
+
+If the ENTITY does not have Content-Transfer-Encoding field, this
+function returns DEFAULT-ENCODING.  If it is nil, "7bit" is used as
+default value.
+
+
+[Function] mime-entity-number (entity)
+  Return entity-number of ENTITY.
+  (reverse (mime-entity-node-id-internal entity)))
+
+
+[Function] mime-entity-parent (entity &optional message)
+  Return mother entity of ENTITY.
+
+If MESSAGE is specified, it is regarded as root entity.
+
+
+[Function] mime-root-entity-p (entity &optional message)
+  Return t if ENTITY is root-entity (message).
+
+If MESSAGE is specified, it is regarded as root entity.
+
+
+[Function] mime-find-root-entity (entity)
+  Return root entity of ENTITY.
+
+
+[Function] mime-entity-read-field (entity field-name)
+  Parse FIELD-NAME field in header of ENTITY, and return the result.
+
+Format of result is depended on kind of field.  For non-structured
+field, this function returns string.  For structured field, it returns
+list corresponding with structure of the field.
+
+Strings in the result will be converted to internal representation of
+Emacs.
+
+If FIELD-NAME field is not found, this function returns nil.
+
+
+[Function] mime-insert-header (entity &optional invisible-fields
+						visible-fields)
+  Insert before point a decoded header of ENTITY.
+
+
+[Function] mime-entity-name (entity)
+  Return name of the ENTITY.
+
+
+[Function] mime-entity-filename (entity)
+  Return filename of ENTITY.
+
+
+** Level 3 features
+
+[Function] mime-entity-cooked-p (entity)
+  Return non-nil if contents of ENTITY has been already
+  code-converted.
+
+[Function] mime-entity-set-content-type (entity content-type)
+  Set ENTITY's content-type to CONTENT-TYPE.
+
+
+[Function] mime-entity-set-encoding (entity encoding)
+  Set ENTITY's content-transfer-encoding to ENCODING.
+
+
+* encoded-word decoder
+
+** How to use
+
+(require 'mime)
+
+
+** Level 1 features
+
+[Function] mime-decode-header-in-buffer (&optional code-conversion separator)
+  Decode MIME encoded-words in header fields.
+
+If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
+mime-charset, it decodes non-ASCII bit patterns as the mime-charset.
+Otherwise it decodes non-ASCII bit patterns as the
+default-mime-charset.
+
+If SEPARATOR is not nil, it is used as header separator.
+
+
+[Function] mime-decode-header-in-region (start end
+					 &optional code-conversion)
+  Decode MIME encoded-words in region between START and END.
+
+If CODE-CONVERSION is nil, it decodes only encoded-words.  If it is
+mime-charset, it decodes non-ASCII bit patterns as the mime-charset.
+Otherwise it decodes non-ASCII bit patterns as the
+default-mime-charset.
+
+
+[Function] mime-decode-field-body (field-body field-name
+				   &optional mode max-column)
+  Decode FIELD-BODY as FIELD-NAME in MODE, and return the result.
+
+Optional argument MODE must be `plain', `wide', `summary' or `nov'.
+Default mode is `summary'.
+
+If MODE is `wide' and MAX-COLUMN is non-nil, the result is folded with
+MAX-COLUMN.
+
+Non MIME encoded-word part in FILED-BODY is decoded with
+`default-mime-charset'.
+
+
+** Level 2 features
+
+[Function] mime-set-field-decoder (field &rest specs)
+  Set decoder of FIELD.
+
+SPECS must be like `MODE1 DECODER1 MODE2 DECODER2 ...'.
+
+Each mode must be `nil', `plain', `wide', `summary' or `nov'.
+If mode is `nil', corresponding decoder is set up for every modes.
+
+
+[Macro] mime-find-field-presentation-method (name)
+  Return field-presentation-method from NAME.
+
+NAME must be `plain', `wide', `summary' or `nov'.
+
+
+[Function] mime-find-field-decoder (field &optional mode)
+  Return function to decode field-body of FIELD in MODE.
+
+Optional argument MODE must be object or name of
+field-presentation-method.  Name of field-presentation-method must be
+`plain', `wide', `summary' or `nov'.
+Default value of MODE is `summary'.
+
+
+[Function] mime-update-field-decoder-cache (field mode &optional function)
+  Update field decoder cache `mime-field-decoder-cache'.
+
+
+* encoded-word encoder
+
+** How to use
+
+(require 'mime)
+
+
+** Level 1 features
+
+[Function] mime-encode-header-in-buffer (&optional code-conversion)
+  Encode header fields to network representation, such as MIME encoded-word.
+
+It refer variable `mime-field-encoding-method-alist'.
+
+
+[Function] mime-encode-field-body (field-body field-name)
+  Encode FIELD-BODY as FIELD-NAME, and return the result.
+
+A lexical token includes non-ASCII character is encoded as MIME
+encoded-word.  ASCII token is not encoded.
+
+
+* Content-Transfer-Encoding
+
+** How to use
+
+(require 'mel)
+
+
+** Level 1 features
+
+[Function] mime-encode-region (start end encoding)
+  Encode region START to END of current buffer using ENCODING.
+
+ENCODING must be string.
+
+
+[Function] mime-decode-region (start end encoding)
+  Decode region START to END of current buffer using ENCODING.
+
+ENCODING must be string.
+
+
+[Function] mime-decode-string (string encoding)
+  Decode STRING using ENCODING.
+
+ENCODING must be string.  If ENCODING is found in
+`mime-string-decoding-method-alist' as its key, this function decodes
+the STRING by its value.
+
+
+[Function] mime-insert-encoded-file (filename encoding)
+  Insert file FILENAME encoded by ENCODING format.
+
+
+[Function] mime-write-decoded-region (start end filename encoding)
+  Decode and write current region encoded by ENCODING into FILENAME.
+
+START and END are buffer positions.
+
+
+* Mailcap
+
+** How to use
+
+(require 'mime-conf)
+
+
+** Level 1 features
+
+[Function] mime-parse-mailcap-buffer (&optional buffer order)
+  Parse BUFFER as a mailcap, and return the result.
+
+If optional argument ORDER is a function, result is sorted by it.
+If optional argument ORDER is not specified, result is sorted original
+order.  Otherwise result is not sorted.
+
+
+[Variable] mime-mailcap-file (default value is "~/.mailcap")
+  File name of user's mailcap file.
+
+
+[Function] mime-parse-mailcap-file (&optional filename order)
+  Parse FILENAME as a mailcap, and return the result.
+
+If optional argument ORDER is a function, result is sorted by it.
+If optional argument ORDER is not specified, result is sorted original
+order.  Otherwise result is not sorted.
+
+
+[Function] mime-format-mailcap-command (mtext situation)
+  Return formated command string from MTEXT and SITUATION.
+
+MTEXT is a command text of mailcap specification, such as
+view-command.
+
+SITUATION is an association-list about information of entity.  Its key
+may be:
+
+	'type		primary media-type
+	'subtype	media-subtype
+	'filename	filename
+	STRING		parameter of Content-Type field
+
+
+* MIME Field parsing
+
+** How to use
+
+(require 'mime)
+
+
+** Level 2 features
+
+[Variable] mime-field-parser-alist
+  Alist to specify field parser.
+
+
+[Function] mime-parse-Content-Type (string)
+  Parse STRING as field-body of Content-Type field.
+
+Return value is
+    (PRIMARY-TYPE SUBTYPE (NAME1 . VALUE1)(NAME2 . VALUE2) ...)
+or nil.  PRIMARY-TYPE and SUBTYPE are symbol and NAME_n and VALUE_n
+are string.
+
+
+[Function] mime-read-Content-Type ()
+  Read field-body of Content-Type field from current-buffer,
+and return parsed it.  Format of return value is as same as
+`mime-parse-Content-Type'.
+
+
+[Function] mime-parse-Content-Disposition (string)
+  Parse STRING as field-body of Content-Disposition field.
+
+
+[Function] mime-read-Content-Disposition ()
+  Read field-body of Content-Disposition field from current-buffer,
+and return parsed it.
+
+
+[Function] mime-parse-Content-Transfer-Encoding (string)
+  Parse STRING as field-body of Content-Transfer-Encoding field.
+
+
+[Function] mime-read-Content-Transfer-Encoding (&optional default-encoding)
+  Read field-body of Content-Transfer-Encoding field from
+current-buffer, and return it.
+
+If is is not found, return DEFAULT-ENCODING.
+
+
+[Function] mime-parse-msg-id (tokens)
+  Parse TOKENS as msg-id of Content-Id or Message-Id field.
+
+
+[Function] mime-uri-parse-cid (string)
+  Parse STRING as cid URI.
+
+
+* MIME message parsing
+
+** How to use
+
+(require 'mime)
+
+
+** Level 3 features
+
+[Function] mime-parse-buffer (&optional buffer representation-type)
+  Parse BUFFER as a MIME message.
+
+If buffer is omitted, it parses current-buffer.
+
+
+* STD 11 parsing
+
+** How to use
+
+(require 'std11)
+
+
+** Level 1 features
+
+[Function] std11-fetch-field (name)
+  Return the value of the header field NAME.
+
+The buffer is expected to be narrowed to just the headers of the message.
+
+
+[Function] std11-narrow-to-header (&optional boundary)
+  Narrow to the message header.
+
+If BOUNDARY is not nil, it is used as message header separator.
+
+
+[Function] std11-field-body (name &optional boundary)
+  Return the value of the header field NAME.
+
+If BOUNDARY is not nil, it is used as message header separator.
+
+
+[Function] std11-unfold-string (string)
+  Unfold STRING as message header field.
+
+
+** Level 2 features
+
+[Function] std11-lexical-analyze (string &optional analyzer start)
+  Analyze STRING as lexical tokens of STD 11.
+
+
+[Function] std11-address-string (address)
+  Return string of address part from parsed ADDRESS of RFC 822.
+
+
+[Function] std11-full-name-string (address)
+  Return string of full-name part from parsed ADDRESS of RFC 822.
+
+
+[Function] std11-msg-id-string (msg-id)
+  Return string from parsed MSG-ID of RFC 822.
+
+
+[Function] std11-fill-msg-id-list-string (string &optional column)
+  Fill list of msg-id in STRING, and return the result.
+
+
+[Function] std11-parse-address-string (string)
+  Parse STRING as mail address.
+
+
+[Function] std11-parse-addresses-string (string)
+  Parse STRING as mail address list.
+
+
+[Function] std11-parse-msg-id-string (string)
+  Parse STRING as msg-id.
+
+
+[Function] std11-parse-msg-ids-string (string)
+  Parse STRING as `*(phrase / msg-id)'.
+
+
+[Function] std11-extract-address-components (string)
+  Extract full name and canonical address from STRING.
+
+Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).
+If no name can be extracted, FULL-NAME will be nil.
+
+
+* SMTP
+
+** How to use
+
+(require 'smtp)
+
+
+** Level 1 features
+
+[Function] smtp-send-buffer (sender recipients buffer)
+
+
+* QMTP
+
+** How to use
+
+(require 'qmtp)
+
+
+** Level 1 features
+
+[Function] qmtp-send-buffer (sender recipients buffer)

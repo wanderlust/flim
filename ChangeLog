@@ -1,3 +1,84 @@
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM-1.14-API.en: New file.
+
+	* smtp.el (smtp-open-connection-function): Add autoload cookie.
+
+	* qmtp.el (qmtp-open-connection-function): Add autoload cookie.
+
+	* mime.el (mime-entity-children): Add DOC.
+	(mime-entity-node-id): Add DOC.
+	(mime-entity-content-type): Add DOC.
+	(mime-entity-content-disposition): Add DOC.
+	(mime-entity-encoding): Add DOC.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-encode-field-body): Add autoload setting.
+
+	* eword-encode.el (mime-encode-field-body): Renamed from
+	`eword-encode-field-body'; declare `eword-encode-field-body' as
+	obsolete alias.
+	(mime-encode-header-in-buffer): Use `mime-encode-field-body'
+	instead of `eword-encode-field-body'.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime.el (mime-encode-header-in-buffer): Renamed from
+	`eword-encode-header'.
+
+	* mmdbuffer.el: Deleted.
+
+	* mime-def.el (mime-header): New group.
+	(mime-field-decoding-max-size): New user option [moved from
+	eword-decode.el].
+	(mime-field-encoding-method-alist): New user option [moved from
+	eword-encode.el].
+
+	* eword-encode.el (eword-field-encoding-method-alist): Moved to
+	mime-def.el and renamed to `mime-field-encoding-method-alist'.
+	(mime-header-charset-encoding-alist): Renamed from
+	`eword-charset-encoding-alist'.
+	(mime-header-default-charset-encoding): New variable.
+	(ew-find-charset-rule): Use
+	`mime-header-default-charset-encoding'.
+	(eword-in-subject-p): Declare as obsolete function.
+	(mime-encode-header-in-buffer): Renamed from
+	`eword-encode-header'; declare `eword-encode-header' as obsolete
+	alias.
+
+	* eword-decode.el (eword-max-size-to-decode): Moved to mime-def.el
+	and renamed to `mime-field-decoding-max-size'.
+	(mime-header-lexical-analyzer): Renamed from
+	`eword-lexical-analyzer'; switch to variable.
+
+2000-12-19  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el (eword-encode-default-start-column): Switch to
+	variable.
+
+2000-12-17  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-parse.el: Require `luna'.
+
+2000-12-16  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* eword-encode.el Use `find-charset-string' instead of
+	`find-non-ascii-charset-string'.
+	(eword-encode-addr-seq-to-rword-list): Don't use `butlast'.
+	(eword-encode-header): Use `find-charset-region' instead of
+	`find-non-ascii-charset-string'.
+
+2000-12-15  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime/eword-decode.el: Don't use
+	`define-obsolete-function-alias'; so `eword-decode-header' is
+	deleted.
+
+2000-12-15  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* Makefile (tar): Use `cvs tag -R' instead of `cvs tag -RF'.
+
 2000-12-15   Daiki Ueno  <ueno@unixuser.org>
 
 	* smtp.el (smtp-send-buffer): Pass the BUFFER argument to

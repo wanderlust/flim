@@ -61,6 +61,7 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
   :type 'integer
   :group 'qmtp)
 
+;;;###autoload
 (defvar qmtp-open-connection-function (function open-network-stream))
 
 (defvar qmtp-error-response-alist

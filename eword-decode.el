@@ -38,16 +38,6 @@
 
 (eval-when-compile (require 'cl))	; list*, pop
 
-(defgroup eword-decode nil
-  "Encoded-word decoding"
-  :group 'mime)
-
-(defcustom eword-max-size-to-decode 1000
-  "*Max size to decode header field."
-  :group 'eword-decode
-  :type '(choice (integer :tag "Limit (bytes)")
-		 (const :tag "Don't limit" nil)))
-
 
 ;;; @ MIME encoded-word definition
 ;;;
@@ -143,8 +133,8 @@ decode the charset included in it, it is not decoded."
 						    start-column
 						    &optional max-column
 						    start)
-  (if (and eword-max-size-to-decode
-	   (> (length string) eword-max-size-to-decode))
+  (if (and mime-field-decoding-max-size
+	   (> (length string) mime-field-decoding-max-size))
       string
     (or max-column
 	(setq max-column fill-column))
@@ -471,8 +461,8 @@ If SEPARATOR is not nil, it is used as header separator."
        (point-max)))
    code-conversion))
 
-(define-obsolete-function-alias 'eword-decode-header
-  'mime-decode-header-in-buffer)
+;; (define-obsolete-function-alias 'eword-decode-header
+;;   'mime-decode-header-in-buffer)
 
 
 ;;; @ encoded-word decoder
@@ -554,7 +544,7 @@ as a version of Net$cape)."
   "*Max position of eword-lexical-analyze-cache.
 It is max size of eword-lexical-analyze-cache - 1.")
 
-(defcustom eword-lexical-analyzer
+(defvar mime-header-lexical-analyzer
   '(eword-analyze-quoted-string
     eword-analyze-domain-literal
     eword-analyze-comment
@@ -574,9 +564,7 @@ format.
 
 Previous function is preferred to next function.  If a function
 returns nil, next function is used.  Otherwise the return value will
-be the result."
-  :group 'eword-decode
-  :type '(repeat function))
+be the result.")
 
 (defun eword-analyze-quoted-string (string start &optional must-unfold)
   (let ((p (std11-check-enclosure string ?\" ?\" nil start)))
@@ -694,7 +682,7 @@ be the result."
 	dest ret)
     (while (< start len)
       (setq ret
-	    (let ((rest eword-lexical-analyzer)
+	    (let ((rest mime-header-lexical-analyzer)
 		  func r)
 	      (while (and (setq func (car rest))
 			  (null

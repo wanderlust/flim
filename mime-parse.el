@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'mime-def)
+(require 'luna)
 (require 'std11)
 
 (autoload 'mime-entity-body-buffer "mime")
