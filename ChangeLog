@@ -1,3 +1,8 @@
+2000-12-14  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-def.el, qmtp.el, smtp.el, smtpmail.el, std11.el: Require
+	`custom' instead of `pcustom'.
+
 2000-12-12   Daiki Ueno  <ueno@unixuser.org>
 
 	* sasl.el: Rewrite with luna.
