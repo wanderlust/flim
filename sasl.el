@@ -138,14 +138,11 @@ STEPS is list of continuation function."
 
 (defun sasl-step-data (step)
   "Return the data which STEP holds, a string."
-  (if (vectorp step)
-      (aref step 1)))
+  (aref step 1))
 
 (defun sasl-step-set-data (step data)
   "Store DATA string to STEP."
-  (if (vectorp step)
-      (aset step 1 data)
-    (vector nil data)))
+  (aset step 1 data))
 
 (defun sasl-next-step (client step)
   "Evaluate the challenge and prepare an appropriate next response.
