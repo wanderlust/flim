@@ -277,8 +277,8 @@ If is is not found, return DEFAULT-ENCODING."
    entity
    (with-current-buffer (mime-entity-body-buffer entity)
      (save-restriction
-       (narrow-to-region (mime-buffer-entity-body-start-internal entity)
-			 (mime-buffer-entity-body-end-internal entity))
+       (narrow-to-region (mime-entity-body-start-point entity)
+			 (mime-entity-body-end-point entity))
        (list (mime-parse-message
 	      (mime-entity-representation-type-internal entity) nil
 	      entity (cons 0 (mime-entity-node-id-internal entity))))
