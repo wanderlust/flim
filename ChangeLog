@@ -1,3 +1,8 @@
+2004-08-18  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* std11.el (std11-wrap-as-quoted-string): Fix function name for
+	encoding.
+
 2004-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* smtp.el (smtp-parse-progress-message-format): Fix regexp usage.

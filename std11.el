@@ -236,7 +236,7 @@ If non-nil, std11-wrap-as-quoted-string use encode-coding-string.")
           ;; unlimited patch by simm-emacs@fan.gr.jp
           ;;   Mon, 10 Jan 2000 13:03:02 +0900
           (if std11-filename-coding-system
-              (encode-coding-system string std11-filename-coding-system)
+              (encode-coding-string string std11-filename-coding-system)
             (std11-wrap-as-quoted-pairs string std11-non-qtext-char-list))
 	  "\""))
 
