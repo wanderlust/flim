@@ -225,8 +225,10 @@
 				(string-to-int (buffer-substring
 						(match-beginning 1)
 						(match-end 1))
-					       16))))
-			    (goto-char (point-max)))
+					       16))
+			       t t))
+			    (goto-char (point-max))
+			    )
 			  (setq sorted-raw (cdr sorted-raw)))
 			(decode-mime-charset-region (point-min) (point-max)
 						    mcs)
@@ -235,7 +237,7 @@
 	       (language (mime-parameter-language parm)))
 	  (when language
 	    (put-text-property 0 (length val)
-			       'mime-language  val))
+			       'mime-language language val))
 	  (aset (cdr parm) 3 val)
 	  ))))
 
