@@ -1,3 +1,7 @@
+1999-07-22  MORIOKA Tomohiko  <tomo@etl.go.jp>
+
+	* FLIM: Version 1.13.1 (Tawaramoto) released.
+
 1999-07-21  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mime-parse.el (mime-parse-buffer): Fixed.
