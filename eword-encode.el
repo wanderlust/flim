@@ -596,6 +596,7 @@ Optional argument COLUMN is start-position of the field."
   "Encode FIELD-BODY as FIELD-NAME, and return the result.
 A lexical token includes non-ASCII character is encoded as MIME
 encoded-word.  ASCII token is not encoded."
+  (setq field-body (std11-unfold-string field-body))
   (if (string= field-body "")
       ""
     (let (start)
