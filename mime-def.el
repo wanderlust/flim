@@ -207,7 +207,7 @@ If method is nil, this field will not be encoded."
 
 (defsubst mime-content-type-parameter (content-type parameter)
   "Return PARAMETER value of CONTENT-TYPE."
-  (cdr (assoc parameter (mime-content-type-parameters content-type))))
+  (cdr (assoc parameter (cdr (cdr content-type)))))
 
 
 (defsubst mime-type/subtype-string (type &optional subtype)
