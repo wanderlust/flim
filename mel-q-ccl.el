@@ -284,7 +284,7 @@ abcdefghijklmnopqrstuvwxyz\
        (,after-wsp = 0)
        ,(mel-ccl-set-eof-block '(end))
        (read r0)
-       (loop				; column <= 75
+       (loop	; invariant: column <= 75
 	(loop
 	 (loop
 	  (branch
@@ -459,7 +459,7 @@ abcdefghijklmnopqrstuvwxyz\
 		  `((write r1)
 		    (write "=0D")
 		    (end))
-		  `((,column += 3)
+		  `((,column += 4)
 		    (,after-wsp = 0)
 		    (write r1)
 		    (write-repeat "=0D"))
@@ -539,7 +539,7 @@ abcdefghijklmnopqrstuvwxyz\
 		   (if (,column < 73)
 		       ((,after-wsp = 0)
 			(,column += 3)
-			(write-repeat ,"=0D"))
+			(write-repeat "=0D"))
 		     (if (,column < 74)
 			 (if (r0 == ?\r)
 			     ((,after-wsp = 0)
@@ -567,7 +567,7 @@ abcdefghijklmnopqrstuvwxyz\
 		   (write ,(concat soft (if output-crlf "\r" "")))
 		   ,(mel-ccl-set-eof-block `(end))
 		   (write-read-repeat r0))
-		;; noWSP ; r0{LF}:type-CRLF
+		;; noWSP ; r0{LF}:type-brk
 		((,after-wsp = 0)
 		 (,column = 0)
 		 ,@(if output-crlf '((write ?\r)) '())
