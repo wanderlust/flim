@@ -1,4 +1,10 @@
-1999-08-20  Daiki Ueno  <ueno@ueda.info.waseda.ac.jp>
+1999-08-19  TSUMURA Tomoaki   <tsumura@kuis.kyoto-u.ac.jp>
+
+	* mel-b-el.el (base64-num-to-char): Use <(` ...)> and <(, ...)>
+	instead of <`...> and <,...>.
+	(base64-char-to-num): Likewise.
+
+1999-08-20  Daiki Ueno        <ueno@ueda.info.waseda.ac.jp>
 
 	* mel-b-ccl.el (mel-ccl-decode-b): Use <(` ...)>, <(, ...)> and
 	<(,@ ...)> instead of <`...>, <,...> and <,@...> unless
@@ -7,7 +13,7 @@
 	* mel-q-ccl.el (mel-ccl-decode-quoted-printable-generic): Fix
 	quotation.
 
-1999-08-19  Daiki Ueno  <ueno@ueda.info.waseda.ac.jp>
+1999-08-19  Daiki Ueno        <ueno@ueda.info.waseda.ac.jp>
 
 	* mel-b-ccl.el (mel-ccl-decode-b): Use <(` ...)>, <(, ...)> and
 	<(,@ ...)> instead of <`...>, <,...> and <,@...>.
@@ -22,6 +28,7 @@
 	(mel-ccl-encode-quoted-printable-generic): Likewise.
 	(mel-ccl-decode-quoted-printable-generic): Likewise.
 
+
 1999-08-19  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* CLIME: Version 1.13.1 (Ando) released.
@@ -50,7 +57,7 @@
 
 1999-08-19  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* CLIME: Version 1.13.0 (Shin-H-Drry~ji) released.
+	* CLIME: Version 1.13.0 (Shin-Hrry~ji) released.
 
 1999-08-18  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -482,7 +489,7 @@
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.7 (Y-D~zaki) released.
+	* FLIM: Version 1.12.7 (Y~zaki) released.
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -657,7 +664,7 @@
 
 1999-05-11  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.6 (Family-K-Drenmae) released.
+	* FLIM: Version 1.12.6 (Family-Krenmae) released.
 
 1999-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
@@ -774,7 +781,7 @@
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.3 (Kintetsu-K-Drriyama) released.
+	* FLIM: Version 1.12.3 (Kintetsu-Krriyama) released.
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -817,7 +824,7 @@
 
 1999-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.2 (Kuj-Dr) released.
+	* FLIM: Version 1.12.2 (Kujr) released.
 
 1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1003,7 +1010,7 @@
 
 1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.1 (Nishinoky-Dr) released.
+	* FLIM: Version 1.12.1 (Nishinokyr) released.
 
 1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -1221,7 +1228,7 @@
 
 1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.11.2 (Heij-Dr) was released.
+	* FLIM: Version 1.11.2 (Heijr) was released.
 
 	* NEWS (Abolish variable `mime-temp-directory'): New subsection.
 
@@ -1501,7 +1508,7 @@
 
 1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.4 (Shin-H-Drsono) was released.
+	* FLIM: Version 1.10.4 (Shin-Hrsono) was released.
 
 1998-10-12  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -1686,7 +1693,7 @@
 
 1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.0 (K-Drdo) was released.
+	* FLIM: Version 1.10.0 (Krdo) was released.
 
 	* README.en (What's FLIM): Add mel-ccl.el.
 
@@ -1973,7 +1980,7 @@
 
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.9.1 (Tonosh-Dr) was released.
+	* FLIM: Version 1.9.1 (Tonoshr) was released.
 
 	* mime-en.sgml (mm-backend): Translate a little.
 
@@ -2116,7 +2123,7 @@
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.8.0 (Shij-Dr) was released.
+	* FLIM-Chao: Version 1.8.0 (Shijr) was released.
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2228,7 +2235,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (-DRkubo) was released.
+	* FLIM: Version 1.8.0 (Rkubo) was released.
 
 	* README.en: Delete `How to use'.
 
@@ -2353,7 +2360,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (Goj-Dr) was released.
+	* FLIM-Chao: Version 1.7.0 (Gojr) was released.
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2612,7 +2619,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-Gory-Drmae) was released.
+	* FLIM: Version 1.4.1 (Momoyama-Goryrmae) was released.
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2732,7 +2739,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (J-D~jr) was released.
+	* FLIM: Version 1.2.0 (J~jr) was released.
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -2783,7 +2790,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (T-Drji) was released.
+	* FLIM: Version 1.1.0 (Trji) was released.
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2819,7 +2826,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (Ky-Drto) was released.
+	* FLIM: Version 1.0.1 (Kyrto) was released.
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.
