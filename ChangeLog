@@ -1,5 +1,12 @@
 1999-01-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
+	* NEWS (New function `mime-find-entity-from-content-id'): New
+	subsection.
+	(New function `mime-parse-msg-id'): New subsection.
+	(New function `mime-uri-parse-cid'): New subsection.
+
+1999-01-24  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
 	* mime.el (mime-find-entity-from-content-id): New function.
 	(mime-field-parser-alist): Use `mime-parse-msg-id' instead of
 	`std11-parse-msg-id' to parse `Message-Id', `Recent-Message-Id'
