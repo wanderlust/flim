@@ -1199,6 +1199,13 @@ permit-sticked-comment)
 ;; デコーダが単なる文字列を出力する場合、単純には encoded-word そのものと
 ;; encoded-word のようにみえる文字列を区別できない。
 ;; ここでは文字列中でそれらを確実に区別して表現する方法を示す。
+
+;;;; 1999/05/26 新しい表現を思いついた。
+;;;; 任意の文字列中に含まれる特定の =?charset?encoding?text?= というを区別すれば良いから、
+;;;; =?charset?encoding?text?=?charset?encoding?text?=...?charset?encoding?text?= という
+;;;; パターンで最長マッチを行い、問題の encoded-word かどうかを charset にマーキングしておけば良い。
+;;;; + は 3倍増でなく、倍増で済む。
+
 ;;
 ;; rule 1: 文字列中で =?charset?encoding?text?= というパターンに
 ;;  マッチしない部分はその部分のままの内容を表す。
