@@ -91,10 +91,12 @@ representation-type."
 ;;;
 
 (defun mime-entity-children (entity)
+  "Return list of entities included in the ENTITY."
   (or (mime-entity-children-internal entity)
       (luna-send entity 'mime-entity-children entity)))
 
 (defun mime-entity-node-id (entity)
+  "Return node-id of ENTITY."
   (mime-entity-node-id-internal entity))
 
 (defun mime-entity-number (entity)
@@ -267,6 +269,7 @@ If MESSAGE is specified, it is regarded as root entity."
 ;; (make-obsolete 'mime-fetch-field 'mime-entity-fetch-field)
 
 (defun mime-entity-content-type (entity)
+  "Return content-type of ENTITY."
   (or (mime-entity-content-type-internal entity)
       (let ((ret (mime-entity-fetch-field entity "Content-Type")))
 	(if ret
@@ -275,6 +278,7 @@ If MESSAGE is specified, it is regarded as root entity."
 	  ))))
 
 (defun mime-entity-content-disposition (entity)
+  "Return content-disposition of ENTITY."
   (or (mime-entity-content-disposition-internal entity)
       (let ((ret (mime-entity-fetch-field entity "Content-Disposition")))
 	(if ret
@@ -283,6 +287,10 @@ If MESSAGE is specified, it is regarded as root entity."
 	  ))))
 
 (defun mime-entity-encoding (entity &optional default-encoding)
+  "Return content-transfer-encoding of ENTITY.
+If the ENTITY does not have Content-Transfer-Encoding field, this
+function returns DEFAULT-ENCODING.  If it is nil, \"7bit\" is used as
+default value."
   (or (mime-entity-encoding-internal entity)
       (let ((ret (mime-entity-fetch-field entity "Content-Transfer-Encoding")))
 	(mime-entity-set-encoding-internal
