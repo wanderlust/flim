@@ -1,3 +1,9 @@
+1999-05-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
+
+	* mel-b-el.el (pack-sequence): Eliminate local variable `i'.
+	(base64-encode-1): Avoid concat.
+	(base64-encode-string): Fixed last change; extra padding.
+
 1999-05-26  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* smtpmail.el (smtpmail-default-smtp-server): Define obsolete
