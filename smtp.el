@@ -654,6 +654,8 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     (while response-continue
       (goto-char smtp-read-point)
       (while (not (search-forward smtp-end-of-line nil t))
+	(unless (smtp-connection-opened connection)
+	  (signal 'smtp-error "Connection closed"))
 	(accept-process-output (smtp-connection-process-internal connection))
 	(goto-char smtp-read-point))
       (if decoder
