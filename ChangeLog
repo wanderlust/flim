@@ -1,7 +1,8 @@
 2005-07-25  Daiki Ueno  <ueno@unixuser.org>
 
 	* smtp.el (smtp-read-response): Signal an error if connection is
-	closed while reading response.  [cf. <emacs-mime-ja:01978>]
+	closed while reading response.  From Hiroya Murata
+	<lapis-lazuli@pop06.odn.ne.jp> [cf. <emacs-mime-ja:01978>]
 
 2004-11-20  Daiki Ueno  <ueno@unixuser.org>
 
