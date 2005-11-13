@@ -766,6 +766,8 @@ represents addr-spec of RFC 822."
                    ((eq name 'comment) "")
                    ((eq name 'quoted-string)
                     (concat "\"" (cdr token) "\""))
+                   ((eq name 'domain-literal)
+                    (concat "[" (cdr token) "]"))
                    (t (cdr token)))
                   )))
 	     seq "")

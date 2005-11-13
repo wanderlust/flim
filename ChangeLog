@@ -1,3 +1,8 @@
+2005-11-13  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* std11.el (std11-addr-to-string): Reconstruct domain literal.
+	From Yuuichi Teranishi [cf. <emacs-mime-ja:01956>]
+
 2005-07-25  Daiki Ueno  <ueno@unixuser.org>
 
 	* smtp.el (smtp-read-response): Signal an error if connection is
