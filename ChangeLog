@@ -1,3 +1,23 @@
+2005-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* eword-decode.el: Change the way to decode successive
+	encoded-words: decode B- or Q-encoding in each encoded-word,
+	concatenate them, and decode it as charset.  See the following
+	threads for more information:
+	http://news.gmane.org/group/gmane.emacs.pretest.bugs/thread=9541
+	http://news.gmane.org/group/gmane.emacs.gnus.general/thread=61176
+	(eword-decode-allow-incomplete-encoded-text): New variable.
+	(eword-decode-encoded-words): New function.
+	(eword-decode-string): Use it.
+	(eword-decode-region): Use it.
+	(eword-analyze-encoded-word): Use it.
+	(eword-decode-encoded-word): Abolish.
+	(eword-decode-encoded-text): Abolish.
+	(eword-decode-encoded-word-error-handler): Abolish.
+	(eword-warning-face): Abolish.
+	(eword-decode-encoded-word-default-error-handler): Abolish.
+
+
 2005-12-25  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.8 (Shij-Dò) released.-A
