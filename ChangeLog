@@ -1,3 +1,11 @@
+2005-12-25  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.8 (Shij-Dò) released.-A
+
+2005-12-25  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-def.el (mime-library-product): Update to 1.14.8.
+
 2005-11-13  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* std11.el (std11-addr-to-string): Reconstruct domain literal.
@@ -14,6 +22,7 @@
 	* ntlm.el (ntlm-ascii2unicode): Don't apply zerop to a character.
 	(ntlm-smb-hash): Ditto.
 
+
 2004-10-01  MORIOKA Tomohiko  <tomo@mousai.as.wakwak.ne.jp>
 
 	* FLIM: Version 1.14.7 (Sanj-Dò-A) released.
