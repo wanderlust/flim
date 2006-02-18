@@ -148,6 +148,11 @@ For instance, the value \"Sending (%k)...\" shows like
 		(const :tag "Don't show progress message" nil))
   :group 'smtp)
 
+(defcustom smtp-debug nil
+  "*If non-nil, smtp debug info printout into messages."
+  :type 'boolean
+  :group 'smtp)
+
 (defvar sasl-mechanisms)
 
 ;;;###autoload
@@ -455,7 +460,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	  (let ((smtp-use-sasl nil)
 		(smtp-use-starttls-ignore-error t))
 	    (funcall smtp-submit-package-function package)))
-      (setq servers (cdr servers)))))
+	(setq servers (cdr servers)))))
 
 ;;; @ hook methods for `smtp-submit-package'
 ;;;
@@ -653,26 +658,31 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	response)
     (while response-continue
       (goto-char smtp-read-point)
-      (while (not (search-forward smtp-end-of-line nil t))
+      (while (not (re-search-forward "\r?\n" nil t))
 	(unless (smtp-connection-opened connection)
 	  (signal 'smtp-error "Connection closed"))
 	(accept-process-output (smtp-connection-process-internal connection))
 	(goto-char smtp-read-point))
-      (if decoder
-	  (let ((string (buffer-substring smtp-read-point (- (point) 2))))
-	    (delete-region smtp-read-point (point))
-	    (insert (funcall decoder string) smtp-end-of-line)))
-      (setq response
-	    (nconc response
-		   (list (buffer-substring
-			  (+ 4 smtp-read-point)
-			  (- (point) 2)))))
-      (goto-char
-       (prog1 smtp-read-point
-	 (setq smtp-read-point (point))))
-      (if (looking-at "[1-5][0-9][0-9] ")
-	  (setq response (cons (read (point-marker)) response)
-		response-continue nil)))
+      (let ((bol smtp-read-point)
+	    (eol (match-beginning 0)))
+	(when decoder
+	  (let ((string (buffer-substring bol eol)))
+	    (delete-region bol (point))
+	    (insert (funcall decoder string))
+	    (setq eol (point))
+	    (insert smtp-end-of-line)))
+	(setq smtp-read-point (point))
+	(goto-char bol)
+	(cond
+	 ((looking-at "[1-5][0-9][0-9]\\([ -]\\)")
+	  (setq response
+		(nconc response
+		       (list (buffer-substring (match-end 0) eol))))
+	  (when (string= (match-string 1) " ")
+	    (setq response (cons (read (point-marker)) response)
+		  response-continue nil)))
+	 (smtp-debug
+	  (message "Invalid response: %s" (buffer-substring bol eol))))))
     response))
 
 (defun smtp-send-command (connection command)
