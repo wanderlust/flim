@@ -664,8 +664,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	(accept-process-output (smtp-connection-process-internal connection))
 	(goto-char smtp-read-point))
       (let ((bol smtp-read-point)
-	    (eol (match-beginning 0))
-	    (reply-code nil))
+	    (eol (match-beginning 0)))
 	(when decoder
 	  (let ((string (buffer-substring bol eol)))
 	    (delete-region bol (point))
@@ -674,17 +673,16 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	    (insert smtp-end-of-line)))
 	(setq smtp-read-point (point))
 	(goto-char bol)
-	(if (not (looking-at "[1-5][0-9][0-9]\\([ -]\\)"))
-	    (when smtp-debug
-	      (message "Invalid response: %s" (buffer-substring bol eol)))
-	  (when (string= (match-string 1) " ")
-	    (setq reply-code (read (point-marker))))
+	(cond
+	 ((looking-at "[1-5][0-9][0-9]\\([ -]\\)")
 	  (setq response
 		(nconc response
 		       (list (buffer-substring (match-end 0) eol))))
-	  (when reply-code
-	    (setq response (cons reply-code response)
-		  response-continue nil)))))
+	  (when (string= (match-string 1) " ")
+	    (setq response (cons (read (point-marker)) response)
+		  response-continue nil)))
+	 (smtp-debug
+	  (message "Invalid response: %s" (buffer-substring bol eol))))))
     response))
 
 (defun smtp-send-command (connection command)
