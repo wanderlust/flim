@@ -1,3 +1,9 @@
+2006-02-18  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
+
+	* smtp.el (smtp-debug): New user option.
+	(smtp-read-response): Treat a line break code loosely.  If
+	smtp-debug is non-nil, show an invalid response.
+
 2005-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* eword-decode.el: Change the way to decode successive
