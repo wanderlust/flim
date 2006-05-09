@@ -1,6 +1,6 @@
-;;; sha1-el.el --- SHA1 Secure Hash Algorithm in Emacs-Lisp.
+;;; sha1-el.el --- SHA1 Secure Hash Algorithm in Emacs-Lisp
 
-;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2001, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: SHA1, FIPS 180-1
@@ -19,8 +19,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
 
@@ -54,46 +54,59 @@
 
 (require 'hex-util)
 
+(autoload 'executable-find "executable")
+
 ;;;
 ;;; external SHA1 function.
 ;;;
 
-(defvar sha1-maximum-internal-length 500
-  "*Maximum length of message to use lisp version of SHA1 function.
+(defgroup sha1 nil
+  "Elisp interface for SHA1 hash computation."
+  :group 'extensions)
+
+(defcustom sha1-maximum-internal-length 500
+  "*Maximum length of message to use Lisp version of SHA1 function.
 If message is longer than this, `sha1-program' is used instead.
 
-If this variable is set to 0, use extarnal program only.
-If this variable is set to nil, use internal function only.")
+If this variable is set to 0, use external program only.
+If this variable is set to nil, use internal function only."
+  :type 'integer
+  :group 'sha1)
 
-(defvar sha1-program '("openssl" "sha1")
+(defcustom sha1-program '("sha1sum")
   "*Name of program to compute SHA1.
-It must be a string \(program name\) or list of strings \(name and its args\).")
+It must be a string \(program name\) or list of strings \(name and its args\)."
+  :type '(repeat string)
+  :group 'sha1)
 
-(defun sha1-string-external (string)
-  ;; `with-temp-buffer' is new in v20, so we do not use it.
-  (save-excursion
-    (let (buffer)
-      (unwind-protect
-	  (let (prog args)
-	    (if (consp sha1-program)
-		(setq prog (car sha1-program)
-		      args (cdr sha1-program))
-	      (setq prog sha1-program
-		    args nil))
-	    (setq buffer (set-buffer
-			  (generate-new-buffer " *sha1 external*")))
-	    (insert string)
-	    (apply (function call-process-region)
-		   (point-min)(point-max)
-		   prog t t nil args)
-	    ;; SHA1 is 40 bytes long in hexadecimal form.
-	    (buffer-substring (point-min)(+ (point-min) 40)))
-	(and buffer
-	     (buffer-name buffer)
-	     (kill-buffer buffer))))))
+(defcustom sha1-use-external (condition-case ()
+				 (executable-find (car sha1-program))
+			       (error))
+  "*Use external SHA1 program.
+If this variable is set to nil, use internal function only."
+  :type 'boolean
+  :group 'sha1)
 
-(defun sha1-region-external (beg end)
-  (sha1-string-external (buffer-substring-no-properties beg end)))
+(defun sha1-string-external (string &optional binary)
+  (let (prog args digest default-enable-multibyte-characters)
+    (if (consp sha1-program)
+	(setq prog (car sha1-program)
+	      args (cdr sha1-program))
+      (setq prog sha1-program
+	    args nil))
+    (with-temp-buffer
+      (insert string)
+      (apply (function call-process-region)
+	     (point-min)(point-max)
+	     prog t t nil args)
+      ;; SHA1 is 40 bytes long in hexadecimal form.
+      (setq digest (buffer-substring (point-min)(+ (point-min) 40))))
+    (if binary
+	(decode-hex-string digest)
+      digest)))
+
+(defun sha1-region-external (beg end &optional binary)
+  (sha1-string-external (buffer-substring-no-properties beg end) binary))
 
 ;;;
 ;;; internal SHA1 function.
@@ -385,38 +398,44 @@ It must be a string \(program name\) or list of strings \(name and its args\).")
       (fillarray block-high nil)
       (fillarray block-low  nil))))
 
-(defun sha1-string-internal (string)
-  (encode-hex-string (sha1-binary string)))
+(defun sha1-string-internal (string &optional binary)
+  (if binary
+      (sha1-binary string)
+    (encode-hex-string (sha1-binary string))))
 
-(defun sha1-region-internal (beg end)
-  (sha1-string-internal (buffer-substring-no-properties beg end)))
+(defun sha1-region-internal (beg end &optional binary)
+  (sha1-string-internal (buffer-substring-no-properties beg end) binary))
 
 ;;;
 ;;; application interface.
 ;;;
 
-(defun sha1-region (beg end)
-  (if (and sha1-maximum-internal-length
+(defun sha1-region (beg end &optional binary)
+  (if (and sha1-use-external
+	   sha1-maximum-internal-length
 	   (> (abs (- end beg)) sha1-maximum-internal-length))
-      (sha1-region-external beg end)
-    (sha1-region-internal beg end)))
+      (sha1-region-external beg end binary)
+    (sha1-region-internal beg end binary)))
 
-(defun sha1-string (string)
-  (if (and sha1-maximum-internal-length
+(defun sha1-string (string &optional binary)
+  (if (and sha1-use-external
+	   sha1-maximum-internal-length
 	   (> (length string) sha1-maximum-internal-length))
-      (sha1-string-external string)
-    (sha1-string-internal string)))
+      (sha1-string-external string binary)
+    (sha1-string-internal string binary)))
 
-(defun sha1 (object &optional beg end)
+;;;###autoload
+(defun sha1 (object &optional beg end binary)
   "Return the SHA1 (Secure Hash Algorithm) of an object.
 OBJECT is either a string or a buffer.
 Optional arguments BEG and END denote buffer positions for computing the
-hash of a portion of OBJECT."
+hash of a portion of OBJECT.
+If BINARY is non-nil, return a string in binary form."
   (if (stringp object)
-      (sha1-string object)
+      (sha1-string object binary)
     (save-excursion
       (set-buffer object)
-      (sha1-region (or beg (point-min)) (or end (point-max))))))
+      (sha1-region (or beg (point-min)) (or end (point-max)) binary))))
 
 (provide 'sha1-el)
 

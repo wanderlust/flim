@@ -1,6 +1,6 @@
 ;;; mime-def.el --- definition module about MIME -*- coding: iso-8859-4; -*-
 
-;; Copyright (C) 1995,96,97,98,99,2000,2001,2002,2003
+;; Copyright (C) 1995,96,97,98,99,2000,2001,2002,2003,2004
 ;;   Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
@@ -21,8 +21,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
@@ -33,7 +33,7 @@
 (eval-when-compile (require 'luna))	; luna-arglist-to-arguments
 
 (eval-and-compile
-  (defconst mime-library-product ["FLIM" (1 14 6) "Marutamachi"]
+  (defconst mime-library-product ["FLIM" (1 14 8) "Shijò"]
     "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)

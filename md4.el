@@ -1,5 +1,6 @@
 ;;; md4.el --- MD4 Message Digest Algorithm.
 
+;; Copyright (C) 2004 Free Software Foundation, Inc.
 ;; Copyright (C) 2001 Taro Kawagishi
 ;; Author: Taro Kawagishi <tarok@transpulse.org>
 ;; Keywords: MD4
@@ -20,23 +21,13 @@
 ;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
 ;;;
 ;;; MD4 hash calculation
-
-(defun print-int32 (int32)
-  "print 32 bits integer in 4 bytes string as little endian"
-  (let ((h (car int32)) (l (cdr int32)))
-    (list (logand l 255) (lsh l -8) (logand h 255) (lsh h -8))))
-
-(defun print-string-hexa (str)
-  "print a string in hexadecimal"
-  (let (out)
-    (mapcar (function (lambda (x) (concat out (format "%x" x)))) str)))
 
 (defvar md4-buffer (make-vector 4 '(0 . 0))
   "work buffer of four 32-bit integers")

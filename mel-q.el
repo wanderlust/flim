@@ -20,8 +20,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
@@ -254,7 +254,8 @@ the program (maybe mmencode included in metamail or XEmacs package)."
 
 
 (defvar quoted-printable-external-decoder-option-to-specify-file '("-o")
-  "*list of options of quoted-printable decoder program to specify file.")
+  "*list of options of quoted-printable decoder program to specify file.
+If the quoted-printable decoder does not have such option, set this as nil.")
 
 (mel-define-method mime-write-decoded-region (start end filename
 						    (nil "quoted-printable"))
@@ -264,10 +265,18 @@ START and END are buffer positions."
   (as-binary-process
    (apply (function call-process-region)
 	  start end (car quoted-printable-external-decoder)
-	  nil nil nil
-	  (append (cdr quoted-printable-external-decoder)
-		  quoted-printable-external-decoder-option-to-specify-file
-		  (list filename)))))
+	  (null quoted-printable-external-decoder-option-to-specify-file)
+	  (unless quoted-printable-external-decoder-option-to-specify-file
+	    (list (current-buffer) nil))
+	  nil
+	  (delq nil
+		(append
+		 (cdr quoted-printable-external-decoder)
+		 quoted-printable-external-decoder-option-to-specify-file
+		 (when quoted-printable-external-decoder-option-to-specify-file
+		   (list filename))))))
+  (unless quoted-printable-external-decoder-option-to-specify-file
+    (write-region-as-binary (point-min) (point-max) filename)))
 
 
 ;;; @ Q-encoding encode/decode string

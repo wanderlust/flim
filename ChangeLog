@@ -1,3 +1,208 @@
+2005-12-25  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* FLIM: Version 1.14.8 (Shij-Dò) released.-A
+
+2005-12-25  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-def.el (mime-library-product): Update to 1.14.8.
+
+2005-11-13  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* std11.el (std11-addr-to-string): Reconstruct domain literal.
+	From Yuuichi Teranishi [cf. <emacs-mime-ja:01956>]
+
+2005-07-25  Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-read-response): Signal an error if connection is
+	closed while reading response.  From Hiroya Murata
+	<lapis-lazuli@pop06.odn.ne.jp> [cf. <emacs-mime-ja:01978>]
+
+2004-11-20  Daiki Ueno  <ueno@unixuser.org>
+
+	* ntlm.el (ntlm-ascii2unicode): Don't apply zerop to a character.
+	(ntlm-smb-hash): Ditto.
+
+
+2004-10-01  MORIOKA Tomohiko  <tomo@mousai.as.wakwak.ne.jp>
+
+	* FLIM: Version 1.14.7 (Sanj-Dò) released.-A
+
+2004-10-01  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mime-def.el (mime-library-product): Update to 1.14.7.
+
+2004-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-en.sgml, mime-ja.sgml (CVS based development): Remove the
+	description about developers' pserver access.
+
+2004-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sha1-dl.el: Don't provide the sha1-dl feature twice.
+	(sha1-region): Allow the optional argument `binary'.
+	(sha1): Ditto.
+
+2004-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* smtp.el (smtp-parse-progress-message-format): Fix regexp usage.
+
+2004-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* smtp.el (smtp-progress-message-format): New user option.
+	(smtp-primitive-data): Show progress message.
+	(smtp-parse-progress-message-format): New function.
+	(smtp-show-progress-message): New function.
+	(smtp-deduce-address-list): Use insert instead of insert-string.
+
+2004-07-27  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* mel-g.el (gzip64-external-encoder): Change default value to
+	cause more recognizable error.
+	(gzip64-external-decoder): Ditto.
+
+2004-06-09  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* std11.el (std11-parse-word-or-comment-or-period): Renamed from
+	`std11-parse-word-or-comment' and allow period.
+	(std11-parse-phrase): Allow parsing obs-phrase in rfc2822.
+
+2004-05-24  Len Trigg  <lenbok@myrealbox.com>
+
+	* mime-conf.el (mime-format-mailcap-command): Quote a file name
+	which may contain spaces using `shell-quote-argument' in order to
+	pass it to the shell safely.
+
+2004-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* eword-encode.el (mime-encode-header-in-buffer): Don't ignore a
+	space char at the beginning of a field body in order to honor the
+	76-column rule which is described in RFC 2047 section 2.
+
+2004-04-15  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* eword-decode.el (eword-decode-encoded-text): Fix bug when
+	`must-unfold' is specified; eliminate CR too when `must-unfold' is
+	specified.
+
+2004-04-13  Kenichi Okada  <okada@opaopa.org>
+
+	* mel-u.el (mime-write-decoded-region): Use make-temp-file.
+	(uuencode-external-decode-region): Ditto.
+
+2004-04-12  Kenichi Okada  <okada@opaopa.org>
+
+	* mel-u.el (mime-write-decoded-region): Use temporary filename.
+
+2004-03-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* sha1-el.el (sha1-maximum-internal-length): Doc fix.
+
+2004-02-23  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* lunit.el (lunit-make-test-suite-from-class): Fix regexp.
+	Use "^test" instead of "^test-".
+
+2004-02-19  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* lunit.el (lunit-assert): Avoid double-eval `condtion-expr'.
+	Use ,(not (not condition)) instead of ,condition.
+
+2004-02-18  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* lunit.el (lunit-make-test-suite-from-class): Restrict test
+	method name to test-*.
+
+2004-02-17  Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-starttls-program): New user option.
+	(smtp-starttls-extra-args): New user option.
+	(smtp-send-buffer): Bind starttls-program and starttls-extra-args.
+
+2004-01-27  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* mel-q.el (quoted-printable-external-decoder-option-to-specify-file): 
+	Accept nil.
+	(mime-write-decoded-region): If the value of the variable
+	`quoted-printable-external-decoder-option-to-specify-file' is nil,
+	write stdout to the output file.
+
+	* mel-b-el.el (base64-external-decoder-option-to-specify-file): 
+	Accept nil.
+	(base64-write-decoded-region): If the value of the variable
+	`base64-external-decoder-option-to-specify-file' is nil, write
+	stdout to the output file.
+
+2004-01-12  Daiki Ueno  <ueno@unixuser.org>
+
+	* sasl.texi: Texinfo markup fixes.  From Jesper Harder
+	<harder@ifa.au.dk>.
+
+2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sha1-el.el (sha1-string-external): Use with-temp-buffer.
+
+2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sha1-el.el (sha1-string-external): Make it can return a string
+	in binary form.
+	(sha1-region-external): Ditto.
+	(sha1-string-internal): Ditto.
+	(sha1-region-internal): Ditto.
+	(sha1-region): Ditto.
+	(sha1-string): Ditto.
+	(sha1): Ditto.
+
+2003-12-16  Simon Josefsson  <jas@extundo.com>
+
+	* sha1-el.el (autoload): Don't use ignore-errors.
+	(sha1-use-external): Use condition-case.  Suggested by Katsumi
+	Yamaoka <yamaoka@jpl.org>.
+
+2003-12-15  Simon Josefsson  <jas@extundo.com>
+
+	* sha1-el.el (autoload): Ignore errors for
+	executable-find. (XEmacs ecrypto does not require sh-script where
+	executable.el is located.)
+	(sha1-use-external): Likewise.
+
+	* sha1-el.el (sha1): Add defgroup.
+	(sha1-maximum-internal-length, sha1-program, sha1-use-external)
+	(sha1-program): Use 'sha1sum' from GNU CoreUtils instead of OpenSSL.
+	(sha1): Autoload.
+
+2001-12-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* sha1-el.el (sha1-use-external): New variable.
+	(sha1-region): Use it.
+	(sha1-string): Ditto.
+
+2004-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* ntlm.el (ntlm-string-as-unibyte): New macro.
+	(ntlm-build-auth-response): Use it.
+
+2004-01-05  Simon Josefsson  <jas@extundo.com>
+
+	* ntlm.el: Fix namespace.  Change smb-passwd-hash into
+	ntlm-smb-passwd-hash, smb-owf-encrypt into ntlm-smb-owf-encrypt,
+	smb-passwd-hash into ntlm-smb-passwd-hash, smbdes-e-p16 into
+	ntlm-smb-des-e-p16, smbdes-e-p24 into ntlm-smb-des-e-p24, smbhash
+	into ntlm-smb-hash, smb-sp8 into ntlm-smb-sp8, smb-str-to-key into
+	ntlm-smb-str-to-key, smb-dohash into ntlm-smb-dohash, smb-perm1
+	into ntlm-smb-perm1, smb-perm2 into ntlm-smb-perm2, smb-perm3 into
+	ntlm-smb-perm3, smb-perm4 into ntlm-smb-perm4, smb-perm5 into
+	ntlm-smb-perm5, smb-perm6 into ntlm-smb-perm6, smb-sc into
+	ntlm-smb-sc, smb-sbox into ntlm-smb-sbox, string-permute into
+	ntlm-string-permute, string-lshift into ntlm-string-lshift,
+	string-xor into ntlm-string-xor.  Suggested by
+	Jesper Harder <harder@myrealbox.com>.
+
+	* ntlm.el: Don't include poem.
+
+	* md4.el (print-int32, print-string-hexa): Remove.  Suggested by
+	Jesper Harder <harder@myrealbox.com>.
+
+
 2003-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.6 (Marutamachi) released.
@@ -112,7 +317,7 @@
 
 2002-06-03  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-	* FLIM: Version 1.14.4 (Kashiharajing.DŽþ-mae) released.
+	* FLIM: Version 1.14.4 (Kashiharajing-Dþ-mae) released.-A
 
 2002-06-02  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
@@ -210,7 +415,7 @@
 
 2001-06-01  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-	* FLIM: Version 1.14.3 (UnebigoryŽòmae) released.
+	* FLIM: Version 1.14.3 (Unebigory-Dòmae) released.-A
 
 2001-06-01  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -1272,7 +1477,7 @@
 
 2000-07-12  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
-	* FLIM-Chao: Version 1.14.1 (RokujizŽò) released.
+	* FLIM-Chao: Version 1.14.1 (Rokujiz-Dò) released.-A
 
 2000-07-10  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
@@ -1890,7 +2095,7 @@
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.7 (YŽþzaki) released.
+	* FLIM: Version 1.12.7 (Y-Dþzaki) released.-A
 
 1999-05-31  MORIOKA Tomohiko  <tomo@m17n.org>
 
@@ -2065,7 +2270,7 @@
 
 1999-05-11  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* FLIM: Version 1.12.6 (Family-KŽòenmae) released.
+	* FLIM: Version 1.12.6 (Family-K-Dòenmae) released.-A
 
 1999-04-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
@@ -2182,7 +2387,7 @@
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.3 (Kintetsu-KŽòriyama) released.
+	* FLIM: Version 1.12.3 (Kintetsu-K-Dòriyama) released.-A
 
 1999-01-23  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2225,7 +2430,7 @@
 
 1999-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.2 (KujŽò) released.
+	* FLIM: Version 1.12.2 (Kuj-Dò) released.-A
 
 1999-01-16  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2411,7 +2616,7 @@
 
 1998-12-02  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.12.1 (NishinokyŽò) released.
+	* FLIM: Version 1.12.1 (Nishinoky-Dò) released.-A
 
 1998-11-30  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2629,7 +2834,7 @@
 
 1998-10-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.11.2 (HeijŽò) was released.
+	* FLIM: Version 1.11.2 (Heij-Dò) was released.-A
 
 	* NEWS (Abolish variable `mime-temp-directory'): New subsection.
 
@@ -2909,7 +3114,7 @@
 
 1998-10-12  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.4 (Shin-HŽòsono) was released.
+	* FLIM: Version 1.10.4 (Shin-H-Dòsono) was released.-A
 
 1998-10-12  Katsumi Yamaoka   <yamaoka@jpl.org>
 
@@ -3094,7 +3299,7 @@
 
 1998-09-29  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.10.0 (KŽòdo) was released.
+	* FLIM: Version 1.10.0 (K-Dòdo) was released.-A
 
 	* README.en (What's FLIM): Add mel-ccl.el.
 
@@ -3381,7 +3586,7 @@
 
 1998-08-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.9.1 (TonoshŽò) was released.
+	* FLIM: Version 1.9.1 (Tonosh-Dò) was released.-A
 
 	* mime-en.sgml (mm-backend): Translate a little.
 
@@ -3524,7 +3729,7 @@
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.8.0 (ShijŽò) was released.
+	* FLIM-Chao: Version 1.8.0 (Shij-Dò) was released.-A
 
 1998-07-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -3636,7 +3841,7 @@
 
 1998-07-01  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.8.0 (ŽÒkubo) was released.
+	* FLIM: Version 1.8.0 (-DÒkubo) was released.-A
 
 	* README.en: Delete `How to use'.
 
@@ -3761,7 +3966,7 @@
 
 1998-06-28  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM-Chao: Version 1.7.0 (GojŽò) was released.
+	* FLIM-Chao: Version 1.7.0 (Goj-Dò) was released.-A
 
 1998-06-26  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -4020,7 +4225,7 @@
 
 1998-06-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.4.1 (Momoyama-GoryŽòmae) was released.
+	* FLIM: Version 1.4.1 (Momoyama-Gory-Dòmae) was released.-A
 
 1998-06-18  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -4140,7 +4345,7 @@
 
 1998-05-06  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.2.0 (JŽþjŽò) was released.
+	* FLIM: Version 1.2.0 (J-Dþjò) was released.-A
 
 	* README.en (What's FLIM): Delete description about
  	std11-parse.el; add description about mailcap.el.
@@ -4191,7 +4396,7 @@
 
 1998-05-05  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.1.0 (TŽòji) was released.
+	* FLIM: Version 1.1.0 (T-Dòji) was released.-A
 
 1998-05-04  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -4227,7 +4432,7 @@
 
 1998-04-17  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
-	* FLIM: Version 1.0.1 (KyŽòto) was released.
+	* FLIM: Version 1.0.1 (Ky-Dòto) was released.-A
 
 	* mime-def.el (mime-spadework-module-version-string): New
  	constant.

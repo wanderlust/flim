@@ -19,8 +19,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
@@ -481,7 +481,7 @@ be the result."
 	      (cons (cons 'word elt) rest)
 	    )))))
 
-(defun std11-parse-word-or-comment (lal)
+(defun std11-parse-word-or-comment-or-period (lal)
   (let ((ret (std11-parse-token-or-comment lal)))
     (if ret
 	(let ((elt (car ret))
@@ -493,12 +493,15 @@ be the result."
 		 )
 		((assq 'comment elt)
 		 (cons (cons 'comment-word elt) rest)
+		 )
+		((string-equal (cdr (assq 'specials elt)) ".")
+		 (cons (cons 'period elt) rest)
 		 ))
 	  ))))
 
 (defun std11-parse-phrase (lal)
   (let (ret phrase)
-    (while (setq ret (std11-parse-word-or-comment lal))
+    (while (setq ret (std11-parse-word-or-comment-or-period lal))
       (setq phrase (append phrase (cdr (car ret))))
       (setq lal (cdr ret))
       )
@@ -763,6 +766,8 @@ represents addr-spec of RFC 822."
                    ((eq name 'comment) "")
                    ((eq name 'quoted-string)
                     (concat "\"" (cdr token) "\""))
+                   ((eq name 'domain-literal)
+                    (concat "[" (cdr token) "]"))
                    (t (cdr token)))
                   )))
 	     seq "")

@@ -19,8 +19,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
 
@@ -237,7 +237,7 @@ TESTS holds a number of instances of `lunit-test'."
 (defmacro lunit-assert (condition-expr)
   "Verify that CONDITION-EXPR returns non-nil; signal an error if not."
   (let ((condition (eval condition-expr)))
-    `(unless ,condition
+    `(when ,(not condition)
        (signal 'lunit-failure (list ',condition-expr)))))
 
 (luna-define-class lunit-test-printer (lunit-test-listener))
@@ -265,6 +265,7 @@ TESTS holds a number of instances of `lunit-test'."
     (mapatoms
      (lambda (symbol)
        (if (and (fboundp symbol)
+		(string-match "^test" (symbol-name symbol))
 		(null (get symbol 'luna-method-qualifier)))
 	   (push (lunit-make-test-case class symbol) tests)))
      (luna-class-obarray (luna-find-class class)))

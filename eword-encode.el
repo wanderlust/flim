@@ -19,8 +19,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
@@ -751,8 +751,7 @@ encoded-word.  ASCII token is not encoded."
 ;;;###autoload
 (defun mime-encode-header-in-buffer (&optional code-conversion)
   "Encode header fields to network representation, such as MIME encoded-word.
-
-It refer variable `mime-field-encoding-method-alist'."
+It refers the `mime-field-encoding-method-alist' variable."
   (interactive "*")
   (save-excursion
     (save-restriction
@@ -760,11 +759,10 @@ It refer variable `mime-field-encoding-method-alist'."
       (goto-char (point-min))
       (let ((default-cs (mime-charset-to-coding-system default-mime-charset))
 	    bbeg end field-name)
-	(while (re-search-forward
-		(concat "\\(" std11-field-head-regexp "\\)" " ?")
-		nil t)
+	(while (re-search-forward std11-field-head-regexp nil t)
 	  (setq bbeg (match-end 0)
-		field-name (buffer-substring (match-beginning 0) (1- (match-end 1)))
+		field-name (buffer-substring-no-properties (match-beginning 0)
+							   (1- bbeg))
 		end (std11-field-end))
 	  (and (delq 'ascii (find-charset-region bbeg end))
 	       (let ((method (eword-find-field-encoding-method
@@ -785,11 +783,7 @@ It refer variable `mime-field-encoding-method-alist'."
 			       (or (mime-charset-to-coding-system
 				    method)
 				   default-cs)))
-			  (encode-coding-region bbeg end cs)
-			  )))
-		 ))
-	  ))
-      )))
+			  (encode-coding-region bbeg end cs)))))))))))
 (defalias 'eword-encode-header 'mime-encode-header-in-buffer)
 (make-obsolete 'eword-encode-header 'mime-encode-header-in-buffer)
 

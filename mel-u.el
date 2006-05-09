@@ -20,8 +20,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
@@ -69,22 +69,21 @@ This function uses external uuencode decoder which is specified by
 variable `uuencode-external-decoder'."
   (interactive "*r")
   (save-excursion
-    (let ((filename (save-excursion
-		      (save-restriction
-			(narrow-to-region start end)
-			(goto-char start)
-			(if (re-search-forward "^begin [0-9]+ " nil t)
-			    (if (looking-at ".+$")
-				(buffer-substring (match-beginning 0)
-						  (match-end 0)))))))
-	  (default-directory temporary-file-directory))
-      (if filename
-	  (let ((coding-system-for-read  'binary)
-		(coding-system-for-write 'binary))
-	    (apply (function call-process-region)
-		   start end (car uuencode-external-decoder)
-		   t nil nil
-		   (cdr uuencode-external-decoder))
+    (let ((filename (make-temp-file "x-uue")))
+      (save-excursion
+	(save-restriction
+	  (set-mark end)
+	  (narrow-to-region start end)
+	  (goto-char start)
+	  (when (and (re-search-forward "^begin [0-9]+ " nil t)
+		     (looking-at ".+$"))
+	    (replace-match filename)
+	    (let ((coding-system-for-read  'binary)
+		  (coding-system-for-write 'binary))
+	      (apply (function call-process-region)
+		     start (mark) (car uuencode-external-decoder)
+		     t nil nil
+		     (cdr uuencode-external-decoder)))
 	    (insert-file-contents filename)
 	    ;; The previous line causes the buffer to be made read-only, I
 	    ;; do not pretend to understand the control flow leading to this
@@ -92,7 +91,7 @@ variable `uuencode-external-decoder'."
 	    ;;	Use `inhibit-read-only' to avoid to force
 	    ;;	buffer-read-only nil. - tomo.
 	    (let ((inhibit-read-only t))
-	      (delete-file filename)))))))
+	      (delete-file filename))))))))
 
 (mel-define-method-function (mime-encode-region start end (nil "x-uue"))
 			    'uuencode-external-encode-region)
@@ -134,24 +133,26 @@ variable `uuencode-external-encoder'."
 START and END are buffer positions."
   (interactive "*r\nFWrite decoded region to file: ")
   (save-excursion
-    (let ((file (save-excursion
-		  (save-restriction
-		    (narrow-to-region start end)
-		    (goto-char start)
-		    (if (re-search-forward "^begin [0-9]+ " nil t)
-			(if (looking-at ".+$")
-			    (buffer-substring (match-beginning 0)
-					      (match-end 0)))))))
-	  (default-directory temporary-file-directory))
-      (if file
-	  (let ((coding-system-for-read  'binary)
-		(coding-system-for-write 'binary))
-	    (apply (function call-process-region)
-		   start end (car uuencode-external-decoder)
-		   nil nil nil
-		   (cdr uuencode-external-decoder))
-	    (rename-file file filename 'overwrites))))))
-
+    (let ((clone-buf (clone-buffer " *x-uue*"))
+	  (file (make-temp-file "x-uue")))
+      (save-excursion
+	(save-restriction
+	  (set-buffer clone-buf)
+	  (narrow-to-region start end)
+	  (setq buffer-read-only nil)
+	  (goto-char start)
+	  (when (and (re-search-forward "^begin [0-9]+ " nil t)
+		   (looking-at ".+$"))
+	    (replace-match file)
+	    (let ((coding-system-for-read  'binary)
+		  (coding-system-for-write 'binary))
+	      (apply (function call-process-region)
+		     (point-min) (point-max) (car uuencode-external-decoder)
+		     nil nil nil
+		     (cdr uuencode-external-decoder))
+	      (rename-file file filename 'overwrites)
+	      (message (concat "Wrote " filename))))))
+      (kill-buffer clone-buf))))
 
 ;;; @ end
 ;;;
