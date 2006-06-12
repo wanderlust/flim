@@ -898,9 +898,13 @@ abcdefghijklmnopqrstuvwxyz\
   (defun quoted-printable-ccl-insert-encoded-file (filename)
     "Encode contents of the file named as FILENAME, and insert it."
     (interactive "*fInsert encoded file: ")
-    (let ((coding-system-for-read 'mel-ccl-quoted-printable-lf-lf-rev)
-	  format-alist)
-      (insert-file-contents filename)))
+    (insert
+     (decode-coding-string
+      (with-temp-buffer
+	(set-buffer-multibyte nil)
+	(insert-file-contents-as-binary filename)
+	(buffer-string))
+      'mel-ccl-quoted-printable-lf-lf-rev)))
 
   (mel-define-method-function
    (mime-encode-string string (nil "quoted-printable"))
