@@ -423,7 +423,9 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	(smtp-primitive-data package))
     (let ((connection (smtp-find-connection (current-buffer))))
       (when (smtp-connection-opened connection)
-	(smtp-primitive-quit package)
+	(condition-case nil
+	    (smtp-primitive-quit package)
+	  (smtp-error))
 	(smtp-close-connection connection)))))
 
 (defun smtp-send-buffer-by-myself (sender recipients buffer)
