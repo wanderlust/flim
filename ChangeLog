@@ -1,3 +1,8 @@
+2006-09-24  Daiki Ueno  <ueno@unixuser.org>
+
+	* smtp.el (smtp-end-of-line): Abolished; reverted the change
+	2002-07-24 Katsumi Yamaoka <yamaoka@jpl.org>.
+
 2006-06-15  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* smtp.el (smtp-submit-package): Ignore error in

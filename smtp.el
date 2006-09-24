@@ -171,19 +171,13 @@ Here is an example:
 It connects to a SMTP server using \"ssh\" before actually connecting
 to the SMTP port.  Where the command \"nc\" is the netcat executable;
 see http://www.atstake.com/research/tools/index.html#network_utilities
-for details.  In addition, you will have to modify the value for
-`smtp-end-of-line' to \"\\n\" if you use \"telnet\" instead of \"nc\".")
+for details.")
 
 (defvar smtp-read-point nil)
 
 (defvar smtp-connection-alist nil)
 
 (defvar smtp-submit-package-function #'smtp-submit-package)
-
-(defvar smtp-end-of-line "\r\n"
-  "*String to use as end-of-line marker when talking to a SMTP server.
-This is \"\\r\\n\" by default, but it may have to be \"\\n\" when using a non
-native connection function.  See also `smtp-open-connection-function'.")
 
 ;;; @ SMTP package
 ;;; A package contains a mail message, an envelope sender address,
@@ -672,7 +666,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	    (delete-region bol (point))
 	    (insert (funcall decoder string))
 	    (setq eol (point))
-	    (insert smtp-end-of-line)))
+	    (insert "\r\n")))
 	(setq smtp-read-point (point))
 	(goto-char bol)
 	(cond
@@ -695,7 +689,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	   (smtp-connection-encoder-internal connection)))
       (set-buffer (process-buffer process))
       (goto-char (point-max))
-      (setq command (concat command smtp-end-of-line))
+      (setq command (concat command "\r\n"))
       (insert command)
       (setq smtp-read-point (point))
       (if encoder
@@ -709,8 +703,8 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	 (smtp-connection-encoder-internal connection)))
     ;; Escape "." at start of a line.
     (if (eq (string-to-char data) ?.)
-	(setq data (concat "." data smtp-end-of-line))
-      (setq data (concat data smtp-end-of-line)))
+	(setq data (concat "." data "\r\n"))
+      (setq data (concat data "\r\n")))
     (if encoder
 	(setq data (funcall encoder data)))
     (process-send-string process data)))
