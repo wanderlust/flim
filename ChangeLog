@@ -1,5 +1,10 @@
 2006-09-24  Daiki Ueno  <ueno@unixuser.org>
 
+	* smtp.el (smtp-progress-message-format): Abolished; reverted the
+	change 2004-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>.
+
+2006-09-24  Daiki Ueno  <ueno@unixuser.org>
+
 	* smtp.el (smtp-end-of-line): Abolished; reverted the change
 	2002-07-24 Katsumi Yamaoka <yamaoka@jpl.org>.
 

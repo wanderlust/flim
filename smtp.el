@@ -131,23 +131,6 @@ don't define this value."
   :type '(repeat string)
   :group 'smtp-extensions)
 
-(defcustom smtp-progress-message-format nil
-  "Format string used to show progress message while sending mails.
-It allows the following special format specifiers:
-
-%b means show the number of bytes which has been sent
-   and the total bytes of a mail.
-%k means show the number of kilobytes which has been sent
-   and the total kilobytes of a mail.
-%l means show the number of lines which has been sent
-   and the total lines of a mail.
-
-For instance, the value \"Sending (%k)...\" shows like
-\"Sending (45k/123k)...\" in the echo area."
-  :type '(radio (string :format "%v\n" :size 0 :value "Sending (%k)...")
-		(const :tag "Don't show progress message" nil))
-  :group 'smtp)
-
 (defcustom smtp-debug nil
   "*If non-nil, smtp debug info printout into messages."
   :type 'boolean
@@ -602,20 +585,18 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 (defun smtp-primitive-data (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
-	 response def prev)
+	 response)
     (smtp-send-command connection "DATA")
     (setq response (smtp-read-response connection))
     (if (/= (car response) 354)
 	(smtp-response-error response))
     (save-excursion
       (set-buffer (smtp-package-buffer-internal package))
-      (setq def (smtp-parse-progress-message-format))
       (goto-char (point-min))
       (while (not (eobp))
 	(smtp-send-data
 	 connection (buffer-substring (point) (progn (end-of-line)(point))))
-	(beginning-of-line 2)
-	(setq prev (smtp-show-progress-message def prev))))
+	(beginning-of-line 2)))
     (smtp-send-command connection ".")
     (setq response (smtp-read-response connection))
     (if (/= (car response) 250)
@@ -767,74 +748,6 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 			  recipient-address-list)))
 	    recipient-address-list))
       (kill-buffer smtp-address-buffer))))
-
-;;; @ functions used to show progress message
-;;;
-(defun smtp-parse-progress-message-format ()
-  "Parse the `smtp-progress-message-format' variable.
-Return nil, or a cons of an ordinary format string and a type including
-nil, the symbols `b', `k' and `l'."
-  (when smtp-progress-message-format
-    (let ((format smtp-progress-message-format)
-	  (index 0)
-	  type)
-      (while (string-match "%\\([bkl]\\)\\|%\\([^%bkl]\\|\\'\\)" format index)
-	(if (and (not type)
-		 (match-beginning 1))
-	    (setq index (match-end 0)
-		  type (intern (match-string 1 format))
-		  format (replace-match
-			  (cond ((eq type 'b)
-				 (concat "%d/"
-					 (number-to-string (buffer-size))))
-				((eq type 'k)
-				 (if (>= (buffer-size) 512)
-				     (concat "%dk/"
-					     (number-to-string
-					      (/ (+ (buffer-size) 512) 1024))
-					     "k")
-				   (setq type 'b)
-				   (concat "%d/"
-					   (number-to-string (buffer-size)))))
-				(t
-				 (concat "%d/"
-					 (number-to-string
-					  (count-lines (point-min)
-						       (point-max))))))
-			  nil nil format))
-	  (setq index (1+ (match-end 0))
-		format (replace-match "%\\&" nil nil format))))
-      (cons format type))))
-
-(defun smtp-show-progress-message (def prev)
-  "Show progress message while sending mails.
-DEF is a cons cell which is pre-computed by the
-`smtp-parse-progress-message-format' function or nil.
-PREV is a number shown last time or nil.
-Return a number computed this time."
-  (when (car def)
-    (let* ((fmt (car def))
-	   (type (cdr def))
-	   (value (cond ((eq type 'b)
-			 (- (point) (point-min)))
-			((eq type 'k)
-			 (/ (- (point) (point-min) -512) 1024))
-			((eq type 'l)
-			 (count-lines (point-min) (point)))))
-	   message-log-max)
-      (unless (and prev
-		   value
-		   (eq type 'k)
-		   (<= value prev))
-	(cond ((featurep 'xemacs)
-	       (display-message 'no-log (if value
-					    (format fmt value)
-					  fmt)))
-	      (value
-	       (message fmt value))
-	      (t
-	       (message "%s" fmt))))
-      value)))
 
 (provide 'smtp)
 
