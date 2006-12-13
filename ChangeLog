@@ -1,3 +1,7 @@
+2006-12-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* FLIM-CFG (PACKAGEDIR): Avoid an error with Emacs.
+
 2006-12-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* FLIM-MK (compile-flim-package): Use
