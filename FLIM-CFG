@@ -61,28 +61,6 @@
       (expand-file-name FLIM_PREFIX VERSION_SPECIFIC_LISPDIR))
 
 (defvar PACKAGEDIR
-  (let ((dirs (append
-	       (cond ((boundp 'early-package-hierarchies)
-		      (append (if early-package-load-path
-				  early-package-hierarchies)
-			      (if late-package-load-path
-				  late-package-hierarchies)
-			      (if last-package-load-path
-				  last-package-hierarchies)))
-		     ((boundp 'early-packages)
-		      (append (if early-package-load-path
-				  early-packages)
-			      (if late-package-load-path
-				  late-packages)
-			      (if last-package-load-path
-				  last-packages))))
-	       (if (and (boundp 'configure-package-path)
-			(listp configure-package-path))
-		   (delete "" configure-package-path))))
-	dir)
-    (while (and (setq dir (car dirs))
-		(not (file-exists-p dir)))
-      (setq dirs (cdr dirs)))
-    dir))
+  (install-get-default-package-directory))
 
 ;;; FLIM-CFG ends here
