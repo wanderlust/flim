@@ -1,3 +1,8 @@
+2007-06-18  Wencheng Fang  <wencheng.fang@spherenet.co.jp>
+
+	* mel.el (mime-write-decoded-region): Define method function that
+	uses built-in base64-decode-region.  [cf. <emacs-mime-ja:02169>]
+
 2006-12-20  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* README.ja, README.en (Installation): Update required version of
