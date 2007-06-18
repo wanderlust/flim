@@ -1,3 +1,9 @@
+2007-06-18  Wencheng Fang  <wencheng.fang@spherenet.co.jp>
+
+	* mel.el (mime-write-decoded-region): Define method function that
+	uses built-in base64-decode-region.  [cf. <emacs-mime-ja:02169>]
+
+
 2005-12-25  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* FLIM: Version 1.14.8 (Shij-Dò) released.-A

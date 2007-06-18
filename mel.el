@@ -176,6 +176,15 @@ mmencode included in metamail or XEmacs package)."
 	       (binary-insert-encoded-file filename)
 	       (buffer-string))))
     (or (bolp) (insert ?\n)))
+  (mel-define-method mime-write-decoded-region (start end filename
+						      (nil "base64"))
+    "Decode the region from START to END and write out to FILENAME."
+    (interactive "*r\nFWrite decoded region to file: ")
+    (let ((str (buffer-substring start end)))
+      (with-temp-buffer
+	(insert str)
+	(base64-decode-region (point-min) (point-max))
+	(write-region-as-binary (point-min) (point-max) filename))))
     
   ;; (mel-define-method-function (encoded-text-encode-string string (nil "B"))
   ;;                             'base64-encode-string)
