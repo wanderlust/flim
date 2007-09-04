@@ -1,3 +1,21 @@
+2007-09-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* eword-encode.el (make-ew-rword, ew-rword-text, ew-rword-charset)
+	(ew-rword-encoding, ew-rword-type): Use new-style backquotes.
+
+	* hmac-def.el (define-hmac-function): Use new-style backquotes.
+
+	* md4.el (md4-make-step): Use new-style backquotes.
+
+2007-08-23  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* sha1-el.el: Fix up comment style.
+	(sha1-F0, sha1-F1, sha1-F2, sha1-F3, sha1-S1, sha1-S5, sha1-S30)
+	(sha1-OP, sha1-add-to-H): Use new-style backquotes.
+
+	* hex-util.el: Fix up comment style.
+	(hex-char-to-num, num-to-hex-char): Use new-style backquotes.
+
 2007-06-18  Wencheng Fang  <wencheng.fang@spherenet.co.jp>
 
 	* mel.el (mime-write-decoded-region): Define method function that

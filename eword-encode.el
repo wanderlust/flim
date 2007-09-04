@@ -164,15 +164,15 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;;
 
 (defmacro make-ew-rword (text charset encoding type)
-  (` (list (, text)(, charset)(, encoding)(, type))))
+  `(list ,text ,charset ,encoding ,type))
 (defmacro ew-rword-text (rword)
-  (` (car (, rword))))
+  `(car ,rword))
 (defmacro ew-rword-charset (rword)
-  (` (car (cdr (, rword)))))
+  `(car (cdr ,rword)))
 (defmacro ew-rword-encoding (rword)
-  (` (car (cdr (cdr (, rword))))))
+  `(car (cdr (cdr ,rword))))
 (defmacro ew-rword-type (rword)
-  (` (car (cdr (cdr (cdr (, rword)))))))
+  `(car (cdr (cdr (cdr ,rword)))))
 
 (defun ew-find-charset-rule (charsets)
   (if charsets
