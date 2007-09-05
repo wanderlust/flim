@@ -28,14 +28,14 @@
 
 (eval-when-compile
   (defmacro hex-char-to-num (chr)
-    `(let ((chr ,chr))
-       (cond
-	((and (<= ?a chr)(<= chr ?f)) (+ (- chr ?a) 10))
-	((and (<= ?A chr)(<= chr ?F)) (+ (- chr ?A) 10))
-	((and (<= ?0 chr)(<= chr ?9)) (- chr ?0))
-	(t (error "Invalid hexadecimal digit `%c'" chr)))))
+    (` (let ((chr (, chr)))
+	 (cond
+	  ((and (<= ?a chr)(<= chr ?f)) (+ (- chr ?a) 10))
+	  ((and (<= ?A chr)(<= chr ?F)) (+ (- chr ?A) 10))
+	  ((and (<= ?0 chr)(<= chr ?9)) (- chr ?0))
+	  (t (error "Invalid hexadecimal digit `%c'" chr))))))
   (defmacro num-to-hex-char (num)
-    `(aref "0123456789abcdef" ,num)))
+    (` (aref "0123456789abcdef" (, num)))))
 
 (defun decode-hex-string (string)
   "Decode hexadecimal STRING to octet string."
@@ -43,9 +43,9 @@
 	 (dst (make-string (/ len 2) 0))
 	 (idx 0)(pos 0))
     (while (< pos len)
-      ;; logior and lsh are not byte-coded.
-      ;;  (aset dst idx (logior (lsh (hex-char-to-num (aref string pos)) 4)
-      ;; 			    (hex-char-to-num (aref string (1+ pos)))))
+;;; logior and lsh are not byte-coded.
+;;;  (aset dst idx (logior (lsh (hex-char-to-num (aref string pos)) 4)
+;;; 			    (hex-char-to-num (aref string (1+ pos)))))
       (aset dst idx (+ (* (hex-char-to-num (aref string pos)) 16)
 		       (hex-char-to-num (aref string (1+ pos)))))
       (setq idx (1+ idx)
@@ -58,11 +58,11 @@
 	 (dst (make-string (* len 2) 0))
 	 (idx 0)(pos 0))
     (while (< pos len)
-      ;; logand and lsh are not byte-coded.
-      ;; (aset dst idx (num-to-hex-char (logand (lsh (aref string pos) -4) 15)))
+;;; logand and lsh are not byte-coded.
+;;;  (aset dst idx (num-to-hex-char (logand (lsh (aref string pos) -4) 15)))
       (aset dst idx (num-to-hex-char (/ (aref string pos) 16)))
       (setq idx (1+ idx))
-      ;;  (aset dst idx (num-to-hex-char (logand (aref string pos) 15)))
+;;;  (aset dst idx (num-to-hex-char (logand (aref string pos) 15)))
       (aset dst idx (num-to-hex-char (% (aref string pos) 16)))
       (setq idx (1+ idx)
             pos (1+ pos)))
