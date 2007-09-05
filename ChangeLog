@@ -1,3 +1,13 @@
+2007-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* eword-encode.el (make-ew-rword, ew-rword-text, ew-rword-charset)
+	(ew-rword-encoding, ew-rword-type)
+	* hmac-def.el (define-hmac-function)
+	* md4.el (md4-make-step)
+	* sha1-el.el (sha1-F0, sha1-F1, sha1-F2, sha1-F3, sha1-S1)
+	(sha1-S5, sha1-S30, sha1-OP, sha1-add-to-H)
+	* hex-util.el (hex-char-to-num, num-to-hex-char): Revert last changes.
+
 2007-09-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* eword-encode.el (make-ew-rword, ew-rword-text, ew-rword-charset)
