@@ -1,6 +1,7 @@
 ;;; eword-encode.el --- RFC 2047 based encoded-word encoder for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999,2000,2002,2003,2004 Free
+;;   Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: encoded-word, MIME, multilingual, header, mail, news
