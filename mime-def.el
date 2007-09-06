@@ -1,6 +1,6 @@
 ;;; mime-def.el --- definition module about MIME -*- coding: iso-8859-4; -*-
 
-;; Copyright (C) 1995,96,97,98,99,2000,2001,2002,2003,2004,2005
+;; Copyright (C) 1995,96,97,98,99,2000,2001,2002,2003,2004,2005,2006
 ;;   Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
