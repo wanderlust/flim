@@ -67,7 +67,7 @@
       0   1   2   3   4   5   6   7   8   9 nil nil nil nil nil nil
     nil  10  11  12  13  14  15 nil nil nil nil nil nil nil nil nil
     nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
-    nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
+    nil  10  11  12  13  14  15 nil nil nil nil nil nil nil nil nil
     nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
     nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
     nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
