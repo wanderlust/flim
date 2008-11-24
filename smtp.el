@@ -131,21 +131,9 @@ don't define this value."
   :type '(repeat string)
   :group 'smtp-extensions)
 
-(defcustom smtp-progress-message-format nil
-  "Format string used to show progress message while sending mails.
-It allows the following special format specifiers:
-
-%b means show the number of bytes which has been sent
-   and the total bytes of a mail.
-%k means show the number of kilobytes which has been sent
-   and the total kilobytes of a mail.
-%l means show the number of lines which has been sent
-   and the total lines of a mail.
-
-For instance, the value \"Sending (%k)...\" shows like
-\"Sending (45k/123k)...\" in the echo area."
-  :type '(radio (string :format "%v\n" :size 0 :value "Sending (%k)...")
-		(const :tag "Don't show progress message" nil))
+(defcustom smtp-debug nil
+  "*If non-nil, smtp debug info printout into messages."
+  :type 'boolean
   :group 'smtp)
 
 (defvar sasl-mechanisms)
@@ -166,19 +154,13 @@ Here is an example:
 It connects to a SMTP server using \"ssh\" before actually connecting
 to the SMTP port.  Where the command \"nc\" is the netcat executable;
 see http://www.atstake.com/research/tools/index.html#network_utilities
-for details.  In addition, you will have to modify the value for
-`smtp-end-of-line' to \"\\n\" if you use \"telnet\" instead of \"nc\".")
+for details.")
 
 (defvar smtp-read-point nil)
 
 (defvar smtp-connection-alist nil)
 
 (defvar smtp-submit-package-function #'smtp-submit-package)
-
-(defvar smtp-end-of-line "\r\n"
-  "*String to use as end-of-line marker when talking to a SMTP server.
-This is \"\\r\\n\" by default, but it may have to be \"\\n\" when using a non
-native connection function.  See also `smtp-open-connection-function'.")
 
 ;;; @ SMTP package
 ;;; A package contains a mail message, an envelope sender address,
@@ -418,7 +400,9 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	(smtp-primitive-data package))
     (let ((connection (smtp-find-connection (current-buffer))))
       (when (smtp-connection-opened connection)
-	(smtp-primitive-quit package)
+	(condition-case nil
+	    (smtp-primitive-quit package)
+	  (smtp-error))
 	(smtp-close-connection connection)))))
 
 (defun smtp-send-buffer-by-myself (sender recipients buffer)
@@ -455,7 +439,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	  (let ((smtp-use-sasl nil)
 		(smtp-use-starttls-ignore-error t))
 	    (funcall smtp-submit-package-function package)))
-      (setq servers (cdr servers)))))
+	(setq servers (cdr servers)))))
 
 ;;; @ hook methods for `smtp-submit-package'
 ;;;
@@ -601,20 +585,18 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 (defun smtp-primitive-data (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
-	 response def prev)
+	 response)
     (smtp-send-command connection "DATA")
     (setq response (smtp-read-response connection))
     (if (/= (car response) 354)
 	(smtp-response-error response))
     (save-excursion
       (set-buffer (smtp-package-buffer-internal package))
-      (setq def (smtp-parse-progress-message-format))
       (goto-char (point-min))
       (while (not (eobp))
 	(smtp-send-data
 	 connection (buffer-substring (point) (progn (end-of-line)(point))))
-	(beginning-of-line 2)
-	(setq prev (smtp-show-progress-message def prev))))
+	(beginning-of-line 2)))
     (smtp-send-command connection ".")
     (setq response (smtp-read-response connection))
     (if (/= (car response) 250)
@@ -653,26 +635,31 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	response)
     (while response-continue
       (goto-char smtp-read-point)
-      (while (not (search-forward smtp-end-of-line nil t))
+      (while (not (re-search-forward "\r?\n" nil t))
 	(unless (smtp-connection-opened connection)
 	  (signal 'smtp-error "Connection closed"))
 	(accept-process-output (smtp-connection-process-internal connection))
 	(goto-char smtp-read-point))
-      (if decoder
-	  (let ((string (buffer-substring smtp-read-point (- (point) 2))))
-	    (delete-region smtp-read-point (point))
-	    (insert (funcall decoder string) smtp-end-of-line)))
-      (setq response
-	    (nconc response
-		   (list (buffer-substring
-			  (+ 4 smtp-read-point)
-			  (- (point) 2)))))
-      (goto-char
-       (prog1 smtp-read-point
-	 (setq smtp-read-point (point))))
-      (if (looking-at "[1-5][0-9][0-9] ")
-	  (setq response (cons (read (point-marker)) response)
-		response-continue nil)))
+      (let ((bol smtp-read-point)
+	    (eol (match-beginning 0)))
+	(when decoder
+	  (let ((string (buffer-substring bol eol)))
+	    (delete-region bol (point))
+	    (insert (funcall decoder string))
+	    (setq eol (point))
+	    (insert "\r\n")))
+	(setq smtp-read-point (point))
+	(goto-char bol)
+	(cond
+	 ((looking-at "[1-5][0-9][0-9]\\([ -]\\)")
+	  (setq response
+		(nconc response
+		       (list (buffer-substring (match-end 0) eol))))
+	  (when (string= (match-string 1) " ")
+	    (setq response (cons (read (point-marker)) response)
+		  response-continue nil)))
+	 (smtp-debug
+	  (message "Invalid response: %s" (buffer-substring bol eol))))))
     response))
 
 (defun smtp-send-command (connection command)
@@ -683,7 +670,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	   (smtp-connection-encoder-internal connection)))
       (set-buffer (process-buffer process))
       (goto-char (point-max))
-      (setq command (concat command smtp-end-of-line))
+      (setq command (concat command "\r\n"))
       (insert command)
       (setq smtp-read-point (point))
       (if encoder
@@ -697,8 +684,8 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	 (smtp-connection-encoder-internal connection)))
     ;; Escape "." at start of a line.
     (if (eq (string-to-char data) ?.)
-	(setq data (concat "." data smtp-end-of-line))
-      (setq data (concat data smtp-end-of-line)))
+	(setq data (concat "." data "\r\n"))
+      (setq data (concat data "\r\n")))
     (if encoder
 	(setq data (funcall encoder data)))
     (process-send-string process data)))
@@ -761,74 +748,6 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 			  recipient-address-list)))
 	    recipient-address-list))
       (kill-buffer smtp-address-buffer))))
-
-;;; @ functions used to show progress message
-;;;
-(defun smtp-parse-progress-message-format ()
-  "Parse the `smtp-progress-message-format' variable.
-Return nil, or a cons of an ordinary format string and a type including
-nil, the symbols `b', `k' and `l'."
-  (when smtp-progress-message-format
-    (let ((format smtp-progress-message-format)
-	  (index 0)
-	  type)
-      (while (string-match "%\\([bkl]\\)\\|%\\([^%bkl]\\|\\'\\)" format index)
-	(if (and (not type)
-		 (match-beginning 1))
-	    (setq index (match-end 0)
-		  type (intern (match-string 1 format))
-		  format (replace-match
-			  (cond ((eq type 'b)
-				 (concat "%d/"
-					 (number-to-string (buffer-size))))
-				((eq type 'k)
-				 (if (>= (buffer-size) 512)
-				     (concat "%dk/"
-					     (number-to-string
-					      (/ (+ (buffer-size) 512) 1024))
-					     "k")
-				   (setq type 'b)
-				   (concat "%d/"
-					   (number-to-string (buffer-size)))))
-				(t
-				 (concat "%d/"
-					 (number-to-string
-					  (count-lines (point-min)
-						       (point-max))))))
-			  nil nil format))
-	  (setq index (1+ (match-end 0))
-		format (replace-match "%\\&" nil nil format))))
-      (cons format type))))
-
-(defun smtp-show-progress-message (def prev)
-  "Show progress message while sending mails.
-DEF is a cons cell which is pre-computed by the
-`smtp-parse-progress-message-format' function or nil.
-PREV is a number shown last time or nil.
-Return a number computed this time."
-  (when (car def)
-    (let* ((fmt (car def))
-	   (type (cdr def))
-	   (value (cond ((eq type 'b)
-			 (- (point) (point-min)))
-			((eq type 'k)
-			 (/ (- (point) (point-min) -512) 1024))
-			((eq type 'l)
-			 (count-lines (point-min) (point)))))
-	   message-log-max)
-      (unless (and prev
-		   value
-		   (eq type 'k)
-		   (<= value prev))
-	(cond ((featurep 'xemacs)
-	       (display-message 'no-log (if value
-					    (format fmt value)
-					  fmt)))
-	      (value
-	       (message fmt value))
-	      (t
-	       (message "%s" fmt))))
-      value)))
 
 (provide 'smtp)
 

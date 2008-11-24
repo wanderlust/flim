@@ -39,10 +39,10 @@ FLIM とは？
 	XEmacs 21.1 以降
 
 
-導入 (install)
-==============
+導入 (Installation)
+===================
 
-(0) 導入 (install) する前に、APEL (9.22 以降) を導入してください。APEL 
+(0) 導入 (install) する前に、APEL (10.7 以降) を導入してください。APEL
     は以下のところで取得できます:
 
 	ftp://ftp.m17n.org/pub/mule/apel/

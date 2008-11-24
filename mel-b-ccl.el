@@ -419,9 +419,13 @@ abcdefghijklmnopqrstuvwxyz\
   (defun base64-ccl-insert-encoded-file (filename)
     "Encode contents of file FILENAME to base64, and insert the result."
     (interactive "*fInsert encoded file: ")
-    (let ((coding-system-for-read 'mel-ccl-base64-lf-rev)
-	  format-alist)
-      (insert-file-contents filename)))
+    (insert
+     (decode-coding-string
+      (with-temp-buffer
+	(set-buffer-multibyte nil)
+	(insert-file-contents-as-binary filename)
+	(buffer-string))
+      'mel-ccl-base64-lf-rev)))
 
   (mel-define-method-function (mime-encode-string string (nil "base64"))
 			      'base64-ccl-encode-string)
