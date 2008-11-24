@@ -1,3 +1,8 @@
+2008-09-20  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* mel-q-ccl.el (mel-ccl-256-to-16-table): Accept (illegal) lower
+	case representation for decoding.
+
 2007-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* eword-encode.el (make-ew-rword, ew-rword-text, ew-rword-charset)
