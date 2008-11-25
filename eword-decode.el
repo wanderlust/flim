@@ -98,7 +98,11 @@ such as a version of Net$cape)."
       (while match
 	(setq next (match-end 0))
 	(push (list (match-string 2 string) ;; charset
-		    (match-string 3 string) ;; language
+		    (when (match-beginning 3) ;; language
+		      (intern
+		       (downcase
+			(substring string
+				   (1+ (match-beginning 3)) (match-end 3)))))
 		    (match-string 4 string) ;; encoding
 		    (match-string 5 string) ;; encoded-text
 		    (match-string 1 string)) ;; encoded-word
@@ -232,7 +236,11 @@ such as a version of Net$cape)."
 	  (while match
 	    (goto-char (setq end (match-end 0)))
 	    (push (list (match-string 2) ;; charset
-			(match-string 3) ;; language
+			(when (match-beginning 3) ;; language
+			  (intern
+			   (downcase
+			    (buffer-substring (1+ (match-beginning 3))
+					      (match-end 3)))))
 			(match-string 4) ;; encoding
 			(match-string 5) ;; encoded-text
 			(match-string 1)) ;; encoded-word
@@ -713,7 +721,11 @@ be the result.")
     (while match
       (setq next (match-end 0))
       (push (list (match-string 2 string) ;; charset
-		  (match-string 3 string) ;; language
+		  (when (match-beginning 3) ;; language
+		    (intern
+		     (downcase
+		      (substring string
+				 (1+ (match-beginning 3)) (match-end 3)))))
 		  (match-string 4 string) ;; encoding
 		  (match-string 5 string) ;; encoded-text
 		  (match-string 1 string)) ;; encoded-word
