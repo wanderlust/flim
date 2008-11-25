@@ -1,5 +1,10 @@
 2008-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* eword-decode.el (eword-decode-string, eword-decode-region):
+	Mention language info in doc string.
+
+2008-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* eword-decode.el (eword-decode-string, eword-decode-region)
 	(eword-analyze-encoded-word): Express the language portion of an
 	encoded word as a symbol.
