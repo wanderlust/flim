@@ -40,7 +40,8 @@
 (defsubst quoted-printable-quote-char (character)
   (concat
    "="
-   (char-to-string (aref quoted-printable-hex-chars (ash character -4)))
+   (char-to-string (aref quoted-printable-hex-chars
+			 (ash (logand character 255) -4)))
    (char-to-string (aref quoted-printable-hex-chars (logand character 15)))))
 
 (defun quoted-printable-internal-encode-region (start end)
@@ -58,7 +59,7 @@
 	    (forward-char)
 	    (setq col 0))
 	   (t
-	    (setq chr (char-after (point)))
+	    (setq chr (logand (char-after (point)) 255))
 	    (cond
 	     ((and (memq chr '(?  ?\t))	; encode WSP char before CRLF.
 		   (eq (char-after (1+ (point))) ?\n))

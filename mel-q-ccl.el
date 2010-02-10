@@ -146,8 +146,9 @@ abcdefghijklmnopqrstuvwxyz\
 (define-ccl-program mel-ccl-decode-q
   `(1
     ((loop
-      (read-branch
-       r0
+      (read r0)
+      (branch
+       (r0 & 255)
        ,@(mapcar
           (lambda (r0)
             (cond
@@ -188,7 +189,9 @@ abcdefghijklmnopqrstuvwxyz\
   `(3
     (loop
      (loop
-      (read-branch
+      (read r0)
+      (r0 &= 255)
+      (branch
        r0
        ,@(mapcar
           (lambda (r0)
@@ -295,6 +298,7 @@ abcdefghijklmnopqrstuvwxyz\
        (loop	; invariant: column <= 75
 	(loop
 	 (loop
+	  (r0 &= 255)
 	  (branch
 	   r0
 	   ,@(mapcar
@@ -591,7 +595,7 @@ abcdefghijklmnopqrstuvwxyz\
     ((read r0)
      (loop
       (branch
-       r0
+       (r0 & 255)
        ,@(mapcar
           (lambda (r0)
             (let ((tmp (aref mel-ccl-qp-table r0)))
@@ -729,9 +733,8 @@ abcdefghijklmnopqrstuvwxyz\
                (t
                 ;; r0:[^\t\r -~]
                 ;; invalid character found.
-                ;; -> ignore.
-                `((read r0)
-                  (repeat))))))
+                ;; -> output as is.
+                `((write-read-repeat r0))))))
           mel-ccl-256-table))
       ;; r1[0]:[\t ]
       (loop
@@ -884,27 +887,56 @@ abcdefghijklmnopqrstuvwxyz\
 
 (unless-broken ccl-execute-eof-block-on-decoding-some
 
-  (defun quoted-printable-ccl-encode-string (string)
-    "Encode STRING with quoted-printable encoding."
-    (decode-coding-string
-     string
-     'mel-ccl-quoted-printable-lf-lf-rev))
+  (cond
+   ((eval-when-compile
+      (and (eq emacs-major-version 23)
+	   (eq emacs-minor-version 1)))
+    (defun quoted-printable-ccl-encode-string (string)
+      "Encode STRING with quoted-printable encoding."
+      (ccl-execute-on-string 'mel-ccl-encode-quoted-printable-lf-lf
+			     [0 0 0 0 0 0 0 0 0] string nil t))
+    (defun quoted-printable-ccl-encode-region (start end)
+      "Encode the region from START to END with quoted-printable encoding."
+      (interactive "*r")
+      (save-excursion
+	(goto-char start)
+	(insert (prog1 (quoted-printable-ccl-encode-string
+			(buffer-substring start end))
+		  (delete-region start end)))))
 
-  (defun quoted-printable-ccl-encode-region (start end)
-    "Encode the region from START to END with quoted-printable encoding."
-    (interactive "*r")
-    (decode-coding-region start end 'mel-ccl-quoted-printable-lf-lf-rev))
+    (defun quoted-printable-ccl-insert-encoded-file (filename)
+      "Encode contents of the file named as FILENAME, and insert it."
+      (interactive "*fInsert encoded file: ")
+      (insert
+       (ccl-execute-on-string 'mel-ccl-encode-quoted-printable-lf-lf
+			      [0 0 0 0 0 0 0 0 0]
+			      (with-temp-buffer
+				(set-buffer-multibyte nil)
+				(insert-file-contents-as-binary filename)
+				(buffer-string))
+			      nil t))))
+   (t
+    (defun quoted-printable-ccl-encode-string (string)
+      "Encode STRING with quoted-printable encoding."
+      (decode-coding-string
+       string
+       'mel-ccl-quoted-printable-lf-lf-rev))
 
-  (defun quoted-printable-ccl-insert-encoded-file (filename)
-    "Encode contents of the file named as FILENAME, and insert it."
-    (interactive "*fInsert encoded file: ")
-    (insert
-     (decode-coding-string
-      (with-temp-buffer
-	(set-buffer-multibyte nil)
-	(insert-file-contents-as-binary filename)
-	(buffer-string))
-      'mel-ccl-quoted-printable-lf-lf-rev)))
+    (defun quoted-printable-ccl-encode-region (start end)
+      "Encode the region from START to END with quoted-printable encoding."
+      (interactive "*r")
+      (decode-coding-region start end 'mel-ccl-quoted-printable-lf-lf-rev))
+
+    (defun quoted-printable-ccl-insert-encoded-file (filename)
+      "Encode contents of the file named as FILENAME, and insert it."
+      (interactive "*fInsert encoded file: ")
+      (insert
+       (decode-coding-string
+	(with-temp-buffer
+	  (set-buffer-multibyte nil)
+	  (insert-file-contents-as-binary filename)
+	  (buffer-string))
+	'mel-ccl-quoted-printable-lf-lf-rev)))))
 
   (mel-define-method-function
    (mime-encode-string string (nil "quoted-printable"))
@@ -932,7 +964,10 @@ encoding."
 (defun quoted-printable-ccl-write-decoded-region (start end filename)
   "Decode quoted-printable encoded current region and write out to FILENAME."
   (interactive "*r\nFWrite decoded region to file: ")
-  (let ((coding-system-for-write 'mel-ccl-quoted-printable-lf-lf-rev)
+  (let ((coding-system-for-write
+	 (if (coding-system-p 'mel-ccl-quoted-printable-lf-lf-rev-unix)
+	     'mel-ccl-quoted-printable-lf-lf-rev-unix
+	   'mel-ccl-quoted-printable-lf-lf-rev))
 	jka-compr-compression-info-list jam-zcat-filename-list)
     (write-region start end filename)))
 
@@ -950,16 +985,31 @@ encoding."
 ;;; @ Q
 ;;;
 
-(defun q-encoding-ccl-encode-string (string &optional mode)
-  "Encode STRING to Q-encoding of encoded-word, and return the result.
+  (cond
+   ((eval-when-compile
+      (and (eq emacs-major-version 23)
+	   (eq emacs-minor-version 1)))
+    (defun q-encoding-ccl-encode-string (string &optional mode)
+      "Encode STRING to Q-encoding of encoded-word, and return the result.
 MODE allows `text', `comment', `phrase' or nil.  Default value is
 `phrase'."
-  (decode-coding-string
-   string
-   (cond
-    ((eq mode 'text) 'mel-ccl-uq-rev)
-    ((eq mode 'comment) 'mel-ccl-cq-rev)
-    (t 'mel-ccl-pq-rev))))
+      (ccl-execute-on-string
+       (cond
+	((eq mode 'text) 'mel-ccl-encode-uq)
+	((eq mode 'comment) 'mel-ccl-encode-cq)
+	(t 'mel-ccl-encode-pq))
+       [0 0 0 0 0 0 0 0 0] string nil t)))
+   (t
+    (defun q-encoding-ccl-encode-string (string &optional mode)
+      "Encode STRING to Q-encoding of encoded-word, and return the result.
+MODE allows `text', `comment', `phrase' or nil.  Default value is
+`phrase'."
+      (decode-coding-string
+       string
+       (cond
+	((eq mode 'text) 'mel-ccl-uq-rev)
+	((eq mode 'comment) 'mel-ccl-cq-rev)
+	(t 'mel-ccl-pq-rev))))))
 
 (defun q-encoding-ccl-decode-string (string)
   "Decode Q encoded STRING and return the result."
