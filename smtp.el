@@ -555,7 +555,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     ;; SIZE --- Message Size Declaration (RFC1870)
     (if (and smtp-use-size
 	     (assq 'size extensions))
-	(setq extension (format "SIZE=%d" (smtp-package-buffer-internal-size package))))
+	(setq extension (format " SIZE=%d" (smtp-package-buffer-internal-size package))))
     ;; 8BITMIME --- 8bit-MIMEtransport (RFC1652)
     (if (and smtp-use-8bitmime
 	     (assq '8bitmime extensions))
@@ -563,7 +563,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     (smtp-send-command
      connection
      (if extension
-	 (format "MAIL FROM:<%s> %s" sender extension)
+	 (format "MAIL FROM:<%s>%s" sender extension)
        (format "MAIL FROM:<%s>" sender)))
     (setq response (smtp-read-response connection))
     (if (/= (car response) 250)
