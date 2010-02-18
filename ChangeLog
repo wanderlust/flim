@@ -1,3 +1,10 @@
+2010-02-18  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* mel-q-ccl.el (quoted-printable-ccl-encode-string)
+	(quoted-printable-ccl-insert-encoded-file)
+	(q-encoding-ccl-encode-string): Make new vector instead of use of
+	the one that is hard-coded in the program.
+
 2010-02-14  Tetsurou Okazaki  <okazaki@be.to>
 
 	* smtp.el (smtp-primitive-mailfrom): Fixed two spaces may be used

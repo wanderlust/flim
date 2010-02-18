@@ -894,7 +894,7 @@ abcdefghijklmnopqrstuvwxyz\
     (defun quoted-printable-ccl-encode-string (string)
       "Encode STRING with quoted-printable encoding."
       (ccl-execute-on-string 'mel-ccl-encode-quoted-printable-lf-lf
-			     [0 0 0 0 0 0 0 0 0] string nil t))
+			     (make-vector 9 0) string nil t))
     (defun quoted-printable-ccl-encode-region (start end)
       "Encode the region from START to END with quoted-printable encoding."
       (interactive "*r")
@@ -909,7 +909,7 @@ abcdefghijklmnopqrstuvwxyz\
       (interactive "*fInsert encoded file: ")
       (insert
        (ccl-execute-on-string 'mel-ccl-encode-quoted-printable-lf-lf
-			      [0 0 0 0 0 0 0 0 0]
+			      (make-vector 9 0)
 			      (with-temp-buffer
 				(set-buffer-multibyte nil)
 				(insert-file-contents-as-binary filename)
@@ -998,7 +998,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 	((eq mode 'text) 'mel-ccl-encode-uq)
 	((eq mode 'comment) 'mel-ccl-encode-cq)
 	(t 'mel-ccl-encode-pq))
-       [0 0 0 0 0 0 0 0 0] string nil t)))
+       (make-vector 9 0) string nil t)))
    (t
     (defun q-encoding-ccl-encode-string (string &optional mode)
       "Encode STRING to Q-encoding of encoded-word, and return the result.
