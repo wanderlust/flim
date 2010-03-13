@@ -1,3 +1,17 @@
+2010-03-10  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* mel-q-ccl.el (quoted-printable-ccl-decode-string)
+	(q-encoding-ccl-decode-string): Use ccl-execute-on-string() on
+	Emacs 23.1.
+	(quoted-printable-ccl-decode-region)
+	(quoted-printable-ccl-write-decoded-region): Use
+	quoted-printable-ccl-decode-string on Emacs 23.1.
+
+	* mel-q.el (quoted-printable-num-to-raw-byte-char): New inline
+	function.
+	(quoted-printable-internal-decode-region)
+	(q-encoding-decode-string): Use it.
+
 2010-02-18  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mel-q-ccl.el (quoted-printable-ccl-encode-string)

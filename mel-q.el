@@ -177,6 +177,18 @@ It calls external quoted-printable encoder specified by
 	((<= ?0 chr) (- chr ?0))
 	))
 
+(if (eval-when-compile
+      (> (string-to-char (string-as-multibyte "\200")) 128))
+    (defsubst quoted-printable-num-to-raw-byte-char (chr)
+      (if (and chr
+	       (> chr 127))
+	  (logior chr
+		  (eval-when-compile
+		    (- (string-to-char (string-as-multibyte "\200")) 128)))
+	chr))
+  (defsubst quoted-printable-num-to-raw-byte-char (chr)
+    chr))
+
 (defun quoted-printable-internal-decode-region (start end)
   (save-excursion
     (save-restriction
@@ -198,9 +210,10 @@ It calls external quoted-printable encoder specified by
 	  ;; encoded char.
 	  (insert
 	   (prog1
-	       (logior
-		(ash (quoted-printable-hex-char-to-num (char-after (point))) 4)
-		(quoted-printable-hex-char-to-num (char-after (1+ (point)))))
+	       (quoted-printable-num-to-raw-byte-char
+		(logior
+		 (ash (quoted-printable-hex-char-to-num (char-after (point))) 4)
+		 (quoted-printable-hex-char-to-num (char-after (1+ (point))))))
 	     (delete-region (1- (point))(+ 2 (point))))))
 	 (t
 	  ;; invalid encoding.
@@ -320,7 +333,9 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 			   "")
 			(h (setq l (quoted-printable-hex-char-to-num chr))
 			   (prog1
-			       (char-to-string (logior (ash h 4) l))
+			       (char-to-string
+				(quoted-printable-num-to-raw-byte-char
+				 (logior (ash h 4) l)))
 			     (setq h nil)))
 			(t (char-to-string chr)))))
 	       string "")))
