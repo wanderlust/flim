@@ -1,3 +1,8 @@
+2010-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* FLIM-CFG: Add emu subdirectory to load-path when LISPDIR is
+	specified.  Suggested by Kazuhiro NISHIYAMA <zn@mbf.nifty.com>.
+
 2010-03-10  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mel-q-ccl.el (quoted-printable-ccl-decode-string)
