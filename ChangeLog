@@ -1,3 +1,8 @@
+2010-08-05  Tetsurou Okazaki  <okazaki@be.to>
+
+	* smtp.el (smtp-submit-package): Handle the case that
+	`smtp-find-connection' returns nil in unwind forms.
+
 2010-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* FLIM-CFG: Add emu subdirectory to load-path when LISPDIR is

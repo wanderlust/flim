@@ -399,7 +399,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	(smtp-primitive-rcptto package)
 	(smtp-primitive-data package))
     (let ((connection (smtp-find-connection (current-buffer))))
-      (when (smtp-connection-opened connection)
+      (when (and connection (smtp-connection-opened connection))
 	(condition-case nil
 	    (smtp-primitive-quit package)
 	  (smtp-error))
