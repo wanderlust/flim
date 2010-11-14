@@ -1,3 +1,20 @@
+2010-11-14  Herbert J. Skuhra  <hskuhra@fastmail.fm>
+
+	* sha1-el.el (sha1-F0, sha1-F1, sha1-F2, sha1-F3, sha1-S1)
+	(sha1-S5, sha1-S30, sha1-OP, sha1-add-to-H): Use new style
+	backquotes.
+
+	* md5-el.el: Dto.
+
+	* md4.el (md4-make-step): Dto.
+
+	* hmac-def.el (define-hmac-function): Dto.
+
+	* hex-util.el (hex-char-to-num, hex-char-to-char): Dto.
+
+	* eword-encode.el (make-ew-rword, ew-rword-text)
+	(ew-rword-charset, ew-rword-encoding, ew-rword-type): Dto.
+
 2010-08-05  Tetsurou Okazaki  <okazaki@be.to>
 
 	* smtp.el (smtp-submit-package): Handle the case that
