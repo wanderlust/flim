@@ -1,4 +1,4 @@
-2010-11-14  Herbert J. Skuhra  <hskuhra@fastmail.fm>
+2010-11-14  HAMANO Kiyoto  <khiker.mail@gmail.com>
 
 	* sha1-el.el (sha1-F0, sha1-F1, sha1-F2, sha1-F3, sha1-S1)
 	(sha1-S5, sha1-S30, sha1-OP, sha1-add-to-H): Use new style
