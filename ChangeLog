@@ -1,3 +1,8 @@
+2011-05-16  David Maus  <dmaus@ictsoc.de>
+
+	* md4.el (md4-make-step): Use new style backqoutes. Slipped
+	through 2010-11-14.
+
 2010-11-14  HAMANO Kiyoto  <khiker.mail@gmail.com>
 
 	* sha1-el.el (sha1-F0, sha1-F1, sha1-F2, sha1-F3, sha1-S1)
