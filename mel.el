@@ -86,7 +86,7 @@ Content-Transfer-Encoding for it."
 
 (defun 8bit-write-decoded-region (start end filename)
   "Decode and write current region encoded by \"8bit\" into FILENAME."
-  (let ((coding-system-for-write 'raw-text)
+  (let ((coding-system-for-write 'no-conversion)
 	format-alist)
     (write-region start end filename)))
 

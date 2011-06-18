@@ -391,16 +391,15 @@ default value."
 (defun mime-entity-filename (entity)
   "Return filename of ENTITY."
   (or (mime-entity-uu-filename entity)
-      (let ((ret (mime-content-disposition-filename
-		  (mime-entity-content-disposition entity))))
-	(if (and mime-header-accept-quoted-encoded-words
-		 ret)
+      (let ((ret (or (mime-content-disposition-filename
+		      (mime-entity-content-disposition entity))
+		     (cdr (let ((param (mime-content-type-parameters
+					(mime-entity-content-type entity))))
+			    (or (assoc "name" param)
+				(assoc "x-name" param)))))))
+	(if ret
 	    (eword-decode-string ret)
-	  ret))
-      (cdr (let ((param (mime-content-type-parameters
-			 (mime-entity-content-type entity))))
-	     (or (assoc "name" param)
-		 (assoc "x-name" param))))))
+	  ""))))
 
 
 (defsubst mime-entity-media-type (entity)

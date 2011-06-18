@@ -142,8 +142,14 @@ If method is nil, this field will not be encoded."
 (defconst mime-token-regexp
   (concat "[^" mime-tspecial-char-list "\000-\040]+"))
 (defconst mime-attribute-char-regexp
-  (concat "[^" mime-tspecial-char-list "\000-\040"
+  (concat "[^" mime-tspecial-char-list
 	  "*'%"				; introduced in RFC 2231.
+	  "\000-\040"
+	  "]"))
+(defconst mime-non-attribute-char-regexp
+  (concat "[" mime-tspecial-char-list
+	  "*'%"				; introduced in RFC 2231.
+	  "\000-\040\177-\377"		; non-printable, non-US-ASCII.
 	  "]"))
 
 (defconst mime-charset-regexp
@@ -151,7 +157,8 @@ If method is nil, this field will not be encoded."
 	  "*'%"				; should not include "%"?
 	  "]+"))
 
-;; More precisely, length of "[A-Za-z]+" is limited to at most 8.
+;; More precisely, length of each "[A-Za-z]+" is limited to at most 8.
+;; See RFC 3066 "Tags for the Identification of Languages".
 ;; (defconst mime-language-regexp "[A-Za-z]+\\(-[A-Za-z]+\\)*")
 (defconst mime-language-regexp "[-A-Za-z]+")
 

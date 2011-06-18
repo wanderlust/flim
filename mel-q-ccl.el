@@ -887,10 +887,40 @@ abcdefghijklmnopqrstuvwxyz\
 
 (unless-broken ccl-execute-eof-block-on-decoding-some
 
+  (eval-when-compile
+    (define-ccl-program test-ccl-cs-decoder
+      '(1 (loop
+	   (read r0)
+	   (write-repeat r0))))
+    (define-ccl-program test-ccl-cs-encoder
+      '(1 (loop
+	   (read r0)
+	   (read r0)
+	   (read r0)
+	   (write-repeat r0))))
+    (make-ccl-coding-system
+     'test-ccl-cs-cs ?T "ccl coding system tester"
+     'test-ccl-cs-decoder 'test-ccl-cs-encoder))
+
+  (broken-facility ccl-coding-system-decoder
+    "Decoder for CCL coding system is broken on Emacs 23.1."
+    (and
+     (eq 16385
+	 (length (decode-coding-string
+		  (make-string 16385 ?A) 'test-ccl-cs-cs)))
+     (eq 1025
+	 (length (decode-coding-string 
+		  (string-as-multibyte
+		   (make-string 1025 128)) 'test-ccl-cs-cs)))))
+    
+  (broken-facility ccl-coding-system-encoder
+    "Encoder for CCL coding system is broken on Emacs 23.1."
+    (eq 5462
+	(length (encode-coding-string
+		 (make-string 16386 ?A) 'test-ccl-cs-cs))))
+
   (cond
-   ((eval-when-compile
-      (and (eq emacs-major-version 23)
-	   (eq emacs-minor-version 1)))
+   ((broken-p 'ccl-coding-system-decoder)
     (defun quoted-printable-ccl-encode-string (string)
       "Encode STRING with quoted-printable encoding."
       (ccl-execute-on-string 'mel-ccl-encode-quoted-printable-lf-lf
@@ -950,9 +980,7 @@ abcdefghijklmnopqrstuvwxyz\
   )
 
   (cond
-   ((eval-when-compile
-      (and (eq emacs-major-version 23)
-	   (eq emacs-minor-version 1)))
+   ((broken-p 'ccl-coding-system-encoder)
     (defun quoted-printable-ccl-decode-string (string)
       "Decode quoted-printable encoded STRING."
       (ccl-execute-on-string 'mel-ccl-decode-quoted-printable-lf-lf
@@ -1015,9 +1043,7 @@ encoding."
 ;;;
 
   (cond
-   ((eval-when-compile
-      (and (eq emacs-major-version 23)
-	   (eq emacs-minor-version 1)))
+   ((broken-p 'ccl-coding-system-decoder)
     (defun q-encoding-ccl-encode-string (string &optional mode)
       "Encode STRING to Q-encoding of encoded-word, and return the result.
 MODE allows `text', `comment', `phrase' or nil.  Default value is
@@ -1043,8 +1069,15 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
        (cond
 	((eq mode 'text) 'mel-ccl-uq-rev)
 	((eq mode 'comment) 'mel-ccl-cq-rev)
-	(t 'mel-ccl-pq-rev))))
+	(t 'mel-ccl-pq-rev))))))
 
+(cond
+   ((broken-p 'ccl-coding-system-encoder)
+    (defun q-encoding-ccl-decode-string (string)
+      "Decode Q encoded STRING and return the result."
+      (ccl-execute-on-string 'mel-ccl-decode-q
+			     (make-vector 9 0) string nil t)))
+   (t
     (defun q-encoding-ccl-decode-string (string)
       "Decode Q encoded STRING and return the result."
       (encode-coding-string
