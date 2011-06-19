@@ -103,14 +103,6 @@ don't define this value."
   :type 'boolean
   :group 'smtp-extensions)
 
-(defcustom smtp-starttls-program "starttls"
-  "The program to run in a subprocess to open an TLSv1 connection."
-  :group 'smtp-extensions)
-
-(defcustom smtp-starttls-extra-args nil
-  "Extra arguments to `starttls-program'"
-  :group 'smtp-extensions)
-
 (defcustom smtp-use-sasl nil
   "If non-nil, use SMTP Authentication (RFC2554) if available."
   :type 'boolean
@@ -358,8 +350,6 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 		  (error "`smtp-server' not defined"))))
 	   (package
 	    (smtp-make-package sender recipients buffer))
-	   (starttls-program smtp-starttls-program)
-	   (starttls-extra-args smtp-starttls-extra-args)
 	   (smtp-open-connection-function
 	    (if smtp-use-starttls
 		#'starttls-open-stream

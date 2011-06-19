@@ -1,3 +1,10 @@
+2011-06-19  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	Revert the change of 2004-02-17.
+	* smtp.el (smtp-starttls-program, smtp-starttls-extra-args):
+	Abolished.
+	(smtp-send-buffer): Likewise.
+
 2011-06-09  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mime.el (mime-entity-filename): When a result is got from entity
