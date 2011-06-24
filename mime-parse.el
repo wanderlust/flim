@@ -427,6 +427,19 @@ Return value is an alist of MIME parameter values."
 		    encoded (cdr encoded))))))))
     (nreverse result)))
 
+(defun mime-encode-parameters-broken-mime (params)
+  "Encode PARAMS plist compatibly with Outlook.
+Return value is an alist of MIME parameter values."
+  (let (result)
+    (while (cadr params)
+      (setq result
+	    `((,(car params)
+	       . ,(eword-encode-string (cadr params)
+				       (+ (length (car params)) 3)))
+	      . ,result)
+	    params (cddr params)))
+    (nreverse result)))
+
 
 ;;; @ field parser
 ;;;

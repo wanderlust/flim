@@ -670,6 +670,46 @@ Optional second arg COLUMN is ignored."
 	      (mime-parse-parameters (cdr tokens)))
              ""))))
 
+(defun eword-encode-Content-Type-field-body-broken-mime
+  (field-body &optional column)
+  "Encode FIELD-BODY compatibly with Outlook, if necessary.
+Optional second arg COLUMN is ignored."
+  (let ((tokens (mime-lexical-analyze field-body))
+	primary-type)
+    (unless (eq (car (car tokens)) 'mime-token)
+      (error "Invalid Content-Type value: %s" field-body))
+    (setq primary-type (downcase (cdr (car tokens)))
+	  tokens (cdr tokens))
+    (unless (and (eq (car (car tokens)) 'tspecials)
+		 (string= (cdr (car tokens)) "/")
+		 (setq tokens (cdr tokens))
+		 (eq (car (car tokens)) 'mime-token))
+      (error "Invalid Content-Type value: %s" field-body))
+    (concat " " primary-type "/" (downcase (cdr (car tokens)))
+            (mapconcat
+             (function
+              (lambda (param)
+                (concat ";\n " (car param) "=\"" (cdr param) "\"")))
+             (mime-encode-parameters-broken-mime
+	      (mime-parse-parameters (cdr tokens)))
+             ""))))
+
+(defun eword-encode-Content-Disposition-field-body-broken-mime
+  (field-body &optional column)
+  "Encode FIELD-BODY compatibly with Outlook, if necessary.
+Optional second arg COLUMN is ignored."
+  (let ((tokens (mime-lexical-analyze field-body)))
+    (unless (eq (car (car tokens)) 'mime-token)
+      (error "Invalid Content-Disposition value: %s" field-body))
+    (concat " " (cdr (car tokens))
+            (mapconcat
+             (function
+              (lambda (param)
+                (concat ";\n " (car param) "=\"" (cdr param) "\"")))
+             (mime-encode-parameters-broken-mime
+	      (mime-parse-parameters (cdr tokens)))
+             ""))))
+
 ;;;###autoload
 (defun mime-encode-field-body (field-body field-name)
   "Encode FIELD-BODY as FIELD-NAME, and return the result.

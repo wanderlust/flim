@@ -1,3 +1,12 @@
+2011-06-24  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* mime-parse.el (mime-encode-parameters-broken-mime): New function.
+
+	* eword-encode.el (eword-encode-Content-Type-field-body-broken-mime)
+	(eword-encode-Content-Disposition-field-body-broken-mime): New
+	functions.  If you want to use them, modify
+	`mime-header-encode-method-alist'.
+
 2011-06-19  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	Revert the change of 2004-02-17.
