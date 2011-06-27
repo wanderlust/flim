@@ -177,17 +177,18 @@ It calls external quoted-printable encoder specified by
 	((<= ?0 chr) (- chr ?0))
 	))
 
-(if (eval-when-compile
-      (> (string-to-char (string-as-multibyte "\200")) 128))
+(eval-and-compile
+  (if (eval-when-compile
+	(> (string-to-char (string-as-multibyte "\200")) 128))
+      (defsubst quoted-printable-num-to-raw-byte-char (chr)
+	(if (and chr
+		 (> chr 127))
+	    (logior chr
+		    (eval-when-compile
+		      (- (string-to-char (string-as-multibyte "\200")) 128)))
+	  chr))
     (defsubst quoted-printable-num-to-raw-byte-char (chr)
-      (if (and chr
-	       (> chr 127))
-	  (logior chr
-		  (eval-when-compile
-		    (- (string-to-char (string-as-multibyte "\200")) 128)))
-	chr))
-  (defsubst quoted-printable-num-to-raw-byte-char (chr)
-    chr))
+      chr)))
 
 (defun quoted-printable-internal-decode-region (start end)
   (save-excursion

@@ -1,3 +1,8 @@
+2011-06-27  Kazuhiro Ito  <kazuhiro@chrono.local.domain>
+
+	* mel-q.el (quoted-printable-num-to-raw-byte-char): Enclose with
+	eval-and-compile().
+
 2011-06-24  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mime-parse.el (mime-encode-parameters-broken-mime): New function.
