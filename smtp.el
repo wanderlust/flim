@@ -98,6 +98,12 @@ don't define this value."
   :type 'boolean
   :group 'smtp-extensions)
 
+(defcustom smtp-use-gnutls (and (fboundp 'gnutls-available-p)
+				(gnutls-available-p))
+  "If non-nil, use built-in GnuTLS for STARTTLS."
+  :type 'boolean
+  :group 'smtp-extensions)
+
 (defcustom smtp-use-starttls-ignore-error nil
   "If non-nil, do not use STARTTLS if STARTTLS is not available."
   :type 'boolean
@@ -268,8 +274,15 @@ Return a newly allocated connection-object.
 BUFFER is the buffer to associate with the connection.  SERVER is name
 of the host to connect to.  SERVICE is name of the service desired."
   (let ((process
-	 (binary-funcall smtp-open-connection-function
-			 "SMTP" buffer server service))
+	 (binary-funcall
+	  (cond
+	   ((and smtp-use-starttls smtp-use-gnutls)
+	    'smtp-open-gnutls-starttls-stream)
+	   (smtp-use-starttls
+	    'starttls-open-stream)
+	   (t
+	    smtp-open-connection-function))
+	  "SMTP" buffer server service))
 	connection)
     (when process
       (setq connection (smtp-make-connection process server service))
@@ -349,11 +362,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	      (or smtp-server
 		  (error "`smtp-server' not defined"))))
 	   (package
-	    (smtp-make-package sender recipients buffer))
-	   (smtp-open-connection-function
-	    (if smtp-use-starttls
-		#'starttls-open-stream
-	      smtp-open-connection-function)))
+	    (smtp-make-package sender recipients buffer)))
       (save-excursion
 	(set-buffer
 	 (get-buffer-create
@@ -374,7 +383,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	    (smtp-primitive-ehlo package)
 	  (smtp-response-error
 	   (smtp-primitive-helo package)))
-	(if smtp-use-starttls
+	(if (and smtp-use-starttls (null smtp-use-gnutls))
 	    (if (assq 'starttls
 		      (smtp-connection-extensions-internal
 		       (smtp-find-connection (current-buffer))))
@@ -402,10 +411,6 @@ RECIPIENTS is a list of envelope recipient addresses.
 BUFFER may be a buffer or a buffer name which contains mail message."
   (let ((servers
 	 (smtp-find-server recipients))
-	(smtp-open-connection-function
-	 (if smtp-use-starttls
-	     #'starttls-open-stream
-	   smtp-open-connection-function))
 	server package)
       (while (car servers)
 	(setq server (caar servers))
@@ -738,6 +743,20 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 			  recipient-address-list)))
 	    recipient-address-list))
       (kill-buffer smtp-address-buffer))))
+
+(defun smtp-open-gnutls-starttls-stream (name buffer host port)
+  (open-protocol-stream
+   name buffer host port
+   :type (if smtp-use-starttls-ignore-error 'network 'starttls)
+   :end-of-command "^[1-5][0-9][0-9]\\( .*\\)?\r?\n"
+   :success "^2[0-9][0-9]\\([ -].*\\)?\r?\n"
+   :capability-command (format "EHLO %s\r\n" (smtp-make-fqdn))
+   :starttls-function
+   (lambda (response)
+     (when (save-match-data
+	     (string-match "[ -]STARTTLS\\( \\|\r?\n\\)" response))
+       "STARTTLS\r\n"))
+   :client-certificate t))
 
 (provide 'smtp)
 
