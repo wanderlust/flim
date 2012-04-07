@@ -284,6 +284,10 @@ of the host to connect to.  SERVICE is name of the service desired."
 	    smtp-open-connection-function))
 	  "SMTP" buffer server service))
 	connection)
+    (unless (and (processp process)
+		 (memq (process-status process) '(open run)))
+      (error "Open SMTP connection function to %s:%s failed"
+	     server (if (integerp service) (format "%d" service) service)))
     (when process
       (setq connection (smtp-make-connection process server service))
       (set-process-filter process 'smtp-process-filter)
