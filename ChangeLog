@@ -1,3 +1,8 @@
+2012-04-20  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* mime-parse.el (mime-parse-message): Use mime-read-Content-Type
+	instead of mime-parse-Content-Type.
+
 2012-04-07  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* smtp.el (smtp-open-connection): Raise error when open connection

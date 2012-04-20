@@ -678,10 +678,7 @@ If Content-Transfer-Encoding field is not found, return nil."
 	    body-start (point-min)))
     (save-restriction
       (narrow-to-region header-start header-end)
-      (setq content-type (or (let ((str (std11-fetch-field "Content-Type")))
-			       (if str
-				   (mime-parse-Content-Type str)
-				 ))
+      (setq content-type (or (mime-read-Content-Type)
 			     default-ctl))
       )
     (luna-make-entity representation-type
