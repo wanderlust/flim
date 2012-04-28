@@ -67,6 +67,11 @@
 	(eword-encode-split-string, eword-encode-phrase-to-rword-list):
 	Use it.
 
+2012-04-28  MORIOKA Tomohiko  <tomo.git@chise.org>
+
+	* README.ja, README.en (Bug reports): Use "Emacs-MIME" instead of
+	"EMACS-MIME".
+
 2001-02-27  Martin Buchholz  <martin@xemacs.org>
 
 	* mime-en.sgml: Typo fix.
