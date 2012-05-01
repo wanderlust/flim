@@ -146,14 +146,13 @@ FLIM とは？
   バグ報告や改善の提案を書いたときは、是非 EMACS-MIME メーリングリスト
   に送ってください:
 
-	emacs-mime-en@m17n.org	(英語)
-	emacs-mime-ja@m17n.org	(日本語)
+	emacs-mime-ja@lists.chise.org	（日本語）
+	emacs-mime-en@lists.chise.org	（英語）
 
   EMACS-MIME ML を通して、FLIM のバグを報告したり、FLIM の最新のリリー
   スを取得したり、FLIM の将来の拡張の議論をしたりすることができます。
-  EMACS-MIME ML に参加するには、空の電子メールを
+  EMACS-MIME ML に参加したい方は、以下の頁の記述を見て購読手続きを行っ
+  てください：
 
-	emacs-mime-en-ctl@m17n.org	(英語)
-	emacs-mime-ja-ctl@m17n.org	(日本語)
-
-  に送ってください。
+      http://lists.chise.org/mailman/listinfo/emacs-mime-ja （日本語）
+      http://lists.chise.org/mailman/listinfo/emacs-mime-en （英語）
