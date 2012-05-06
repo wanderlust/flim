@@ -24,7 +24,7 @@
 	(smtp-open-connection): Decide which open-connection-function is
 	called here.  Respect smtp-use-gnutls's value.
 
-2011-06-27  Kazuhiro Ito  <kazuhiro@chrono.local.domain>
+2011-06-27  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mel-q.el (quoted-printable-num-to-raw-byte-char): Enclose with
 	eval-and-compile().
