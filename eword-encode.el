@@ -97,6 +97,8 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ charset word
 ;;;
 
+(unless (and (null (string< mule-version "6.0"))
+	     (fboundp 'detect-mime-charset-string))
 (defsubst eword-encode-char-type (character)
   (if (memq character '(?  ?\t ?\n))
       nil
@@ -124,11 +126,14 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	      string (substring string i)
 	      len (- len i))))
     (nreverse dest)))
+)
 
 
 ;;; @ word
 ;;;
 
+(unless (and (null (string< mule-version "6.0"))
+	     (fboundp 'detect-mime-charset-string))
 (defun eword-encode-charset-words-to-words (charset-words)
   (let (dest)
     (while charset-words
@@ -158,6 +163,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		))))
     (nreverse dest)
     ))
+)
 
 
 ;;; @ rule
@@ -185,7 +191,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;; [tomo:2002-11-05] The following code is a quick-fix for emacsen
 ;; which is not depended on the Mule model.  We should redesign
 ;; `eword-encode-split-string' to avoid to depend on the Mule model.
-(if (featurep 'utf-2000)
+(cond ((featurep 'utf-2000)
 ;; for CHISE Architecture
 (defun tm-eword::words-to-ruled-words (wl &optional mode)
   (let (mcs)
@@ -200,7 +206,14 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		mode)
 	       ))
 	    wl)))
+)
 
+((and (null (string< mule-version "6.0"))
+      (fboundp 'detect-mime-charset-string))
+;; for Emacs23 and later
+)
+
+(t
 ;; for legacy Mule
 (defun tm-eword::words-to-ruled-words (wl &optional mode)
   (mapcar (function
@@ -209,6 +222,45 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	       (make-ew-rword (cdr word) (car ret)(nth 1 ret) mode)
 	       )))
 	  wl))
+))
+
+(if (and (null (string< mule-version "6.0"))
+	 (fboundp 'detect-mime-charset-string))
+;; for Emacs23 and later
+(defun tm-eword::string-to-ruled-words (string &optional mode)
+  (let ((len (length string))
+	(beg 0)
+	(i 1)
+	spacep dest mcs)
+    (when (> len 0)
+      (mapcar
+       (lambda (elt)
+	 (if (cdr elt)
+	     (make-ew-rword (car elt) nil nil mode)
+	   (setq mcs (detect-mime-charset-string (car elt)))
+	   (make-ew-rword
+	    (car elt)
+	    mcs
+	    (cdr (or (assq mcs mime-header-charset-encoding-alist)
+		     (cons nil mime-header-default-charset-encoding)))
+	    mode)))
+       (progn
+	 (setq spacep (memq (aref string 0) '(?  ?\t ?\n)))
+	 (while (< i len)
+	   (unless (eq spacep (memq (aref string i) '(?  ?\t ?\n)))
+	     (setq dest (cons (cons (substring string beg i) spacep) dest))
+	     (setq beg i)
+	     (setq spacep (null spacep)))
+	   (setq i (1+ i)))
+	 (nreverse
+	  (cons (cons (substring string beg len) spacep) dest)))))))
+
+;; for other platforms
+(defun tm-eword::string-to-ruled-words (string &optional mode)
+  (tm-eword::words-to-ruled-words
+   (eword-encode-charset-words-to-words
+    (eword-encode-divide-into-charset-words string))
+   mode))
 )
 
 (defun ew-space-process (seq)
@@ -248,11 +300,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
     ))
 
 (defun eword-encode-split-string (str &optional mode)
-  (ew-space-process
-   (tm-eword::words-to-ruled-words
-    (eword-encode-charset-words-to-words
-     (eword-encode-divide-into-charset-words str))
-    mode)))
+  (ew-space-process (tm-eword::string-to-ruled-words str mode)))
 
 
 ;;; @ length
@@ -423,22 +471,16 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	     (setq dest
 		   (append dest
 			   '(("(" nil nil special))
-			   (tm-eword::words-to-ruled-words
-			    (eword-encode-charset-words-to-words
-			     (eword-encode-divide-into-charset-words
-			      (cdr token)))
-			    'comment)
+			   (tm-eword::string-to-ruled-words
+			    (cdr token) 'comment)
 			   '((")" nil nil special))
 			   ))
 	     )
 	    (t
 	     (setq dest
 		   (append dest
-			   (tm-eword::words-to-ruled-words
-			    (eword-encode-charset-words-to-words
-			     (eword-encode-divide-into-charset-words
-			      (cdr token))
-			     ) 'phrase)))
+			   (tm-eword::string-to-ruled-words
+			    (cdr token) 'phrase)))
 	     ))
       (setq phrase (cdr phrase))
       )
