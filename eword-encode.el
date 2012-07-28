@@ -188,6 +188,20 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		       (cons charset mime-header-default-charset-encoding)))))
 	(list charset encoding))))
 
+(if (and (null (string< mule-version "6.0"))
+	 (fboundp 'detect-mime-charset-string))
+;;for Emacs23 and later
+(defun ew-find-string-rule (string)
+  (let ((charset (detect-mime-charset-string string)))
+    (list charset
+	  (cdr (or (assq charset mime-header-charset-encoding-alist)
+		   (cons nil mime-header-default-charset-encoding))))))
+
+;; for other platforms
+(defun ew-find-string-rule (string)
+  (ew-find-charset-rule (find-charset-string string)))
+)
+
 ;; [tomo:2002-11-05] The following code is a quick-fix for emacsen
 ;; which is not depended on the Mule model.  We should redesign
 ;; `eword-encode-split-string' to avoid to depend on the Mule model.
@@ -460,8 +474,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	     (setq dest
 		   (append dest
 			   (list
-			    (let ((ret (ew-find-charset-rule
-					(find-charset-string str))))
+			    (let ((ret (ew-find-string-rule str)))
 			      (make-ew-rword
 			       str (car ret)(nth 1 ret) 'phrase)
 			      )

@@ -1,5 +1,15 @@
 2012-07-29  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
+	* eword-encode.el (ew-find-string-rule): Define own function for
+	Emacs23 which has APEL with detect-mime-charset-string for it.
+
+2012-07-29  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* eword-encode.el (ew-find-string-rule): New function.
+	(eword-encode-phrase-to-rword-list): Use it.
+
+2012-07-29  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
 	* eword-encode.el (tm-eword::string-to-ruled-words): Define own
 	function for Emacs23 which has APEL with
 	detect-mime-charset-string for it.
