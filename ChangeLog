@@ -2,6 +2,7 @@
 
 	* eword-encode.el (ew-find-string-rule): Define own function for
 	Emacs23 which has APEL with detect-mime-charset-string for it.
+	(ew-find-charset-rule): Define only when needed.
 
 2012-07-29  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
