@@ -1053,12 +1053,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 	((eq mode 'text) 'mel-ccl-encode-uq)
 	((eq mode 'comment) 'mel-ccl-encode-cq)
 	(t 'mel-ccl-encode-pq))
-       (make-vector 9 0) string nil t))
-
-    (defun q-encoding-ccl-decode-string (string)
-      "Decode Q encoded STRING and return the result."
-      (ccl-execute-on-string 'mel-ccl-decode-q
-			     (make-vector 9 0) string nil t)))
+       (make-vector 9 0) string nil t)))
    (t
     (defun q-encoding-ccl-encode-string (string &optional mode)
       "Encode STRING to Q-encoding of encoded-word, and return the result.
