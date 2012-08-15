@@ -1,3 +1,8 @@
+2012-08-14  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* std11.el (std11-unfold-strip-leading-tab): New variable.
+	(std11-unfold-string): Use it.  Workaround for incorrect folding.
+
 2012-08-10  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mel-q-ccl.el (q-encoding-ccl-decode-string): Remove duplicate

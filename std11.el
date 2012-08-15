@@ -181,20 +181,28 @@ If BOUNDARY is not nil, it is used as message header separator."
 ;;; @ unfolding
 ;;;
 
+(defcustom std11-unfold-strip-leading-tab t
+  "When non-nil, `std11-unfold-string' strips leading TAB, which is mainly added by incorrect folding."
+  :group 'news
+  :group 'mail
+  :type 'boolean
+  )
+
 ;;;###autoload
 (defun std11-unfold-string (string)
   "Unfold STRING as message header field."
-  (let ((dest "")
+  (let (dest
 	(p 0))
-    (while (string-match "\n\\([ \t]\\)" string p)
-      (setq dest (concat dest
-                         (substring string p (match-beginning 0))
-                         (substring string
-				    (match-beginning 1)
-				    (setq p (match-end 0)))
-                         ))
-      )
-    (concat dest (substring string p))
+    (while (string-match "\\( ?\\)\n\\([ \t]\\)" string p)
+      (setq dest (cons (unless (and std11-unfold-strip-leading-tab
+				    (< (match-beginning 0) (match-end 1))
+				    (eq (aref string (match-beginning 2)) ?\t))
+			 (match-string 2 string))
+		       (cons (substring string p (match-end 1))
+			     dest))
+	    p (match-end 0)
+	    ))
+    (apply 'concat (nreverse (cons (substring string p) dest)))
     ))
 
 
