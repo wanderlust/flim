@@ -195,13 +195,13 @@ decode the charset included in it, it is not decoded."
 (defun eword-decode-unstructured-field-body (string &optional start-column
 						    max-column)
   (eword-decode-string
-   (decode-mime-charset-string string default-mime-charset)))
+   (mime-charset-decode-string string default-mime-charset)))
 
 (defun eword-decode-and-unfold-unstructured-field-body (string
 							&optional start-column
 							max-column)
   (eword-decode-string
-   (decode-mime-charset-string (std11-unfold-string string)
+   (mime-charset-decode-string (std11-unfold-string string)
 			       default-mime-charset)
    'must-unfold))
 
@@ -209,7 +209,7 @@ decode the charset included in it, it is not decoded."
 						      &optional start-column
 						      max-column)
   (eword-decode-string
-   (decode-mime-charset-string string default-mime-charset)
+   (mime-charset-decode-string string default-mime-charset)
    'must-unfold))
 
 
@@ -579,7 +579,7 @@ such as a version of Net$cape)."
     (while rest
       (setq word (or (and (setq charset (caaar rest))
 			  (condition-case err
-			      (decode-mime-charset-string (cdar rest) charset)
+			      (mime-charset-decode-string (cdar rest) charset)
 			    (error
 			     (message "%s" (error-message-string err))
 			     nil)))
@@ -636,7 +636,7 @@ be the result.")
   (let ((p (std11-check-enclosure string ?\" ?\" nil start))
 	ret)
     (when p
-      (setq ret (decode-mime-charset-string
+      (setq ret (mime-charset-decode-string
 		 (std11-strip-quoted-pair
 		  (substring string (1+ start) (1- p)))
 		 default-mime-charset))
@@ -681,7 +681,7 @@ be the result.")
 					 dest
 				       (cons
 					(eword-decode-string
-					 (decode-mime-charset-string
+					 (mime-charset-decode-string
 					  ret default-mime-charset)
 					 must-unfold)
 					dest)
@@ -698,7 +698,7 @@ be the result.")
 			       (cons (car ret) dest)
 			     (list* (car ret)
 				    (eword-decode-string
-				     (decode-mime-charset-string
+				     (mime-charset-decode-string
 				      last-str default-mime-charset)
 				     must-unfold)
 				    dest)
@@ -747,7 +747,7 @@ be the result.")
   (if (and (string-match std11-atom-regexp string start)
 	   (= (match-beginning 0) start))
       (let ((end (match-end 0)))
-	(cons (cons 'atom (decode-mime-charset-string
+	(cons (cons 'atom (mime-charset-decode-string
 			   (substring string start end)
 			   default-mime-charset))
 	      ;;(substring string end)

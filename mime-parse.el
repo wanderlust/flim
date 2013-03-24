@@ -103,11 +103,7 @@ be the result."
                 (delete-region (point)(- (point) 3)))))
     (setq text (buffer-string))
     (when charset
-      ;; I believe that `decode-mime-charset-string' of mcs-e20.el should
-      ;; be independent of the value of `enable-multibyte-characters'.
-      (erase-buffer)
-      (set-buffer-multibyte t)
-      (setq text (decode-mime-charset-string text charset)))
+      (setq text (mime-charset-decode-string text charset)))
     (when language
       (put-text-property 0 (length text) 'mime-language language text))
     text))
@@ -298,11 +294,7 @@ return value is just a string."
       (with-temp-buffer
 	(let ((charset (find-mime-charset-by-charsets
 			(find-charset-string value))))
-	  ;; I believe that `encode-mime-charset-string' of mcs-e20.el should
-	  ;; be independent of the value of `enable-multibyte-characters'.
-	  ;; -- shuhei
-	  (set-buffer-multibyte t)
-	  (setq value (encode-mime-charset-string value charset))
+	  (setq value (mime-charset-encode-string value charset))
 	  (set-buffer-multibyte nil)
 	  (insert value)
 	  (goto-char (point-min))

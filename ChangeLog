@@ -1,3 +1,24 @@
+2013-03-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	Many encoder/decoder functions now always encode/decode regardless
+	buffer's multibyteness.
+	* mime-def.el (mime-charset-decode-string)
+	(mime-charset-encode-string): New functions.
+
+	* mime-parse.el (mime-decode-parameter-value)
+	(mime-encode-extended-parameter): Use them.
+
+	* eword-decode.el (eword-decode-unstructured-field-body)
+	(eword-decode-and-unfold-unstructured-field-body)
+	(eword-decode-unfolded-unstructured-field-body)
+	(eword-decode-encoded-words, eword-analyze-quoted-string)
+	(eword-analyze-comment, eword-analyze-atom): Use
+	mime-charset-decode-string instead of decode-mime-charset-string.
+
+	* eword-encode.el (tm-eword::encoded-word-length)
+	(tm-eword::encoded-word-length): Use mime-charset-encode-string
+	instead of encode-mime-charset-string.
+
 2012-08-14  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* std11.el (std11-unfold-strip-leading-tab): New variable.

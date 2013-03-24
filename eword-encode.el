@@ -330,11 +330,11 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	ret)
     (setq ret
 	  (cond ((string-equal encoding "B")
-		 (setq string (encode-mime-charset-string string charset))
+		 (setq string (mime-charset-encode-string string charset))
 		 (base64-encoded-length string)
 		 )
 		((string-equal encoding "Q")
-		 (setq string (encode-mime-charset-string string charset))
+		 (setq string (mime-charset-encode-string string charset))
 		 (Q-encoded-text-length string (ew-rword-type rword))
 		 )))
     (if ret
