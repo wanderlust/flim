@@ -31,8 +31,6 @@ FLIM とは？
       eword-decode.el --- encoded-word 復号器
       eword-encode.el --- encoded-word 符号器
 
-    mailcap.el	--- mailcap の解析処理等
-
   以下の環境で動作します：
 
 	Emacs 20.4 以降

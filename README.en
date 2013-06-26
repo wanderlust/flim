@@ -33,8 +33,6 @@ What's FLIM
       eword-decode.el --- encoded-word decoder
       eword-encode.el --- encoded-word encoder
 
-    mailcap.el	--- mailcap parser and utility
-
   This library should work on:
 
 	Emacs 20.4 and up
