@@ -1,3 +1,7 @@
+2013-07-05  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* eword-encode.el: Fix the previous change for really checking.
+
 2013-07-04  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* eword-encode.el: Check whether the mule-vesion variable is defined.

@@ -97,8 +97,8 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ charset word
 ;;;
 
-(unless (and (null (and (boundp 'mule-version)
-			(string< mule-version "6.0")))
+(unless (and (boundp 'mule-version)
+	     (null (string< mule-version "6.0"))
 	     (fboundp 'detect-mime-charset-string))
 (defsubst eword-encode-char-type (character)
   (if (memq character '(?  ?\t ?\n))
@@ -133,8 +133,8 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ word
 ;;;
 
-(unless (and (null (and (boundp 'mule-version)
-			(string< mule-version "6.0")))
+(unless (and (boundp 'mule-version)
+	     (null (string< mule-version "6.0"))
 	     (fboundp 'detect-mime-charset-string))
 (defun eword-encode-charset-words-to-words (charset-words)
   (let (dest)
@@ -182,8 +182,8 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 (defmacro ew-rword-type (rword)
   `(car (cdr (cdr (cdr ,rword)))))
 
-(unless (and (null (and (boundp 'mule-version)
-			(string< mule-version "6.0")))
+(unless (and (boundp 'mule-version)
+	     (null (string< mule-version "6.0"))
 	     (fboundp 'detect-mime-charset-string))
 (defun ew-find-charset-rule (charsets)
   (if charsets
@@ -194,8 +194,8 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	(list charset encoding))))
 )
 
-(if (and (null (and (boundp 'mule-version)
-		    (string< mule-version "6.0")))
+(if (and (boundp 'mule-version)
+	 (null (string< mule-version "6.0"))
 	 (fboundp 'detect-mime-charset-string))
 ;;for Emacs23 and later
 (defun ew-find-string-rule (string)
@@ -229,8 +229,8 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	    wl)))
 )
 
-((and (null (and (boundp 'mule-version)
-		 (string< mule-version "6.0")))
+((and (boundp 'mule-version)
+      (null (string< mule-version "6.0"))
       (fboundp 'detect-mime-charset-string))
 ;; for Emacs23 and later
 )
@@ -246,8 +246,8 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	  wl))
 ))
 
-(if (and (null (and (boundp 'mule-version)
-		    (string< mule-version "6.0")))
+(if (and (boundp 'mule-version)
+	 (null (string< mule-version "6.0"))
 	 (fboundp 'detect-mime-charset-string))
 ;; for Emacs23 and later
 (defun tm-eword::string-to-ruled-words (string &optional mode)
