@@ -1,3 +1,8 @@
+2014-02-22  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* mel-q-ccl.el (quoted-printable-ccl-insert-encoded-file): Call
+	insert-file-contents-literally directly.
+
 2013-07-05  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* eword-encode.el: Fix the previous change for really checking.
