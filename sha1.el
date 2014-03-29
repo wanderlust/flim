@@ -41,7 +41,8 @@
 (defvar sha1-dl-module
   (cond
    ((and (fboundp 'sha1)
-	 (subrp (symbol-function 'sha1)))
+	 (or (subrp (symbol-function 'secure-hash))
+	     (subrp (symbol-function 'sha1))))
     nil)
    ((fboundp 'dynamic-link)
     ;; Should we take care of `dynamic-link-path'?
@@ -53,6 +54,11 @@
     nil)))
 
 (cond
+ ((and (fboundp 'sha1)
+       (or (subrp (symbol-function 'secure-hash))
+	   (subrp (symbol-function 'sha1))))
+  ;; Do nothing.
+  )
  ((and (stringp sha1-dl-module)
        (file-exists-p sha1-dl-module))
   (require 'sha1-dl))
