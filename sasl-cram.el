@@ -27,6 +27,7 @@
 
 (require 'sasl)
 (require 'hmac-md5)
+(require 'hex-util)
 
 (defconst sasl-cram-md5-steps
   '(ignore				;no initial response

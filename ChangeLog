@@ -1,3 +1,16 @@
+2014-03-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* sasl-cram.el: Require hex-util.el.
+
+	* sasl-digest.el: Require hex-util.el.
+
+	* hmac-md5.el: Do not require hex-util.el.  Define autoload for
+	decode-hex-string only when needed.
+	(md5-binary): Use built-in functionality if available.
+
+	* hmac-sha1.el: Linkewise.
+	(sha1-binary): Use built-in functionality if available.
+
 2014-03-29  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* FLIM-ELS: Do not install sha1-el.el when built-in SHA1 library
