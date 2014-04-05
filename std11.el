@@ -64,7 +64,9 @@ If BOUNDARY is not nil, it is used as message header separator."
   (narrow-to-region
    (goto-char (point-min))
    (if (re-search-forward
-	(concat "^\\(" (regexp-quote (or boundary "")) "\\)?$")
+	(if boundary
+	    (concat "^\\(" (regexp-quote boundary) "\\)?$")
+	  "^$")
 	nil t)
        (match-beginning 0)
      (point-max)
@@ -90,8 +92,8 @@ used as message header separator."
       (let ((case-fold-search t)
 	    field-name)
 	(catch 'tag
+	  (goto-char (point-min))
 	  (while (setq field-name (car field-names))
-	    (goto-char (point-min))
 	    (if (re-search-forward (concat "^" field-name ":[ \t]*") nil t)
 		(throw 'tag
 		       (buffer-substring-no-properties

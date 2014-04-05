@@ -1,3 +1,8 @@
+2014-04-05  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* std11.el (std11-narrow-to-header)
+	(std11-field-bodies): Minor refactoring.
+
 2014-03-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* sasl-cram.el: Require hex-util.el.
