@@ -960,6 +960,10 @@
 	(mime-parse-Content-Transfer-Encoding,
 	mime-read-Content-Transfer-Encoding): Ditto.
 
+2001-02-27  Martin Buchholz  <martin@xemacs.org>
+
+	* mime-en.sgml: Typo fix.
+
 2001-02-27  Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
 
 	MIME Parameter Value decoder support.
