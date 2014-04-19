@@ -3,8 +3,8 @@
 #
 
 PACKAGE = flim
-API	= 1.13
-RELEASE = 2
+API	= 1.14
+RELEASE = 9
 
 TAR	= tar
 RM	= /bin/rm -f
@@ -25,11 +25,18 @@ GOMI	= *.elc \
 FILES	= README.?? Makefile FLIM-MK FLIM-CFG FLIM-ELS *.el ChangeLog
 
 VERSION	= $(API).$(RELEASE)
-ARC_DIR = /ftp/pub/mule/flim/flim-$(API)
-SEMI_ARC_DIR = /ftp/pub/mule/semi/semi-1.13-for-flim-$(API)
+ARC_DIR_PREFIX = /home/kanji/tomo/public_html/lemi/dist
+ARC_DIR = $(ARC_DIR_PREFIX)/flim/flim-$(API)
+SEMI_ARC_DIR = $(ARC_DIR_PREFIX)/semi/semi-1.14-for-flim-$(API)
+
+CVS_HOST = cvs.m17n.org
 
 elc:
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
+		$(VERSION_SPECIFIC_LISPDIR)
+
+check:
+	$(EMACS) $(FLAGS) -f check-flim $(PREFIX) $(LISPDIR) \
 		$(VERSION_SPECIFIC_LISPDIR)
 
 install:	elc
@@ -49,9 +56,9 @@ clean:
 
 tar:
 	cvs commit
-	sh -c 'cvs tag -RF $(PACKAGE)-`echo $(VERSION) | tr . _`; \
+	sh -c 'cvs tag -R $(PACKAGE)-`echo $(VERSION) | tr . _`; \
 	cd /tmp; \
-	cvs -d :pserver:anonymous@cvs.m17n.org:/cvs/root \
+	cvs -d :pserver:anonymous@$(CVS_HOST):/cvs/root \
 		export -d $(PACKAGE)-$(VERSION) \
 		-r $(PACKAGE)-`echo $(VERSION) | tr . _` \
 		flim'

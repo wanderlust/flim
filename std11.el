@@ -1,8 +1,8 @@
 ;;; std11.el --- STD 11 functions for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,01,02 Free Software Foundation, Inc.
 
-;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author:   MORIOKA Tomohiko <tomo@m17n.org>
 ;; Keywords: mail, news, RFC 822, STD 11
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -19,14 +19,12 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
-(require 'poe)
-(require 'poem)				; find-non-ascii-charset-string
-(require 'pcustom)			; std11-lexical-analyzer
+(require 'custom)			; std11-lexical-analyzer
 
 
 ;;; @ fetch
@@ -46,9 +44,7 @@ The optional argument BOUNDs the search; it is a buffer position."
     (if (re-search-forward "^$" bound t)
 	(goto-char (1- (match-beginning 0)))
       (end-of-line)
-      ))
-  (point)
-  )
+      (point))))
 
 ;;;###autoload
 (defun std11-fetch-field (name)
@@ -185,20 +181,28 @@ If BOUNDARY is not nil, it is used as message header separator."
 ;;; @ unfolding
 ;;;
 
+(defcustom std11-unfold-strip-leading-tab t
+  "When non-nil, `std11-unfold-string' strips leading TAB, which is mainly added by incorrect folding."
+  :group 'news
+  :group 'mail
+  :type 'boolean
+  )
+
 ;;;###autoload
 (defun std11-unfold-string (string)
   "Unfold STRING as message header field."
-  (let ((dest "")
+  (let (dest
 	(p 0))
-    (while (string-match "\n\\([ \t]\\)" string p)
-      (setq dest (concat dest
-                         (substring string p (match-beginning 0))
-                         (substring string
-				    (match-beginning 1)
-				    (setq p (match-end 0)))
-                         ))
-      )
-    (concat dest (substring string p))
+    (while (string-match "\\( ?\\)\n\\([ \t]\\)" string p)
+      (setq dest (cons (unless (and std11-unfold-strip-leading-tab
+				    (< (match-beginning 0) (match-end 1))
+				    (eq (aref string (match-beginning 2)) ?\t))
+			 (match-string 2 string))
+		       (cons (substring string p (match-end 1))
+			     dest))
+	    p (match-end 0)
+	    ))
+    (apply 'concat (nreverse (cons (substring string p) dest)))
     ))
 
 
@@ -291,6 +295,11 @@ be the result."
   )
 ;; (defconst std11-spaces-regexp
 ;;   (eval-when-compile (concat "[" std11-space-char-list "]+")))
+
+(defconst std11-non-atom-regexp
+  (eval-when-compile
+    (concat "[" std11-special-char-list std11-space-char-list "]")))
+
 (defconst std11-atom-regexp
   (eval-when-compile
     (concat "[^" std11-special-char-list std11-space-char-list "]+")))
@@ -315,13 +324,21 @@ be the result."
     ))
 
 (defun std11-analyze-atom (string start)
-  (if (and (string-match std11-atom-regexp string start)
-	   (= (match-beginning 0) start))
-      (let ((end (match-end 0)))
-	(cons (cons 'atom (substring string start end))
-	      ;;(substring string end)
-	      end)
-	)))
+  (if (string-match std11-non-atom-regexp string start)
+      (if (> (match-beginning 0) start)
+	  (cons (cons 'atom (substring string start (match-beginning 0)))
+		(match-beginning 0))
+	nil)
+    (cons (cons 'atom (substring string start))
+	  (length string)))
+  ;; (if (and (string-match std11-atom-regexp string start)
+  ;;          (= (match-beginning 0) start))
+  ;;     (let ((end (match-end 0)))
+  ;;       (cons (cons 'atom (substring string start end))
+  ;;             ;;(substring string end)
+  ;;             end)
+  ;;       ))
+  )
 
 (defun std11-check-enclosure (string open close &optional recursive from)
   (let ((len (length string))
@@ -398,7 +415,7 @@ be the result."
 			  (null (setq r (funcall func string start))))
 		(setq rest (cdr rest)))
 	      (or r
-		  (list (cons 'error (substring string start)) (1+ len)))
+		  (cons (cons 'error (substring string start)) (1+ len)))
 	      ))
       (setq dest (cons (car ret) dest)
 	    start (cdr ret))
@@ -435,8 +452,7 @@ be the result."
 		(setq token (car lal))
 		(or (std11-ignored-token-p token)
 		    (if (and (setq token-value (cdr token))
-			     (find-non-ascii-charset-string token-value)
-			     )
+			     (delq 'ascii (find-charset-string token-value)))
 			(setq token nil)
 		      )))
       (setq lal (cdr lal))
@@ -473,7 +489,7 @@ be the result."
 	      (cons (cons 'word elt) rest)
 	    )))))
 
-(defun std11-parse-word-or-comment (lal)
+(defun std11-parse-word-or-comment-or-period (lal)
   (let ((ret (std11-parse-token-or-comment lal)))
     (if ret
 	(let ((elt (car ret))
@@ -485,12 +501,15 @@ be the result."
 		 )
 		((assq 'comment elt)
 		 (cons (cons 'comment-word elt) rest)
+		 )
+		((string-equal (cdr (assq 'specials elt)) ".")
+		 (cons (cons 'period elt) rest)
 		 ))
 	  ))))
 
 (defun std11-parse-phrase (lal)
   (let (ret phrase)
-    (while (setq ret (std11-parse-word-or-comment lal))
+    (while (setq ret (std11-parse-word-or-comment-or-period lal))
       (setq phrase (append phrase (cdr (car ret))))
       (setq lal (cdr ret))
       )
@@ -755,6 +774,8 @@ represents addr-spec of RFC 822."
                    ((eq name 'comment) "")
                    ((eq name 'quoted-string)
                     (concat "\"" (cdr token) "\""))
+                   ((eq name 'domain-literal)
+                    (concat "[" (cdr token) "]"))
                    (t (cdr token)))
                   )))
 	     seq "")
@@ -765,7 +786,7 @@ represents addr-spec of RFC 822."
   "Return string of address part from parsed ADDRESS of RFC 822."
   (cond ((eq (car address) 'group)
 	 (mapconcat (function std11-address-string)
-		    (car (cdr address))
+		    (nth 2 address)
 		    ", ")
 	 )
 	((eq (car address) 'mailbox)

@@ -19,21 +19,19 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
 (require 'mime-def)
 
-(eval-and-compile
-  (defvar base64-dl-handle
-    (and (stringp base64-dl-module)
-	 (file-exists-p base64-dl-module)
-	 (dynamic-link base64-dl-module)))
+(defvar base64-dl-handle
+  (and (stringp base64-dl-module)
+       (file-exists-p base64-dl-module)
+       (dynamic-link base64-dl-module)))
 
-  (dynamic-call "emacs_base64_init" base64-dl-handle)
-  )
+(dynamic-call "emacs_base64_init" base64-dl-handle)
 
 ;; base64-dl-module provides `encode-base64-string' and `decode-base64-string'.
 (defalias 'base64-encode-string 'encode-base64-string)

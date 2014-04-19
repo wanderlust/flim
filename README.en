@@ -33,13 +33,16 @@ What's FLIM
       eword-decode.el --- encoded-word decoder
       eword-encode.el --- encoded-word encoder
 
-    mailcap.el	--- mailcap parser and utility
+  This library should work on:
+
+	Emacs 20.4 and up
+	XEmacs 21.1 and up
 
 
 Installation
 ============
 
-(0) before installing it, please install APEL (9.22 or later) package.
+(0) before installing it, please install APEL (10.7 or later) package.
     APEL package is available at:
 
 	ftp://ftp.m17n.org/pub/mule/apel/
@@ -127,33 +130,19 @@ Installation
   Notice that XEmacs package system requires XEmacs 21.0 or later.
 
 
-load-path (for Emacs or MULE)
-=============================
-
-  If you are using Emacs or Mule, please add directory of FLIM to
-  load-path.  If you install by default setting, you can write
-  subdirs.el for example:
-
-  --------------------------------------------------------------------
-  (normal-top-level-add-to-load-path '("apel" "flim"))
-  --------------------------------------------------------------------
-
-  If you are using XEmacs, there are no need of setting about
-  load-path.
-
-
 Bug reports
 ===========
 
   If you write bug-reports and/or suggestions for improvement, please
-  send them to the EMACS-MIME Mailing List:
+  send them to the EMACS-MIME Mailing Lists:
 
-	emacs-mime-en@m17n.org	(English)
-	emacs-mime-ja@m17n.org	(Japanese)
+	emacs-mime-en@lists.chise.org	(English)
+	emacs-mime-ja@lists.chise.org	(Japanese)
 
   Via the EMACS-MIME ML, you can report FLIM bugs, obtain the latest
   release of FLIM, and discuss future enhancements to FLIM.  To join
-  the EMACS-MIME ML, send an empty e-mail to
+  the EMACS-MIME ML, please see the descriptions of the following
+  pages:
 
-	emacs-mime-en-ctl@m17n.org	(English)
-	emacs-mime-ja-ctl@m17n.org	(Japanese)
+      http://lists.chise.org/mailman/listinfo/emacs-mime-en (English)
+      http://lists.chise.org/mailman/listinfo/emacs-mime-ja (Japanese)

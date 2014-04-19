@@ -1,6 +1,6 @@
 ;;; mel-q.el --- Quoted-Printable encoder/decoder.
 
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99,2000,2001 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;; Created: 1995/6/25
@@ -20,13 +20,18 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
 (require 'mime-def)
 (require 'path-util)
+(eval-when-compile
+  ;; XXX: should provide char-list instead of string-to-char-list.
+  ;; XXx: and also the macro `as-binary-process' should be provided
+  ;; XXx: by the module "pces" which will be loaded by way of "poem".
+  (require 'poem))
 
 
 ;;; @ Quoted-Printable encoder
@@ -35,7 +40,8 @@
 (defsubst quoted-printable-quote-char (character)
   (concat
    "="
-   (char-to-string (aref quoted-printable-hex-chars (ash character -4)))
+   (char-to-string (aref quoted-printable-hex-chars
+			 (ash (logand character 255) -4)))
    (char-to-string (aref quoted-printable-hex-chars (logand character 15)))))
 
 (defun quoted-printable-internal-encode-region (start end)
@@ -53,7 +59,7 @@
 	    (forward-char)
 	    (setq col 0))
 	   (t
-	    (setq chr (char-after (point)))
+	    (setq chr (logand (char-after (point)) 255))
 	    (cond
 	     ((and (memq chr '(?  ?\t))	; encode WSP char before CRLF.
 		   (eq (char-after (1+ (point))) ?\n))
@@ -171,6 +177,19 @@ It calls external quoted-printable encoder specified by
 	((<= ?0 chr) (- chr ?0))
 	))
 
+(eval-and-compile
+  (if (eval-when-compile
+	(> (string-to-char (string-as-multibyte "\200")) 128))
+      (defsubst quoted-printable-num-to-raw-byte-char (chr)
+	(if (and chr
+		 (> chr 127))
+	    (logior chr
+		    (eval-when-compile
+		      (- (string-to-char (string-as-multibyte "\200")) 128)))
+	  chr))
+    (defsubst quoted-printable-num-to-raw-byte-char (chr)
+      chr)))
+
 (defun quoted-printable-internal-decode-region (start end)
   (save-excursion
     (save-restriction
@@ -192,9 +211,10 @@ It calls external quoted-printable encoder specified by
 	  ;; encoded char.
 	  (insert
 	   (prog1
-	       (logior
-		(ash (quoted-printable-hex-char-to-num (char-after (point))) 4)
-		(quoted-printable-hex-char-to-num (char-after (1+ (point)))))
+	       (quoted-printable-num-to-raw-byte-char
+		(logior
+		 (ash (quoted-printable-hex-char-to-num (char-after (point))) 4)
+		 (quoted-printable-hex-char-to-num (char-after (1+ (point))))))
 	     (delete-region (1- (point))(+ 2 (point))))))
 	 (t
 	  ;; invalid encoding.
@@ -249,7 +269,8 @@ the program (maybe mmencode included in metamail or XEmacs package)."
 
 
 (defvar quoted-printable-external-decoder-option-to-specify-file '("-o")
-  "*list of options of quoted-printable decoder program to specify file.")
+  "*list of options of quoted-printable decoder program to specify file.
+If the quoted-printable decoder does not have such option, set this as nil.")
 
 (mel-define-method mime-write-decoded-region (start end filename
 						    (nil "quoted-printable"))
@@ -259,10 +280,18 @@ START and END are buffer positions."
   (as-binary-process
    (apply (function call-process-region)
 	  start end (car quoted-printable-external-decoder)
-	  nil nil nil
-	  (append (cdr quoted-printable-external-decoder)
-		  quoted-printable-external-decoder-option-to-specify-file
-		  (list filename)))))
+	  (null quoted-printable-external-decoder-option-to-specify-file)
+	  (unless quoted-printable-external-decoder-option-to-specify-file
+	    (list (current-buffer) nil))
+	  nil
+	  (delq nil
+		(append
+		 (cdr quoted-printable-external-decoder)
+		 quoted-printable-external-decoder-option-to-specify-file
+		 (when quoted-printable-external-decoder-option-to-specify-file
+		   (list filename))))))
+  (unless quoted-printable-external-decoder-option-to-specify-file
+    (write-region-as-binary (point-min) (point-max) filename)))
 
 
 ;;; @ Q-encoding encode/decode string
@@ -305,7 +334,9 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 			   "")
 			(h (setq l (quoted-printable-hex-char-to-num chr))
 			   (prog1
-			       (char-to-string (logior (ash h 4) l))
+			       (char-to-string
+				(quoted-printable-num-to-raw-byte-char
+				 (logior (ash h 4) l)))
 			     (setq h nil)))
 			(t (char-to-string chr)))))
 	       string "")))

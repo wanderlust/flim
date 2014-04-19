@@ -1,8 +1,8 @@
 ;;; mel-b-ccl.el --- Base64 encoder/decoder using CCL.
 
-;; Copyright (C) 1998,1999 Tanaka Akira
+;; Copyright (C) 1998,1999,2000 Free Software Foundation, Inc.
 
-;; Author: Tanaka Akira <akr@jaist.ac.jp>
+;; Author: Tanaka Akira <akr@m17n.org>
 ;; Created: 1998/9/17
 ;; Keywords: MIME, Base64
 
@@ -20,8 +20,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
@@ -419,7 +419,13 @@ abcdefghijklmnopqrstuvwxyz\
   (defun base64-ccl-insert-encoded-file (filename)
     "Encode contents of file FILENAME to base64, and insert the result."
     (interactive "*fInsert encoded file: ")
-    (insert-file-contents-as-coding-system 'mel-ccl-base64-lf-rev filename))
+    (insert
+     (decode-coding-string
+      (with-temp-buffer
+	(set-buffer-multibyte nil)
+	(insert-file-contents-as-binary filename)
+	(buffer-string))
+      'mel-ccl-base64-lf-rev)))
 
   (mel-define-method-function (mime-encode-string string (nil "base64"))
 			      'base64-ccl-encode-string)
@@ -447,7 +453,9 @@ abcdefghijklmnopqrstuvwxyz\
 (defun base64-ccl-write-decoded-region (start end filename)
   "Decode the region from START to END and write out to FILENAME."
   (interactive "*r\nFWrite decoded region to file: ")
-  (write-region-as-coding-system 'mel-ccl-b-rev start end filename))
+  (let ((coding-system-for-write 'mel-ccl-b-rev)
+	jka-compr-compression-info-list jam-zcat-filename-list)
+    (write-region start end filename)))
 
 (mel-define-method-function (mime-decode-string string (nil "base64"))
 			    'base64-ccl-decode-string)

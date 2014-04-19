@@ -1,10 +1,10 @@
-;;; mime-def.el --- definition module about MIME
+;;; mime-def.el --- definition module about MIME -*- coding: iso-8859-4; -*-
 
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
-;; Copyright (C) 1999 Electrotechnical Laboratory, JAPAN.
-;; Licensed to the Free Software Foundation.
+;; Copyright (C) 1995,96,97,98,99,2000,2001,2002,2003,2004,2005,2006
+;;   Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
+;;	Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Keywords: definition, MIME, multimedia, mail, news
 
 ;; This file is part of FLIM (Faithful Library about Internet Message).
@@ -21,23 +21,21 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
-(require 'poe)
-(require 'poem)
-(require 'pcustom)
+(require 'custom)
 (require 'mcharset)
 (require 'alist)
+(require 'static)
 
-(eval-when-compile (require 'cl))	; list*
+(eval-when-compile (require 'luna))	; luna-arglist-to-arguments
 
 (eval-and-compile
-  (defconst mime-library-product ["FLIM" (1 13 2) "Kasanui"]
-    "Product name, version number and code name of MIME-library package.")
-  )
+  (defconst mime-library-product ["FLIM" (1 14 9) "Gojò"]
+    "Product name, version number and code name of MIME-library package."))
 
 (defmacro mime-product-name (product)
   `(aref ,product 0))
@@ -59,8 +57,6 @@
 ;;; @ variables
 ;;;
 
-(require 'custom)
-
 (defgroup mime '((default-mime-charset custom-variable))
   "Emacs MIME Interfaces"
   :group 'news
@@ -72,6 +68,60 @@
   :type '(repeat string))
 
 
+;;; @@ for encoded-word
+;;;
+
+(defgroup mime-header nil
+  "Header representation, specially encoded-word"
+  :group 'mime)
+
+;;; @@@ decoding
+;;;
+
+(defcustom mime-field-decoding-max-size 1000
+  "*Max size to decode header field."
+  :group 'mime-header
+  :type '(choice (integer :tag "Limit (bytes)")
+		 (const :tag "Don't limit" nil)))
+
+(defcustom mime-header-accept-quoted-encoded-words nil
+  "*Accept encoded-words in quoted-strings."
+  :group 'mime-header
+  :type 'boolean)
+
+
+;;; @@@ encoding
+;;;
+
+(defcustom mime-field-encoding-method-alist
+  '(("X-Nsubject" . iso-2022-jp-2)
+    ("Newsgroups" . nil)
+    ("Message-ID" . nil)
+    (t            . mime)
+    )
+  "*Alist to specify field encoding method.
+Its key is field-name, value is encoding method.
+
+If method is `mime', this field will be encoded into MIME format.
+
+If method is a MIME-charset, this field will be encoded as the charset
+when it must be convert into network-code.
+
+If method is `default-mime-charset', this field will be encoded as
+variable `default-mime-charset' when it must be convert into
+network-code.
+
+If method is nil, this field will not be encoded."
+  :group 'mime-header
+  :type '(repeat (cons (choice :tag "Field"
+			       (string :tag "Name")
+			       (const :tag "Default" t))
+		       (choice :tag "Method"
+			       (const :tag "MIME conversion" mime)
+			       (symbol :tag "non-MIME conversion")
+			       (const :tag "no-conversion" nil)))))
+
+
 ;;; @ required functions
 ;;;
 
@@ -81,37 +131,39 @@
 (defsubst regexp-or (&rest args)
   (concat "\\(" (mapconcat (function identity) args "\\|") "\\)"))
 
+(or (fboundp 'char-int)
+    (defalias 'char-int 'identity))
 
-;;; @ about STD 11
+
+;;; @ MIME constants
 ;;;
 
-(eval-and-compile
-  (defconst std11-quoted-pair-regexp "\\\\.")
-  (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
-  (defconst std11-qtext-regexp
-    (eval-when-compile
-      (concat "[^" std11-non-qtext-char-list "]"))))
-(defconst std11-quoted-string-regexp
-  (eval-when-compile
-    (concat "\""
-	    (regexp-*
-	     (regexp-or std11-qtext-regexp std11-quoted-pair-regexp))
-	    "\"")))
-
-
-;;; @ about MIME
-;;;
-
-(eval-and-compile
-  (defconst mime-tspecial-char-list
-    '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=)))
+(defconst mime-tspecial-char-list
+  '(?\] ?\[ ?\( ?\) ?< ?> ?@ ?, ?\; ?: ?\\ ?\" ?/ ?? ?=))
 (defconst mime-token-regexp
-  (eval-when-compile
-    (concat "[^" mime-tspecial-char-list "\000-\040]+")))
-(defconst mime-charset-regexp mime-token-regexp)
+  (concat "[^" mime-tspecial-char-list "\000-\040]+"))
+(defconst mime-attribute-char-regexp
+  (concat "[^" mime-tspecial-char-list
+	  "*'%"				; introduced in RFC 2231.
+	  "\000-\040"
+	  "]"))
+(defconst mime-non-attribute-char-regexp
+  (concat "[" mime-tspecial-char-list
+	  "*'%"				; introduced in RFC 2231.
+	  "\000-\040\177-\377"		; non-printable, non-US-ASCII.
+	  "]"))
 
-(defconst mime-media-type/subtype-regexp
-  (concat mime-token-regexp "/" mime-token-regexp))
+(defconst mime-charset-regexp
+  (concat "[^" mime-tspecial-char-list "\000-\040"
+	  "*'%"				; should not include "%"?
+	  "]+"))
+
+;; More precisely, length of each "[A-Za-z]+" is limited to at most 8.
+;; See RFC 3066 "Tags for the Identification of Languages".
+;; (defconst mime-language-regexp "[A-Za-z]+\\(-[A-Za-z]+\\)*")
+(defconst mime-language-regexp "[-A-Za-z]+")
+
+(defconst mime-encoding-regexp mime-token-regexp)
 
 
 ;;; @@ base64 / B
@@ -157,26 +209,25 @@
 ;;;
 
 (defsubst make-mime-content-type (type subtype &optional parameters)
-  (list* (cons 'type type)
-	 (cons 'subtype subtype)
-	 (nreverse parameters))
-  )
+  (cons (cons 'type type)
+	(cons (cons 'subtype subtype)
+	      parameters)))
 
 (defsubst mime-content-type-primary-type (content-type)
   "Return primary-type of CONTENT-TYPE."
   (cdr (car content-type)))
 
 (defsubst mime-content-type-subtype (content-type)
-  "Return primary-type of CONTENT-TYPE."
-  (cdr (cadr content-type)))
+  "Return subtype of CONTENT-TYPE."
+  (cdr (car (cdr content-type))))
 
 (defsubst mime-content-type-parameters (content-type)
-  "Return primary-type of CONTENT-TYPE."
-  (cddr content-type))
+  "Return parameters of CONTENT-TYPE."
+  (cdr (cdr content-type)))
 
 (defsubst mime-content-type-parameter (content-type parameter)
   "Return PARAMETER value of CONTENT-TYPE."
-  (cdr (assoc parameter (mime-content-type-parameters content-type))))
+  (cdr (assoc parameter (cdr (cdr content-type)))))
 
 
 (defsubst mime-type/subtype-string (type &optional subtype)
@@ -189,6 +240,10 @@
 
 ;;; @ Content-Disposition
 ;;;
+
+(defsubst make-mime-content-disposition (type &optional parameters)
+  (cons (cons 'type type)
+	parameters))
 
 (defsubst mime-content-disposition-type (content-disposition)
   "Return disposition-type of CONTENT-DISPOSITION."
@@ -205,97 +260,6 @@
 (defsubst mime-content-disposition-filename (content-disposition)
   "Return filename of CONTENT-DISPOSITION."
   (mime-content-disposition-parameter content-disposition "filename"))
-
-
-;;; @ MIME entity
-;;;
-
-(require 'luna)
-
-(autoload 'mime-entity-content-type "mime")
-(autoload 'mime-parse-multipart "mime-parse")
-(autoload 'mime-parse-encapsulated "mime-parse")
-(autoload 'mime-entity-content "mime")
-
-(luna-define-class mime-entity ()
-		   (location
-		    content-type children parent
-		    node-id
-		    content-disposition encoding
-		    ;; for other fields
-		    original-header parsed-header))
-
-(defalias 'mime-entity-representation-type-internal 'luna-class-name)
-(defalias 'mime-entity-set-representation-type-internal 'luna-set-class-name)
-
-(luna-define-internal-accessors 'mime-entity)
-
-(luna-define-method mime-entity-fetch-field ((entity mime-entity)
-					     field-name)
-  (or (symbolp field-name)
-      (setq field-name (intern (capitalize (capitalize field-name)))))
-  (cdr (assq field-name
-	     (mime-entity-original-header-internal entity))))
-
-(luna-define-method mime-entity-children ((entity mime-entity))
-  (let* ((content-type (mime-entity-content-type entity))
-	 (primary-type (mime-content-type-primary-type content-type)))
-    (cond ((eq primary-type 'multipart)
-	   (mime-parse-multipart entity)
-	   )
-	  ((and (eq primary-type 'message)
-		(memq (mime-content-type-subtype content-type)
-		      '(rfc822 news external-body)
-		      ))
-	   (mime-parse-encapsulated entity)
-	   ))
-    ))
-
-(luna-define-method mime-insert-text-content ((entity mime-entity))
-  (insert
-   (decode-mime-charset-string (mime-entity-content entity)
-			       (or (mime-content-type-parameter
-				    (mime-entity-content-type entity)
-				    "charset")
-				   default-mime-charset)
-			       'CRLF)
-   ))
-
-
-;;; @ for mm-backend
-;;;
-
-(defmacro mm-expand-class-name (type)
-  `(intern (format "mime-%s-entity" ,type)))
-
-(defmacro mm-define-backend (type &optional parents)
-  `(luna-define-class ,(mm-expand-class-name type)
-		      ,(nconc (mapcar (lambda (parent)
-					(mm-expand-class-name parent)
-					)
-				      parents)
-			      '(mime-entity))))
-
-(defmacro mm-define-method (name args &rest body)
-  (or (eq name 'initialize-instance)
-      (setq name (intern (format "mime-%s" name))))
-  (let ((spec (car args)))
-    (setq args
-	  (cons (list (car spec)
-		      (mm-expand-class-name (nth 1 spec)))
-		(cdr args)))
-    `(luna-define-method ,name ,args ,@body)
-    ))
-
-(put 'mm-define-method 'lisp-indent-function 'defun)
-
-(def-edebug-spec mm-define-method
-  (&define name ((arg symbolp)
-		 [&rest arg]
-		 [&optional ["&optional" arg &rest arg]]
-		 &optional ["&rest" arg]
-		 )
-	   def-body))
 
 
 ;;; @ message structure
@@ -437,6 +401,29 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
 	       path)
 	  ))))
 
+(static-cond
+ ((eval-when-compile (and (featurep 'mule)
+			  (>= emacs-major-version 20)
+			  (null (featurep 'xemacs))))
+  (defsubst mime-charset-decode-string (string charset &optional lbt)
+    "Decode the STRING as MIME CHARSET.
+Buffer's multibyteness is ignored."
+    (let ((cs (mime-charset-to-coding-system charset lbt)))
+      (if cs
+	  (decode-coding-string string cs)
+	string)))
+
+  (defsubst mime-charset-encode-string (string charset &optional lbt)
+    "Encode the STRING as MIME CHARSET.
+Buffer's multibyteness is ignored."
+    (let ((cs (mime-charset-to-coding-system charset lbt)))
+      (if cs
+	  (encode-coding-string string cs)
+	string))))
+ (t
+  (defalias 'mime-charset-decode-string 'decode-mime-charset-string)
+  (defalias 'mime-charset-encode-string 'encode-mime-charset-string))
+ )
 
 ;;; @ end
 ;;;

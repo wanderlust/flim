@@ -1,10 +1,9 @@
 ;;; mel-g.el --- Gzip64 encoder/decoder.
 
-;; Copyright (C) 1995,1996,1997,1998 MORIOKA Tomohiko
-;; Copyright (C) 1996,1997,1999 Shuhei KOBAYASHI
+;; Copyright (C) 1995,96,97,98,99,2001  Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
-;;         MORIOKA Tomohiko <tomo@m17n.org>
+;;	MORIOKA Tomohiko <tomo@m17n.org>
 ;; Maintainer: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Created: 1995/10/25
 ;; Keywords: Gzip64, base64, gzip, MIME
@@ -23,8 +22,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
 
@@ -40,16 +39,10 @@
 ;;; @ variables
 ;;;
 
-(defvar gzip64-external-encoder
-  (let ((file (exec-installed-p "mmencode")))
-    (and file
-	 (` ("sh" "-c" (, (concat "gzip -c | " file))))))
+(defvar gzip64-external-encoder '("sh" "-c" "gzip -c | mmencode")
   "*list of gzip64 encoder program name and its arguments.")
 
-(defvar gzip64-external-decoder
-  (let ((file (exec-installed-p "mmencode")))
-    (and file
-	 (` ("sh" "-c" (, (concat file " -u | gzip -dc"))))))
+(defvar gzip64-external-decoder '("sh" "-c" "mmencode -u | gzip -dc")
   "*list of gzip64 decoder program name and its arguments.")
 
 
@@ -59,25 +52,26 @@
 (defun gzip64-external-encode-region (beg end)
   (interactive "*r")
   (save-excursion
-    (as-binary-process
-     (apply (function call-process-region)
-	    beg end (car gzip64-external-encoder)
-	    t t nil
-	    (cdr gzip64-external-encoder)))
+    (let ((coding-system-for-write 'binary))
+      (apply (function call-process-region)
+	     beg end (car gzip64-external-encoder)
+	     t t nil
+	     (cdr gzip64-external-encoder)))
     ;; for OS/2
     ;;   regularize line break code
-    (goto-char (point-min))
-    (while (re-search-forward "\r$" nil t)
-      (replace-match ""))))
+    ;;(goto-char (point-min))
+    ;;(while (re-search-forward "\r$" nil t)
+    ;;  (replace-match ""))
+    ))
 
 (defun gzip64-external-decode-region (beg end)
   (interactive "*r")
   (save-excursion
-    (as-binary-process
-     (apply (function call-process-region)
-	    beg end (car gzip64-external-decoder)
-	    t t nil
-	    (cdr gzip64-external-decoder)))))
+    (let ((coding-system-for-read 'binary))
+      (apply (function call-process-region)
+	     beg end (car gzip64-external-decoder)
+	     t t nil
+	     (cdr gzip64-external-decoder)))))
 
 (mel-define-method-function (mime-encode-region start end (nil "x-gzip64"))
 			    'gzip64-external-encode-region)
@@ -116,13 +110,14 @@
   "Decode and write current region encoded by gzip64 into FILENAME.
 START and END are buffer positions."
   (interactive "*r\nFWrite decoded region to file: ")
-  (as-binary-process
-   (apply (function call-process-region)
-	  start end (car gzip64-external-decoder)
-	  nil nil nil
-	  (let ((args (cdr gzip64-external-decoder)))
-	    (append (butlast args)
-		    (list (concat (car (last args)) ">" filename)))))))
+  (let ((coding-system-for-read 'binary)
+	(coding-system-for-write 'binary))
+    (apply (function call-process-region)
+	   start end (car gzip64-external-decoder)
+	   nil nil nil
+	   (let ((args (cdr gzip64-external-decoder)))
+	     (append (butlast args)
+		     (list (concat (car (last args)) ">" filename)))))))
 
 
 ;;; @ end
@@ -130,4 +125,4 @@ START and END are buffer positions."
 
 (provide 'mel-g)
 
-;;; mel-g.el ends here.
+;;; mel-g.el ends here

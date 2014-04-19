@@ -1,12 +1,14 @@
-;;; mailcap.el --- mailcap parser
+;;; mime-conf.el --- mailcap parser and MIME playback configuration
 
-;; Copyright (C) 1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1997,1998,1999,2000,2004 Free Software Foundation, Inc.
 
-;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;; Created: 1997/6/27
+;; Author: MORIOKA Tomohiko <tomo@m17n.org>
+;; Created: 1997-06-27
+;; Original: 1997-06-27 mailcap.el by MORIOKA Tomohiko
+;;	Renamed: 2000-11-24 to mime-conf.el by MORIOKA Tomohiko
 ;; Keywords: mailcap, setting, configuration, MIME, multimedia
 
-;; This file is part of SEMI (Spadework for Emacs MIME Interfaces).
+;; This file is part of FLIM (Faithful Library about Internet Message).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -20,8 +22,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
 
@@ -31,7 +33,7 @@
 ;;; @ comment
 ;;;
 
-(defsubst mailcap-skip-comment ()
+(defsubst mime-mailcap-skip-comment ()
   (let ((chr (char-after (point))))
     (when (and chr
 	       (or (= chr ?\n)
@@ -43,7 +45,7 @@
 ;;; @ token
 ;;;
 
-(defsubst mailcap-look-at-token ()
+(defsubst mime-mailcap-look-at-token ()
   (if (looking-at mime-token-regexp)
       (let ((beg (match-beginning 0))
 	    (end (match-end 0)))
@@ -55,13 +57,13 @@
 ;;; @ typefield
 ;;;
 
-(defsubst mailcap-look-at-type-field ()
-  (let ((type (mailcap-look-at-token)))
+(defsubst mime-mailcap-look-at-type-field ()
+  (let ((type (mime-mailcap-look-at-token)))
     (if type
 	(if (eq (char-after (point)) ?/)
 	    (progn
 	      (forward-char)
-	      (let ((subtype (mailcap-look-at-token)))
+	      (let ((subtype (mime-mailcap-look-at-token)))
 		(if subtype
 		    (cons (cons 'type (intern type))
 			  (unless (string= subtype "*")
@@ -74,7 +76,7 @@
 ;;; @ field separator
 ;;;
 
-(defsubst mailcap-skip-field-separator ()
+(defsubst mime-mailcap-skip-field-separator ()
   (let ((ret (looking-at "\\([ \t]\\|\\\\\n\\)*;\\([ \t]\\|\\\\\n\\)*")))
     (when ret
       (goto-char (match-end 0))
@@ -84,7 +86,7 @@
 ;;; @ mtext
 ;;;
 
-(defsubst mailcap-look-at-schar ()
+(defsubst mime-mailcap-look-at-schar ()
   (let ((chr (char-after (point))))
     (if (and chr
 	     (>= chr ? )
@@ -95,17 +97,17 @@
 	    chr
 	  (forward-char)))))
 
-(defsubst mailcap-look-at-qchar ()
+(defsubst mime-mailcap-look-at-qchar ()
   (when (eq (char-after (point)) ?\\)
     (prog2
 	(forward-char)
 	(char-after (point))
       (forward-char))))
 
-(defsubst mailcap-look-at-mtext ()
+(defsubst mime-mailcap-look-at-mtext ()
   (let ((beg (point)))
-    (while (or (mailcap-look-at-qchar)
-	       (mailcap-look-at-schar)))
+    (while (or (mime-mailcap-look-at-qchar)
+	       (mime-mailcap-look-at-schar)))
     (buffer-substring beg (point))
     ))
 
@@ -113,13 +115,13 @@
 ;;; @ field
 ;;;
 
-(defsubst mailcap-look-at-field ()
-  (let ((token (mailcap-look-at-token)))
+(defsubst mime-mailcap-look-at-field ()
+  (let ((token (mime-mailcap-look-at-token)))
     (if token
 	(if (looking-at "[ \t]*=[ \t]*")
 	    (let ((value (progn
 			   (goto-char (match-end 0))
-			   (mailcap-look-at-mtext))))
+			   (mime-mailcap-look-at-mtext))))
 	      (if value
 		  (cons (intern token) value)
 		))
@@ -130,14 +132,14 @@
 ;;; @ mailcap entry
 ;;;
 
-(defun mailcap-look-at-entry ()
-  (let ((type (mailcap-look-at-type-field)))
-    (if (and type (mailcap-skip-field-separator))
-	(let ((view (mailcap-look-at-mtext))
+(defun mime-mailcap-look-at-entry ()
+  (let ((type (mime-mailcap-look-at-type-field)))
+    (if (and type (mime-mailcap-skip-field-separator))
+	(let ((view (mime-mailcap-look-at-mtext))
 	      fields field)
 	  (when view
-	    (while (and (mailcap-skip-field-separator)
-			(setq field (mailcap-look-at-field))
+	    (while (and (mime-mailcap-skip-field-separator)
+			(setq field (mime-mailcap-look-at-field))
 			)
 	      (setq fields (cons field fields))
 	      )
@@ -149,7 +151,8 @@
 ;;; @ main
 ;;;
 
-(defun mailcap-parse-buffer (&optional buffer order)
+;;;###autoload
+(defun mime-parse-mailcap-buffer (&optional buffer order)
   "Parse BUFFER as a mailcap, and return the result.
 If optional argument ORDER is a function, result is sorted by it.
 If optional argument ORDER is not specified, result is sorted original
@@ -160,8 +163,8 @@ order.  Otherwise result is not sorted."
     (goto-char (point-min))
     (let (entries entry)
       (while (progn
-	       (while (mailcap-skip-comment))
-	       (setq entry (mailcap-look-at-entry))
+	       (while (mime-mailcap-skip-comment))
+	       (setq entry (mime-mailcap-look-at-entry))
 	       )
 	(setq entries (cons entry entries))
 	(forward-line)
@@ -172,24 +175,26 @@ order.  Otherwise result is not sorted."
 	    ))))
 
 
-(defcustom mailcap-file "~/.mailcap"
-  "*File name of user's mailcap file."
-  :group 'mime
-  :type 'file)
+;;;###autoload
+(defvar mime-mailcap-file "~/.mailcap"
+  "*File name of user's mailcap file.")
 
-(defun mailcap-parse-file (&optional filename order)
+;;;###autoload
+(defun mime-parse-mailcap-file (&optional filename order)
   "Parse FILENAME as a mailcap, and return the result.
 If optional argument ORDER is a function, result is sorted by it.
 If optional argument ORDER is not specified, result is sorted original
 order.  Otherwise result is not sorted."
   (or filename
-      (setq filename mailcap-file))
+      (setq filename mime-mailcap-file))
   (with-temp-buffer
     (insert-file-contents filename)
-    (mailcap-parse-buffer (current-buffer) order)
+    (mime-parse-mailcap-buffer (current-buffer) order)
     ))
 
-(defun mailcap-format-command (mtext situation)
+
+;;;###autoload
+(defun mime-format-mailcap-command (mtext situation)
   "Return formated command string from MTEXT and SITUATION.
 
 MTEXT is a command text of mailcap specification, such as
@@ -217,7 +222,7 @@ may be:
 			    (error "'filename is not specified in situation.")
 			  (setq dest (concat dest
 					     (substring mtext p (1- i))
-					     file)
+					     (shell-quote-argument file))
 				i (1+ i)
 				p i)
 			  )))
@@ -265,6 +270,6 @@ may be:
 ;;; @ end
 ;;;
 
-(provide 'mailcap)
+(provide 'mime-conf)
 
-;;; mailcap.el ends here
+;;; mime-conf.el ends here

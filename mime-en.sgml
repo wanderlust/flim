@@ -1,6 +1,6 @@
 <!doctype sinfo system>
 <head>
-<title>FLIM 1.12 Reference Manual about MIME Features
+<title>FLIM 1.14 Reference Manual about MIME Features
 <author>MORIOKA Tomohiko <mail>morioka@jaist.ac.jp</mail>
 <date>1999-01-27
 
@@ -914,10 +914,10 @@ Encode header fields to network representation, such as MIME
 encoded-word.
 <p>
 Each field is encoded as corresponding method specified by variable
-<code>eword-field-encoding-method-alist</code>.
+<code>mime-field-encoding-method-alist</code>.
 </defun>
 
-<defvar name="eword-field-encoding-method-alist">
+<defvar name="mime-field-encoding-method-alist">
 <p>
 Association list to specify field encoding method.  Each element looks
 like (FIELD . METHOD).
@@ -941,20 +941,10 @@ network-code.
 <p>
 <define type="group" name="mime">
 <p>
-MIME $B4XO"5!G=$K4X$9$k(B group.
+The group associated with functions related to MIME.
 <p>
-<code>mail</code> $B$H(B <code>news</code> $B$KB0$9$k!#(B
+It belongs to <code>mail</code> and <code>news</code>.
 </define>
-
-<defvar name="mime-temp-directory">
-<p>
-MIME $B5!G=$K4X$9$k<BAu$,0l;~E*$K;HMQ$9$k(B file $B$r:n@.$9$k(B directory.
-<p>
-$B4D6-JQ?t(B <code>MIME_TMP_DIR</code>, <code>TM_TMP_DIR</code>,
-<code>TMPDIR</code>, <code>TMP</code> $B$b$7$/$O(B <code>TEMP</code> $B$,@_Dj(B
-$B$5$l$F$$$?>l9g!"$=$l$r=i4|CM$H$7$FMQ$$$k!#2?$b@_Dj$5$l$F$$$J$$>l9g!"(B
-<code>"/tmp/"</code> $B$rMQ$$$k!#(B
-</defvar>
 
 
 <h1> Appendix
@@ -1327,8 +1317,8 @@ EMACS-MIME ML, send an empty e-mail to:
 <h2> CVS based development
 <node> CVS
 <p>
-FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K!$G:G(B
-$B?7$N(B FLIM $B$rF~<j$9$k$3$H$,$G$-$^$9!'(B
+Files in FLIM are managed under CVS. Therefore you can obtain the
+newest FLIM by the following method:
 
 <verb>
 (0) cvs login
@@ -1344,19 +1334,15 @@ FLIM $B$N(B file $B$O(B CVS $B$r;H$C$F4IM}$5$l$F$$$^$9!#$3$N$?$a!"0J2<$NJ}K
 </verb>
 
 <p>
-CVS $B$rMQ$$$?3+H/$K;22C$7$?$$J}$O(B
+If you would like to join CVS based development, please send mail to
 
 <ul>
 <li> <mail>cvs@cvs.m17n.org</mail>
 </ul>
 
 <noindent>
-$B$^$G!"%"%+%&%s%HL>$H(B ssh $B$N8x3+80$rAw$C$F$/$@$5$$!#(Bssh $B7PM3$G$O!"(B
-cvsroot $B$O(B :ext:cvs@cvs.m17n.org:/cvs/root $B$H$J$j$^$9!#(B
-<p>
-$B$I$&$7$F$b(B ssh $B$,;H$($J$$>l9g!"(Bpserver $B7PM3$G$b3+H/$K;22C$G$-$^$9!#(B
-$B$3$N>l9g!"(BUNIX $B$N(B /etc/passwd $BMM<0$G0E9f2=$5$l$?%Q%9%o!<%I$rAw$C$F2<$5$$!#(B
-$B$3$N>l9g(B cvsroot $B$O(B :pserver:<$B%"%+%&%s%HL>(B>@cvs.m17n.org:/cvs/root $B$H$J$j$^$9!#(B
+with your account name and your public key for ssh.
+cvsroot is :ext:cvs@@cvs.m17n.org:/cvs/root.
 
 
 <h2> History of FLIM

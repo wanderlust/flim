@@ -13,8 +13,8 @@
     (progn
       (add-to-list 'default-load-path LISPDIR)
       (add-to-list 'load-path LISPDIR)
-      (add-to-list 'load-path (expand-file-name "apel" LISPDIR))
-      ))
+      (add-to-list 'load-path (expand-file-name "emu" LISPDIR))
+      (add-to-list 'load-path (expand-file-name "apel" LISPDIR))))
 
 (if (boundp 'VERSION_SPECIFIC_LISPDIR)
     (add-to-list 'load-path VERSION_SPECIFIC_LISPDIR))
@@ -58,18 +58,10 @@
 ;; (setq FLIM_DIR (expand-file-name FLIM_PREFIX VERSION_SPECIFIC_LISPDIR))
 (setq FLIM_DIR (expand-file-name FLIM_PREFIX LISPDIR))
 
+(setq FLIM_VERSION_SPECIFIC_DIR
+      (expand-file-name FLIM_PREFIX VERSION_SPECIFIC_LISPDIR))
+
 (defvar PACKAGEDIR
-  (if (boundp 'early-packages)
-      (let ((dirs (append (if early-package-load-path
-			      early-packages)
-			  (if late-package-load-path
-			      late-packages)
-			  (if last-package-load-path
-			      last-packages)))
-	    dir)
-	(while (not (file-exists-p
-		     (setq dir (car dirs))))
-	  (setq dirs (cdr dirs)))
-	dir)))
+  (install-get-default-package-directory))
 
 ;;; FLIM-CFG ends here

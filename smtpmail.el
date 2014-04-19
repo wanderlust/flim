@@ -1,6 +1,6 @@
 ;;; smtpmail.el --- SMTP interface for mail-mode
 
-;; Copyright (C) 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Tomoji Kagatani <kagatani@rbc.ncl.omron.co.jp>
 ;; Keywords: mail
@@ -19,8 +19,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
 
@@ -42,11 +42,11 @@
 
 ;;; Code:
 
-(require 'poe)
-(require 'pcustom)
+(require 'custom)
 (require 'smtp)
 (require 'sendmail)
 (require 'time-stamp)
+(require 'mel) ; binary-write-decoded-region, binary-find-file-noselect
 
 (eval-when-compile (require 'static))
 
@@ -154,8 +154,12 @@ This is relative to `smtpmail-queue-dir'.")
 ;;;		   (insert "Sender: " (user-login-name) "\n")))
 	    ;; Don't send out a blank subject line
 	    (goto-char (point-min))
-	    (if (re-search-forward "^Subject:[ \t]*\n" delimline t)
-		(replace-match ""))
+	    (if (re-search-forward "^Subject:\\([ \t]*\n\\)+\\b" delimline t)
+		(replace-match "")
+	      ;; This one matches a Subject just before the header delimiter.
+	      (if (and (re-search-forward "^Subject:\\([ \t]*\n\\)+" delimline t)
+		       (= (match-end 0) delimline))
+		  (replace-match "")))
 	    ;; Put the "From:" field in unless for some odd reason
 	    ;; they put one in themselves.
 	    (goto-char (point-min))
@@ -226,10 +230,9 @@ This is relative to `smtpmail-queue-dir'.")
 	  ; Send or queue
 	  (if (not smtpmail-queue-mail)
 	      (if smtpmail-recipient-address-list
-		  (if (not (smtp-via-smtp user-mail-address
-					  smtpmail-recipient-address-list
-					  tembuf))
-		      (error "Sending failed; SMTP protocol error"))
+		  (smtp-send-buffer user-mail-address
+				    smtpmail-recipient-address-list
+				    tembuf)
 		(error "Sending failed; no recipients"))
 	    (let* ((file-data (convert-standard-filename
 			       (concat
@@ -246,7 +249,7 @@ This is relative to `smtpmail-queue-dir'.")
 		(insert-buffer tembuf)
 		(or (file-directory-p smtpmail-queue-dir)
 		    (make-directory smtpmail-queue-dir t))
-		(write-region-as-binary (point-min) (point-max) file-data)
+		(binary-write-decoded-region (point-min) (point-max) file-data)
 		(set-buffer buffer-elisp)
 		(erase-buffer)
 		(insert (concat
@@ -282,11 +285,10 @@ This is relative to `smtpmail-queue-dir'.")
 						   (end-of-line)
 						   (point))))
 	(load file-msg)
-	(setq tembuf (find-file-noselect-as-binary file-msg))
+	(setq tembuf (binary-find-file-noselect file-msg))
 	(if smtpmail-recipient-address-list
-	    (if (not (smtp-via-smtp user-mail-address
-				    smtpmail-recipient-address-list tembuf))
-		(error "Sending failed; SMTP protocol error"))
+	    (smtp-send-buffer user-mail-address
+			      smtpmail-recipient-address-list tembuf)
 	  (error "Sending failed; no recipients"))  
 	(delete-file file-msg)
 	(delete-file (concat file-msg ".el"))
