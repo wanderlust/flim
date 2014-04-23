@@ -72,7 +72,8 @@
  ((fboundp 'md5-binary)
   ;; do nothing.
   )
- ((subrp (symbol-function 'secure-hash))
+ ((and (fboundp 'secure-hash)
+       (subrp (symbol-function 'secure-hash)))
   (defun md5-binary (string)
     "Return the MD5 of STRING in binary form."
     (secure-hash 'md5 string nil nil t)))

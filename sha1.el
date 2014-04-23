@@ -41,7 +41,8 @@
 (defvar sha1-dl-module
   (cond
    ((and (fboundp 'sha1)
-	 (or (subrp (symbol-function 'secure-hash))
+	 (or (and (fboundp 'secure-hash)
+		  (subrp (symbol-function 'secure-hash)))
 	     (subrp (symbol-function 'sha1))))
     nil)
    ((fboundp 'dynamic-link)
@@ -55,7 +56,8 @@
 
 (cond
  ((and (fboundp 'sha1)
-       (or (subrp (symbol-function 'secure-hash))
+       (or (and (fboundp 'secure-hash)
+		(subrp (symbol-function 'secure-hash)))
 	   (subrp (symbol-function 'sha1))))
   ;; Do nothing.
   )

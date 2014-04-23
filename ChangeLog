@@ -1,3 +1,14 @@
+2014-04-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* FLIM-ELS: Check whether secure-hash function is defined.
+	Cf. https://github.com/ikazuhiro/flim/commit/85bbe382c4812fd041207aa727acba8ece2e7a39#commitcomment-6082738
+
+	* hmac-md5.el: Likewise.
+
+	* hmac-sha1.el: Likewise.
+
+	* sha1.el (TOP, sha1-dl-module): Likewise.
+
 2014-04-15  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* FLIM-ELS: Install sha1-el.el when dynamic-link is available and

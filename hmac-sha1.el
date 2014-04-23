@@ -72,7 +72,8 @@
  ((fboundp 'sha1-binary)
   ;; do nothing.
   )
- ((subrp (symbol-function 'secure-hash))
+ ((and (fboundp 'secure-hash)
+       (subrp (symbol-function 'secure-hash)))
   (defun sha1-binary (string)
     "Return the SHA1 of STRING in binary form."
     (secure-hash 'sha1 string nil nil t)))
