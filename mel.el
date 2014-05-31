@@ -165,24 +165,23 @@ Read text is decoded as CODING-SYSTEM."
   (mel-define-method-function (mime-decode-region start end (nil "base64"))
 			      'base64-decode-region)  
   (mel-define-method mime-insert-encoded-file (filename (nil "base64"))
-    "Encode contents of file FILENAME to base64, and insert the result.
-It calls external base64 encoder specified by
-`base64-external-encoder'.  So you must install the program (maybe
-mmencode included in metamail or XEmacs package)."
+    "Encode contents of file FILENAME to base64, and insert the result."
     (interactive "*fInsert encoded file: ")
-    (insert (base64-encode-string
-	     (with-temp-buffer
-	       (set-buffer-multibyte nil)
-	       (binary-insert-encoded-file filename)
-	       (buffer-string))))
+    ;; No need to make buffer unibyte if binary-insert-encoded-file only
+    ;; inserts single-byte characters.
+    (save-restriction
+      (narrow-to-region (point) (point))
+      (binary-insert-encoded-file filename)
+      (base64-encode-region (point-min) (point-max))
+      (goto-char (point-max)))
     (or (bolp) (insert ?\n)))
   (mel-define-method mime-write-decoded-region (start end filename
 						      (nil "base64"))
     "Decode the region from START to END and write out to FILENAME."
     (interactive "*r\nFWrite decoded region to file: ")
-    (let ((str (buffer-substring start end)))
+    (let ((buffer (current-buffer)))
       (with-temp-buffer
-	(insert str)
+	(insert-buffer-substring buffer start end)
 	(base64-decode-region (point-min) (point-max))
 	(write-region-as-binary (point-min) (point-max) filename))))
     

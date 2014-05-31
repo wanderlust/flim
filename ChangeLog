@@ -1,3 +1,9 @@
+2014-05-31  Juliusz Chroboczek  <jch@pps.univ-paris-diderot.fr>
+
+	* mel.el (mime-insert-encoded-file): Avoid going through an
+	intermediary string, work inline.
+	(mime-write-decoded-region): likewise.
+
 2013-06-26  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mailcap.el: Removed to resolve compatibility problem when run in
