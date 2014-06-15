@@ -64,7 +64,6 @@
 ;;; Code:
 
 (eval-when-compile (require 'hmac-def))
-(require 'hex-util)			; (decode-hex-string STRING)
 (require 'sha1)				; expects (sha1 STRING)
 
 ;; To share *.elc files between Emacs w/ and w/o DL patch,
@@ -73,7 +72,13 @@
  ((fboundp 'sha1-binary)
   ;; do nothing.
   )
+ ((and (fboundp 'secure-hash)
+       (subrp (symbol-function 'secure-hash)))
+  (defun sha1-binary (string)
+    "Return the SHA1 of STRING in binary form."
+    (secure-hash 'sha1 string nil nil t)))
  (t
+  (autoload 'decode-hex-string "hex-util")
   (defun sha1-binary (string)
     "Return the SHA1 of STRING in binary form."
     (decode-hex-string (sha1 string)))))

@@ -942,7 +942,7 @@ abcdefghijklmnopqrstuvwxyz\
 			      (make-vector 9 0)
 			      (with-temp-buffer
 				(set-buffer-multibyte nil)
-				(insert-file-contents-as-binary filename)
+				(insert-file-contents-literally filename)
 				(buffer-string))
 			      nil t))))
    (t
@@ -964,7 +964,7 @@ abcdefghijklmnopqrstuvwxyz\
        (decode-coding-string
 	(with-temp-buffer
 	  (set-buffer-multibyte nil)
-	  (insert-file-contents-as-binary filename)
+	  (insert-file-contents-literally filename)
 	  (buffer-string))
 	'mel-ccl-quoted-printable-lf-lf-rev)))))
 

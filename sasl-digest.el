@@ -34,6 +34,7 @@
 
 (require 'sasl)
 (require 'hmac-md5)
+(require 'hex-util)
 
 (defvar sasl-digest-md5-nonce-count 1)
 (defvar sasl-digest-md5-unique-id-function

@@ -39,8 +39,12 @@
       (setq hmac-modules (cons 'md5-dl hmac-modules))
     (setq hmac-modules (cons 'md5-el hmac-modules))))
 
-(if (fboundp 'dynamic-link)
-    (setq hmac-modules (cons 'sha1-dl hmac-modules))
+(unless (and (fboundp 'sha1)
+	     (or (and (fboundp 'secure-hash)
+		      (subrp (symbol-function 'secure-hash)))
+		 (subrp (symbol-function 'sha1))))
+  (when (fboundp 'dynamic-link)
+    (setq hmac-modules (cons 'sha1-dl hmac-modules)))
   (setq hmac-modules (cons 'sha1-el hmac-modules)))
 
 (setq flim-modules (nconc hmac-modules flim-modules))

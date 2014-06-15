@@ -4,6 +4,61 @@
 	intermediary string, work inline.
 	(mime-write-decoded-region): likewise.
 
+2014-04-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* FLIM-ELS: Check whether secure-hash function is defined.
+	Cf. https://github.com/ikazuhiro/flim/commit/85bbe382c4812fd041207aa727acba8ece2e7a39#commitcomment-6082738
+
+	* hmac-md5.el: Likewise.
+
+	* hmac-sha1.el: Likewise.
+
+	* sha1.el (TOP, sha1-dl-module): Likewise.
+
+2014-04-15  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* FLIM-ELS: Install sha1-el.el when dynamic-link is available and
+	built-in sha1 library is not available.
+
+2014-04-05  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* std11.el (std11-narrow-to-header)
+	(std11-field-bodies): Minor refactoring.
+
+2014-03-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* sasl-cram.el: Require hex-util.el.
+
+	* sasl-digest.el: Require hex-util.el.
+
+	* hmac-md5.el: Do not require hex-util.el.  Define autoload for
+	decode-hex-string only when needed.
+	(md5-binary): Use built-in functionality if available.
+
+	* hmac-sha1.el: Linkewise.
+	(sha1-binary): Use built-in functionality if available.
+
+2014-03-29  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* FLIM-ELS: Do not install sha1-el.el when built-in SHA1 library
+	is available.
+
+	* sha1.el: Do not require sha1-el.el in the above case.
+	(sha1-dl-module): set to nil in the above case.
+
+2014-02-22  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* mel-q-ccl.el (quoted-printable-ccl-insert-encoded-file): Call
+	insert-file-contents-literally directly.
+
+2013-07-05  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* eword-encode.el: Fix the previous change for really checking.
+
+2013-07-04  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* eword-encode.el: Check whether the mule-vesion variable is defined.
+
 2013-06-26  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mailcap.el: Removed to resolve compatibility problem when run in
@@ -64,6 +119,15 @@
 	* eword-encode.el (tm-eword::string-to-ruled-words): New function.
 	(eword-encode-split-string, eword-encode-phrase-to-rword-list):
 	Use it.
+
+2012-04-28  MORIOKA Tomohiko  <tomo.git@chise.org>
+
+	* README.ja, README.en (Bug reports): Use "Emacs-MIME" instead of
+	"EMACS-MIME".
+
+2001-02-27  Martin Buchholz  <martin@xemacs.org>
+
+	* mime-en.sgml: Typo fix.
 
 2012-04-28  MORIOKA Tomohiko  <tomo@zinbun.kyoto-u.ac.jp>
 

@@ -1042,7 +1042,7 @@ translated by non-Internet gateways.
 <p>
 Any byte stream is called <concept>binary</concept>.
 <p>
-It does not require structureof lines.  It differs from from <a
+It does not require structure of lines.  It differs from from <a
 node="8bit">8bit</a>.
 <p>
 In addition, if line structured data contain too long line (more than
