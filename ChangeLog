@@ -1,3 +1,16 @@
+2014-06-20  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	Un-encoded garbage handling is available when built-in base64
+	decoder is used.
+
+	* mel.el (mel-b-builtin-garbage-strategy): New customizable
+	variable.
+	(mel-b-builtin-encoded-line-regexp): New variable.
+	(mel-b-builtin-decode-string, mel-b-builtin-decode-region): New
+	functions.
+	(mime-decode-string, mime-decode-region)
+	(mime-write-decoded-region): (mel-b-builtin) Use them.
+
 2014-05-31  Juliusz Chroboczek  <jch@pps.univ-paris-diderot.fr>
 
 	* mel.el (mime-insert-encoded-file): Avoid going through an
