@@ -79,7 +79,7 @@ don't define this value."
   :group 'smtp)
 
 (defcustom smtp-fqdn nil
-  "Fully qualified domain name used for Message-ID."
+  "Fully qualified domain name used for SMTP HELO/EHLO."
   :type '(choice (const nil) string)
   :group 'smtp)
 
