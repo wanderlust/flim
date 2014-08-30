@@ -97,15 +97,20 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ charset word
 ;;;
 
+(eval-when-compile
+  (unless (and (boundp 'mule-version)
+	       (null (string< mule-version "6.0"))
+	       (fboundp 'detect-mime-charset-string))
+    (defmacro eword-encode-char-type (character)
+      `(if (memq ,character '(?  ?\t ?\n))
+	   nil
+	 (char-charset ,character)
+	 ))
+    ))
+
 (unless (and (boundp 'mule-version)
 	     (null (string< mule-version "6.0"))
 	     (fboundp 'detect-mime-charset-string))
-(defsubst eword-encode-char-type (character)
-  (if (memq character '(?  ?\t ?\n))
-      nil
-    (char-charset character)
-    ))
-
 (defun eword-encode-divide-into-charset-words (string)
   (let ((len (length string))
 	dest)
