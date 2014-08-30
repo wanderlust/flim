@@ -142,8 +142,7 @@
 	(mode-obj (mime-find-field-presentation-method 'wide))
 	field-decoder
 	f-b p f-e field-name len field field-body)
-    (save-excursion
-      (set-buffer buffer)
+    (with-current-buffer buffer
       (save-restriction
 	(narrow-to-region start end)
 	(goto-char start)

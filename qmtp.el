@@ -116,10 +116,8 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
 
 ;;;###autoload
 (defun qmtp-send-buffer (sender recipients buffer)
-  (save-excursion
-    (set-buffer
-     (get-buffer-create
-      (format "*trace of QMTP session to %s*" qmtp-server)))
+  (with-current-buffer (get-buffer-create
+			(format "*trace of QMTP session to %s*" qmtp-server))
     (buffer-disable-undo)
     (erase-buffer)
     (make-local-variable 'qmtp-read-point)

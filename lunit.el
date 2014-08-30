@@ -301,8 +301,7 @@ TESTS holds a number of instances of `lunit-test'."
 
 (defun lunit-generate-template (file)
   (interactive "fGenerate lunit template for: ")
-  (save-excursion
-    (set-buffer (find-file-noselect file))
+  (with-current-buffer (find-file-noselect file)
     (let ((index-alist 
 	   (lunit-create-index-function)))
       (with-output-to-temp-buffer "*Lunit template*"

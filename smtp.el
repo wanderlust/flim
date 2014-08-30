@@ -184,8 +184,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 
 (defun smtp-package-buffer-internal-size (package)
   "Return the size of PACKAGE, an integer."
-  (save-excursion
-    (set-buffer (smtp-package-buffer-internal package))
+  (with-current-buffer (smtp-package-buffer-internal package)
     (let ((size
 	   (+ (buffer-size)
 	      ;; Add one byte for each change-of-line
@@ -367,10 +366,8 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 		  (error "`smtp-server' not defined"))))
 	   (package
 	    (smtp-make-package sender recipients buffer)))
-      (save-excursion
-	(set-buffer
-	 (get-buffer-create
-	  (format "*trace of SMTP session to %s*" server)))
+      (with-current-buffer (get-buffer-create
+			    (format "*trace of SMTP session to %s*" server))
 	(erase-buffer)
 	(buffer-disable-undo)
 	(unless (smtp-find-connection (current-buffer))
@@ -425,10 +422,8 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 			   (mapconcat 'concat recipients ">,<"))))
 	(setq package
 	      (smtp-make-package sender recipients buffer))
-	(save-excursion
-	  (set-buffer
-	   (get-buffer-create
-	    (format "*trace of SMTP session to %s*" server)))
+	(with-current-buffer (get-buffer-create
+			      (format "*trace of SMTP session to %s*" server))
 	  (erase-buffer)
 	  (buffer-disable-undo)
 	  (unless (smtp-find-connection (current-buffer))
@@ -589,8 +584,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     (setq response (smtp-read-response connection))
     (if (/= (car response) 354)
 	(smtp-response-error response))
-    (save-excursion
-      (set-buffer (smtp-package-buffer-internal package))
+    (with-current-buffer (smtp-package-buffer-internal package)
       (goto-char (point-min))
       (while (not (eobp))
 	(smtp-send-data
@@ -613,8 +607,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 ;;; @ low level process manipulating function
 ;;;
 (defun smtp-process-filter (process output)
-  (save-excursion
-    (set-buffer (process-buffer process))
+  (with-current-buffer (process-buffer process)
     (goto-char (point-max))
     (insert output)))
 
@@ -662,12 +655,11 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     response))
 
 (defun smtp-send-command (connection command)
-  (save-excursion
-    (let ((process
-	   (smtp-connection-process-internal connection))
-	  (encoder
-	   (smtp-connection-encoder-internal connection)))
-      (set-buffer (process-buffer process))
+  (let ((process
+	 (smtp-connection-process-internal connection))
+	(encoder
+	 (smtp-connection-encoder-internal connection)))
+    (with-current-buffer (process-buffer process)
       (goto-char (point-max))
       (setq command (concat command "\r\n"))
       (insert command)
@@ -697,13 +689,10 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	addr-regexp
 	(smtp-address-buffer (generate-new-buffer " *smtp-mail*")))
     (unwind-protect
-	(save-excursion
-	  ;;
-	  (set-buffer smtp-address-buffer)
+	(with-current-buffer smtp-address-buffer
 	  (setq case-fold-search t)
 	  (erase-buffer)
-	  (insert (save-excursion
-		    (set-buffer smtp-text-buffer)
+	  (insert (with-current-buffer smtp-text-buffer
 		    (buffer-substring-no-properties header-start header-end)))
 	  (goto-char (point-min))
 	  ;; RESENT-* fields should stop processing of regular fields.

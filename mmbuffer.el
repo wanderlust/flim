@@ -43,8 +43,7 @@
   (or (mime-buffer-entity-buffer-internal entity)
       (mime-buffer-entity-set-buffer-internal
        entity (get-buffer (mime-entity-location-internal entity))))
-  (save-excursion
-    (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (let ((header-start
 	   (or (mime-buffer-entity-header-start-internal entity)
 	       (mime-buffer-entity-set-header-start-internal
@@ -94,8 +93,7 @@
   )
 
 (luna-define-method mime-write-entity ((entity mime-buffer-entity) filename)
-  (save-excursion
-    (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (let ((coding-system-for-write 'raw-text-dos))
       (write-region (mime-buffer-entity-header-start-internal entity)
 		    (mime-buffer-entity-body-end-internal entity)
@@ -110,8 +108,7 @@
 ;;;
 
 (luna-define-method mime-entity-body ((entity mime-buffer-entity))
-  (save-excursion
-    (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (buffer-substring (mime-buffer-entity-body-start-internal entity)
 		      (mime-buffer-entity-body-end-internal entity))))
 
@@ -123,8 +120,7 @@
 
 (luna-define-method mime-write-entity-body ((entity mime-buffer-entity)
 					    filename)
-  (save-excursion
-    (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (binary-write-decoded-region
      (mime-buffer-entity-body-start-internal entity)
      (mime-buffer-entity-body-end-internal entity)
@@ -135,8 +131,7 @@
 ;;;
 
 (luna-define-method mime-entity-content ((entity mime-buffer-entity))
-  (save-excursion
-    (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (mime-decode-string
      (buffer-substring (mime-buffer-entity-body-start-internal entity)
 		       (mime-buffer-entity-body-end-internal entity))
@@ -151,8 +146,7 @@
 
 (luna-define-method mime-write-entity-content ((entity mime-buffer-entity)
 					       filename)
-  (save-excursion
-    (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (mime-write-decoded-region (mime-buffer-entity-body-start-internal entity)
 			       (mime-buffer-entity-body-end-internal entity)
 			       filename
@@ -166,8 +160,7 @@
 (luna-define-method mime-entity-fetch-field :around
   ((entity mime-buffer-entity) field-name)
   (or (luna-call-next-method)
-      (save-excursion
-	(set-buffer (mime-buffer-entity-buffer-internal entity))
+      (with-current-buffer (mime-buffer-entity-buffer-internal entity)
 	(save-restriction
 	  (narrow-to-region (mime-buffer-entity-header-start-internal entity)
 			    (mime-buffer-entity-header-end-internal entity))

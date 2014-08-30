@@ -31,8 +31,7 @@
 (mm-define-method entity-cooked-p ((entity cooked)) t)
 
 (mm-define-method write-entity-content ((entity cooked) filename)
-  (save-excursion
-    (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (let ((encoding (or (mime-entity-encoding entity) "7bit")))
       (if (member encoding '("7bit" "8bit" "binary"))
 	  (write-region (mime-buffer-entity-body-start-internal entity)
@@ -44,16 +43,14 @@
 	))))
 
 (mm-define-method write-entity ((entity cooked) filename)
-  (save-excursion
-    (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (write-region (mime-buffer-entity-header-start-internal entity)
 		  (mime-buffer-entity-body-end-internal entity)
 		  filename)
     ))
 
 (mm-define-method write-entity-body ((entity cooked) filename)
-  (save-excursion
-    (set-buffer (mime-buffer-entity-buffer-internal entity))
+  (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (write-region (mime-buffer-entity-body-start-internal entity)
 		  (mime-buffer-entity-body-end-internal entity)
 		  filename)

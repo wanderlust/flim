@@ -1,3 +1,24 @@
+2014-08-31  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* lunit.el (lunit-generate-template): Use `with-current-buffer'
+	rather than save-excursion+set-buffer.
+
+	* mmbuffer.el (initialize-instance, mime-write-entity)
+	(mime-entity-body, mime-write-entity-body, mime-entity-content)
+	(mime-write-entity-content, mime-entity-fetch-field): Likewise.
+
+	* mmcooked.el (write-entity-content, write-entity)
+	(write-entity-body): Likewise.
+
+	* mmgeneric.el (mime-insert-header-from-buffer): Likewise.
+
+	* qmtp.el (qmtp-send-buffer): Likewise.
+
+	* smtp.el (smtp-package-buffer-internal-size, smtp-send-buffer)
+	(smtp-send-buffer-by-myself, smtp-primitive-data)
+	(smtp-process-filter, smtp-send-command)
+	(smtp-deduce-address-list): Likewise.
+
 2014-06-20  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	Un-encoded garbage handling is available when built-in base64
