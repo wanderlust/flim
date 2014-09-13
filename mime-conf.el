@@ -222,7 +222,13 @@ may be:
 			    (error "'filename is not specified in situation.")
 			  (setq dest (concat dest
 					     (substring mtext p (1- i))
-					     (shell-quote-argument file))
+					     ;; if the situation (wrongly) quotes
+					     ;; the argument, fix it.
+					     (if (eq ?' (aref mtext (- i 2)))
+						 (concat "'"
+							 (shell-quote-argument file)
+							 "'")
+					       (shell-quote-argument file)))
 				i (1+ i)
 				p i)
 			  )))

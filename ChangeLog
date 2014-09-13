@@ -1,3 +1,9 @@
+2014-09-13  Erik Hetzner <egh@e6h.org>
+
+	* mime-conf.el (mime-format-mailcap-command): Add quotes for
+	quoted file name to unquote.
+	Cf. https://github.com/wanderlust/flim/pull/3
+
 2014-08-31  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mime-parse.el (mime-decode-parameter-value)
