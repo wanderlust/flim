@@ -1,3 +1,23 @@
+2014-11-09  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* mime-en.texi (7bit): Fix typo.
+
+	* mime-ja.texi: Fix missing cross-references.
+
+2014-11-09  Erik Hetzner <egh@e6h.org>
+
+	* flim-pkg.el: New file.
+
+2014-11-09  Erik Hetzner <egh@e6h.org>
+
+	* mime-en.texi: Fix headers and missing cross-references.
+
+	* mime-ja.texi: Fix headers.
+
+	* mime-en.sgml: Removed.
+
+	* mime-ja.sgml: Removed.
+
 2014-09-15  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mime-conf.el (mime-format-mailcap-command): Minor refactoring.
