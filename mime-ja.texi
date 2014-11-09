@@ -1,7 +1,9 @@
 \input texinfo.tex
 @c Generated automatically from mime-ja.sgml by sinfo 3.7.
 @setfilename mime-ja.info
-@settitle{FLIM 1.14 MIME 機能説明書}
+@documentlanguage ja
+@documentencoding iso-2022-jp
+@settitle FLIM 1.14 MIME 機能説明書
 @titlepage
 @title FLIM 1.14 MIME 機能説明書
 @author 守岡 知彦 <morioka@@jaist.ac.jp>
