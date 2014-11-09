@@ -459,7 +459,7 @@ Entity $B$OCj>]2=$5$l$?%G!<%?I=8=$G!"<B:]$N%G!<%?I=8=$H$7$F$OMQES$K1~$8$F(B
 
 $B$3$3$G!"(Bentity $B$,$I$&$$$&<oN`$NI=8=$r9T$C$F$$$k$+$r<($9$N$,(B
 @strong{representation-type} $B$G!"(Bentity $B$r@8@.$9$k;~$K$O$3$l$r;XDj$7$^$9!#(B
-(cf. @ref{Entity Creation}) @refill
+(cf. @ref{Entity creation}) @refill
 
 $BA0@a$^$G$K=R$Y$FMh$?(B entity $B$KBP$9$k=hM}$O!"(Bentity $B$KBP$7$F$=$N=hM}$r0M(B
 $BMj$9$k$3$H$K$h$C$F<B8=$5$l$F$$$^$9!#(BEntity $B$O<+J,$N(B representation-type 
@@ -536,7 +536,7 @@ representation-type $B$NL>A0$N@hF,$K(B @code{mm} $B$rIU$1$?$b$N$K$J$C$F(B
 @cindex Content-Type $BMs(B
 
 @strong{Content-Type $BMs(B} $B$O(B media-type (@ref{media-type}) $B$d(B MIME
-charset $B$H$$$C$?(B entity (@ref{entity}) $B$NFbMF$N<oN`$dI=8=7A<0$J$I$r5-=R(B
+charset $B$H$$$C$?(B entity (@ref{Entity}) $B$NFbMF$N<oN`$dI=8=7A<0$J$I$r5-=R(B
 $B$9$k$?$a$N$b$N$G!"(BRFC 2045 (@ref{RFC 2045}) $B$GDj5A$5$l$F$$$^$9!#(B
 
 @noindent
@@ -1083,7 +1083,7 @@ MIME $B4XO"5!G=$K4X$9$k(B group.@refill
 
 $B$^$?!"(B0 $B$+$i(B 31 $B$*$h$S(B 127 $B$GI=8=$5$l$k@)8fJ8;z$H(B 32 $B$GI=8=$5$l$k6uGr$H(B 
 33 $B$+$i(B 126 $B$GI=8=$5$l$k?^7AJ8;z$+$i$J$kJ8;zNs$N$3$H$r(B ``7bit $B$NJ8;zNs(B'' 
-$B$H8F$V!J$3$l$O(B ISO 2022 (@ref{ISO 2022}) $B$N!V(B7 $BC10L7O!W$HF1MM!K!#(B
+$B$H8F$V!J$3$l$O(B ISO 2022 $B$N!V(B7 $BC10L7O!W$HF1MM!K!#(B
 
 $BEAE}E*$J(B Internet $B$N(B MTA (@ref{MTA}) $B$O(B 7bit $B$N(B data $B$rE>Aw$G$-$k$N$G!"(B
 7bit $B$N(B data $B$O(B Quoted-Printable (@ref{Quoted-Printable}) $B$d(B Base64
@@ -1091,7 +1091,7 @@ MIME $B4XO"5!G=$K4X$9$k(B group.@refill
 
 $B$7$+$7!"(B7bit $B$G$"$l$P$I$s$J(B data $B$G$bNI$$$H$O$$$($J$$!#$J$<$J$i!"#19T$N(B
 $BD9$5$,$"$^$j$KD9$$$H!"(BMTA $B$O$=$N(B message $B$rE>Aw$9$k$3$H$,$G$-$J$$$+$i$G(B
-$B$"$k!#$A$J$_$K!"(BRFC 821 (@ref{RFC 821}) $B$O#19T$O2~9TJ8;z$r=|$$$F(B 998
+$B$"$k!#$A$J$_$K!"(BRFC 822 (@ref{RFC 822}) $B$O#19T$O2~9TJ8;z$r=|$$$F(B 998
 byte $B0JFb$G$"$k$3$H$r5a$a$F$$$k!#$h$C$F!"$3$l0J>e$N9T$,4^$^$l$k2DG=@-$N(B
 $B$"$k(B data, $BNc$($P!"(BPostscript $B$N(B data $B$J$I$O(B Quoted-Printable $BEy$G(B 
 encode$B$9$kI,MQ$,$"$k!#(B
@@ -1108,9 +1108,9 @@ encode$B$9$kI,MQ$,$"$k!#(B
 
 $B$^$?!"(B0 $B$+$i(B 31, 127 $B$*$h$S(B 128 $B$+$i(B 159 $B$GI=8=$5$l$k@)8fJ8;z$H(B 32 $B$GI=(B
 $B8=$5$l$k6uGr$H(B 33 $B$+$i(B 126 $B$H(B 160 $B$+$i(B 255 $B$GI=8=$5$l$k?^7AJ8;z$+$i$J$k(B
-$BJ8;zNs$N$3$H$r(B ``8bit $B$NJ8;zNs(B'' $B$H8F$V!J$3$l$O(B ISO 2022 (@ref{ISO 2022}) $B$N!V(B8 $BC10L7O!W$HF1MM!K!#(B@refill
+$BJ8;zNs$N$3$H$r(B ``8bit $B$NJ8;zNs(B'' $B$H8F$V!J$3$l$O(B ISO 2022 $B$N!V(B8 $BC10L7O!W$HF1MM!K!#(B@refill
 
-iso-8859-1 (@ref{iso-8859-1}) $B$d(B euc-kr (@ref{euc-kr}) $B$H$$$C$?Id9f2=J8(B
+iso-8859-1 $B$d(B euc-kr $B$H$$$C$?Id9f2=J8(B
 $B;z=89g$O(B 8bit $B$NJ8;zNs$G$"$k!#(B@refill
 
 $BEAE}E*$J(B Internet $B$N(B MTA (@ref{MTA}) $B$O(B 7bit (@ref{7bit}) $B$N(B data $B$7$+E>(B
@@ -1123,7 +1123,7 @@ iso-8859-1 (@ref{iso-8859-1}) $B$d(B euc-kr (@ref{euc-kr}) $B$H$$$C$?Id9f2=J8
 
 $B$7$+$7!"(B8bit $B$G$"$l$P$I$s$J(B data $B$G$bNI$$$H$O$$$($J$$!#$J$<$J$i!"#19T$N(B
 $BD9$5$,$"$^$j$KD9$$$H!"(BMTA $B$O$=$N(B message $B$rE>Aw$9$k$3$H$,$G$-$J$$$+$i$G(B
-$B$"$k!#$A$J$_$K!"(BRFC 821 (@ref{RFC 821}) $B$O#19T$O2~9TJ8;z$r=|$$$F(B 998
+$B$"$k!#$A$J$_$K!"(BRFC 822 (@ref{RFC 822}) $B$O#19T$O2~9TJ8;z$r=|$$$F(B 998
 byte $B0JFb$G$"$k$3$H$r5a$a$F$$$k!#$h$C$F!"$3$l0J>e$N9T$,4^$^$l$k2DG=@-$N(B
 $B$"$k(B data, $BNc$($P!"(BPostscript $B$N(B data $B$J$I$O(B Quoted-Printable $BEy$G(B 
 encode$B$9$kI,MQ$,$"$k!#(B@refill
@@ -1141,7 +1141,7 @@ data $B$O(B @strong{binary} (@ref{binary}) $B$H8F$V$3$H$K$9$k!#(B@refill
 @cindex ANSI X3.4:1986
 @cindex ASCII
 
-$B%"%a%j%+O"K.$G;H$o$l$kJ8;z$rId9f2=$7$?Id9f2=J8;z=89g(B (@ref{$BId9f2=J8;z=8(B $B9g(B})$B!#(BA-Z, a-z $B$N(B Latin $BJ8;z$H?t;z!"4v$D$+$N5-9f$+$i$J$k!#(BISO 646 $B$N0l$D(B
+$B%"%a%j%+O"K.$G;H$o$l$kJ8;z$rId9f2=$7$?Id9f2=J8;z=89g(B (@ref{Coded character set})$B!#(BA-Z, a-z $B$N(B Latin $BJ8;z$H?t;z!"4v$D$+$N5-9f$+$i$J$k!#(BISO 646 $B$N0l$D(B
 $B$G!"8=:_$O9q:]4p=`HG(B (IRV) $B$K$J$C$F$$$k!#(B
 
 
@@ -1207,7 +1207,7 @@ Internet $B0J30$N(B network $B$r7PM3$9$k>l9g$G$b0BA4$KE>Aw$G$-$k$h$&$K@_7W$5
 @cindex subtype
 @cindex primary-type
 
-MIME (@ref{MIME}) $B$K$*$1$k(B entity (@ref{entity}) $B$N<oN`!#(B
+MIME (@ref{MIME}) $B$K$*$1$k(B entity (@ref{Entity}) $B$N<oN`!#(B
 @strong{primary-type} $B$H(B @strong{subtype} $B$+$i$J$k!#(BRFC 2046 (@ref{RFC 2046}) $B$GDj5A$5$l$F$$$k!#(B@refill
 
 primary-type $B$OI8=`$G$O(B
@@ -1224,15 +1224,15 @@ primary-type $B$OI8=`$G$O(B
 @item
 @strong{application}
 @item
-@strong{multipart} (@ref{multipart})
+@strong{multipart}
 @item
 @strong{message}
 @end itemize
 
 @noindent
 $B$,Dj5A$5$l!"$=$l$>$l$K$O(B application/octet-stream, audio/basic,
-image/jpeg, multipart/mixed (@ref{multipart/mixed}), text/plain
-(@ref{text/plain}), video/mpeg $B$J$I$N$5$^$6$^$J(B subtype $B$,Dj5A$5$l$F$$$k!#(B
+image/jpeg, multipart/mixed, text/plain, video/mpeg $B$J$I$N(B
+$B$5$^$6$^$J(B subtype $B$,Dj5A$5$l$F$$$k!#(B
 
 @noindent
 @strong{[$BCm0U(B]}
@@ -1332,7 +1332,7 @@ iso-2022-jp $B$d(B euc-kr $B$O$=$N#1$D!#(B
 @subsection Quoted-Printable
 
 RFC 2045 (@ref{RFC 2045}) $B$GDj5A$5$l$F$$$k(B MIME (@ref{MIME}) $B$K$*$1$k(B 
-binary data (@ref{binary data}) $B$N(B network $B$G$NJQ49K!$N#1$D!#(B@refill
+binary data $B$N(B network $B$G$NJQ49K!$N#1$D!#(B@refill
 
 `=' $B$d@)8fJ8;z$d(B 128 $B0J>e$NJ8;z$J$I$O(B `=AF' $B$N$h$&$K(B `=' $B$N8e$KB3$/(B 16 
 $B?J?t$GI=8=$9$k!#$3$N$?$a!"(BASCII (@ref{ASCII}) $BJ8;zCf?4$N(B data $B$G$O(B 
@@ -1459,8 +1459,8 @@ Standards Track (obsolete RFC 1521, 1522, 1590).
 @node plain text, us-ascii, RFC 2049, Glossary
 @subsection plain text
 
-$B=qBN$dAHHG$K4X$9$k>pJs$r;}$?$J$$J8;zId9f(B(@ref{Coded character set})$B$N$_(B
-$B$GI=8=$5$l$k(B text $B>pJs!#(B(cf. @ref{text/plain})
+$B=qBN$dAHHG$K4X$9$k>pJs$r;}$?$J$$J8;zId9f(B (@ref{Coded character set}) $B$N$_(B
+$B$GI=8=$5$l$k(B text $B>pJs!#(B
 
 
 
@@ -1474,7 +1474,7 @@ Standards Track (obsolete RFC 1521, 1522, 1590).
 
 ASCII (@ref{ASCII}) $B$N$_$+$i$J$j(B ISO 2022 $B$K$h$kId9f3HD%$O5v$5$l$J$$!#(B
 
-Internet message $B$K$*$1$kI8=`$NId9f2=J8;z=89g(B(@ref{Coded character set}) 
+Internet message $B$K$*$1$kI8=`$NId9f2=J8;z=89g(B (@ref{Coded character set})
 $B$G$"$j!"L@<(E*$K(B MIME charset $B$,<($5$l$J$$>l9g$O86B'$H$7$F(B 
 @strong{us-ascii} $B$,;H$o$l$k!#(B@refill
 

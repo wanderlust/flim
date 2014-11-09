@@ -1102,7 +1102,7 @@ no need to translate by Quoted-Printable (@ref{Quoted-Printable}) or
 Base64 (@ref{Base64}) for 7bit data.@refill
 
 However if there are too long lines, it can not translate by 7bit MTA
-even if it is 7bit data.  RFC 821 (@ref{RFC 822}) and RFC 2045 (@ref{RFC 2045}) require lines in 7bit data must be less than 998 bytes.  So if a
+even if it is 7bit data.  RFC 822 (@ref{RFC 822}) and RFC 2045 (@ref{RFC 2045}) require lines in 7bit data must be less than 998 bytes.  So if a
 ``7bit data'' has a line more than 999 bytes, it is regarded as binary
 (@ref{binary}).  For example, Postscript file should be encoded by
 Quoted-Printable.
