@@ -1,3 +1,20 @@
+2014-12-16  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	CCL base lexical analyzers are available.  They are much faster.
+	If you modify `std11-lexical-analyzer' or `mime-lexical-analyzer',
+	you also need to modify `std11-ccl-lexical-analyzer' or
+	`mime-ccl-lexical-analyzer', respectively.
+
+	* mime-parse.el (mime-default-ccl-lexical-analyzer): New CCL program.
+	(mime-ccl-lexical-analyzer): New customizable variable.
+	(mime-lexical-analyze): Use CCL based lexical analyzer if
+	mime-ccl-lexical-analyzer is non-nil.
+
+	* std11.el (std11-default-ccl-lexical-analyzer): New CCL program.
+	(std11-ccl-lexical-analyzer): New customizable variable.
+	(std11-lexical-analyze): Use CCL based lexical analyzer if
+	std11-ccl-lexical-analyzer is non-nil.
+
 2014-11-09  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mime-en.texi (7bit): Fix typo.

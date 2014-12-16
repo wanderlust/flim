@@ -25,6 +25,10 @@
 
 ;;; Code:
 
+(require 'custom)
+(require 'pccl)
+(require 'broken)
+
 (require 'mime-def)
 (require 'luna)
 (require 'std11)
@@ -36,6 +40,144 @@
 
 ;;; @ lexical analyzer
 ;;;
+
+(define-ccl-program mime-default-ccl-lexical-analyzer
+  ;; r0 input
+  ;; r1 flag means any character exists.
+  ;; r2 in parse flag
+  ;;    1 atom, 2 spaces 3 comment (no output) 4 encloser 5 error
+  ;; r3 comment depth
+  (eval-when-compile
+    (let* ((wrt `(if (r0 == ?\") (write "\\\"")
+		   (if (r0 == ?\\) (write "\\\\")
+		     (write r0))))
+	   (atm `((branch r2
+			  ((r2 = 1)
+			   (write "(mime-token . \"")
+			   (write-read-repeat r0))
+			  (write-read-repeat r0)
+			  ((r2 = 1)
+			   (write "(mime-token . \"")
+			   (write-read-repeat r0)))
+		  ))
+	   (ts  `((if (r2 == 1) ((write "\")") (r2 = 0)))
+		  (write "(tspecials . \"")
+		  ,wrt
+		  (write "\")")
+		  (read r0)
+		  (repeat)))
+	   (sp  `((branch r2
+			  ((r2 = 2)
+			   (read r0)
+			   (repeat))
+			  ((write "\")")
+			   (r2 = 2)
+			   (read r0)
+			   (repeat))
+			  ((read r0) (repeat)))
+		  ))
+	   (err `((branch r2
+			  ((write "(error . \""))
+			  ((write "\")")
+			   (write "(error . \""))
+			  ((write "(error . \"")))
+		  (r2 = 5)
+		  (loop
+		   (write-read-repeat r0))))
+	   (enc (lambda (name tag)
+		  `((if (r2 == 1) ((write "\")")))
+		    (write ,(concat "(" name " . \""))
+		    (r2 = 4)
+		    (loop
+		     (read-branch
+		      r0
+		      ,@(let* ((count (1+ (max tag ?\\)))
+			       (result (make-vector count '(write-repeat r0))))
+			  (dotimes (i count)
+			    (aset result
+				  i (cond ((eq i tag)
+					   '(break))
+					  ((eq i ?\\)
+					   `((write "\\\\")
+					     (read r0)
+					     ,wrt
+					     (repeat)))
+					  ((eq i ?\")
+					   '((write "\\\"") (repeat))))))
+			  (mapcar 'identity result)))
+		     (write-repeat r0))
+		    (write "\")")
+		    (r2 = 0)
+		    (read r0)
+		    (repeat))))
+	   (qs (funcall enc "quoted-string" ?\"))
+	   (dl (funcall enc "domain-literal" ?\]))
+	   (cm  `((if (r2 == 1) ((write "\")")))
+		  (r2 = 3)
+		  (r3 = 1)
+		  (loop
+		   (read-branch
+		    r0
+		    ,@(let* ((count (1+ (max ?\( ?\) ?\\)))
+			     (result (make-vector count '(repeat))))
+			(dotimes (i count)
+			  (aset result i (cond ((eq i ?\()
+						'((r3 += 1) (repeat)))
+					       ((eq i ?\))
+						'((r3 -= 1)
+						  (if (r3 < 1) (break)
+						    (repeat))))
+					       ((eq i ?\\)
+						`((read r0)
+						  (repeat)))
+					       )))
+			(mapcar 'identity result)))
+		   (repeat))
+		  (r2 = 0)
+		  (read r0)
+		  (repeat))))
+      `(8
+	((r2 = 0)
+	 (read r0)
+	 (r1 = 1)
+	 (write "((")
+	 (loop
+	  (branch r0
+		  ,@(mapcar (lambda (elt) (eval elt))
+			    '(err err err err err err err err
+				  err sp  sp  err err err err err
+				  err err err err err err err err
+				  err err err err err err err err
+				  sp  atm qs  atm atm atm atm atm
+				  cm  ts  atm atm ts  atm atm ts 
+				  atm atm atm atm atm atm atm atm
+				  atm atm ts  ts  ts  ts  ts  ts
+				  ts  atm atm atm atm atm atm atm
+				  atm atm atm atm atm atm atm atm
+				  atm atm atm atm atm atm atm atm
+				  atm atm atm dl  ts  ts)))
+	  ,@atm))
+	((branch r1
+		 (write "(nil . t)")
+		 (branch r2
+			 (write ") . t)")
+			 (write "\")) . t)")
+			 (write "\")) . t)")
+			 (write "\")))")
+			 (write "\")))")
+			 (write "\")) . t)"))
+		 ))
+	))))
+
+(defcustom mime-ccl-lexical-analyzer
+  (when (null (broken-p 'ccl-execute-eof-block))
+    'mime-default-ccl-lexical-analyzer)
+  "Specify CCL-program symbol for `mime-lexical-analyze'.
+When nil, do not use CCL.
+See docstring of `std11-ccl-lexical-analyzer' for details of CCL-program.
+If you modify `mime-lexical-analyzer', set this variable to nil or prepare corresponding CCL-program."
+  :group 'mime
+  :type '(choice symbol (const :tag "Do not use CCL." nil)))
 
 (defcustom mime-lexical-analyzer
   '(std11-analyze-quoted-string
@@ -70,22 +212,27 @@ be the result."
 
 (defun mime-lexical-analyze (string)
   "Analyze STRING as lexical tokens of MIME."
-  (let ((ret (std11-lexical-analyze string mime-lexical-analyzer))
-        prev tail)
-    ;; skip leading linear-white-space.
-    (while (memq (car (car ret)) '(spaces comment))
-      (setq ret (cdr ret)))
-    (setq prev ret
-          tail (cdr ret))
-    ;; remove linear-white-space.
-    (while tail
-      (if (memq (car (car tail)) '(spaces comment))
-          (progn
-            (setcdr prev (cdr tail))
-            (setq tail (cdr tail)))
-        (setq prev (cdr prev)
-              tail (cdr tail))))
-    ret))
+  (let (ret prev tail)
+    (if (and mime-ccl-lexical-analyzer
+	     (cdr (setq ret (read (ccl-execute-on-string
+				   mime-ccl-lexical-analyzer
+				   (make-vector 9 0) (or string ""))))))
+	(car ret)
+      (setq ret (std11-lexical-analyze string mime-lexical-analyzer))
+      ;; skip leading linear-white-space.
+      (while (memq (car (car ret)) '(spaces comment))
+	(setq ret (cdr ret)))
+      (setq prev ret
+	    tail (cdr ret))
+      ;; remove linear-white-space.
+      (while tail
+	(if (memq (car (car tail)) '(spaces comment))
+	    (progn
+	      (setcdr prev (cdr tail))
+	      (setq tail (cdr tail)))
+	  (setq prev (cdr prev)
+		tail (cdr tail))))
+      ret)))
 
 
 ;;; @ field parser

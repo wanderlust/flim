@@ -25,7 +25,8 @@
 ;;; Code:
 
 (require 'custom)			; std11-lexical-analyzer
-
+(require 'pccl)
+(require 'broken)
 
 ;;; @ fetch
 ;;;
@@ -269,6 +270,146 @@ If BOUNDARY is not nil, it is used as message header separator."
 ;;; @ lexical analyze
 ;;;
 
+(define-ccl-program std11-default-ccl-lexical-analyzer
+  ;; r0 input
+  ;; r1 flag means any character exists.
+  ;; r2 in parse flag
+  ;;    1 atom, 2 spaces, 3 quoted string or domain literal, 4 comment
+  ;; r3 comment depth
+  (eval-when-compile
+    (let* ((wrt `(if (r0 == ?\") (write "\\\"")
+		   (if (r0 == ?\\) (write "\\\\")
+		     (write r0))))
+	   (atm `((branch r2
+			  ((r2 = 1)
+			   (write "(atom . \"")
+			   (write-read-repeat r0))
+			  (write-read-repeat r0)
+			  ((write "\")")
+			   (r2 = 1)
+			   (write "(atom . \"")
+			   (write-read-repeat r0))
+			  )))
+	   (spc `((if r2 ((write "\")") (r2 = 0)))
+		  (write "(specials . \"")
+		  ,wrt
+		  (write "\")")
+		  (read r0)
+		  (repeat)))
+	   (sp  `((branch r2
+			  ((r2 = 2)
+			   (write "(spaces . \"")
+			   (write-read-repeat r0))
+			  ((write "\")")
+			   (r2 = 2)
+			   (write "(spaces . \"")
+			   (write-read-repeat r0))
+			  (write-read-repeat r0))))
+	   (enc (lambda (name tag)
+		  `((if r2 ((write "\")")))
+		    (write ,(concat "(" name " . \""))
+		    (r2 = 3)
+		    (loop
+		     (read-branch
+		      r0
+		      ,@(let* ((count (1+ (max tag ?\\)))
+			       (result (make-vector count '(write-repeat r0))))
+			  (dotimes (i count)
+			    (aset result
+				  i (cond ((eq i tag)
+					   '(break))
+					  ((eq i ?\\)
+					   `((write "\\\\")
+					     (read r0)
+					     ,wrt
+					     (repeat)))
+					  ((eq i ?\")
+					   '((write "\\\"") (repeat))))))
+			  (mapcar 'identity result)))
+		     (write-repeat r0))
+		    (write "\")")
+		    (r2 = 0)
+		    (read r0)
+		    (repeat))))
+	   (qs (funcall enc "quoted-string" ?\"))
+	   (dl (funcall enc "domain-literal" ?\]))
+	   (cm  `((if r2 ((write "\")")))
+		  (write "(comment . \"")
+		  (r2 = 4)
+		  (r3 = 1)
+		  (loop
+		   (read-branch
+		    r0
+		    ,@(let* ((count (1+ (max ?\( ?\) ?\\)))
+			     (result (make-vector count '(write-repeat r0))))
+			(dotimes (i count)
+			  (aset result i (cond ((eq i ?\()
+						'((r3 += 1) (write-repeat r0)))
+					       ((eq i ?\))
+						'((r3 -= 1)
+						  (if (r3 < 1) (break)
+						    (write-repeat r0))))
+					       ((eq i ?\\)
+						`((write "\\\\")
+						  (read r0)
+						  ,wrt
+						  (repeat)))
+					       ((eq i ?\")
+						'((write "\\\"") (repeat))))))
+			(mapcar 'identity result)))
+		   (write-repeat r0))
+		  (write "\")")
+		  (r2 = 0)
+		  (read r0)
+		  (repeat)
+		  ))
+	   )
+      `(8
+	((r2 = 0)
+	 (read r0)
+	 (r1 = 1)
+	 (write "((")
+	 (loop
+	  (branch r0
+		  ,@(mapcar (lambda (elt)
+			      (eval elt))
+			    '(atm atm atm atm atm atm atm atm
+				  atm sp  sp  atm atm atm atm atm
+				  atm atm atm atm atm atm atm atm
+				  atm atm atm atm atm atm atm atm
+				  sp  atm qs  atm atm atm atm atm
+				  cm  spc atm atm spc atm spc atm
+				  atm atm atm atm atm atm atm atm
+				  atm atm spc spc spc atm spc atm
+				  spc atm atm atm atm atm atm atm
+				  atm atm atm atm atm atm atm atm
+				  atm atm atm atm atm atm atm atm
+				  atm atm atm dl  spc spc)))
+	  ,@atm
+	  ))
+	((branch r1
+		 (write "(nil . t)")
+		 (branch r2
+			 (write ") . t)")
+			 (write "\")) . t)")
+			 (write "\")) . t)")
+			 (write "\")))")
+			 (write "\")))"))))
+	))))
+
+(defcustom std11-ccl-lexical-analyzer
+  (when (null (broken-p 'ccl-execute-eof-block))
+    'std11-default-ccl-lexical-analyzer)
+  "Specify CCL-program symbol for `std11-lexical-analyze'.
+When nil, do not use CCL.
+CCL-program returns a string which expresses a cons.
+When cons's cdr is non-nil, CCL-program succeeds in analyzing and car is analyzed result.
+When cdr is nil,CCL-program fails in analyzing.
+If you modify `std11-lexical-analyzer', set this variable to nil or prepare corresponding CCL-program."
+  :group 'news
+  :group 'mail
+  :type '(choice symbol (const :tag "Do not use CCL." nil)))
+
 (defcustom std11-lexical-analyzer
   '(std11-analyze-quoted-string
     std11-analyze-domain-literal
@@ -403,27 +544,33 @@ be the result."
 ;;;###autoload
 (defun std11-lexical-analyze (string &optional analyzer start)
   "Analyze STRING as lexical tokens of STD 11."
-  (or analyzer
-      (setq analyzer std11-lexical-analyzer))
-  (or start
-      (setq start 0))
-  (let ((len (length string))
-	dest ret)
-    (while (< start len)
-      (setq ret
-	    (let ((rest analyzer)
-		  func r)
-	      (while (and (setq func (car rest))
-			  (null (setq r (funcall func string start))))
-		(setq rest (cdr rest)))
-	      (or r
-		  (cons (cons 'error (substring string start)) (1+ len)))
-	      ))
-      (setq dest (cons (car ret) dest)
-	    start (cdr ret))
-      )
-    (nreverse dest)
-    ))
+  (let (len dest ret)
+    (if (and std11-ccl-lexical-analyzer
+	     (null analyzer)
+	     (cdr (setq ret (read (ccl-execute-on-string
+				   std11-ccl-lexical-analyzer
+				   (make-vector 9 0)
+				   (if start (substring string start)
+				     (or string "")))))))
+	(car ret)
+      (setq len (length string)
+	    analyzer (or analyzer std11-lexical-analyzer)
+	    start (or start 0))
+      (while (< start len)
+	(setq ret
+	      (let ((rest analyzer)
+		    func r)
+		(while (and (setq func (car rest))
+			    (null (setq r (funcall func string start))))
+		  (setq rest (cdr rest)))
+		(or r
+		    (cons (cons 'error (substring string start)) (1+ len)))
+		))
+	(setq dest (cons (car ret) dest)
+	      start (cdr ret))
+	)
+      (nreverse dest)
+      )))
 
 
 ;;; @ parser
