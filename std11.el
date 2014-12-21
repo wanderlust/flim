@@ -577,9 +577,7 @@ be the result."
 ;;;
 
 (defun std11-ignored-token-p (token)
-  (let ((type (car token)))
-    (or (eq type 'spaces)(eq type 'comment))
-    ))
+  (memq (car token) '(spaces comment)))
 
 (defun std11-parse-token (lal)
   (let (token itl)
