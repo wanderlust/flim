@@ -162,8 +162,8 @@
 		 (branch r2
 			 (write ") . t)")
 			 (write "\")) . t)")
-			 (write "\")) . t)")
-			 (write "\")))")
+			 (write ") . t)")
+			 (write "))")
 			 (write "\")))")
 			 (write "\")) . t)"))
 		 ))
