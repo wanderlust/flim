@@ -1,3 +1,12 @@
+2015-04-27  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* mime-parse.el (mime-default-ccl-lexical-analyzer): Fix wrong
+	program is build on XEmacs.
+
+	Cf. https://github.com/wanderlust/flim/commit/488a4d70fb4ae57bdd30dc75c2d75579894e28a2
+
+	* std11.el (std11-default-ccl-lexical-analyzer): Likewise.
+
 2015-03-10  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mime-parse.el (mime-default-ccl-lexical-analyzer): Fix the case
