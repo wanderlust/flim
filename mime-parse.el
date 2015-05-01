@@ -41,6 +41,7 @@
 ;;; @ lexical analyzer
 ;;;
 
+(unless-broken ccl-usable
 (define-ccl-program mime-default-ccl-lexical-analyzer
   ;; r0 input
   ;; r1 flag means any character exists.
@@ -157,9 +158,11 @@
 			 (write "\")) . t)"))
 		 ))
 	))))
+)
 
 (defcustom mime-ccl-lexical-analyzer
-  (when (null (broken-p 'ccl-execute-eof-block))
+  (static-unless (or (broken-p 'ccl-usable)
+		     (broken-p 'ccl-execute-eof-block))
     'mime-default-ccl-lexical-analyzer)
   "Specify CCL-program symbol for `mime-lexical-analyze'.
 When nil, do not use CCL.

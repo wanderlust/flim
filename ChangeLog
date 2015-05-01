@@ -1,3 +1,11 @@
+2015-04-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* mime-parse.el (mime-default-ccl-lexical-analyzer)
+	(mime-ccl-lexical-analyzer): Fix for CCL unusable environments.
+
+	* std11.el (std11-default-ccl-lexical-analyzer)
+	(std11-ccl-lexical-analyzer): Likeswise.
+
 2015-04-27  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* mime-parse.el (mime-default-ccl-lexical-analyzer): Fix wrong

@@ -270,6 +270,7 @@ If BOUNDARY is not nil, it is used as message header separator."
 ;;; @ lexical analyze
 ;;;
 
+(unless-broken ccl-usable
 (define-ccl-program std11-default-ccl-lexical-analyzer
   ;; r0 input
   ;; r1 flag means any character exists.
@@ -388,9 +389,11 @@ If BOUNDARY is not nil, it is used as message header separator."
 			 (write "\")))")
 			 (write "\")))"))))
 	))))
+)
 
 (defcustom std11-ccl-lexical-analyzer
-  (when (null (broken-p 'ccl-execute-eof-block))
+  (static-unless (or (broken-p 'ccl-execute-eof-block)
+		     (broken-p 'ccl-usable))
     'std11-default-ccl-lexical-analyzer)
   "Specify CCL-program symbol for `std11-lexical-analyze'.
 When nil, do not use CCL.
