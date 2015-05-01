@@ -25,6 +25,7 @@
 
 ;;; Code:
 
+(require 'poem)
 (require 'mime-def)
 (require 'mel)
 (require 'std11)
