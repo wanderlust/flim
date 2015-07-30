@@ -1,3 +1,8 @@
+2015-07-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* smtp.el (smtp-primitive-auth): Fix the case that server returns
+	human readable string for AUTH command.
+
 2015-05-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* smtp.el (smtp-make-fqdn): Show more informative message for
