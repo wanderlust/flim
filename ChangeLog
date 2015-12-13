@@ -1,3 +1,10 @@
+2015-12-13  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* smtp.el (smtp-send-buffer, smtp-send-buffer-by-myself): Kill
+	trace buffer after sending when smtp-debug is nil and network
+	stream is disconnected.  Suggested by Herbert J. Skuhra
+	<herbert@oslo.ath.cx>
+
 2015-07-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* smtp.el (smtp-primitive-auth): Fix the case that server returns
