@@ -739,9 +739,17 @@ be the result.")
       (setq match (and (string-match regexp string next)
 		       (= next (match-beginning 0)))))
     (when words
-      (cons (cons 'atom (eword-decode-encoded-words (nreverse words)
-						    must-unfold))
-	    next))))
+      (setq words (eword-decode-encoded-words (nreverse words) must-unfold))
+      (cons
+       (cons 'atom
+	     (if (and (string-match std11-non-atom-regexp words)
+		      (null (eq (cdr (std11-analyze-quoted-string words 0))
+				(length words))))
+		 ;; Docoded words contains non-atom special chars and are
+		 ;; not quoted.
+		 (std11-wrap-as-quoted-string words)
+	       words))
+       next))))
 
 (defun eword-analyze-atom (string start &optional must-unfold)
   (if (and (string-match std11-atom-regexp string start)
