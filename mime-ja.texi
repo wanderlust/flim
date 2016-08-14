@@ -4,6 +4,10 @@
 @documentlanguage ja
 @documentencoding iso-2022-jp
 @settitle FLIM 1.14 MIME 機能説明書
+@dircategory GNU Emacs Lisp
+@direntry
+* FLIM (ja): (mime-ja).         Internet message library.
+@end direntry
 @titlepage
 @title FLIM 1.14 MIME 機能説明書
 @author 守岡 知彦 <morioka@@jaist.ac.jp>
