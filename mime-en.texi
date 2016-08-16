@@ -3,6 +3,11 @@
 @setfilename mime-en.info
 @settitle FLIM 1.14 Reference Manual about MIME Features
 @documentencoding iso-2022-jp
+@documentlanguage en
+@dircategory GNU Emacs Lisp
+@direntry
+* FLIM (en): (mime-en).         Internet message library.
+@end direntry
 @titlepage
 @title FLIM 1.14 Reference Manual about MIME Features
 @author MORIOKA Tomohiko <morioka@@jaist.ac.jp>
