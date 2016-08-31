@@ -742,7 +742,9 @@ be the result.")
       (setq words (eword-decode-encoded-words (nreverse words) must-unfold))
       (cons
        (cons 'atom
-	     (if (and (string-match std11-non-atom-regexp words)
+	     (if (and (string-match (eval-when-compile
+				      (concat "[" std11-special-char-list "]"))
+				    words)
 		      (null (eq (cdr (std11-analyze-quoted-string words 0))
 				(length words))))
 		 ;; Docoded words contains non-atom special chars and are
