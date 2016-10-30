@@ -381,7 +381,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	  (setq smtp-connection-alist
 		(delq (assq buffer smtp-connection-alist)
 		      smtp-connection-alist))
-	  (kill-buffer))))))
+	  (kill-buffer nil))))))
 
 (defun smtp-submit-package (package)
   (unwind-protect
@@ -445,7 +445,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	    (setq smtp-connection-alist
 		  (delq (assq buffer smtp-connection-alist)
 			smtp-connection-alist))
-	    (kill-buffer)))
+	    (kill-buffer nil)))
 	(setq servers (cdr servers)))))
 
 ;;; @ hook methods for `smtp-submit-package'

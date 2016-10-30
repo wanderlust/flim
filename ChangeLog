@@ -1,3 +1,10 @@
+2016-10-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* smtp.el (smtp-send-buffer, smtp-send-buffer-by-myself): Call
+	kill-buffer with nil.  Only Emacs 23 and later support omitting an
+	argument for kill-buffer.  Reported By Tatsuya Kinoshita
+	<tats@vega.ocn.ne.jp>.  Cf. [wl:14662]
+
 2016-08-31  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* eword-decode.el (eword-analyze-encoded-word): Fix the check for
