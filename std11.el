@@ -219,14 +219,13 @@ If BOUNDARY is not nil, it is used as message header separator."
 	(len (length string))
 	)
     (while (< i len)
-      (let ((chr (aref string i)))
-	(if (memq chr specials)
-	    (setq dest (concat dest (substring string b i) "\\")
-		  b i)
-	  ))
+      (if (memq (aref string i) specials)
+	  (setq dest (cons "\\" (cons (substring string b i) dest))
+		b i)
+	)
       (setq i (1+ i))
       )
-    (concat dest (substring string b))
+    (apply 'concat (nreverse (cons (substring string b) dest)))
     ))
 
 (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
@@ -245,14 +244,13 @@ If BOUNDARY is not nil, it is used as message header separator."
 	(len (length string))
 	)
     (while (< i len)
-      (let ((chr (aref string i)))
-	(if (eq chr ?\\)
-	    (setq dest (concat dest (substring string b i))
-		  b (1+ i)
-		  i (+ i 2))
-	  (setq i (1+ i))
-	  )))
-    (concat dest (substring string b))
+      (if (eq (aref string i) ?\\)
+	  (setq dest (cons (substring string b i) dest)
+		b (1+ i)
+		i (+ i 2))
+	(setq i (1+ i))
+	))
+    (apply 'concat (nreverse (cons (substring string b) dest)))
     ))
 
 (defun std11-strip-quoted-string (string)
@@ -577,10 +575,7 @@ be the result."
 (defun std11-parse-token (lal)
   (let (token itl)
     (while (and lal
-		(progn
-		  (setq token (car lal))
-		  (std11-ignored-token-p token)
-		  ))
+		(std11-ignored-token-p (setq token (car lal))))
       (setq lal (cdr lal))
       (setq itl (cons token itl))
       )
@@ -609,10 +604,7 @@ be the result."
 (defun std11-parse-token-or-comment (lal)
   (let (token itl)
     (while (and lal
-		(progn
-		  (setq token (car lal))
-		  (eq (car token) 'spaces)
-		  ))
+		(eq (car (setq token (car lal))) 'spaces))
       (setq lal (cdr lal))
       (setq itl (cons token itl))
       )
@@ -943,30 +935,24 @@ represents addr-spec of RFC 822."
 (defun std11-comment-value-to-string (value)
   (if (stringp value)
       (std11-strip-quoted-pair value)
-    (let ((dest ""))
+    (let (dest)
       (while value
 	(setq dest
-	      (concat dest
-		      (if (stringp (car value))
-			  (car value)
-			(concat "("
-				(std11-comment-value-to-string
-				 (cdr (car value)))
-				")")
-			))
+	      (if (stringp (car value))
+		  (cons (car value) dest)
+		(cons ")"
+		      (cons (std11-comment-value-to-string
+			     (cdr (car value)))
+			    (cons "(" dest))))
 	      value (cdr value))
 	)
-      dest)))
+      (apply 'concat (nreverse dest)))))
 
 ;;;###autoload
 (defun std11-full-name-string (address)
   "Return string of full-name part from parsed ADDRESS of RFC 822."
   (cond ((eq (car address) 'group)
-	 (mapconcat (function
-		     (lambda (token)
-		       (cdr token)
-		       ))
-		    (nth 1 address) "")
+	 (mapconcat 'cdr (nth 1 address) "")
 	 )
 	((eq (car address) 'mailbox)
 	 (let ((addr (nth 1 address))

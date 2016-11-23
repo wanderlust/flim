@@ -1,5 +1,19 @@
 2016-10-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
+	* std11.el (std11-full-name-string): Refactored.
+
+2016-10-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* eword-decode.el (eword-decode-structured-field-body)
+	(eword-decode-and-unfold-structured-field-body)
+	(eword-decode-and-fold-structured-field-body): Decrease number of
+	times for calling concat function.
+
+	* std11.el (std11-wrap-as-quoted-pairs, std11-strip-quoted-pair)
+	(std11-comment-value-to-string): Likewise.
+
+2016-10-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
 	* smtp.el (smtp-send-buffer, smtp-send-buffer-by-myself): Call
 	kill-buffer with nil.  Only Emacs 23 and later support omitting an
 	argument for kill-buffer.  Reported By Tatsuya Kinoshita

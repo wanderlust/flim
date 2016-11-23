@@ -123,13 +123,13 @@ put to the decoded text as the `mime-language' text property."
 					   &optional start-column max-column
 					   start)
   (let ((tokens (eword-lexical-analyze string start 'must-unfold))
-	(result "")
+	result
 	token)
     (while tokens
       (setq token (car tokens))
-      (setq result (concat result (eword-decode-token token)))
+      (setq result (cons (eword-decode-token token) result))
       (setq tokens (cdr tokens)))
-    result))
+    (apply 'concat (nreverse result))))
 
 (defun eword-decode-and-unfold-structured-field-body (string
 						      &optional
@@ -144,17 +144,18 @@ characters are regarded as variable `default-mime-charset'.
 If an encoded-word is broken or your emacs implementation can not
 decode the charset included in it, it is not decoded."
   (let ((tokens (eword-lexical-analyze string start 'must-unfold))
-	(result ""))
+	result)
     (while tokens
       (let* ((token (car tokens))
 	     (type (car token)))
 	(setq tokens (cdr tokens))
 	(setq result
-	      (if (eq type 'spaces)
-		  (concat result " ")
-		(concat result (eword-decode-token token))
-		))))
-    result))
+	      (cons (if (eq type 'spaces)
+			" "
+		      (eword-decode-token token))
+		    result
+		    ))))
+    (apply 'concat (nreverse result))))
 
 (defun eword-decode-and-fold-structured-field-body (string
 						    start-column
@@ -167,7 +168,7 @@ decode the charset included in it, it is not decoded."
 	(setq max-column fill-column))
     (let ((c start-column)
 	  (tokens (eword-lexical-analyze string start 'must-unfold))
-	  (result "")
+	  result
 	  token)
       (while (and (setq token (car tokens))
 		  (setq tokens (cdr tokens)))
@@ -178,19 +179,19 @@ decode the charset included in it, it is not decoded."
 		     (next-len (string-width next-str))
 		     (next-c (+ c next-len 1)))
 		(if (< next-c max-column)
-		    (setq result (concat result " " next-str)
+		    (setq result (cons next-str (cons " " result))
 			  c next-c)
-		  (setq result (concat result "\n " next-str)
+		  (setq result (cons next-str (cons "\n " result))
 			c (1+ next-len)))
 		(setq tokens (cdr tokens))
 		)
 	    (let* ((str (eword-decode-token token)))
-	      (setq result (concat result str)
+	      (setq result (cons str result)
 		    c (+ c (string-width str)))
 	      ))))
-      (if token
-	  (concat result (eword-decode-token token))
-	result))))
+      (apply 'concat (nreverse
+		      (cons (when token (eword-decode-token token))
+			    result))))))
 
 (defun eword-decode-unstructured-field-body (string &optional start-column
 						    max-column)
