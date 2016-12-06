@@ -68,13 +68,11 @@ The optional 2nd arg SLOTS is a list of slots CLASS will have."
 
 (defun luna-define-class-function (class &optional parents slots)
   (let ((oa (make-vector 31 0))
-	(rest parents)
-	parent name
+	name
 	(i 2)
 	b j)
-    (while rest
-      (setq parent (pop rest)
-	    b (- i 2))
+    (dolist (parent parents)
+      (setq b (- i 2))
       (mapatoms (lambda (sym)
 		  (when (setq j (get sym 'luna-slot-index))
 		    (setq name (symbol-name sym))
@@ -82,9 +80,8 @@ The optional 2nd arg SLOTS is a list of slots CLASS will have."
 		      (put (intern name oa) 'luna-slot-index (+ j b))
 		      (setq i (1+ i)))))
 		(luna-class-obarray (luna-find-class parent))))
-    (setq rest slots)
-    (while rest
-      (setq name (symbol-name (pop rest)))
+    (dolist (slot slots)
+      (setq name (symbol-name slot))
       (unless (intern-soft name oa)
 	(put (intern name oa) 'luna-slot-index i)
 	(setq i (1+ i))))
