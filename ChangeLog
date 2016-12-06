@@ -1,3 +1,8 @@
+2016-12-06  Piotr Trojanek  <piotr.trojanek@gmail.com>
+
+	* luna.el (luna-class-find-member)
+	(luna-class-find-or-make-member): do not modify input argument.
+
 2016-11-30  Piotr Trojanek  <piotr.trojanek@gmail.com>
 
 	* luna.el (luna-define-class-function): simplify iteration with
