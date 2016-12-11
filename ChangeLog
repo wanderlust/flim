@@ -1,3 +1,13 @@
+2016-12-06  Piotr Trojanek  <piotr.trojanek@gmail.com>
+
+	* luna.el (luna-class-find-member)
+	(luna-class-find-or-make-member): do not modify input argument.
+
+2016-11-30  Piotr Trojanek  <piotr.trojanek@gmail.com>
+
+	* luna.el (luna-define-class-function): simplify iteration with
+	dolist.
+
 2016-10-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* smtp.el (smtp-send-buffer, smtp-send-buffer-by-myself): Call
