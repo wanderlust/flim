@@ -38,7 +38,7 @@
 
 (defvar sasl-mechanisms
   '("CRAM-MD5" "DIGEST-MD5" "PLAIN" "LOGIN" "ANONYMOUS"
-    "NTLM" "SCRAM-MD5"))
+    "NTLM" "SCRAM-MD5" "XOAUTH2"))
 
 (defvar sasl-mechanism-alist
   '(("CRAM-MD5" sasl-cram)
@@ -47,7 +47,8 @@
     ("LOGIN" sasl-login)
     ("ANONYMOUS" sasl-anonymous)
     ("NTLM" sasl-ntlm)
-    ("SCRAM-MD5" sasl-scram)))
+    ("SCRAM-MD5" sasl-scram)
+    ("XOAUTH2" sasl-xoauth2)))
 
 (defvar sasl-unique-id-function #'sasl-unique-id-function)
 

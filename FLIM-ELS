@@ -32,6 +32,10 @@
 (unless-broken ccl-usable
   (setq flim-modules (cons 'mel-b-ccl (cons 'mel-q-ccl flim-modules))))
 
+(require 'path-util)
+(when (module-installed-p 'oauth2)
+  (setq flim-modules (append flim-modules '(sasl-xoauth2))))
+
 (if (and (fboundp 'md5)
 	 (subrp (symbol-function 'md5)))
     nil
