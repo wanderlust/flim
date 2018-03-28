@@ -266,7 +266,8 @@ to connect to.  SERVICE is name of the service desired."
 
 (eval-and-compile
   (autoload 'starttls-open-stream "starttls")
-  (autoload 'starttls-negotiate "starttls"))
+  (autoload 'starttls-negotiate "starttls")
+  (autoload 'gnutls-negotiate "gnutls"))
 
 (defun smtp-open-connection (buffer server service)
   "Open a SMTP connection for a service to a host.
@@ -276,9 +277,7 @@ of the host to connect to.  SERVICE is name of the service desired."
   (let ((process
 	 (binary-funcall
 	  (cond
-	   ((and smtp-use-starttls smtp-use-gnutls)
-	    'smtp-open-gnutls-starttls-stream)
-	   (smtp-use-starttls
+	   ((and smtp-use-starttls (null smtp-use-gnutls))
 	    'starttls-open-stream)
 	   (t
 	    smtp-open-connection-function))
@@ -391,7 +390,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	    (smtp-primitive-ehlo package)
 	  (smtp-response-error
 	   (smtp-primitive-helo package)))
-	(if (and smtp-use-starttls (null smtp-use-gnutls))
+	(if smtp-use-starttls
 	    (if (assq 'starttls
 		      (smtp-connection-extensions-internal
 		       (smtp-find-connection (current-buffer))))
@@ -545,13 +544,18 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 (defun smtp-primitive-starttls (package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
+	 (process (smtp-connection-process-internal connection))
 	 response)
     ;; STARTTLS --- begin a TLS negotiation (RFC 2595)
     (smtp-send-command connection "STARTTLS")
     (setq response (smtp-read-response connection))
     (if (/= (car response) 220)
 	(smtp-response-error response))
-    (starttls-negotiate (smtp-connection-process-internal connection))))
+    (if (memq (process-status process) '(run stop exit signal))
+	(starttls-negotiate process)
+      (gnutls-negotiate
+       :process process
+       :hostname (smtp-connection-server-internal connection)))))
 
 (defun smtp-primitive-mailfrom (package)
   (let* ((connection
@@ -753,20 +757,6 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 			  recipient-address-list)))
 	    recipient-address-list))
       (kill-buffer smtp-address-buffer))))
-
-(defun smtp-open-gnutls-starttls-stream (name buffer host port)
-  (open-protocol-stream
-   name buffer host port
-   :type (if smtp-use-starttls-ignore-error 'network 'starttls)
-   :end-of-command "^[1-5][0-9][0-9]\\( .*\\)?\r?\n"
-   :success "^2[0-9][0-9]\\([ -].*\\)?\r?\n"
-   :capability-command (format "EHLO %s\r\n" (smtp-make-fqdn))
-   :starttls-function
-   (lambda (response)
-     (when (save-match-data
-	     (string-match "[ -]STARTTLS\\( \\|\r?\n\\)" response))
-       "STARTTLS\r\n"))
-   :client-certificate t))
 
 (provide 'smtp)
 
