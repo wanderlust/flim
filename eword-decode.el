@@ -817,7 +817,7 @@ characters encoded as encoded-words or invalid \"raw\" format.
 	       (setq dest (concat dest
 				  (if (stringp (car value))
 				      (std11-wrap-as-quoted-pairs
-				       (car value) '(?( ?)))
+				       (car value) '(?\( ?\)))
 				    (eword-decode-token (car value))
 				    ))
 		     value (cdr value))
