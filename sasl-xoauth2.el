@@ -235,7 +235,7 @@ TOKEN should be obtained with `oauth2-request-access'."
 				 'after 'sasl-xoauth2)
 	      (ad-activate 'oauth2-make-access-request))))
     (when (sasl-xoauth2-token-expired-p oauth2-token)
-      (setq oauth-token (sasl-xoauth2-refresh-access oauth2-token)))
+      (setq oauth2-token (sasl-xoauth2-refresh-access oauth2-token)))
     (setq access-token (oauth2-token-access-token oauth2-token))
     (format "user=%s\001auth=Bearer %s\001\001"
 	    (sasl-client-name client)
