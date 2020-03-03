@@ -1,3 +1,8 @@
+2020-02-28  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* sasl.el (sasl-mechanism-alist, sasl-mechanisms): Add OAUTHBEARER
+	as alias for XOAUTH2.
+
 2019-05-26  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* eword-decode.el (eword-decode-token): Escape characters which
