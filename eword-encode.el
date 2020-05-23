@@ -528,6 +528,9 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ application interfaces
 ;;;
 
+(provide 'eword-encode)
+(require 'mime-parse)
+
 (defvar eword-encode-default-start-column 10
   "Default start column if it is omitted.")
 
@@ -675,13 +678,13 @@ encoded-word.  ASCII token is not encoded."
 	(setq method-alist (cdr method-alist)))
       ret)))
 (defalias 'eword-encode-field-body 'mime-encode-field-body)
-(make-obsolete 'eword-encode-field-body 'mime-encode-field-body)
+(make-obsolete 'eword-encode-field-body 'mime-encode-field-body "19 Dec 2000")
 
 (defun eword-in-subject-p ()
   (let ((str (std11-field-body "Subject")))
     (if (and str (string-match eword-encoded-word-regexp str))
 	str)))
-(make-obsolete 'eword-in-subject-p "Don't use it.")
+(make-obsolete 'eword-in-subject-p "Don't use it." "19 Dec 2000")
 
 (defsubst eword-find-field-encoding-method (field-name)
   (setq field-name (downcase field-name))
@@ -735,7 +738,8 @@ It refers the `mime-field-encoding-method-alist' variable."
 				   default-cs)))
 			  (encode-coding-region bbeg end cs)))))))))))
 (defalias 'eword-encode-header 'mime-encode-header-in-buffer)
-(make-obsolete 'eword-encode-header 'mime-encode-header-in-buffer)
+(make-obsolete 'eword-encode-header
+	       'mime-encode-header-in-buffer "19 Dec 2000")
 
 
 ;;; @ end

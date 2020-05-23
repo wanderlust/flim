@@ -112,7 +112,7 @@ called from `qmtp-via-qmtp' with arguments SENDER and RECIPIENTS.")
 	t)
     (error)))
 
-(make-obsolete 'qmtp-via-qmtp "It's old API.")
+(make-obsolete 'qmtp-via-qmtp "It's old API." "05 Nov 2000")
 
 ;;;###autoload
 (defun qmtp-send-buffer (sender recipients buffer)

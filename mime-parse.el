@@ -29,9 +29,10 @@
 (require 'pccl)
 (require 'broken)
 
-(require 'mime-def)
 (require 'luna)
+(require 'mime-def)
 (require 'std11)
+(require 'mime)
 
 (autoload 'mime-entity-body-buffer "mime")
 (autoload 'mime-entity-body-start-point "mime")
@@ -372,7 +373,8 @@ property of the decoded-value."
 
 ;;; for compatibility with flim-1_13-rfc2231 API.
 (defalias 'mime-parse-parameters-from-list 'mime-decode-parameters)
-(make-obsolete 'mime-parse-parameters-from-list 'mime-decode-parameters)
+(make-obsolete 'mime-parse-parameters-from-list
+	       'mime-decode-parameters "28 Feb 2001")
 
 
 ;;; @ parameter value encoder
@@ -557,6 +559,9 @@ Return value is an alist of MIME parameter values."
 		    section (1+ section)
 		    encoded (cdr encoded))))))))
     (nreverse result)))
+
+(provide 'mime-parse)
+(require 'eword-encode)
 
 (defun mime-encode-parameters-broken-mime (params)
   "Encode PARAMS plist compatibly with Outlook.

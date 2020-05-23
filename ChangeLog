@@ -1,5 +1,28 @@
 2020-05-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
+	Suppress byte-compiler's warnings.
+
+	* eword-decode.el (eword-decode-header): Add obsolete date.
+
+	* eword-encode.el: Fix dependency.
+	(eword-encode-header, eword-in-subject-p)
+	(eword-encode-field-body): Add obsolete date.
+
+	* mime-def.el: Remove dependecy on static.el.
+	(eval-when-compile): Assume Emacs24 or later.
+	(mime-message-structure): Add obsolete date.
+
+	* mime-parse.el: Fix dependency.
+	(mime-parse-parameters-from-list): Add obsolete date.
+
+	* qmtp.el (qmtp-via-qmtp): Add obsolete date.
+
+	* smtp.el (smtp-via-smtp): Add obsolete date.
+
+	* std11.el (std11-parse-in-reply-to): Add obsolete date.
+
+2020-05-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
 	Drop old platforms support, dependency on cl.el.  Now supported
 	Emacsen are version 24 and later.
 

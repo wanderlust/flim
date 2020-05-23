@@ -522,7 +522,8 @@ If SEPARATOR is not nil, it is used as header separator."
    code-conversion))
 
 (defalias 'eword-decode-header 'mime-decode-header-in-buffer)
-(make-obsolete 'eword-decode-header 'mime-decode-header-in-buffer)
+(make-obsolete 'eword-decode-header
+	       'mime-decode-header-in-buffer "28 Oct 1998")
 
 
 ;;; @ encoded-words decoder

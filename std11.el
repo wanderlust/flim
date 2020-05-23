@@ -891,7 +891,7 @@ be the result."
 	  ))))
 
 (defalias 'std11-parse-in-reply-to 'std11-parse-msg-ids)
-(make-obsolete 'std11-parse-in-reply-to 'std11-parse-msg-ids)
+(make-obsolete 'std11-parse-in-reply-to 'std11-parse-msg-ids "23 Jan 1999")
 
 
 ;;; @ composer

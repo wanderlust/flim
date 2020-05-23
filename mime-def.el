@@ -29,7 +29,6 @@
 (require 'custom)
 (require 'mcharset)
 (require 'alist)
-(require 'static)
 
 (eval-when-compile (require 'luna))	; luna-arglist-to-arguments
 
@@ -283,7 +282,8 @@ message/rfc822, `mime-entity' structures of them are included in
 
 (make-variable-buffer-local 'mime-message-structure)
 
-(make-obsolete-variable 'mime-message-structure "should not use it.")
+(make-obsolete-variable 'mime-message-structure
+			"should not use it." "26 May 1999")
 
 
 ;;; @ for mel-backend
@@ -401,29 +401,21 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
 	       path)
 	  ))))
 
-(static-cond
- ((eval-when-compile (and (featurep 'mule)
-			  (>= emacs-major-version 20)
-			  (null (featurep 'xemacs))))
-  (defsubst mime-charset-decode-string (string charset &optional lbt)
-    "Decode the STRING as MIME CHARSET.
+(defsubst mime-charset-decode-string (string charset &optional lbt)
+  "Decode the STRING as MIME CHARSET.
 Buffer's multibyteness is ignored."
-    (let ((cs (mime-charset-to-coding-system charset lbt)))
-      (if cs
-	  (decode-coding-string string cs)
-	string)))
+  (let ((cs (mime-charset-to-coding-system charset lbt)))
+    (if cs
+	(decode-coding-string string cs)
+      string)))
 
-  (defsubst mime-charset-encode-string (string charset &optional lbt)
-    "Encode the STRING as MIME CHARSET.
+(defsubst mime-charset-encode-string (string charset &optional lbt)
+  "Encode the STRING as MIME CHARSET.
 Buffer's multibyteness is ignored."
-    (let ((cs (mime-charset-to-coding-system charset lbt)))
-      (if cs
-	  (encode-coding-string string cs)
-	string))))
- (t
-  (defalias 'mime-charset-decode-string 'decode-mime-charset-string)
-  (defalias 'mime-charset-encode-string 'encode-mime-charset-string))
- )
+  (let ((cs (mime-charset-to-coding-system charset lbt)))
+    (if cs
+	(encode-coding-string string cs)
+      string)))
 
 ;;; @ end
 ;;;

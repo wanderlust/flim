@@ -242,12 +242,12 @@ to connect to.  SERVICE is name of the service desired."
   "Return user's fully qualified domain name."
   (if smtp-fqdn
       smtp-fqdn
-    (let ((system-name (system-name)))
+    (let ((name (system-name)))
       (cond
        (smtp-local-domain
-	(concat system-name "." smtp-local-domain))
-       ((string-match "[^.]\\.[^.]" system-name)
-	system-name)
+	(concat name "." smtp-local-domain))
+       ((string-match "[^.]\\.[^.]" name)
+	name)
        (t
 	(error "invalid FQDN. Set smtp-fqdn or smtp-local-domain correctly"))
        ))))
@@ -349,7 +349,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	t)
     (smtp-error)))
 
-(make-obsolete 'smtp-via-smtp "It's old API.")
+(make-obsolete 'smtp-via-smtp "It's old API." "02 Nov 2000")
 
 ;;;###autoload
 (defun smtp-send-buffer (sender recipients buffer)
