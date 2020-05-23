@@ -1,5 +1,12 @@
 2020-05-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
+	Support additional SASL mechanism libraries.
+
+	* sasl.el (sasl-additional-mechanism-alist): New variable.
+	(sasl-mechanism-alist): Include entries for additional libraries.
+	(sasl-mechanisms): Calculate from sasl-mechanism-alist.
+
+2020-05-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	Rmove some files which are inluded in Emacs.
 

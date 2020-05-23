@@ -36,20 +36,31 @@
 
 ;;; Code:
 
-(defvar sasl-mechanisms
-  '("CRAM-MD5" "DIGEST-MD5" "PLAIN" "LOGIN" "ANONYMOUS"
-    "NTLM" "SCRAM-MD5" "XOAUTH2" "OAUTHBEARER"))
+(defvar sasl-additional-mechanism-alist
+  '((sasl-scram-rfc "SCRAM-SHA-1")
+    (sasl-scram-sha256 "SCRAM-SHA-256")
+    ))
 
 (defvar sasl-mechanism-alist
-  '(("CRAM-MD5" sasl-cram)
-    ("DIGEST-MD5" sasl-digest)
-    ("PLAIN" sasl-plain)
-    ("LOGIN" sasl-login)
-    ("ANONYMOUS" sasl-anonymous)
-    ("NTLM" sasl-ntlm)
-    ("SCRAM-MD5" sasl-scram)
-    ("OAUTHBEARER" sasl-xoauth2)
-    ("XOAUTH2" sasl-xoauth2)))
+  (append '(("CRAM-MD5" sasl-cram)
+	    ("DIGEST-MD5" sasl-digest)
+	    ("PLAIN" sasl-plain)
+	    ("LOGIN" sasl-login)
+	    ("ANONYMOUS" sasl-anonymous)
+	    ("NTLM" sasl-ntlm)
+	    ("SCRAM-MD5" sasl-scram)
+	    ("OAUTHBEARER" sasl-xoauth2)
+	    ("XOAUTH2" sasl-xoauth2))
+	  (let (result)
+	    (mapc (lambda (elt)
+		    (when (locate-library (symbol-name (car elt)))
+		      (dolist (name (cdr elt))
+			(setq result (cons (list name (car elt)) result)))))
+		  sasl-additional-mechanism-alist)
+	    result)))
+
+(defvar sasl-mechanisms
+  (mapcar 'car sasl-mechanism-alist))
 
 (defvar sasl-unique-id-function #'sasl-unique-id-function)
 
