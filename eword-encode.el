@@ -1,4 +1,4 @@
-;;; eword-encode.el --- RFC 2047 based encoded-word encoder for GNU Emacs
+;;; eword-encode.el --- RFC 2047 based encoded-word encoder for GNU Emacs  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1995,1996,1997,1998,1999,2000,2002,2003,2004 Free
 ;;   Software Foundation, Inc.
@@ -575,7 +575,7 @@ Optional argument COLUMN is start-position of the field."
 	(or column eword-encode-default-start-column)
 	(eword-encode-split-string string 'text))))
 
-(defun eword-encode-Content-Type-field-body (field-body &optional column)
+(defun eword-encode-Content-Type-field-body (field-body &optional _column)
   "Encode FIELD-BODY with MIME Parameter-Value Extensions, if necessary.
 Optional second arg COLUMN is ignored."
   (let ((tokens (mime-lexical-analyze field-body))
@@ -598,7 +598,8 @@ Optional second arg COLUMN is ignored."
 	      (mime-parse-parameters (cdr tokens)))
              ""))))
 
-(defun eword-encode-Content-Disposition-field-body (field-body &optional column)
+(defun eword-encode-Content-Disposition-field-body
+    (field-body &optional _column)
   "Encode FIELD-BODY with MIME Parameter-Value Extensions, if necessary.
 Optional second arg COLUMN is ignored."
   (let ((tokens (mime-lexical-analyze field-body)))
@@ -614,7 +615,7 @@ Optional second arg COLUMN is ignored."
              ""))))
 
 (defun eword-encode-Content-Type-field-body-broken-mime
-  (field-body &optional column)
+  (field-body &optional _column)
   "Encode FIELD-BODY compatibly with Outlook, if necessary.
 Optional second arg COLUMN is ignored."
   (let ((tokens (mime-lexical-analyze field-body))
@@ -638,7 +639,7 @@ Optional second arg COLUMN is ignored."
              ""))))
 
 (defun eword-encode-Content-Disposition-field-body-broken-mime
-  (field-body &optional column)
+  (field-body &optional _column)
   "Encode FIELD-BODY compatibly with Outlook, if necessary.
 Optional second arg COLUMN is ignored."
   (let ((tokens (mime-lexical-analyze field-body)))

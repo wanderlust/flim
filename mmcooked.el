@@ -1,4 +1,4 @@
-;;; mmcooked.el --- MIME entity implementation for binary buffer
+;;; mmcooked.el --- MIME entity implementation for binary buffer  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
 
@@ -28,7 +28,7 @@
 
 (mm-define-backend cooked (buffer))
 
-(mm-define-method entity-cooked-p ((entity cooked)) t)
+(mm-define-method entity-cooked-p ((_entity cooked)) t)
 
 (mm-define-method write-entity-content ((entity cooked) filename)
   (with-current-buffer (mime-buffer-entity-buffer-internal entity)

@@ -1,4 +1,4 @@
-;;; mmbuffer.el --- MIME entity module for binary buffer
+;;; mmbuffer.el --- MIME entity module for binary buffer  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1998,1999,2000 Free Software Foundation, Inc.
 
@@ -39,7 +39,7 @@
   )
 
 (luna-define-method initialize-instance :after ((entity mime-buffer-entity)
-						&rest init-args)
+						&rest _init-args)
   (or (mime-buffer-entity-buffer-internal entity)
       (mime-buffer-entity-set-buffer-internal
        entity (get-buffer (mime-entity-location-internal entity))))

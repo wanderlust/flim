@@ -1,4 +1,4 @@
-;;; hmac-md5.el --- Compute HMAC-MD5.
+;;; hmac-md5.el --- Compute HMAC-MD5.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 

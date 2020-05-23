@@ -1,4 +1,4 @@
-;;; mel-q.el --- Quoted-Printable encoder/decoder.
+;;; mel-q.el --- Quoted-Printable encoder/decoder.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1995,96,97,98,99,2000,2001 Free Software Foundation, Inc.
 

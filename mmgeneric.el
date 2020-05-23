@@ -1,4 +1,4 @@
-;;; mmgeneric.el --- MIME generic entity module
+;;; mmgeneric.el --- MIME generic entity module  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 

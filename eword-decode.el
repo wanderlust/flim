@@ -1,4 +1,4 @@
-;;; eword-decode.el --- RFC 2047 based encoded-word decoder for GNU Emacs
+;;; eword-decode.el --- RFC 2047 based encoded-word decoder for GNU Emacs  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004,
 ;;   2005 Free Software Foundation, Inc.
@@ -118,9 +118,8 @@ put to the decoded text as the `mime-language' text property."
 	    next (+ start (length words)))))
   string)
 
-(defun eword-decode-structured-field-body (string
-					   &optional start-column max-column
-					   start)
+(defun eword-decode-structured-field-body
+    (string &optional _start-column _max-column start)
   (let ((tokens (eword-lexical-analyze string start 'must-unfold))
 	result
 	token)
@@ -130,11 +129,8 @@ put to the decoded text as the `mime-language' text property."
       (setq tokens (cdr tokens)))
     (apply 'concat (nreverse result))))
 
-(defun eword-decode-and-unfold-structured-field-body (string
-						      &optional
-						      start-column
-						      max-column
-						      start)
+(defun eword-decode-and-unfold-structured-field-body
+    (string &optional _start-column _max-column start)
   "Decode and unfold STRING as structured field body.
 It decodes non us-ascii characters in FULL-NAME encoded as
 encoded-words or invalid \"raw\" string.  \"Raw\" non us-ascii
@@ -192,22 +188,20 @@ decode the charset included in it, it is not decoded."
 		      (cons (when token (eword-decode-token token))
 			    result))))))
 
-(defun eword-decode-unstructured-field-body (string &optional start-column
-						    max-column)
+(defun eword-decode-unstructured-field-body
+    (string &optional _start-column _max-column)
   (eword-decode-string
    (mime-charset-decode-string string default-mime-charset)))
 
-(defun eword-decode-and-unfold-unstructured-field-body (string
-							&optional start-column
-							max-column)
+(defun eword-decode-and-unfold-unstructured-field-body
+    (string &optional _start-column _max-column)
   (eword-decode-string
    (mime-charset-decode-string (std11-unfold-string string)
 			       default-mime-charset)
    'must-unfold))
 
-(defun eword-decode-unfolded-unstructured-field-body (string
-						      &optional start-column
-						      max-column)
+(defun eword-decode-unfolded-unstructured-field-body
+    (string &optional _start-column _max-column)
   (eword-decode-string
    (mime-charset-decode-string string default-mime-charset)
    'must-unfold))
@@ -633,7 +627,7 @@ Previous function is preferred to next function.  If a function
 returns nil, next function is used.  Otherwise the return value will
 be the result.")
 
-(defun eword-analyze-quoted-string (string start &optional must-unfold)
+(defun eword-analyze-quoted-string (string start &optional _must-unfold)
   (let ((p (std11-check-enclosure string ?\" ?\" nil start))
 	ret)
     (when p
@@ -646,7 +640,7 @@ be the result.")
       (cons (cons 'quoted-string ret)
 	    p))))
 
-(defun eword-analyze-domain-literal (string start &optional must-unfold)
+(defun eword-analyze-domain-literal (string start &optional _must-unfold)
   (std11-analyze-domain-literal string start))
 
 (defun eword-analyze-comment (string from &optional must-unfold)
@@ -714,10 +708,10 @@ be the result.")
 		 ))
 	  )))))
 
-(defun eword-analyze-spaces (string start &optional must-unfold)
+(defun eword-analyze-spaces (string start &optional _must-unfold)
   (std11-analyze-spaces string start))
 
-(defun eword-analyze-special (string start &optional must-unfold)
+(defun eword-analyze-special (string start &optional _must-unfold)
   (std11-analyze-special string start))
 
 (defun eword-analyze-encoded-word (string start &optional must-unfold)
@@ -754,7 +748,7 @@ be the result.")
 	       words))
        next))))
 
-(defun eword-analyze-atom (string start &optional must-unfold)
+(defun eword-analyze-atom (string start &optional _must-unfold)
   (if (and (string-match std11-atom-regexp string start)
 	   (= (match-beginning 0) start))
       (let ((end (match-end 0)))

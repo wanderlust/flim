@@ -1,4 +1,4 @@
-;;; mmexternal.el --- MIME entity module for external buffer
+;;; mmexternal.el --- MIME entity module for external buffer  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1998,1999,2000 Free Software Foundation, Inc.
 

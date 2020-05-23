@@ -1,4 +1,4 @@
-;;; sasl-scram.el --- Compute SCRAM-MD5.
+;;; sasl-scram.el --- Compute SCRAM-MD5.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1999 Shuhei KOBAYASHI
 
@@ -204,7 +204,7 @@ If AUTHORIZE-ID is the same as AUTHENTICATE-ID, it may be omitted."
       (fillarray server-salt 0)
       (fillarray buff 0))))
 
-(defun sasl-scram-md5-response-1 (client step)
+(defun sasl-scram-md5-response-1 (client _step)
   (sasl-client-set-property
    client 'client-msg-1
    (sasl-scram-md5-make-client-msg-1

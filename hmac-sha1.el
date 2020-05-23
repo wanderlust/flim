@@ -1,4 +1,4 @@
-;;; hmac-sha1.el --- Compute HMAC-SHA1.
+;;; hmac-sha1.el --- Compute HMAC-SHA1.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 

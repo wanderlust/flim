@@ -1,4 +1,4 @@
-;;; sha1.el --- SHA1 Secure Hash Algorithm.
+;;; sha1.el --- SHA1 Secure Hash Algorithm.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 

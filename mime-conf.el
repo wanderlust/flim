@@ -1,4 +1,4 @@
-;;; mime-conf.el --- mailcap parser and MIME playback configuration
+;;; mime-conf.el --- mailcap parser and MIME playback configuration  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1997,1998,1999,2000,2004 Free Software Foundation, Inc.
 

@@ -1,4 +1,4 @@
-;;; mel-q-ccl.el --- Quoted-Printable encoder/decoder using CCL.
+;;; mel-q-ccl.el --- Quoted-Printable encoder/decoder using CCL.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1998,1999 Tanaka Akira
 
@@ -284,7 +284,6 @@ abcdefghijklmnopqrstuvwxyz\
 	(after-wsp 'r5)
 	(column 'r6)
 	(type 'r3)
-	(current 'r0)
 	(type-raw 0)
 	(type-enc 1)
 	(type-wsp 2)
@@ -935,6 +934,7 @@ encoding."
 (defun quoted-printable-ccl-write-decoded-region (start end filename)
   "Decode quoted-printable encoded current region and write out to FILENAME."
   (interactive "*r\nFWrite decoded region to file: ")
+  (defvar jam-zcat-filename-list)
   (let ((coding-system-for-write
 	 (if (coding-system-p 'mel-ccl-quoted-printable-lf-lf-rev-unix)
 	     'mel-ccl-quoted-printable-lf-lf-rev-unix

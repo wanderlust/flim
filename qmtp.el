@@ -1,4 +1,4 @@
-;;; qmtp.el --- basic functions to send mail with QMTP server
+;;; qmtp.el --- basic functions to send mail with QMTP server  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2000 Free Software Foundation, Inc.
 

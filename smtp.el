@@ -1,4 +1,4 @@
-;;; smtp.el --- basic functions to send mail with SMTP server
+;;; smtp.el --- basic functions to send mail with SMTP server  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1995, 1996, 1998, 1999, 2000, 2001 ,2002, 2004
 ;; Free Software Foundation, Inc.
@@ -450,7 +450,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 ;;; @ hook methods for `smtp-submit-package'
 ;;;
 
-(defun smtp-primitive-greeting (package)
+(defun smtp-primitive-greeting (_package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (response
@@ -458,7 +458,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     (if (/= (car response) 220)
 	(smtp-response-error response))))
 
-(defun smtp-primitive-ehlo (package)
+(defun smtp-primitive-ehlo (_package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 response)
@@ -477,7 +477,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 		     extensions))
 		 (cdr response)))))
 
-(defun smtp-primitive-helo (package)
+(defun smtp-primitive-helo (_package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 response)
@@ -486,7 +486,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     (if (/= (car response) 250)
 	(smtp-response-error response))))
 
-(defun smtp-primitive-auth (package)
+(defun smtp-primitive-auth (_package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (mechanisms
@@ -541,7 +541,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 ;;;     connection (sasl-client-decoder client))
     ))
 
-(defun smtp-primitive-starttls (package)
+(defun smtp-primitive-starttls (_package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 (process (smtp-connection-process-internal connection))
@@ -616,7 +616,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     (if (/= (car response) 250)
 	(smtp-response-error response))))
 
-(defun smtp-primitive-quit (package)
+(defun smtp-primitive-quit (_package)
   (let* ((connection
 	  (smtp-find-connection (current-buffer)))
 	 response)

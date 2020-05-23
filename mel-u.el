@@ -1,4 +1,4 @@
-;;; mel-u.el --- uuencode encoder/decoder.
+;;; mel-u.el --- uuencode encoder/decoder.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 

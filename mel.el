@@ -1,4 +1,4 @@
-;;; mel.el --- A MIME encoding/decoding library.
+;;; mel.el --- A MIME encoding/decoding library.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1995,1996,1997,1998,1999,2000 Free Software Foundation, Inc.
 
@@ -98,8 +98,8 @@ Content-Transfer-Encoding for it."
 			    'identity)
 (mel-define-method-function (mime-decode-string string (nil "8bit"))
 			    'identity)
-(mel-define-method mime-encode-region (start end (nil "8bit")))
-(mel-define-method mime-decode-region (start end (nil "8bit")))
+(mel-define-method mime-encode-region (_start _end (nil "8bit")))
+(mel-define-method mime-decode-region (_start _end (nil "8bit")))
 (mel-define-method-function (mime-insert-encoded-file filename (nil "8bit"))
 			    '8bit-insert-encoded-file)
 (mel-define-method-function (mime-write-decoded-region
@@ -115,6 +115,7 @@ Content-Transfer-Encoding for it."
 
 (defun binary-write-decoded-region (start end filename)
   "Decode and write current region encoded by \"binary\" into FILENAME."
+  (defvar jam-zcat-filename-list)
   (let ((coding-system-for-write 'binary)
 	jka-compr-compression-info-list jam-zcat-filename-list)
     (write-region start end filename)))
@@ -145,8 +146,8 @@ Read text is decoded as CODING-SYSTEM."
 			    'identity)
 (mel-define-method-function (mime-decode-string string (nil "binary"))
 			    'identity)
-(mel-define-method mime-encode-region (start end (nil "binary")))
-(mel-define-method mime-decode-region (start end (nil "binary")))
+(mel-define-method mime-encode-region (_start _end (nil "binary")))
+(mel-define-method mime-decode-region (_start _end (nil "binary")))
 (mel-define-method-function (mime-insert-encoded-file filename (nil "binary"))
 			    'binary-insert-encoded-file)
 (mel-define-method-function (mime-write-decoded-region

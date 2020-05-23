@@ -1,4 +1,4 @@
-;;; mime-parse.el --- MIME message parser
+;;; mime-parse.el --- MIME message parser  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1994,95,96,97,98,99,2001 Free Software Foundation, Inc.
 

@@ -1,4 +1,4 @@
-;;; std11.el --- STD 11 functions for GNU Emacs
+;;; std11.el --- STD 11 functions for GNU Emacs  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1995,96,97,98,99,2000,01,02 Free Software Foundation, Inc.
 

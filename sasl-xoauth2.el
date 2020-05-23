@@ -1,4 +1,4 @@
-;;; sasl-xoauth2.el --- OAuth 2.0 module for the SASL client framework
+;;; sasl-xoauth2.el --- OAuth 2.0 module for the SASL client framework  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Kazuhiro Ito
 
@@ -186,7 +186,7 @@ TOKEN should be obtained with `oauth2-request-access'."
 	 (time-add (current-time)
 		   (- sasl-xoauth2-refresh-token-threshold))))))
 
-(defun sasl-xoauth2-response (client step &optional retry)
+(defun sasl-xoauth2-response (client _step &optional _retry)
   (let ((host (sasl-client-server client))
 	(user (sasl-client-name client))
 	info access-token oauth2-token

@@ -1,4 +1,4 @@
-;;; luna.el --- tiny OOP system kernel
+;;; luna.el --- tiny OOP system kernel  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1999,2000,2002 Free Software Foundation, Inc.
 
@@ -228,8 +228,8 @@ The optional 5th BODY is the body of the method."
 (defmacro luna-get-obarray (entity)
   `(aref ,entity 1))
 
-(defmacro luna-set-obarray (entity obarray)
-  `(aset ,entity 1 ,obarray))
+(defmacro luna-set-obarray (entity array)
+  `(aset ,entity 1 ,array))
 
 (defmacro luna-slot-index (entity slot-name)
   `(luna-class-slot-index (luna-find-class (luna-class-name ,entity))
@@ -247,12 +247,13 @@ The optional 5th BODY is the body of the method."
   `(luna-class-find-functions (luna-find-class (luna-class-name ,entity))
 			      ,service))
 
-(defsubst luna-send (entity message &rest luna-current-method-arguments)
+(defsubst luna-send (entity message &rest arguments)
   "Send MESSAGE to ENTITY, and return the result.
 ENTITY is an instance of a luna class, and MESSAGE is a method name of
 the luna class.
-LUNA-CURRENT-METHOD-ARGUMENTS is arguments of the MESSAGE."
-  (let ((luna-next-methods (luna-find-functions entity message))
+ARGUMENTS is arguments of the MESSAGE."
+  (let ((luna-current-method-arguments arguments)
+	(luna-next-methods (luna-find-functions entity message))
 	luna-current-method
 	luna-previous-return-value)
     (while (and luna-next-methods
@@ -305,10 +306,11 @@ the corresponding SLOTs."
 ;;;
 
 ;; Find a method of ENTITY that handles MESSAGE, and call it with
-;; arguments LUNA-CURRENT-METHOD-ARGUMENTS.
+;; arguments ARGUMENTS.
 
-(defun luna-apply-generic (entity message &rest luna-current-method-arguments)
-  (let* ((class (luna-class-name entity))
+(defun luna-apply-generic (entity message &rest arguments)
+  (let* ((luna-current-method-arguments arguments)
+	 (class (luna-class-name entity))
 	 (cache (get message 'luna-method-cache))
 	 (sym (intern-soft (symbol-name class) cache))
 	 luna-next-methods)

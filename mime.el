@@ -1,4 +1,4 @@
-;;; mime.el --- MIME library module
+;;; mime.el --- MIME library module  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1998,1999,2000,2001,2003 Free Software Foundation, Inc.
 

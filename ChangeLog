@@ -1,5 +1,67 @@
 2020-05-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
+	Use lexical binding.
+
+	* eword-decode.el: Likewise.
+
+	* eword-encode.el: Likewise.
+
+	* hmac-md5.el: Likewise.
+
+	* hmac-sha1.el: Likewise.
+
+	* luna.el: Likewise.
+
+	* lunit.el: Likewise.
+
+	* md5.el: Likewise.
+
+	* mel-g.el: Likewise.
+
+	* mel-q-ccl.el: Likewise.
+
+	* mel-q.el: Likewise.
+
+	* mel-u.el: Likewise.
+
+	* mel.el: Likewise.
+
+	* mime-conf.el: Likewise.
+
+	* mime-def.el: Likewise.
+
+	* mime-parse.el: Likewise.
+
+	* mime.el: Likewise.
+
+	* mmbuffer.el: Likewise.
+
+	* mmcooked.el: Likewise.
+
+	* mmexternal.el: Likewise.
+
+	* mmgeneric.el: Likewise.
+
+	* qmtp.el: Likewise.
+
+	* sasl-cram.el: Likewise.
+
+	* sasl-digest.el: Likewise.
+
+	* sasl-scram.el: Likewise.
+
+	* sasl-xoauth2.el: Likewise.
+
+	* sasl.el: Likewise.
+
+	* sha1.el: Likewise.
+
+	* smtp.el: Likewise.
+
+	* std11.el: Likewise.
+
+2020-05-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
 	Support additional SASL mechanism libraries.
 
 	* sasl.el (sasl-additional-mechanism-alist): New variable.

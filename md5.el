@@ -1,4 +1,4 @@
-;;; md5.el --- MD5 Message Digest Algorithm.
+;;; md5.el --- MD5 Message Digest Algorithm.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1999, 2001  Free Software Foundation, Inc.
 
