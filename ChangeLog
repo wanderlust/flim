@@ -1,5 +1,18 @@
 2020-05-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
+
+	Rmove some files which are inluded in Emacs.
+
+	* hmac-def.el: Removed.
+
+	* hex-utils.el: Removed.
+
+	* sasl-ntlm.el: Removed.
+
+	* FLIM-ELS (flim-modules, hmac-modules): Remove removed files.
+
+2020-05-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
 	Suppress byte-compiler's warnings.
 
 	* eword-decode.el (eword-decode-header): Add obsolete date.

@@ -12,14 +12,12 @@
 		     mmbuffer mmcooked mmexternal
 		     mime-conf
 		     sasl sasl-cram sasl-digest
-		     sasl-ntlm sasl-scram
+		     sasl-scram
 		     smtp qmtp))
 
 (setq flim-version-specific-modules nil)
 
-(setq hmac-modules '(hex-util
-		     hmac-def md5 sha1
-		     hmac-md5 hmac-sha1))
+(setq hmac-modules '(md5 sha1 hmac-md5 hmac-sha1))
 
 (require 'pccl)
 (unless-broken ccl-usable
