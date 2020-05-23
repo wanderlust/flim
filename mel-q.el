@@ -114,8 +114,7 @@
 
 
 (defvar quoted-printable-internal-encoding-limit
-  (if (and (featurep 'xemacs)(featurep 'mule))
-      0
+  (progn
     (require 'path-util)
     (if (exec-installed-p "mmencode")
 	1000

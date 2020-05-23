@@ -38,34 +38,7 @@
 
 ;;; Code:
 
-(defvar sha1-dl-module
-  (cond
-   ((and (fboundp 'sha1)
-	 (or (and (fboundp 'secure-hash)
-		  (subrp (symbol-function 'secure-hash)))
-	     (subrp (symbol-function 'sha1))))
-    nil)
-   ((fboundp 'dynamic-link)
-    ;; Should we take care of `dynamic-link-path'?
-    (let ((path (expand-file-name "sha1.so" exec-directory)))
-      (if (file-exists-p path)
-	  path
-	nil)))
-   (t
-    nil)))
-
-(cond
- ((and (fboundp 'sha1)
-       (or (and (fboundp 'secure-hash)
-		(subrp (symbol-function 'secure-hash)))
-	   (subrp (symbol-function 'sha1))))
-  ;; Do nothing.
-  )
- ((and (stringp sha1-dl-module)
-       (file-exists-p sha1-dl-module))
-  (require 'sha1-dl))
- (t
-  (require 'sha1-el)))
+(defvar sha1-dl-module nil)
 
 (provide 'sha1)
 

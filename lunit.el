@@ -52,8 +52,6 @@
 
 (require 'luna)
 
-(eval-when-compile (require 'cl))
-
 ;;; @ test
 ;;;
 

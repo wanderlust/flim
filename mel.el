@@ -153,134 +153,117 @@ Read text is decoded as CODING-SYSTEM."
 			     start end filename (nil "binary"))
 			    'binary-write-decoded-region)
 
-(defvar mel-b-builtin
-   (and (fboundp 'base64-encode-string)
-        (subrp (symbol-function 'base64-encode-string))))
+(defvar mel-b-builtin t)
 
-(when mel-b-builtin
-  (defcustom mel-b-builtin-garbage-strategy 'asis
-    "When non-nil, base64 decoder functions handle non-encoded garbage.  When value is asis decoders keep garbage and when value is discard decoders delete garbage."
-    :group 'mime
-    :type '(choice (const :tag "Keep as is" asis)
-		   (const :tag "Discard" discard)
-		   (const :tag "Not handled" nil)))
+(defcustom mel-b-builtin-garbage-strategy 'asis
+  "When non-nil, base64 decoder functions handle non-encoded garbage.  When value is asis decoders keep garbage and when value is discard decoders delete garbage."
+  :group 'mime
+  :type '(choice (const :tag "Keep as is" asis)
+		 (const :tag "Discard" discard)
+		 (const :tag "Not handled" nil)))
 
-  (defvar mel-b-builtin-encoded-line-regexp "^[A-Za-z0-9+/]+=*[\t ]*\r?\n?")
+(defvar mel-b-builtin-encoded-line-regexp "^[A-Za-z0-9+/]+=*[\t ]*\r?\n?")
 
-  (mel-define-backend "base64")
-  (mel-define-method-function (mime-encode-string string (nil "base64"))
+(mel-define-backend "base64")
+(mel-define-method-function (mime-encode-string string (nil "base64"))
 			      'base64-encode-string)
-  (defun mel-b-builtin-decode-string (string)
-    "Decode base64 encoded STRING with garbage handling.  Garbage handling strategy is decided by `mel-b-builtin-garbage-strategy'.  Return decoded string."
-    (if (null mel-b-builtin-garbage-strategy)
+(defun mel-b-builtin-decode-string (string)
+  "Decode base64 encoded STRING with garbage handling.  Garbage handling strategy is decided by `mel-b-builtin-garbage-strategy'.  Return decoded string."
+  (if (null mel-b-builtin-garbage-strategy)
+      (base64-decode-string string)
+    (condition-case error
 	(base64-decode-string string)
-      (condition-case error
-	  (base64-decode-string string)
-	(error
-	 (if (string-match mel-b-builtin-encoded-line-regexp string)
-	     (let ((start (match-beginning 0))
-		   end)
-	       (message "Base64 encoded string has garbage")
-	       (while (and (< (setq end (match-end 0)) (length string))
-			   (eq end
-			       (and (string-match
-				     mel-b-builtin-encoded-line-regexp
-				     string end)
-				    (match-beginning 0)))))
-	       (if (eq mel-b-builtin-garbage-strategy 'discard)
-		   (base64-decode-string (substring string start end))
-		 (concat (substring string 0 start)
-			 (base64-decode-string (substring string start end))
-			 (substring string end))))
-	   (signal (car error) (cdr error)))))))
-  (mel-define-method-function (mime-decode-string string (nil "base64"))
-			      'mel-b-builtin-decode-string)
-  (mel-define-method-function (mime-encode-region start end (nil "base64"))
-			      'base64-encode-region)
-  (defun mel-b-builtin-decode-region (start end)
-    "Decode base64 encoded region between START and END with garbage handling.  Garbage handling strategy is decided by `mel-b-builtin-garbage-strategy'."
-    (if (null mel-b-builtin-garbage-strategy)
+      (error
+       (if (string-match mel-b-builtin-encoded-line-regexp string)
+	   (let ((start (match-beginning 0))
+		 end)
+	     (message "Base64 encoded string has garbage")
+	     (while (and (< (setq end (match-end 0)) (length string))
+			 (eq end
+			     (and (string-match
+				   mel-b-builtin-encoded-line-regexp
+				   string end)
+				  (match-beginning 0)))))
+	     (if (eq mel-b-builtin-garbage-strategy 'discard)
+		 (base64-decode-string (substring string start end))
+	       (concat (substring string 0 start)
+		       (base64-decode-string (substring string start end))
+		       (substring string end))))
+	 (signal (car error) (cdr error)))))))
+(mel-define-method-function (mime-decode-string string (nil "base64"))
+			    'mel-b-builtin-decode-string)
+(mel-define-method-function (mime-encode-region start end (nil "base64"))
+			    'base64-encode-region)
+(defun mel-b-builtin-decode-region (start end)
+  "Decode base64 encoded region between START and END with garbage handling.  Garbage handling strategy is decided by `mel-b-builtin-garbage-strategy'."
+  (if (null mel-b-builtin-garbage-strategy)
+      (base64-decode-region start end)
+    (condition-case error
 	(base64-decode-region start end)
-      (condition-case error
-	  (base64-decode-region start end)
-	(error
-	 (save-excursion
-	   (let ((start (min start end))
-		 (end (max start end))
-		 base64-start)
-	     (goto-char start)
-	     (if (re-search-forward mel-b-builtin-encoded-line-regexp end t)
-		 (progn
-		   (message "Base64 encoded region contains garbage")
-		   (setq base64-start (match-beginning 0))
-		   (while (eq (point)
-			      (and (re-search-forward
-				    mel-b-builtin-encoded-line-regexp end t)
-				   (match-beginning 0))))
-		   (when (eq mel-b-builtin-garbage-strategy 'discard)
-		     (delete-region (match-end 0) end))
-		   (base64-decode-region base64-start (point))
-		   (when (eq mel-b-builtin-garbage-strategy 'discard)
-		     (delete-region start base64-start)))
-	       (signal (car error) (cdr error)))))))))
-  (mel-define-method-function (mime-decode-region start end (nil "base64"))
-			      'mel-b-builtin-decode-region)  
-  (mel-define-method mime-insert-encoded-file (filename (nil "base64"))
-    "Encode contents of file FILENAME to base64, and insert the result."
-    (interactive "*fInsert encoded file: ")
-    ;; No need to make buffer unibyte if binary-insert-encoded-file only
-    ;; inserts single-byte characters.
-    (save-restriction
-      (narrow-to-region (point) (point))
-      (binary-insert-encoded-file filename)
-      (base64-encode-region (point-min) (point-max))
-      (goto-char (point-max)))
-    (or (bolp) (insert ?\n)))
-  (mel-define-method mime-write-decoded-region (start end filename
-						      (nil "base64"))
-    "Decode the region from START to END and write out to FILENAME."
-    (interactive "*r\nFWrite decoded region to file: ")
-    (let ((buffer (current-buffer)))
-      (with-temp-buffer
-	(insert-buffer-substring buffer start end)
-	(mel-b-builtin-decode-region (point-min) (point-max))
-	(write-region-as-binary (point-min) (point-max) filename))))
-    
-  ;; (mel-define-method-function (encoded-text-encode-string string (nil "B"))
-  ;;                             'base64-encode-string)
-  (mel-define-method encoded-text-decode-string (string (nil "B"))
-    (if (string-match (eval-when-compile
-			(concat "\\`" B-encoded-text-regexp "\\'"))
-		      string)
-	(base64-decode-string string)
-      (error "Invalid encoded-text %s" string)))
-  )
+      (error
+       (save-excursion
+	 (let ((start (min start end))
+	       (end (max start end))
+	       base64-start)
+	   (goto-char start)
+	   (if (re-search-forward mel-b-builtin-encoded-line-regexp end t)
+	       (progn
+		 (message "Base64 encoded region contains garbage")
+		 (setq base64-start (match-beginning 0))
+		 (while (eq (point)
+			    (and (re-search-forward
+				  mel-b-builtin-encoded-line-regexp end t)
+				 (match-beginning 0))))
+		 (when (eq mel-b-builtin-garbage-strategy 'discard)
+		   (delete-region (match-end 0) end))
+		 (base64-decode-region base64-start (point))
+		 (when (eq mel-b-builtin-garbage-strategy 'discard)
+		   (delete-region start base64-start)))
+	     (signal (car error) (cdr error)))))))))
+(mel-define-method-function (mime-decode-region start end (nil "base64"))
+			    'mel-b-builtin-decode-region)  
+(mel-define-method mime-insert-encoded-file (filename (nil "base64"))
+  "Encode contents of file FILENAME to base64, and insert the result."
+  (interactive "*fInsert encoded file: ")
+  ;; No need to make buffer unibyte if binary-insert-encoded-file only
+  ;; inserts single-byte characters.
+  (save-restriction
+    (narrow-to-region (point) (point))
+    (binary-insert-encoded-file filename)
+    (base64-encode-region (point-min) (point-max))
+    (goto-char (point-max)))
+  (or (bolp) (insert ?\n)))
+(mel-define-method mime-write-decoded-region (start end filename
+						    (nil "base64"))
+  "Decode the region from START to END and write out to FILENAME."
+  (interactive "*r\nFWrite decoded region to file: ")
+  (let ((buffer (current-buffer)))
+    (with-temp-buffer
+      (insert-buffer-substring buffer start end)
+      (mel-b-builtin-decode-region (point-min) (point-max))
+      (write-region-as-binary (point-min) (point-max) filename))))
 
-(mel-use-module 'mel-b-el '("base64" "B"))
+;; (mel-define-method-function (encoded-text-encode-string string (nil "B"))
+;;                             'base64-encode-string)
+(mel-define-method encoded-text-decode-string (string (nil "B"))
+  (if (string-match (eval-when-compile
+		      (concat "\\`" B-encoded-text-regexp "\\'"))
+		    string)
+      (base64-decode-string string)
+    (error "Invalid encoded-text %s" string)))
+
+
 (mel-use-module 'mel-q '("quoted-printable" "Q"))
 (mel-use-module 'mel-g '("x-gzip64"))
 (mel-use-module 'mel-u '("x-uue" "x-uuencode"))
 
-(defvar mel-b-ccl-module
-  (and (featurep 'mule)
-       (progn
-	 (require 'path-util)
-	 (module-installed-p 'mel-b-ccl))))
-
 (defvar mel-q-ccl-module
-  (and (featurep 'mule)
-       (progn
-	 (require 'path-util)
-	 (module-installed-p 'mel-q-ccl))))
-
-(when mel-b-ccl-module
-  (mel-use-module 'mel-b-ccl '("base64" "B")))
+  (progn
+    (require 'path-util)
+    (module-installed-p 'mel-q-ccl)))
 
 (when mel-q-ccl-module
   (mel-use-module 'mel-q-ccl '("quoted-printable" "Q")))
-
-(when base64-dl-module
-  (mel-use-module 'mel-b-dl '("base64" "B")))
 
 
 ;;; @ region

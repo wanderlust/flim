@@ -49,30 +49,7 @@
 
 ;;; Code:
 
-(defvar md5-dl-module
-  (cond
-   ((and (fboundp 'md5)
-	 (subrp (symbol-function 'md5)))
-    nil)
-   ((fboundp 'dynamic-link)
-    ;; Should we take care of `dynamic-link-path'?
-    (let ((path (expand-file-name "md5.so" exec-directory)))
-      (if (file-exists-p path)
-	  path
-	nil)))
-   (t
-    nil)))
-
-(cond
- ((and (fboundp 'md5)
-       (subrp (symbol-function 'md5)))
-  ;; do nothing.
-  )
- ((and (stringp md5-dl-module)
-       (file-exists-p md5-dl-module))
-  (require 'md5-dl))
- (t
-  (require 'md5-el)))
+(defvar md5-dl-module nil)
 
 (provide 'md5)
 

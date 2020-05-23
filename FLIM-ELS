@@ -12,7 +12,7 @@
 		     mmbuffer mmcooked mmexternal
 		     mime-conf
 		     sasl sasl-cram sasl-digest
-		     md4 ntlm sasl-ntlm sasl-scram
+		     sasl-ntlm sasl-scram
 		     smtp qmtp))
 
 (setq flim-version-specific-modules nil)
@@ -21,36 +21,12 @@
 		     hmac-def md5 sha1
 		     hmac-md5 hmac-sha1))
 
-(if (and (fboundp 'base64-encode-string)
-	 (subrp (symbol-function 'base64-encode-string)))
-    nil
-  (if (fboundp 'dynamic-link)
-      (setq flim-modules (cons 'mel-b-dl flim-modules))))
-(setq flim-modules (cons 'mel-b-el flim-modules))
-
 (require 'pccl)
 (unless-broken ccl-usable
-  (setq flim-modules (cons 'mel-b-ccl (cons 'mel-q-ccl flim-modules))))
+  (setq flim-modules (cons 'mel-q-ccl flim-modules)))
 
 (require 'path-util)
 (when (module-installed-p 'oauth2)
   (setq flim-modules (append flim-modules '(sasl-xoauth2))))
-
-(if (and (fboundp 'md5)
-	 (subrp (symbol-function 'md5)))
-    nil
-  (if (fboundp 'dynamic-link)
-      (setq hmac-modules (cons 'md5-dl hmac-modules))
-    (setq hmac-modules (cons 'md5-el hmac-modules))))
-
-(unless (and (fboundp 'sha1)
-	     (or (and (fboundp 'secure-hash)
-		      (subrp (symbol-function 'secure-hash)))
-		 (subrp (symbol-function 'sha1))))
-  (when (fboundp 'dynamic-link)
-    (setq hmac-modules (cons 'sha1-dl hmac-modules)))
-  (setq hmac-modules (cons 'sha1-el hmac-modules)))
-
-(setq flim-modules (nconc hmac-modules flim-modules))
 
 ;;; FLIM-ELS ends here

@@ -31,7 +31,6 @@
 (require 'std11)
 (require 'eword-decode)
 
-
 ;;; @ variables
 ;;;
 
@@ -98,80 +97,9 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 ;;; @ charset word
 ;;;
 
-(eval-when-compile
-  (unless (and (boundp 'mule-version)
-	       (null (string< mule-version "6.0"))
-	       (fboundp 'detect-mime-charset-string))
-    (defmacro eword-encode-char-type (character)
-      `(if (memq ,character '(?  ?\t ?\n))
-	   nil
-	 (char-charset ,character)
-	 ))
-    ))
-
-(unless (and (boundp 'mule-version)
-	     (null (string< mule-version "6.0"))
-	     (fboundp 'detect-mime-charset-string))
-(defun eword-encode-divide-into-charset-words (string)
-  (let ((len (length string))
-	dest)
-    (while (> len 0)
-      (let* ((chr (aref string 0))
-             ;; (chr (sref string 0))
-	     (charset (eword-encode-char-type chr))
-             (i 1)
-	     ;; (i (char-length chr))
-	     )
-	(while (and (< i len)
-		    (setq chr (aref string i))
-                    ;; (setq chr (sref string i))
-		    (eq charset (eword-encode-char-type chr)))
-	  (setq i (1+ i))
-          ;; (setq i (char-next-index chr i))
-	  )
-	(setq dest (cons (cons charset (substring string 0 i)) dest)
-	      string (substring string i)
-	      len (- len i))))
-    (nreverse dest)))
-)
-
 
 ;;; @ word
 ;;;
-
-(unless (and (boundp 'mule-version)
-	     (null (string< mule-version "6.0"))
-	     (fboundp 'detect-mime-charset-string))
-(defun eword-encode-charset-words-to-words (charset-words)
-  (let (dest)
-    (while charset-words
-      (let* ((charset-word (car charset-words))
-	     (charset (car charset-word))
-	     )
-	(if charset
-	    (let ((charsets (list charset))
-		  (str (cdr charset-word))
-		  )
-	      (catch 'tag
-		(while (setq charset-words (cdr charset-words))
-		  (setq charset-word (car charset-words)
-			charset (car charset-word))
-		  (if (null charset)
-		      (throw 'tag nil)
-		    )
-		  (or (memq charset charsets)
-		      (setq charsets (cons charset charsets))
-		      )
-		  (setq str (concat str (cdr charset-word)))
-		  ))
-	      (setq dest (cons (cons charsets str) dest))
-	      )
-	  (setq dest (cons charset-word dest)
-		charset-words (cdr charset-words)
-		))))
-    (nreverse dest)
-    ))
-)
 
 
 ;;; @ rule
@@ -200,62 +128,12 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	(list charset encoding))))
 )
 
-(if (and (boundp 'mule-version)
-	 (null (string< mule-version "6.0"))
-	 (fboundp 'detect-mime-charset-string))
-;;for Emacs23 and later
 (defun ew-find-string-rule (string)
   (let ((charset (detect-mime-charset-string string)))
     (list charset
 	  (cdr (or (assq charset mime-header-charset-encoding-alist)
 		   (cons nil mime-header-default-charset-encoding))))))
 
-;; for other platforms
-(defun ew-find-string-rule (string)
-  (ew-find-charset-rule (find-charset-string string)))
-)
-
-;; [tomo:2002-11-05] The following code is a quick-fix for emacsen
-;; which is not depended on the Mule model.  We should redesign
-;; `eword-encode-split-string' to avoid to depend on the Mule model.
-(cond ((featurep 'utf-2000)
-;; for CHISE Architecture
-(defun tm-eword::words-to-ruled-words (wl &optional mode)
-  (let (mcs)
-    (mapcar (function
-	     (lambda (word)
-	       (setq mcs (detect-mime-charset-string (cdr word)))
-	       (make-ew-rword
-		(cdr word)
-		mcs
-		(cdr (or (assq mcs mime-header-charset-encoding-alist)
-			 (cons mcs mime-header-default-charset-encoding)))
-		mode)
-	       ))
-	    wl)))
-)
-
-((and (boundp 'mule-version)
-      (null (string< mule-version "6.0"))
-      (fboundp 'detect-mime-charset-string))
-;; for Emacs23 and later
-)
-
-(t
-;; for legacy Mule
-(defun tm-eword::words-to-ruled-words (wl &optional mode)
-  (mapcar (function
-	   (lambda (word)
-	     (let ((ret (ew-find-charset-rule (car word))))
-	       (make-ew-rword (cdr word) (car ret)(nth 1 ret) mode)
-	       )))
-	  wl))
-))
-
-(if (and (boundp 'mule-version)
-	 (null (string< mule-version "6.0"))
-	 (fboundp 'detect-mime-charset-string))
-;; for Emacs23 and later
 (defun tm-eword::string-to-ruled-words (string &optional mode)
   (let ((len (length string))
 	(beg 0)
@@ -283,14 +161,6 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	   (setq i (1+ i)))
 	 (nreverse
 	  (cons (cons (substring string beg len) spacep) dest)))))))
-
-;; for other platforms
-(defun tm-eword::string-to-ruled-words (string &optional mode)
-  (tm-eword::words-to-ruled-words
-   (eword-encode-charset-words-to-words
-    (eword-encode-divide-into-charset-words string))
-   mode))
-)
 
 (defun ew-space-process (seq)
   (let (prev a ac b c cc)

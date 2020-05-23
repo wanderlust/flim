@@ -36,8 +36,7 @@
 (require 'mime-def)
 (require 'mel)
 (require 'std11)
-
-(eval-when-compile (require 'cl))	; list*, pop
+(require 'cl-lib)
 
 
 ;;; @ Variables
@@ -697,7 +696,7 @@ be the result.")
 			   dest
 			   (if (string= last-str "")
 			       (cons (car ret) dest)
-			     (list* (car ret)
+			     (cl-list* (car ret)
 				    (eword-decode-string
 				     (mime-charset-decode-string
 				      last-str default-mime-charset)
