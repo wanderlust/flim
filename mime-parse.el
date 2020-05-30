@@ -25,7 +25,6 @@
 
 ;;; Code:
 
-(require 'custom)
 (require 'pccl)
 (require 'broken)
 

@@ -24,9 +24,8 @@
 
 ;;; Code:
 
-(require 'custom)			; std11-lexical-analyzer
 (require 'pccl)
-(require 'broken)
+(require 'static)
 
 ;;; @ fetch
 ;;;

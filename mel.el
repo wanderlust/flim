@@ -27,6 +27,7 @@
 
 (require 'mime-def)
 (require 'alist)
+(require 'pces)
 
 (defcustom mime-encoding-list
   '("7bit" "8bit" "binary" "base64" "quoted-printable")

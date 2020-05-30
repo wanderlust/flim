@@ -563,16 +563,16 @@ such as a version of Net$cape)."
 		  nil)))
 	  (if (and eword-decode-allow-incomplete-encoded-text
 		   rest
-		   (caaar rest)
-		   (string-equal (downcase charset) (downcase (caaar rest)))
-		   (equal language (cdaar rest)))
+		   (cl-caaar rest)
+		   (string-equal (downcase charset) (downcase (cl-caaar rest)))
+		   (equal language (cl-cdaar rest)))
 	      ;; Concatenate text of which the charset is the same.
 	      (setcdr (car rest) (concat (cdar rest) text))
 	    (push (cons (cons charset language) text) rest))
 	;; Don't decode encoded-word.
 	(push (cons (cons nil language) (nth 4 word)) rest)))
     (while rest
-      (setq word (or (and (setq charset (caaar rest))
+      (setq word (or (and (setq charset (cl-caaar rest))
 			  (condition-case err
 			      (mime-charset-decode-string (cdar rest) charset)
 			    (error
@@ -591,7 +591,7 @@ such as a version of Net$cape)."
 				      (t (char-to-string chr))))
 			      (std11-unfold-string word)
 			      "")))
-      (when (setq language (cdaar rest))
+      (when (setq language (cl-cdaar rest))
 	(put-text-property 0 (length word) 'mime-language language word))
       (setq words (concat word words)
 	    rest (cdr rest)))

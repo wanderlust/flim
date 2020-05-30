@@ -31,7 +31,8 @@
   ;; XXX: should provide char-list instead of string-to-char-list.
   ;; XXx: and also the macro `as-binary-process' should be provided
   ;; XXx: by the module "pces" which will be loaded by way of "poem".
-  (require 'poem))
+  (require 'pces)
+  )
 
 
 ;;; @ Quoted-Printable encoder
@@ -202,11 +203,11 @@ It calls external quoted-printable encoder specified by
 	 ((and (memq (char-after (point))
 		     (eval-when-compile
 		       ;; XXX: should provide char-list instead.
-		       (string-to-char-list quoted-printable-hex-chars)))
+		       (string-to-list quoted-printable-hex-chars)))
 	       (memq (char-after (1+ (point)))
 		     (eval-when-compile
 		       ;; XXX: should provide char-list instead.
-		       (string-to-char-list quoted-printable-hex-chars))))
+		       (string-to-list quoted-printable-hex-chars))))
 	  ;; encoded char.
 	  (insert
 	   (prog1

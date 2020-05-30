@@ -1,3 +1,20 @@
+2020-05-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* eword-decode.el (eword-decode-encoded-words): Fix cl
+	dependencies.
+
+	* eword-encode.el: Adjust dependencies.
+
+	* mel-q.el: Adjust dependencies.
+	(quoted-printable-internal-decode-region): Use string-to-list
+	instead of string-to-char-list.
+
+	* mel.el: Adjust dependencies.
+
+	* mime-parse.el: Adjust dependencies.
+
+	* std11.el: Adjust dependencies.
+
 2020-05-23  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	Use lexical binding.
