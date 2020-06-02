@@ -899,18 +899,17 @@ be the result."
 (defun std11-addr-to-string (seq)
   "Return string from lexical analyzed list SEQ
 represents addr-spec of RFC 822."
-  (mapconcat (function
-	      (lambda (token)
-		(let ((name (car token)))
-                  (cond
-                   ((eq name 'spaces) "")
-                   ((eq name 'comment) "")
-                   ((eq name 'quoted-string)
-                    (concat "\"" (cdr token) "\""))
-                   ((eq name 'domain-literal)
-                    (concat "[" (cdr token) "]"))
-                   (t (cdr token)))
-                  )))
+  (mapconcat (lambda (token)
+	       (let ((name (car token)))
+                 (cond
+                  ((eq name 'spaces) "")
+                  ((eq name 'comment) "")
+                  ((eq name 'quoted-string)
+                   (concat "\"" (cdr token) "\""))
+                  ((eq name 'domain-literal)
+                   (concat "[" (cdr token) "]"))
+                  (t (cdr token)))
+                 ))
 	     seq "")
   )
 
@@ -960,21 +959,20 @@ represents addr-spec of RFC 822."
 	   (if (eq (car addr) 'phrase-route-addr)
 	       (setq phrase
 		     (mapconcat
-		      (function
-		       (lambda (token)
-			 (let ((type (car token)))
-			   (cond ((eq type 'quoted-string)
-				  (std11-strip-quoted-pair (cdr token))
-				  )
-				 ((eq type 'comment)
-				  (concat "("
-					  (std11-comment-value-to-string
-					   (cdr token))
-					  ")")
-				  )
-				 (t
-				  (cdr token)
-				  )))))
+		      (lambda (token)
+			(let ((type (car token)))
+			  (cond ((eq type 'quoted-string)
+				 (std11-strip-quoted-pair (cdr token))
+				 )
+				((eq type 'comment)
+				 (concat "("
+					 (std11-comment-value-to-string
+					  (cdr token))
+					 ")")
+				 )
+				(t
+				 (cdr token)
+				 ))))
 		      (nth 1 addr) ""))
 	     )
 	   (cond ((> (length phrase) 0) phrase)

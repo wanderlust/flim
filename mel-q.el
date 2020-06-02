@@ -310,35 +310,33 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
 `phrase'."
   (let ((specials (cdr (or (assq mode q-encoding-special-chars-alist)
 			   (assq 'phrase q-encoding-special-chars-alist)))))
-    (mapconcat (function
-		(lambda (chr)
-		  (cond ((eq chr ? ) "_")
-			((or (< chr 32) (< 126 chr)
-			     (memq chr specials))
-			 (quoted-printable-quote-char chr))
-			(t
-			 (char-to-string chr)))))
+    (mapconcat (lambda (chr)
+		 (cond ((eq chr ? ) "_")
+		       ((or (< chr 32) (< 126 chr)
+			    (memq chr specials))
+			(quoted-printable-quote-char chr))
+		       (t
+			(char-to-string chr))))
 	       string "")))
 
 (defun q-encoding-decode-string (string)
   "Decode STRING which is encoded in Q-encoding and return the result."
   (let (q h l)
-    (mapconcat (function
-		(lambda (chr)
-		  (cond ((eq chr ?_) " ")
-			((eq chr ?=)
-			 (setq q t)
-			 "")
-			(q (setq h (quoted-printable-hex-char-to-num chr))
-			   (setq q nil)
-			   "")
-			(h (setq l (quoted-printable-hex-char-to-num chr))
-			   (prog1
-			       (char-to-string
-				(quoted-printable-num-to-raw-byte-char
-				 (logior (ash h 4) l)))
-			     (setq h nil)))
-			(t (char-to-string chr)))))
+    (mapconcat (lambda (chr)
+		 (cond ((eq chr ?_) " ")
+		       ((eq chr ?=)
+			(setq q t)
+			"")
+		       (q (setq h (quoted-printable-hex-char-to-num chr))
+			  (setq q nil)
+			  "")
+		       (h (setq l (quoted-printable-hex-char-to-num chr))
+			  (prog1
+			      (char-to-string
+			       (quoted-printable-num-to-raw-byte-char
+				(logior (ash h 4) l)))
+			    (setq h nil)))
+		       (t (char-to-string chr))))
 	       string "")))
 
 (mel-define-method-function (encoded-text-encode-string string (nil "Q"))

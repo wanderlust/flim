@@ -1,3 +1,19 @@
+2020-06-02  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	Strip use of function wrapping lambda.
+
+	* eword-encode.el
+	(eword-encode-Content-Disposition-field-body-broken-mime)
+	(eword-encode-Content-Type-field-body-broken-mime)
+	(eword-encode-Content-Disposition-field-body)
+	(eword-encode-Content-Type-field-body): Likewise.
+
+	* mel-q.el (q-encoding-decode-string, q-encoding-encode-string):
+	Likewise.
+
+	* std11.el (std11-full-name-string, std11-addr-to-string):
+	Likewise.
+
 2020-05-30  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* eword-decode.el (eword-decode-encoded-words): Fix cl

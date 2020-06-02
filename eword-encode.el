@@ -590,9 +590,8 @@ Optional second arg COLUMN is ignored."
       (error "Invalid Content-Type value: %s" field-body))
     (concat " " primary-type "/" (downcase (cdr (car tokens)))
             (mapconcat
-             (function
-              (lambda (param)
-                (concat ";\n " (car param) "=" (cdr param))))
+             (lambda (param)
+               (concat ";\n " (car param) "=" (cdr param)))
              (mime-encode-parameters
 	      (mime-parse-parameters (cdr tokens)))
              ""))))
@@ -606,9 +605,8 @@ Optional second arg COLUMN is ignored."
       (error "Invalid Content-Disposition value: %s" field-body))
     (concat " " (cdr (car tokens))
             (mapconcat
-             (function
-              (lambda (param)
-                (concat ";\n " (car param) "=" (cdr param))))
+             (lambda (param)
+               (concat ";\n " (car param) "=" (cdr param)))
              (mime-encode-parameters
 	      (mime-parse-parameters (cdr tokens)))
              ""))))
@@ -630,9 +628,8 @@ Optional second arg COLUMN is ignored."
       (error "Invalid Content-Type value: %s" field-body))
     (concat " " primary-type "/" (downcase (cdr (car tokens)))
             (mapconcat
-             (function
-              (lambda (param)
-                (concat ";\n " (car param) "=\"" (cdr param) "\"")))
+             (lambda (param)
+               (concat ";\n " (car param) "=\"" (cdr param) "\""))
              (mime-encode-parameters-broken-mime
 	      (mime-parse-parameters (cdr tokens)))
              ""))))
@@ -646,9 +643,8 @@ Optional second arg COLUMN is ignored."
       (error "Invalid Content-Disposition value: %s" field-body))
     (concat " " (cdr (car tokens))
             (mapconcat
-             (function
-              (lambda (param)
-                (concat ";\n " (car param) "=\"" (cdr param) "\"")))
+             (lambda (param)
+               (concat ";\n " (car param) "=\"" (cdr param) "\""))
              (mime-encode-parameters-broken-mime
 	      (mime-parse-parameters (cdr tokens)))
              ""))))
