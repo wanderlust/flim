@@ -60,7 +60,7 @@
 	    (forward-char)
 	    (setq col 0))
 	   (t
-	    (setq chr (logand (char-after (point)) 255))
+	    (setq chr (logand (following-char) 255))
 	    (cond
 	     ((and (memq chr '(?  ?\t))	; encode WSP char before CRLF.
 		   (eq (char-after (1+ (point))) ?\n))
@@ -200,7 +200,7 @@ It calls external quoted-printable encoder specified by
 	 ((eolp)
 	  ;; unfold soft line break.
 	  (delete-region (1- (point))(1+ (point))))
-	 ((and (memq (char-after (point))
+	 ((and (memq (following-char)
 		     (eval-when-compile
 		       ;; XXX: should provide char-list instead.
 		       (string-to-list quoted-printable-hex-chars)))
@@ -213,7 +213,7 @@ It calls external quoted-printable encoder specified by
 	   (prog1
 	       (quoted-printable-num-to-raw-byte-char
 		(logior
-		 (ash (quoted-printable-hex-char-to-num (char-after (point))) 4)
+		 (ash (quoted-printable-hex-char-to-num (following-char)) 4)
 		 (quoted-printable-hex-char-to-num (char-after (1+ (point))))))
 	     (delete-region (1- (point))(+ 2 (point))))))
 	 (t

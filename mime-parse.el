@@ -257,7 +257,7 @@ be the result."
                                  (concat mime-attribute-char-regexp "+")))
                (goto-char (match-end 0)))
              (not (eobp)))
-      (insert (prog1 (format "%%%02X" (char-int (char-after)))
+      (insert (prog1 (format "%%%02X" (char-int (following-char)))
                 (delete-region (point)(1+ (point))))))
     (buffer-string)))
 
@@ -403,14 +403,14 @@ return value is just a string."
 	  (while (> (point-max) limit)
 	    (goto-char (- limit 3))		; (length "%XX") => 3
 	    (cond
-	     ((eq (char-after) ?%)
+	     ((eq (following-char) ?%)
 	      (forward-char 3))
 	     ((progn
 		(forward-char)
-		(eq (char-after) ?%)))
+		(eq (following-char) ?%)))
 	     ((progn
 		(forward-char)
-		(eq (char-after) ?%)))
+		(eq (following-char) ?%)))
 	     (t
 	      (forward-char)))
 	    (setq result (cons (prog1 (buffer-substring (point-min)(point))
@@ -443,8 +443,7 @@ return value is just a string."
 		  (if language (symbol-name language) "")
 		  ?')
 	  (while (re-search-forward mime-non-attribute-char-regexp nil t)
-	    (insert (prog1 (format "%%%02X" (char-int
-					     (char-after (1- (point)))))
+	    (insert (prog1 (format "%%%02X" (preceding-char))
 		      (delete-region (1- (point))(point)))))
 	  (mime-divide-extended-parameter name (buffer-string)))))))
 
@@ -468,7 +467,7 @@ just a string is returned."
 	  (while (> (point-max) limit)
 	    (goto-char (point-min))
 	    (while (< (point) limit)
-	      (when (eq (char-after) ?\\)
+	      (when (eq (following-char) ?\\)
 		(forward-char))
 	      (forward-char))
 	    (setq result (cons (concat "\""
@@ -496,7 +495,7 @@ return value is just a string."
     (insert value)
     (goto-char (point-min))
     (while (not (eobp))
-      (when (memq (char-after) '(?\\ ?\"))
+      (when (memq (following-char) '(?\\ ?\"))
 	(insert ?\\))
       (forward-char 1))
     (mime-divide-regular-parameter name (buffer-string))))

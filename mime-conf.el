@@ -34,7 +34,7 @@
 ;;;
 
 (defsubst mime-mailcap-skip-comment ()
-  (let ((chr (char-after (point))))
+  (let ((chr (following-char)))
     (when (and chr
 	       (or (= chr ?\n)
 		   (= chr ?#)))
@@ -60,7 +60,7 @@
 (defsubst mime-mailcap-look-at-type-field ()
   (let ((type (mime-mailcap-look-at-token)))
     (if type
-	(if (eq (char-after (point)) ?/)
+	(if (eq (following-char) ?/)
 	    (progn
 	      (forward-char)
 	      (let ((subtype (mime-mailcap-look-at-token)))
@@ -87,7 +87,7 @@
 ;;;
 
 (defsubst mime-mailcap-look-at-schar ()
-  (let ((chr (char-after (point))))
+  (let ((chr (following-char)))
     (if (and chr
 	     (>= chr ? )
 	     (/= chr ?\;)
@@ -98,10 +98,10 @@
 	  (forward-char)))))
 
 (defsubst mime-mailcap-look-at-qchar ()
-  (when (eq (char-after (point)) ?\\)
+  (when (eq (following-char) ?\\)
     (prog2
 	(forward-char)
-	(char-after (point))
+	(following-char)
       (forward-char))))
 
 (defsubst mime-mailcap-look-at-mtext ()

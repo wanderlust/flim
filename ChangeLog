@@ -1,3 +1,20 @@
+2020-06-03  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	Use following-char and preceding-char instead of char-after and
+	char-before for the current point.
+
+	* mel-q.el (quoted-printable-internal-encode-region)
+	(quoted-printable-internal-decode-region): Likewise.
+
+	* mime-conf.el (mime-mailcap-skip-comment)
+	(mime-mailcap-look-at-type-field, mime-mailcap-look-at-schar)
+	(mime-mailcap-look-at-qchar): Likewise.
+
+	* mime-parse.el (mime-decode-parameter-encode-segment)
+	(mime-divide-extended-parameter, mime-encode-extended-parameter)
+	(mime-divide-regular-parameter, mime-encode-regular-parameter):
+	Likewise.
+
 2020-06-02  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	Strip use of function wrapping lambda.
