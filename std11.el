@@ -138,11 +138,9 @@ If BOUNDARY is not nil, it is used as message header separator."
 	  (while (re-search-forward std11-field-head-regexp nil t)
 	    (setq field
 		  (buffer-substring (match-beginning 0) (std11-field-end)))
-	    (if (string-match regexp field)
-		(setq header (concat header field "\n"))
-	      ))
-	  header)
-	))))
+	    (when (string-match regexp field)
+	      (setq header (cons "\n" (cons field header)))))
+	  (apply 'concat (nreverse header)))))))
 
 (defun std11-header-string-except (regexp &optional boundary)
   "Return string of message header fields not matched by REGEXP.
@@ -157,10 +155,8 @@ If BOUNDARY is not nil, it is used as message header separator."
 	    (setq field
 		  (buffer-substring (match-beginning 0) (std11-field-end)))
 	    (if (not (string-match regexp field))
-		(setq header (concat header field "\n"))
-	      ))
-	  header)
-	))))
+		(setq header (cons "\n" (cons field header)))))
+	  (apply 'concat (nreverse header)))))))
 
 (defun std11-collect-field-names (&optional boundary)
   "Return list of all field-names of the message header in current buffer.
@@ -816,17 +812,15 @@ be the result."
 	       (and (setq ret (std11-parse-mailbox lal))
 		    (setq mbox (list (car ret)))
 		    (setq lal (cdr ret))
-		    (progn
-		      (while (and (setq ret (std11-parse-ascii-token lal))
-				  (setq comma (car ret))
-				  (string-equal
-				   (cdr (assq 'specials comma)) ",")
-				  (setq lal (cdr ret))
-				  (setq ret (std11-parse-mailbox lal))
-				  (setq mbox (cons (car ret) mbox))
-				  (setq lal (cdr ret))
-				  )
-			)))
+		    (while (and (setq ret (std11-parse-ascii-token lal))
+				(setq comma (car ret))
+				(string-equal
+				 (cdr (assq 'specials comma)) ",")
+				(setq lal (cdr ret))
+				(setq ret (std11-parse-mailbox lal))
+				(setq mbox (cons (car ret) mbox))
+				(setq lal (cdr ret))
+				)))
 	       (and (setq ret (std11-parse-ascii-token lal))
 		    (setq semicolon (car ret))
 		    (string-equal (cdr (assq 'specials semicolon)) ";")
@@ -902,15 +896,14 @@ represents addr-spec of RFC 822."
   (mapconcat (lambda (token)
 	       (let ((name (car token)))
                  (cond
-                  ((eq name 'spaces) "")
-                  ((eq name 'comment) "")
+                  ((memq name '(paces comment)) nil)
                   ((eq name 'quoted-string)
                    (concat "\"" (cdr token) "\""))
                   ((eq name 'domain-literal)
                    (concat "[" (cdr token) "]"))
                   (t (cdr token)))
                  ))
-	     seq "")
+	     seq nil)
   )
 
 ;;;###autoload
@@ -999,12 +992,12 @@ represents addr-spec of RFC 822."
 		 (len (length str)))
 	    (setq lal (cdr ret))
 	    (if (> (+ len column) 76)
-		(setq dest (concat dest "\n " str)
+		(setq dest (cons str (cons "\n " dest))
 		      column (1+ len))
 	      (setq dest str
 		    column (+ column len))
 	      ))
-	(setq dest (concat dest (cdr (car lal)))
+	(setq dest (cons (cdr (car lal)) dest)
 	      lal (cdr lal))
 	))
     (while lal
@@ -1014,15 +1007,15 @@ represents addr-spec of RFC 822."
 		   (len (1+ (length str))))
 	      (setq lal (cdr ret))
 	      (if (> (+ len column) 76)
-		  (setq dest (concat dest "\n " str)
+		  (setq dest (cons str (cons "\n " dest))
 			column len)
-		(setq dest (concat dest " " str)
+		(setq dest (cons str (cons " " dest))
 		      column (+ column len))
 		))
-	  (setq dest (concat dest (cdr (car lal)))
+	  (setq dest (cons (cdr (car lal)) dest)
 		lal (cdr lal))
 	  )))
-    dest))
+    (apply 'concat (nreverse dest))))
 
 
 ;;; @ parser with lexical analyzer

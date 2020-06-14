@@ -1,3 +1,20 @@
+2020-06-14  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	Minor refactorings.
+
+	* eword-decode.el (eword-decode-encoded-words)
+	(eword-analyze-comment, eword-decode-token): Reduce use of concat
+	function.
+
+	* sasl.el (sasl-unique-id-number-base36): Replace char-to-string
+	by list for concat function's arguments.
+
+	* smtp.el (smtp-send-data): Minor refactoring.
+
+	* std11.el (std11-header-string, std11-header-string-except)
+	(std11-fill-msg-id-list-string): Reduce use of concat function.
+	(std11-parse-group, std11-addr-to-string): Minor refactorings.
+
 2020-06-05  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* FLIM-MK: Assume Emacs 24 or later.

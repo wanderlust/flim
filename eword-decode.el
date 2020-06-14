@@ -578,24 +578,23 @@ such as a version of Net$cape)."
 			    (error
 			     (message "%s" (error-message-string err))
 			     nil)))
-		     (concat (when (cdr rest) " ")
-			     (cdar rest)
-			     (when (and words
-					(not (eq (string-to-char words) ? )))
-			       " "))))
+		     (concat
+		      (when (cdr rest) " ")
+		      (cdar rest)
+		      (when (and words
+				 (not (eq (string-to-char (car words)) ? )))
+			" "))))
       (when must-unfold
 	(setq word (mapconcat (lambda (chr)
-				(cond ((eq chr ?\n) "")
-				      ((eq chr ?\r) "")
+				(cond ((memq chr '(?\n ?\r)) nil)
 				      ((eq chr ?\t) " ")
-				      (t (char-to-string chr))))
-			      (std11-unfold-string word)
-			      "")))
+				      (t (list chr))))
+			      (std11-unfold-string word) nil)))
       (when (setq language (cl-cdaar rest))
 	(put-text-property 0 (length word) 'mime-language language word))
-      (setq words (concat word words)
-	    rest (cdr rest)))
-    words))
+      (when (> (length word) 0) (setq words (cons word words)))
+      (setq rest (cdr rest)))
+    (apply 'concat words)))
 
 ;;; @ lexical analyze
 ;;;
@@ -660,15 +659,16 @@ be the result.")
 		 (if (>= i len)
 		     (throw 'tag nil)
 		   )
-		 (setq last-str (concat last-str
-					(substring string from (1- i))
-					(char-to-string (aref string i)))
+		 (setq last-str (cons (list (aref string i))
+				      (cons (substring string from (1- i))
+					    last-str))
 		       i (1+ i)
 		       from i)
 		 )
 		((eq chr ?\))
-		 (setq ret (concat last-str
-				   (substring string from i)))
+		 (setq ret
+		       (apply 'concat
+			      (substring string from i) (nreverse last-str)))
 		 (throw 'tag (cons
 			      (cons 'comment
 				    (nreverse
@@ -686,8 +686,8 @@ be the result.")
 		((eq chr ?\()
 		 (if (setq ret (eword-analyze-comment string i must-unfold))
 		     (setq last-str
-			   (concat last-str
-				   (substring string from i))
+			   (apply 'concat (substring string from i)
+				  (nreverse last-str))
 			   dest
 			   (if (string= last-str "")
 			       (cons (car ret) dest)
@@ -700,7 +700,7 @@ be the result.")
 			     )
 			   i (cdr ret)
 			   from i
-			   last-str "")
+			   last-str nil)
 		   (throw 'tag nil)
 		   ))
 		(t
@@ -806,18 +806,15 @@ characters encoded as encoded-words or invalid \"raw\" format.
     (cond ((eq type 'quoted-string)
 	   (std11-wrap-as-quoted-string value))
 	  ((eq type 'comment)
-	   (let ((dest ""))
+	   (let (dest)
 	     (while value
-	       (setq dest (concat dest
-				  (if (stringp (car value))
-				      (std11-wrap-as-quoted-pairs
-				       (car value) '(?\( ?\)))
-				    (eword-decode-token (car value))
-				    ))
-		     value (cdr value))
-	       )
-	     (concat "(" dest ")")
-	     ))
+	       (setq dest (cons (if (stringp (car value))
+				    (std11-wrap-as-quoted-pairs
+				     (car value) '(?\( ?\)))
+				  (eword-decode-token (car value)))
+				dest)
+		     value (cdr value)))
+	     (apply 'concat "(" (nreverse (cons ")" dest)))))
 	  (t value))))
 
 (defun eword-extract-address-components (string &optional start)

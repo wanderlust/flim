@@ -695,9 +695,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	(encoder
 	 (smtp-connection-encoder-internal connection)))
     ;; Escape "." at start of a line.
-    (if (eq (string-to-char data) ?.)
-	(setq data (concat "." data "\r\n"))
-      (setq data (concat data "\r\n")))
+    (setq data (concat (when (eq (string-to-char data) ?.) ".") data "\r\n"))
     (if encoder
 	(setq data (funcall encoder data)))
     (process-send-string process data)))

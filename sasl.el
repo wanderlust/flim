@@ -217,8 +217,7 @@ It contain at least 64 bits of entropy."
 	(= len 0))
       ""
     (concat (sasl-unique-id-number-base36 (/ num 36) (1- len))
-	    (char-to-string (aref "zyxwvutsrqponmlkjihgfedcba9876543210"
-				  (% num 36))))))
+	    (list (aref "zyxwvutsrqponmlkjihgfedcba9876543210" (% num 36))))))
 
 ;;; PLAIN (RFC2595 Section 6)
 (defconst sasl-plain-steps
