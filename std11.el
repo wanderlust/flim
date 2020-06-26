@@ -896,7 +896,7 @@ represents addr-spec of RFC 822."
   (mapconcat (lambda (token)
 	       (let ((name (car token)))
                  (cond
-                  ((memq name '(paces comment)) nil)
+                  ((memq name '(spaces comment)) nil)
                   ((eq name 'quoted-string)
                    (concat "\"" (cdr token) "\""))
                   ((eq name 'domain-literal)
