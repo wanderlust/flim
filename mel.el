@@ -340,7 +340,7 @@ Default value is `phrase'."
     (while (< i len)
       (setq chr (aref string i))
       (if (or (Q-encoding-printable-char-p chr mode)
-	      (eq chr ? ))
+	      (eq chr ?\s))
 	  (setq l (+ l 1))
 	(setq l (+ l 3)))
       (setq i (+ i 1)))

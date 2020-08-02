@@ -582,7 +582,7 @@ such as a version of Net$cape)."
 		      (when (cdr rest) " ")
 		      (cdar rest)
 		      (when (and words
-				 (not (eq (string-to-char (car words)) ? )))
+				 (not (eq (string-to-char (car words)) ?\s)))
 			" "))))
       (when must-unfold
 	(setq word (mapconcat (lambda (chr)

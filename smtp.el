@@ -736,11 +736,11 @@ BUFFER may be a buffer or a buffer name which contains mail message."
 	  (erase-buffer)
 	  (insert " " simple-address-list "\n")
 	  ;; newline --> blank
-	  (subst-char-in-region (point-min) (point-max) 10 ?  t)
+	  (subst-char-in-region (point-min) (point-max) 10 ?\s t)
 	  ;; comma   --> blank
-	  (subst-char-in-region (point-min) (point-max) ?, ?  t)
+	  (subst-char-in-region (point-min) (point-max) ?, ?\s t)
 	  ;; tab     --> blank
-	  (subst-char-in-region (point-min) (point-max)	 9 ?  t)
+	  (subst-char-in-region (point-min) (point-max)	 9 ?\s t)
 
 	  (goto-char (point-min))
 	  ;; tidyness in case hook is not robust when it looks at this

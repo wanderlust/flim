@@ -418,7 +418,7 @@ be the result."
   :type '(repeat function))
 
 (eval-and-compile
-  (defconst std11-space-char-list '(?  ?\t ?\n))
+  (defconst std11-space-char-list '(?\s ?\t ?\n))
   (defconst std11-special-char-list '(?\] ?\[
 					  ?\( ?\) ?< ?> ?@
 					  ?, ?\; ?: ?\\ ?\"

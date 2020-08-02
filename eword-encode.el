@@ -151,9 +151,9 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		     (cons nil mime-header-default-charset-encoding)))
 	    mode)))
        (progn
-	 (setq spacep (memq (aref string 0) '(?  ?\t ?\n)))
+	 (setq spacep (memq (aref string 0) '(?\s ?\t ?\n)))
 	 (while (< i len)
-	   (unless (eq spacep (memq (aref string i) '(?  ?\t ?\n)))
+	   (unless (eq spacep (memq (aref string i) '(?\s ?\t ?\n)))
 	     (setq dest (cons (cons (substring string beg i) spacep) dest))
 	     (setq beg i)
 	     (setq spacep (null spacep)))
@@ -238,7 +238,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 		      )
 		 (setq rwl (cdr rwl))
 		 )
-		((memq (aref string 0) '(?  ?\t))
+		((memq (aref string 0) '(?\s ?\t))
 		 (setq string (concat "\n" string)
 		       len (length string)
 		       rwl (cdr rwl))
@@ -316,7 +316,7 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 	    (catch 'success
 	      (while (catch 'found
 		       (while (>= i 0)
-			 (cond ((memq (setq c (aref dest i)) '(?  ?\t))
+			 (cond ((memq (setq c (aref dest i)) '(?\s ?\t))
 				(if (memq i folded-points)
 				    (throw 'found nil)
 				  (setq folded-points (cons i folded-points))

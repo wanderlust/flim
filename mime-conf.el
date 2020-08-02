@@ -89,7 +89,7 @@
 (defsubst mime-mailcap-look-at-schar ()
   (let ((chr (following-char)))
     (if (and chr
-	     (>= chr ? )
+	     (>= chr ?\s)
 	     (/= chr ?\;)
 	     (/= chr ?\\)
 	     )

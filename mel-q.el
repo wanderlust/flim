@@ -62,7 +62,7 @@
 	   (t
 	    (setq chr (logand (following-char) 255))
 	    (cond
-	     ((and (memq chr '(?  ?\t))	; encode WSP char before CRLF.
+	     ((and (memq chr '(?\s ?\t))	; encode WSP char before CRLF.
 		   (eq (char-after (1+ (point))) ?\n))
 	      (forward-char)
 	      (insert "=\n")
@@ -73,7 +73,7 @@
 		   (eq (char-after (1+  (point))) ?r)
 		   (eq (char-after (+ 2 (point))) ?o)
 		   (eq (char-after (+ 3 (point))) ?m)
-		   (eq (char-after (+ 4 (point))) ? ))
+		   (eq (char-after (+ 4 (point))) ?\s))
 	      (delete-region (point)(1+ (point)))
 	      (insert "=46")		; moved to ?r.
 	      (forward-char 4)		; skip "rom ".
@@ -311,7 +311,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
   (let ((specials (cdr (or (assq mode q-encoding-special-chars-alist)
 			   (assq 'phrase q-encoding-special-chars-alist)))))
     (mapconcat (lambda (chr)
-		 (cond ((eq chr ? ) "_")
+		 (cond ((eq chr ?\s) "_")
 		       ((or (< chr 32) (< 126 chr)
 			    (memq chr specials))
 			(quoted-printable-quote-char chr))
