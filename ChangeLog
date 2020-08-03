@@ -1,3 +1,27 @@
+2020-08-03  Naoya Yamashita  <conao3@gmail.com>
+
+	Use ?\s instead of ?(whitespace).
+	Cf. https://github.com/wanderlust/flim/pull/10
+
+	* eword-decode.el (eword-decode-encoded-words): Likewise.
+
+	* eword-encode.el (eword-encode-rword-list, ew-encode-rword-1)
+	(tm-eword::string-to-ruled-words): Likewise.
+
+	* mel-q-ccl.el (mel-ccl-decode-quoted-printable-generic)
+	(mel-ccl-encode-quoted-printable-generic, mel-ccl-decode-q):
+	Likewise.
+
+	* mel-q.el (quoted-printable-internal-encode-region): Likewise.
+
+	* mel.el (Q-encoded-text-length): Likewise.
+
+	* mime-conf.el (mime-mailcap-look-at-schar): Likewise
+
+	* smtp.el (smtp-deduce-address-list): Likewise.
+
+	* std11.el (std11-space-char-list): Likewise.
+
 2020-06-26  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	* std11.el (std11-addr-to-string): Fix typo.
