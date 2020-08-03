@@ -151,8 +151,7 @@ TOKEN should be obtained with `oauth2-request-access'."
                          :refresh-token
                          ,(oauth2-token-refresh-token token)
                          :access-response
-                         ,(oauth2-token-access-response token)
-                         ))
+                         ,(oauth2-token-access-response token)))
       (plstore-save plstore)))
   token)
 

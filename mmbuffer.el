@@ -35,8 +35,7 @@
 		      body-start
 		      body-end))
 
-  (luna-define-internal-accessors 'mime-buffer-entity)
-  )
+  (luna-define-internal-accessors 'mime-buffer-entity))
 
 (luna-define-method initialize-instance :after ((entity mime-buffer-entity)
 						&rest _init-args)
@@ -63,8 +62,7 @@
 	  (setq header-end (point-min)
 		body-start (point-min)))
 	(mime-buffer-entity-set-header-end-internal entity header-end)
-	(mime-buffer-entity-set-body-start-internal entity body-start)
-	)
+	(mime-buffer-entity-set-body-start-internal entity body-start))
       (or (mime-entity-content-type-internal entity)
 	  (save-restriction
 	    (narrow-to-region header-start header-end)
@@ -72,15 +70,11 @@
 	     entity
 	     (let ((str (std11-fetch-field "Content-Type")))
 	       (if str
-		   (mime-parse-Content-Type str)
-		 )))
-	    ))
-      ))
+		   (mime-parse-Content-Type str))))))))
   entity)
 
 (luna-define-method mime-entity-name ((entity mime-buffer-entity))
-  (buffer-name (mime-buffer-entity-buffer-internal entity))
-  )
+  (buffer-name (mime-buffer-entity-buffer-internal entity)))
 
 
 ;;; @ entity
@@ -89,8 +83,7 @@
 (luna-define-method mime-insert-entity ((entity mime-buffer-entity))
   (insert-buffer-substring (mime-buffer-entity-buffer-internal entity)
 			   (mime-buffer-entity-header-start-internal entity)
-			   (mime-buffer-entity-body-end-internal entity))
-  )
+			   (mime-buffer-entity-body-end-internal entity)))
 
 (luna-define-method mime-write-entity ((entity mime-buffer-entity) filename)
   (with-current-buffer (mime-buffer-entity-buffer-internal entity)
@@ -115,8 +108,7 @@
 (luna-define-method mime-insert-entity-body ((entity mime-buffer-entity))
   (insert-buffer-substring (mime-buffer-entity-buffer-internal entity)
 			   (mime-buffer-entity-body-start-internal entity)
-			   (mime-buffer-entity-body-end-internal entity))
-  )
+			   (mime-buffer-entity-body-end-internal entity)))
 
 (luna-define-method mime-write-entity-body ((entity mime-buffer-entity)
 					    filename)
@@ -150,8 +142,7 @@
     (mime-write-decoded-region (mime-buffer-entity-body-start-internal entity)
 			       (mime-buffer-entity-body-end-internal entity)
 			       filename
-			       (or (mime-entity-encoding entity) "7bit"))
-    ))
+			       (or (mime-entity-encoding entity) "7bit"))))
 
 
 ;;; @ header field
@@ -181,8 +172,7 @@
    (mime-buffer-entity-buffer-internal entity)
    (mime-buffer-entity-header-start-internal entity)
    (mime-buffer-entity-header-end-internal entity)
-   invisible-fields visible-fields)
-  )
+   invisible-fields visible-fields))
 
 
 ;;; @ header buffer
@@ -268,8 +258,7 @@
 	   (dc-ctl
 	    (if (eq (mime-content-type-subtype content-type) 'digest)
 		(make-mime-content-type 'message 'rfc822)
-	      (make-mime-content-type 'text 'plain)
-	      ))
+	      (make-mime-content-type 'text 'plain)))
 	   (body-start (mime-buffer-entity-body-start-internal entity))
 	   (body-end (mime-buffer-entity-body-end-internal entity)))
       (save-restriction
@@ -292,25 +281,20 @@
 		(save-restriction
 		  (narrow-to-region cb ce)
 		  (setq ret (mime-parse-message representation-type dc-ctl
-						entity (cons i node-id)))
-		  )
+						entity (cons i node-id))))
 		(setq children (cons ret children))
 		(goto-char (setq cb ncb))
-		(setq i (1+ i))
-		)
+		(setq i (1+ i)))
 	      (setq ce (point-max))
 	      (save-restriction
 		(narrow-to-region cb ce)
 		(setq ret (mime-parse-message representation-type dc-ctl
-					      entity (cons i node-id)))
-		)
+					      entity (cons i node-id))))
 	      (setq children (cons ret children))
-	      (mime-entity-set-children-internal entity (nreverse children))
-	      )
+	      (mime-entity-set-children-internal entity (nreverse children)))
 	  (mime-entity-set-content-type-internal
 	   entity (make-mime-content-type 'message 'x-broken))
-	  nil)
-	))))
+	  nil)))))
 
 (defun mmbuffer-parse-encapsulated (entity &optional external
 					   representation-type)

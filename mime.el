@@ -61,9 +61,7 @@ current-buffer, and return it.")
   "Parse STRING as cid URI.")
 
 (autoload 'mime-parse-buffer "mime-parse"
-  "Parse BUFFER as a MIME message.")
-
-)
+  "Parse BUFFER as a MIME message."))
 
 (autoload 'mime-encode-field-body "eword-encode"
   "Encode FIELD-BODY as FIELD-NAME, and return the result.")
@@ -110,9 +108,7 @@ representation-type."
 	message
       (let ((rc (nth sn (mime-entity-children message))))
 	(if rc
-	    (mime-find-entity-from-number (cdr entity-number) rc)
-	  ))
-      )))
+	    (mime-find-entity-from-number (cdr entity-number) rc))))))
 
 (defun mime-find-entity-from-node-id (entity-node-id message)
   "Return entity from ENTITY-NODE-ID in MESSAGE."
@@ -273,8 +269,7 @@ If MESSAGE is specified, it is regarded as root entity."
       (let ((ret (mime-entity-fetch-field entity "Content-Type")))
 	(if ret
 	    (mime-entity-set-content-type-internal
-	     entity (mime-parse-Content-Type ret))
-	  ))))
+	     entity (mime-parse-Content-Type ret))))))
 
 (defun mime-entity-content-disposition (entity)
   "Return content-disposition of ENTITY."
@@ -282,8 +277,7 @@ If MESSAGE is specified, it is regarded as root entity."
       (let ((ret (mime-entity-fetch-field entity "Content-Disposition")))
 	(if ret
 	    (mime-entity-set-content-disposition-internal
-	     entity (mime-parse-Content-Disposition ret))
-	  ))))
+	     entity (mime-parse-Content-Disposition ret))))))
 
 (defun mime-entity-encoding (entity &optional default-encoding)
   "Return content-transfer-encoding of ENTITY.
@@ -295,8 +289,7 @@ default value."
 	(mime-entity-set-encoding-internal
 	 entity
 	 (or (and ret (mime-parse-Content-Transfer-Encoding ret))
-	     default-encoding "7bit"))
-	)))
+	     default-encoding "7bit")))))
 
 (defvar mime-field-parser-alist
   '((Return-Path	. std11-parse-route-addr)
@@ -324,8 +317,7 @@ default value."
     (In-Reply-To	. std11-parse-msg-ids)
     (References		. std11-parse-msg-ids)
     
-    (Content-Id		. mime-parse-msg-id)
-    ))
+    (Content-Id		. mime-parse-msg-id)))
 
 (defun mime-entity-read-field (entity field-name)
   (let ((sym (if (symbolp field-name)
@@ -334,14 +326,11 @@ default value."
 		   (setq field-name (symbol-name field-name)))
 	       (intern (capitalize field-name)))))
     (cond ((eq sym 'Content-Type)
-	   (mime-entity-content-type entity)
-	   )
+	   (mime-entity-content-type entity))
 	  ((eq sym 'Content-Disposition)
-	   (mime-entity-content-disposition entity)
-	   )
+	   (mime-entity-content-disposition entity))
 	  ((eq sym 'Content-Transfer-Encoding)
-	   (mime-entity-encoding entity)
-	   )
+	   (mime-entity-encoding entity))
 	  (t
 	   (let* ((header (mime-entity-parsed-header-internal entity))
 		  (field (cdr (assq sym header))))
@@ -355,8 +344,7 @@ default value."
 			   (if parser
 			       (funcall parser
 					(eword-lexical-analyze field-body))
-			     (mime-decode-field-body field-body sym 'plain)
-			     ))
+			     (mime-decode-field-body field-body sym 'plain)))
 		     (mime-entity-set-parsed-header-internal
 		      entity (put-alist sym field header))
 		     field))))))))
@@ -385,8 +373,7 @@ default value."
 	(mime-insert-entity-body entity)
 	(if (re-search-forward "^begin [0-9]+ " nil t)
 	    (if (looking-at ".+$")
-		(buffer-substring (match-beginning 0)(match-end 0))
-	      )))))
+		(buffer-substring (match-beginning 0)(match-end 0)))))))
 
 (defun mime-entity-filename (entity)
   "Return filename of ENTITY."

@@ -39,22 +39,19 @@
 	(mime-write-decoded-region
 	 (mime-buffer-entity-body-start-internal entity)
 	 (mime-buffer-entity-body-end-internal entity)
-	 filename encoding)
-	))))
+	 filename encoding)))))
 
 (mm-define-method write-entity ((entity cooked) filename)
   (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (write-region (mime-buffer-entity-header-start-internal entity)
 		  (mime-buffer-entity-body-end-internal entity)
-		  filename)
-    ))
+		  filename)))
 
 (mm-define-method write-entity-body ((entity cooked) filename)
   (with-current-buffer (mime-buffer-entity-buffer-internal entity)
     (write-region (mime-buffer-entity-body-start-internal entity)
 		  (mime-buffer-entity-body-end-internal entity)
-		  filename)
-    ))
+		  filename)))
 
 (luna-define-method mime-insert-header ((entity mime-cooked-entity)
 					&optional invisible-fields
@@ -63,8 +60,7 @@
     (funcall (car (luna-class-find-functions
 		   (luna-find-class 'mime-buffer-entity)
 		   'mime-insert-header))
-	     entity invisible-fields visible-fields)
-    ))
+	     entity invisible-fields visible-fields)))
 
 (mm-define-method insert-text-content ((entity cooked))
   (let ((str (mime-entity-content entity)))
@@ -77,8 +73,7 @@
 					(mime-entity-content-type entity)
 					"charset")
 				       default-mime-charset)
-				   'CRLF)
-       ))))
+				   'CRLF)))))
 
 
 ;;; @ end

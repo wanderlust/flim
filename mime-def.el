@@ -96,8 +96,7 @@
   '(("X-Nsubject" . iso-2022-jp-2)
     ("Newsgroups" . nil)
     ("Message-ID" . nil)
-    (t            . mime)
-    )
+    (t            . mime))
   "*Alist to specify field encoding method.
 Its key is field-name, value is encoding method.
 
@@ -302,9 +301,7 @@ service."
 	   `((defun ,name ,args
 	       ,@rest
 	       (funcall (mel-find-function ',name ,(car (last args)))
-			,@(luna-arglist-to-arguments (butlast args)))
-	       )))
-     ))
+			,@(luna-arglist-to-arguments (butlast args))))))))
 
 (put 'mel-define-service 'lisp-indent-function 'defun)
 
@@ -318,10 +315,8 @@ service."
 	  (while (and rest
 		      (progn
 			(require (car rest))
-			(null (setq f (intern-soft encoding ob-array)))
-			))
-	    (setq rest (cdr rest))
-	    )
+			(null (setq f (intern-soft encoding ob-array)))))
+	    (setq rest (cdr rest)))
 	  f))))
 
 (defsubst mel-copy-method (service src-backend dst-backend)
@@ -331,8 +326,7 @@ service."
     (when f
       (setq sym (intern dst-backend oa))
       (or (fboundp sym)
-	  (fset sym (symbol-function f))
-	  ))))
+	  (fset sym (symbol-function f))))))
        
 (defsubst mel-copy-backend (src-backend dst-backend)
   (let ((services mel-service-list))
@@ -346,8 +340,7 @@ If PARENTS is specified, TYPE inherits PARENTS.
 Each parent must be backend name (string)."
   (cons 'progn
 	(mapcar (lambda (parent)
-		  `(mel-copy-backend ,parent ,type)
-		  )
+		  `(mel-copy-backend ,parent ,type))
 		parents)))
 
 (defmacro mel-define-method (name args &rest body)
@@ -388,8 +381,7 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
 	 (class (nth 1 specializer)))
     `(progn
        (define-function ,function
-	 (intern ,class ,(intern (format "%s-obarray" name))))
-       )))
+	 (intern ,class ,(intern (format "%s-obarray" name)))))))
 
 (defvar base64-dl-module
   (if (and (fboundp 'base64-encode-string)
@@ -398,8 +390,7 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
     (if (fboundp 'dynamic-link)
 	(let ((path (expand-file-name "base64.so" exec-directory)))
 	  (and (file-exists-p path)
-	       path)
-	  ))))
+	       path)))))
 
 (defsubst mime-charset-decode-string (string charset &optional lbt)
   "Decode the STRING as MIME CHARSET.

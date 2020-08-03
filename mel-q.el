@@ -31,8 +31,7 @@
   ;; XXX: should provide char-list instead of string-to-char-list.
   ;; XXx: and also the macro `as-binary-process' should be provided
   ;; XXx: by the module "pces" which will be loaded by way of "poem".
-  (require 'pces)
-  )
+  (require 'pces))
 
 
 ;;; @ Quoted-Printable encoder
@@ -174,8 +173,7 @@ It calls external quoted-printable encoder specified by
 (defsubst quoted-printable-hex-char-to-num (chr)
   (cond ((<= ?a chr) (+ (- chr ?a) 10))
 	((<= ?A chr) (+ (- chr ?A) 10))
-	((<= ?0 chr) (- chr ?0))
-	))
+	((<= ?0 chr) (- chr ?0))))
 
 (eval-and-compile
   (if (eval-when-compile
