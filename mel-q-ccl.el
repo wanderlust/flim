@@ -153,7 +153,7 @@ abcdefghijklmnopqrstuvwxyz\
           (lambda (r0)
             (cond
              ((= r0 (char-int ?_))
-              `(write-repeat ? ))
+              `(write-repeat ?\s))
              ((= r0 (char-int ?=))
               `((loop
                  (read-branch
@@ -313,7 +313,7 @@ abcdefghijklmnopqrstuvwxyz\
 			       (,(mel-ccl-set-eof-block '((write "Fro") (end)))
 				(read-if (r0 == ?m)
 				  (,(mel-ccl-set-eof-block '((write "From") (end)))
-				   (read-if (r0 == ? )
+				   (read-if (r0 == ?\s)
 				     ((,column = 7)
 				      (,after-wsp = 1)
 				      ,(mel-ccl-set-eof-block '((write "From=20") (end)))
@@ -600,7 +600,7 @@ abcdefghijklmnopqrstuvwxyz\
             (let ((tmp (aref mel-ccl-qp-table r0)))
               (cond
                ((eq tmp 'raw) `(write-read-repeat r0))
-               ((eq tmp 'wsp) (if (eq r0 (char-int ? ))
+               ((eq tmp 'wsp) (if (eq r0 (char-int ?\s))
                                   `(r1 = 1)
                                 `(r1 = 0)))
                ((eq tmp 'cr)
@@ -642,7 +642,7 @@ abcdefghijklmnopqrstuvwxyz\
                 `((read r0)
                   ;; '=' r0
                   (r1 = (r0 == ?\t))
-                  (if ((r0 == ? ) | r1)
+                  (if ((r0 == ?\s) | r1)
                       ;; '=' r0:[\t ]
                       ;; Skip transport-padding.
                       ;; It should check CR LF after
@@ -650,7 +650,7 @@ abcdefghijklmnopqrstuvwxyz\
                       (loop
                        (read-if (r0 == ?\t)
                                 (repeat)
-                                (if (r0 == ? )
+                                (if (r0 == ?\s)
                                     (repeat)
                                   (break)))))
                   ;; '=' [\t ]* r0:[^\t ]
