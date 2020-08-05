@@ -133,9 +133,7 @@ abcdefghijklmnopqrstuvwxyz\
    enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
    enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
    enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc
-   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc])
-
-)
+   enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc enc]))
 
 
 ;;; @ CCL programs
@@ -217,9 +215,7 @@ abcdefghijklmnopqrstuvwxyz\
 	    (if (or (= r1 32) (member r1 raw))
 		'((r0 += 1) (repeat))
 	      '((r0 += 3) (repeat))))
-	  mel-ccl-256-table))))))
-
-)
+	  mel-ccl-256-table)))))))
 
 (define-ccl-program mel-ccl-encode-uq
   (mel-ccl-encode-q-generic mel-ccl-u-raw))
@@ -246,9 +242,7 @@ abcdefghijklmnopqrstuvwxyz\
     (unless p
       (setq p (cons branch (length eof-block-branches))
 	    eof-block-branches (cons p eof-block-branches)))
-    `(,eof-block-reg = ,(cdr p))))
-
-)
+    `(,eof-block-reg = ,(cdr p)))))
 
 (eval-when-compile
 
@@ -268,9 +262,7 @@ abcdefghijklmnopqrstuvwxyz\
     `(,(mel-ccl-set-eof-block crlf-eof)
       (read-if (,reg == ?\n)
 	,succ
-	,crlf-fail))))
-
-)
+	,crlf-fail)))))
 
 (eval-when-compile
 
@@ -287,8 +279,7 @@ abcdefghijklmnopqrstuvwxyz\
 	(type-raw 0)
 	(type-enc 1)
 	(type-wsp 2)
-	(type-brk 3)
-	)
+	(type-brk 3))
     `(4
       ((,column = 0)
        (,after-wsp = 0)
@@ -362,8 +353,7 @@ abcdefghijklmnopqrstuvwxyz\
 		   ((eq tmp 'cr) `((,type = ,(if input-crlf type-brk type-enc))
 				   (break)))
 		   ((eq tmp 'lf) `((,type = ,(if input-crlf type-enc type-brk))
-				   (break)))
-		   )))
+				   (break))))))
 	      mel-ccl-256-table)))
 	 ;; r0:type{raw,enc,wsp,brk}
 	 (branch
@@ -583,8 +573,7 @@ abcdefghijklmnopqrstuvwxyz\
 		 (,column = 0)
 		 ,@(if output-crlf '((write ?\r)) '())
 		 ,(mel-ccl-set-eof-block `(end))
-		 (write-read-repeat r0)))
-	     )))))
+		 (write-read-repeat r0))))))))
       (branch
        ,eof-block-reg
        ,@(reverse (mapcar 'car eof-block-branches))))))
@@ -809,10 +798,7 @@ abcdefghijklmnopqrstuvwxyz\
 			(repeat))))
 		mel-ccl-28-table))))
 	  '(0 1 2 3 4)))
-      (repeat)
-      ))))
-
-)
+      (repeat))))))
 
 (define-ccl-program mel-ccl-encode-quoted-printable-crlf-crlf
   (mel-ccl-encode-quoted-printable-generic t t))
@@ -916,8 +902,7 @@ abcdefghijklmnopqrstuvwxyz\
    'quoted-printable-ccl-encode-region)
   (mel-define-method-function
    (mime-insert-encoded-file filename (nil "quoted-printable"))
-   'quoted-printable-ccl-insert-encoded-file)
-  )
+   'quoted-printable-ccl-insert-encoded-file))
 
 (defun quoted-printable-ccl-decode-string (string)
   "Decode quoted-printable encoded STRING."

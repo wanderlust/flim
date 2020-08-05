@@ -59,8 +59,7 @@
 			  (write-read-repeat r0)
 			  ((r2 = 1)
 			   (write "(mime-token . \"")
-			   (write-read-repeat r0)))
-		  ))
+			   (write-read-repeat r0)))))
 	   (ts  `((if (r2 == 1) ((write "\")") (r2 = 0)))
 		  (write "(tspecials . \"")
 		  ,wrt
@@ -75,8 +74,7 @@
 			   (r2 = 2)
 			   (read r0)
 			   (repeat))
-			  ((read r0) (repeat)))
-		  ))
+			  ((read r0) (repeat)))))
 	   (err `((branch r2
 			  ((write "(error . \""))
 			  ((write "\")")
@@ -155,10 +153,7 @@
 			 (write ") . t)")
 			 (write "))")
 			 (write "\")))")
-			 (write "\")) . t)"))
-		 ))
-	))))
-)
+			 (write "\")) . t)")))))))))
 
 (defcustom mime-ccl-lexical-analyzer
   (static-unless (or (broken-p 'ccl-usable)
@@ -633,8 +628,7 @@ Return value is a mime-content-type object.
 If Content-Type field is not found, return nil."
   (let ((field-body (std11-field-body "Content-Type")))
     (if field-body
-	(mime-parse-Content-Type field-body)
-      )))
+	(mime-parse-Content-Type field-body))))
 
 
 ;;; @@ Content-Disposition
@@ -660,8 +654,7 @@ Return value is a mime-content-disposition object.
 If Content-Disposition field is not found, return nil."
   (let ((field-body (std11-field-body "Content-Disposition")))
     (if field-body
-	(mime-parse-Content-Disposition field-body)
-      )))
+	(mime-parse-Content-Disposition field-body))))
 
 
 ;;; @@ Content-Transfer-Encoding
@@ -684,8 +677,7 @@ Return value is a string.
 If Content-Transfer-Encoding field is not found, return nil."
   (let ((field-body (std11-field-body "Content-Transfer-Encoding")))
     (if field-body
-	(mime-parse-Content-Transfer-Encoding field-body)
-      )))
+	(mime-parse-Content-Transfer-Encoding field-body))))
 
 
 ;;; @@ Content-ID / Message-ID
@@ -813,8 +805,7 @@ If Content-Transfer-Encoding field is not found, return nil."
     (save-restriction
       (narrow-to-region header-start header-end)
       (setq content-type (or (mime-read-Content-Type)
-			     default-ctl))
-      )
+			     default-ctl)))
     (luna-make-entity representation-type
 		      :location (current-buffer)
 		      :content-type content-type
@@ -824,8 +815,7 @@ If Content-Transfer-Encoding field is not found, return nil."
 		      :header-start header-start
 		      :header-end header-end
 		      :body-start body-start
-		      :body-end body-end)
-    ))
+		      :body-end body-end)))
 
 
 ;;; @ for buffer

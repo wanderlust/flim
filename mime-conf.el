@@ -50,8 +50,7 @@
       (let ((beg (match-beginning 0))
 	    (end (match-end 0)))
 	(goto-char end)
-	(buffer-substring beg end)
-	)))
+	(buffer-substring beg end))))
 
 
 ;;; @ typefield
@@ -67,10 +66,8 @@
 		(if subtype
 		    (cons (cons 'type (intern type))
 			  (unless (string= subtype "*")
-			    (list (cons 'subtype (intern subtype)))
-			    )))))
-	  (list (cons 'type (intern type)))
-	  ))))
+			    (list (cons 'subtype (intern subtype))))))))
+	  (list (cons 'type (intern type)))))))
 
 
 ;;; @ field separator
@@ -91,8 +88,7 @@
     (if (and chr
 	     (>= chr ?\s)
 	     (/= chr ?\;)
-	     (/= chr ?\\)
-	     )
+	     (/= chr ?\\))
 	(prog1
 	    chr
 	  (forward-char)))))
@@ -108,8 +104,7 @@
   (let ((beg (point)))
     (while (or (mime-mailcap-look-at-qchar)
 	       (mime-mailcap-look-at-schar)))
-    (buffer-substring beg (point))
-    ))
+    (buffer-substring beg (point))))
 
 
 ;;; @ field
@@ -123,10 +118,8 @@
 			   (goto-char (match-end 0))
 			   (mime-mailcap-look-at-mtext))))
 	      (if value
-		  (cons (intern token) value)
-		))
-	  (list (intern token))
-	  ))))
+		  (cons (intern token) value)))
+	  (list (intern token))))))
 
 
 ;;; @ mailcap entry
@@ -139,10 +132,8 @@
 	      fields field)
 	  (when view
 	    (while (and (mime-mailcap-skip-field-separator)
-			(setq field (mime-mailcap-look-at-field))
-			)
-	      (setq fields (cons field fields))
-	      )
+			(setq field (mime-mailcap-look-at-field)))
+	      (setq fields (cons field fields)))
 	    (nconc type
 		   (list (cons 'view view))
 		   fields))))))
@@ -164,15 +155,12 @@ order.  Otherwise result is not sorted."
     (let (entries entry)
       (while (progn
 	       (while (mime-mailcap-skip-comment))
-	       (setq entry (mime-mailcap-look-at-entry))
-	       )
+	       (setq entry (mime-mailcap-look-at-entry)))
 	(setq entries (cons entry entries))
-	(forward-line)
-	)
+	(forward-line))
       (cond ((functionp order) (sort entries order))
 	    ((null order) (nreverse entries))
-	    (t entries)
-	    ))))
+	    (t entries)))))
 
 
 ;;;###autoload
@@ -189,8 +177,7 @@ order.  Otherwise result is not sorted."
       (setq filename mime-mailcap-file))
   (with-temp-buffer
     (insert-file-contents filename)
-    (mime-parse-mailcap-buffer (current-buffer) order)
-    ))
+    (mime-parse-mailcap-buffer (current-buffer) order)))
 
 
 ;;;###autoload
@@ -231,8 +218,7 @@ may be:
 				     (concat "'" file "'")
 				   file))
 		    i (1+ i)
-		    p i)
-	      ))
+		    p i)))
 	   ((eq chr ?t)
 	    (let ((type (or (mime-type/subtype-string
 			     (cdr (assq 'type situation))
@@ -240,8 +226,7 @@ may be:
 			    "text/plain")))
 	      (setq dest (concat dest (substring mtext p (1- i)) type)
 		    i (1+ i)
-		    p i)
-	      ))
+		    p i)))
 	   ((eq chr ?\{)
 	    (setq i (1+ i))
 	    (unless (string-match "}" mtext i)
@@ -253,19 +238,14 @@ may be:
 		(error "\"%s\" is not specified in situation." attribute))
 	      (setq dest (concat dest (substring mtext p (- i 2)) parameter)
 		    i me
-		    p i)
-	      ))
-	   (t (error "Invalid sequence `%%%c'." chr))
-	   ))
+		    p i)))
+	   (t (error "Invalid sequence `%%%c'." chr))))
 	 ((eq chr ?\\)
 	  (setq dest (concat dest (substring mtext p i))
 		p (1+ i)
-		i (+ i 2))
-	  )
-	 (t (setq i (1+ i)))
-	 )))
-    (concat dest (substring mtext p))
-    ))
+		i (+ i 2)))
+	 (t (setq i (1+ i))))))
+    (concat dest (substring mtext p))))
 
 
 ;;; @ end

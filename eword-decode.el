@@ -69,8 +69,7 @@
 	      "\\("
 	      eword-encoded-text-regexp	; 4
 	      "\\)"
-	      (regexp-quote "?="))))
-  )
+	      (regexp-quote "?=")))))
 
 
 ;;; @ for string
@@ -148,8 +147,7 @@ decode the charset included in it, it is not decoded."
 	      (cons (if (eq type 'spaces)
 			" "
 		      (eword-decode-token token))
-		    result
-		    ))))
+		    result))))
     (apply 'concat (nreverse result))))
 
 (defun eword-decode-and-fold-structured-field-body (string
@@ -178,12 +176,10 @@ decode the charset included in it, it is not decoded."
 			  c next-c)
 		  (setq result (cons next-str (cons "\n " result))
 			c (1+ next-len)))
-		(setq tokens (cdr tokens))
-		)
+		(setq tokens (cdr tokens)))
 	    (let* ((str (eword-decode-token token)))
 	      (setq result (cons str result)
-		    c (+ c (string-width str)))
-	      ))))
+		    c (+ c (string-width str)))))))
       (apply 'concat (nreverse
 		      (cons (when token (eword-decode-token token))
 			    result))))))
@@ -261,11 +257,8 @@ put to the decoded text as the `mime-language' text property."
           (save-restriction
             (narrow-to-region (goto-char beg) end)
             (while (re-search-forward "\n\\([ \t]\\)" nil t)
-              (replace-match (match-string 1))
-              )
-	    (goto-char (point-max))
-	    ))
-      )))
+              (replace-match (match-string 1)))
+	    (goto-char (point-max)))))))
 
 
 ;;; @ for message header
@@ -294,16 +287,13 @@ If mode is `nil', corresponding decoder is set up for every modes."
 		  (setcdr cell (put-alist field function (cdr cell)))
 		(setq mime-field-decoder-alist
 		      (cons (cons mode (list (cons field function)))
-			    mime-field-decoder-alist))
-		))
-	    (apply (function mime-set-field-decoder) field specs)
-	    )
+			    mime-field-decoder-alist))))
+	    (apply (function mime-set-field-decoder) field specs))
 	(mime-set-field-decoder field
 				'plain function
 				'wide function
 				'summary function
-				'nov function)
-	))))
+				'nov function)))))
 
 ;;;###autoload
 (defmacro mime-find-field-presentation-method (name)
@@ -311,20 +301,17 @@ If mode is `nil', corresponding decoder is set up for every modes."
 NAME must be `plain', `wide', `summary' or `nov'."
   (cond ((eq name nil)
 	 `(or (assq 'summary mime-field-decoder-cache)
-	      '(summary))
-	 )
+	      '(summary)))
 	((and (consp name)
 	      (car name)
 	      (consp (cdr name))
 	      (symbolp (car (cdr name)))
 	      (null (cdr (cdr name))))
 	 `(or (assq ,name mime-field-decoder-cache)
-	      (cons ,name nil))
-	 )
+	      (cons ,name nil)))
 	(t
 	 `(or (assq (or ,name 'summary) mime-field-decoder-cache)
-	      (cons (or ,name 'summary) nil))
-	 )))
+	      (cons (or ,name 'summary) nil)))))
 
 (defun mime-find-field-decoder-internal (field &optional mode)
   "Return function to decode field-body of FIELD in MODE.
@@ -334,8 +321,7 @@ Optional argument MODE must be object of field-presentation-method."
 	       (funcall mime-update-field-decoder-cache
 			field (car mode))
 	     (setcdr mode
-		     (cdr (assq (car mode) mime-field-decoder-cache)))
-	     ))))
+		     (cdr (assq (car mode) mime-field-decoder-cache)))))))
 
 ;;;###autoload
 (defun mime-find-field-decoder (field &optional mode)
@@ -350,21 +336,18 @@ Default value of MODE is `summary'."
 	    (cdr p)
 	  (cdr (funcall mime-update-field-decoder-cache
 			field (or mode 'summary)))))
-    (inline (mime-find-field-decoder-internal field mode))
-    ))
+    (inline (mime-find-field-decoder-internal field mode))))
 
 ;;;###autoload
 (defun mime-update-field-decoder-cache (field mode &optional function)
   "Update field decoder cache `mime-field-decoder-cache'."
   (cond ((eq function 'identity)
-	 (setq function nil)
-	 )
+	 (setq function nil))
 	((null function)
 	 (let ((decoder-alist
 		(cdr (assq (or mode 'summary) mime-field-decoder-alist))))
 	   (setq function (cdr (or (assq field decoder-alist)
-				   (assq t decoder-alist)))))
-	 ))
+				   (assq t decoder-alist)))))))
   (let ((cell (assq mode mime-field-decoder-cache))
         ret)
     (if cell
@@ -415,8 +398,7 @@ Default value of MODE is `summary'."
      'plain	#'eword-decode-structured-field-body
      'wide	#'eword-decode-and-fold-structured-field-body
      'summary	#'eword-decode-and-unfold-structured-field-body
-     'nov	#'eword-decode-and-unfold-structured-field-body)
-    ))
+     'nov	#'eword-decode-and-unfold-structured-field-body)))
 
 ;; unstructured fields (default)
 (mime-set-field-decoder
@@ -450,8 +432,7 @@ Non MIME encoded-word part in FILED-BODY is decoded with
       ;; Don't decode
       (if (eq mode 'summary)
 	  (std11-unfold-string field-body)
-	field-body)
-      )))
+	field-body))))
 
 ;;;###autoload
 (defun mime-decode-header-in-region (start end
@@ -488,11 +469,8 @@ default-mime-charset."
 		  (let ((body (buffer-substring p end))
 			(default-mime-charset default-charset))
 		    (delete-region p end)
-		    (insert (funcall field-decoder body (1+ len)))
-		    ))
-		))
-	  (eword-decode-region (point-min) (point-max) t)
-	  )))))
+		    (insert (funcall field-decoder body (1+ len)))))))
+	  (eword-decode-region (point-min) (point-max) t))))))
 
 ;;;###autoload
 (defun mime-decode-header-in-buffer (&optional code-conversion separator)
@@ -511,8 +489,7 @@ If SEPARATOR is not nil, it is used as header separator."
 	  (concat "^\\(" (regexp-quote (or separator "")) "\\)?$")
 	  nil t)
 	 (match-beginning 0)
-       (point-max)
-       ))
+       (point-max)))
    code-conversion))
 
 (defalias 'eword-decode-header 'mime-decode-header-in-buffer)
@@ -657,14 +634,12 @@ be the result.")
 	  (cond ((eq chr ?\\)
 		 (setq i (1+ i))
 		 (if (>= i len)
-		     (throw 'tag nil)
-		   )
+		     (throw 'tag nil))
 		 (setq last-str (cons (list (aref string i))
 				      (cons (substring string from (1- i))
 					    last-str))
 		       i (1+ i)
-		       from i)
-		 )
+		       from i))
 		((eq chr ?\))
 		 (setq ret
 		       (apply 'concat
@@ -679,10 +654,8 @@ be the result.")
 					 (mime-charset-decode-string
 					  ret default-mime-charset)
 					 must-unfold)
-					dest)
-				       )))
-			      (1+ i)))
-		 )
+					dest))))
+			      (1+ i))))
 		((eq chr ?\()
 		 (if (setq ret (eword-analyze-comment string i must-unfold))
 		     (setq last-str
@@ -696,17 +669,13 @@ be the result.")
 				     (mime-charset-decode-string
 				      last-str default-mime-charset)
 				     must-unfold)
-				    dest)
-			     )
+				    dest))
 			   i (cdr ret)
 			   from i
 			   last-str nil)
-		   (throw 'tag nil)
-		   ))
+		   (throw 'tag nil)))
 		(t
-		 (setq i (1+ i))
-		 ))
-	  )))))
+		 (setq i (1+ i)))))))))
 
 (defun eword-analyze-spaces (string start &optional _must-unfold)
   (std11-analyze-spaces string start))
@@ -756,8 +725,7 @@ be the result.")
 			   (substring string start end)
 			   default-mime-charset))
 	      ;;(substring string end)
-	      end)
-	)))
+	      end))))
 
 (defun eword-lexical-analyze-internal (string start must-unfold)
   (let ((len (length string))
@@ -768,17 +736,13 @@ be the result.")
 		  func r)
 	      (while (and (setq func (car rest))
 			  (null
-			   (setq r (funcall func string start must-unfold)))
-			  )
+			   (setq r (funcall func string start must-unfold))))
 		(setq rest (cdr rest)))
 	      (or r
-		  (cons (cons 'error (substring string start)) (1+ len)))
-	      ))
+		  (cons (cons 'error (substring string start)) (1+ len)))))
       (setq dest (cons (car ret) dest)
-	    start (cdr ret))
-      )
-    (nreverse dest)
-    ))
+	    start (cdr ret)))
+    (nreverse dest)))
 
 (defun eword-lexical-analyze (string &optional start must-unfold)
   "Return lexical analyzed list corresponding STRING.
@@ -829,10 +793,8 @@ characters are regarded as variable `default-mime-charset'."
 			   (std11-unfold-string string) start
 			   'must-unfold))))
          (phrase  (std11-full-name-string structure))
-         (address (std11-address-string structure))
-         )
-    (list phrase address)
-    ))
+         (address (std11-address-string structure)))
+    (list phrase address)))
 
 
 ;;; @ end

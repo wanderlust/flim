@@ -249,8 +249,7 @@ to connect to.  SERVICE is name of the service desired."
        ((string-match "[^.]\\.[^.]" name)
 	name)
        (t
-	(error "invalid FQDN. Set smtp-fqdn or smtp-local-domain correctly"))
-       ))))
+	(error "invalid FQDN. Set smtp-fqdn or smtp-local-domain correctly"))))))
 
 (defun smtp-find-connection (buffer)
   "Find the connection delivering to BUFFER."

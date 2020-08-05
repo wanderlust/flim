@@ -38,8 +38,7 @@
 
 (defvar sasl-additional-mechanism-alist
   '((sasl-scram-rfc "SCRAM-SHA-1")
-    (sasl-scram-sha256 "SCRAM-SHA-256")
-    ))
+    (sasl-scram-sha256 "SCRAM-SHA-256")))
 
 (defvar sasl-mechanism-alist
   (append '(("CRAM-MD5" sasl-cram)
