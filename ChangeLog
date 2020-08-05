@@ -1,3 +1,8 @@
+2020-08-05  Naoya Yamashita  <conao3@gmail.com>
+
+	Fix closing parens position (cosmetic change only).
+	Cf. https://github.com/wanderlust/flim/pull/11
+
 2020-08-03  Naoya Yamashita  <conao3@gmail.com>
 
 	Use ?\s instead of ?(whitespace).
