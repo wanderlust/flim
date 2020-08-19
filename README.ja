@@ -1,156 +1,156 @@
-[FLIM $B$N(B README ($BF|K\8lHG(B)]
+[FLIM の README (日本語版)]
 
-FLIM $B$H$O!)(B
+FLIM とは？
 ===========
 
-  FLIM $B$O(B Internet message $B$K4X$9$kMM!9$JI=8=7A<0$dId9f2=$K4X$9$k4pAC(B
-  $BE*$J5!G=$rDs6!$9$k$?$a$NHFMQItIJ$G$9!#(BFLIM $B$O0J2<$N%b%8%e!<%k$+$i9=(B
-  $B@.$5$l$F$$$^$9(B:
+  FLIM は Internet message に関する様々な表現形式や符号化に関する基礎
+  的な機能を提供するための汎用部品です。FLIM は以下のモジュールから構
+  成されています:
 
-    std11.el	--- STD 11 (RFC 822) $B7A<0$K4p$E$/2r@O=hM}Ey(B
+    std11.el	--- STD 11 (RFC 822) 形式に基づく解析処理等
 
-    mime.el	--- MIME-entity $B$K4X$9$k=t5!G=$NDs6!(B
+    mime.el	--- MIME-entity に関する諸機能の提供
 
-      mime-def.el --- MIME $B7A<0$K4X$9$kDj5A(B
+      mime-def.el --- MIME 形式に関する定義
 
-      mime-parse.el --- MIME $B2r@O4o(B
+      mime-parse.el --- MIME 解析器
 
-      mel.el --- MIME $BId9f4o(B/$BI|9f4o(B
-	mel-b-dl.el --- base64 (B-encoding) $BId9f4o(B/$BI|9f4o(B
-			(dynamic loading $B5!G=IU$-(B Emacs 20 $BMQ(B)
+      mel.el --- MIME 符号器/復号器
+	mel-b-dl.el --- base64 (B-encoding) 符号器/復号器
+			(dynamic loading 機能付き Emacs 20 用)
 	mel-b-ccl.el --- base64 (B-encoding) encoder/decoder (using CCL)
-	mel-b-el.el --- base64 (B-encoding) $BId9f4o(B/$BI|9f4o(B
-			($BB>$N(B emacsen $BMQ(B)
+	mel-b-el.el --- base64 (B-encoding) 符号器/復号器
+			(他の emacsen 用)
 	mel-q-ccl.el --- quoted-printable and Q-encoding
 			 encoder/decoder (using CCL)
-	mel-q.el    --- quoted-printable $B$H(B Q-encoding
-		    	$BId9f4o(B/$BI|9f4o(B
-	mel-u.el    --- uuencode $B$N$?$a$NHs8x<0(B backend
-	mel-g.el    --- gzip64 $B$N$?$a$NHs8x<0(B backend
+	mel-q.el    --- quoted-printable と Q-encoding
+		    	符号器/復号器
+	mel-u.el    --- uuencode のための非公式 backend
+	mel-g.el    --- gzip64 のための非公式 backend
 
-      eword-decode.el --- encoded-word $BI|9f4o(B
-      eword-encode.el --- encoded-word $BId9f4o(B
+      eword-decode.el --- encoded-word 復号器
+      eword-encode.el --- encoded-word 符号器
 
-  $B0J2<$N4D6-$GF0:n$7$^$9!'(B
+  以下の環境で動作します：
 
-	Emacs 20.4 $B0J9_(B
-	XEmacs 21.1 $B0J9_(B
+	Emacs 20.4 以降
+	XEmacs 21.1 以降
 
 
-$BF3F~(B (Installation)
+導入 (Installation)
 ===================
 
-(0) $BF3F~(B (install) $B$9$kA0$K!"(BAPEL (10.7 $B0J9_(B) $B$rF3F~$7$F$/$@$5$$!#(BAPEL
-    $B$O0J2<$N$H$3$m$G<hF@$G$-$^$9(B:
+(0) 導入 (install) する前に、APEL (10.7 以降) を導入してください。APEL
+    は以下のところで取得できます:
 
 	ftp://ftp.m17n.org/pub/mule/apel/
 
-(1-a) $BE83+$7$?>l=j$X$NF3F~(B
+(1-a) 展開した場所への導入
 
-  $BE83+$7$?>l=j$H$O0[$J$k>l=j$KF3F~$7$?$/$J$$$J$i!"(B
+  展開した場所とは異なる場所に導入したくないなら、
 
 	% make
 
-  $B$@$1$r<B9T$7$F$/$@$5$$!#(B
+  だけを実行してください。
 
-  emacs $B$N%3%^%s%IL>$r;XDj$9$k$3$H$,$G$-$^$9!#Nc$($P!"(B
+  emacs のコマンド名を指定することができます。例えば、
 
 	% make EMACS=xemacs
 
-  `EMACS=...' $B$,>JN,$5$l$k$H!"(BEmacs=emacs $B$,;H$o$l$^$9!#(B
+  `EMACS=...' が省略されると、Emacs=emacs が使われます。
 
 (b) make install
 
-  $BE83+$7$?>l=j$H$O0[$J$k>l=j$KF3F~$7$?$$$J$i!"(B
+  展開した場所とは異なる場所に導入したいなら、
 
 	% make install
 
-  $B$r<B9T$7$F$/$@$5$$!#(B
+  を実行してください。
 
-  emacs $B$N%3%^%s%IL>$r;XDj$9$k$3$H$,$G$-$^$9!#Nc$($P!"(B
+  emacs のコマンド名を指定することができます。例えば、
 
 	% make install EMACS=xemacs
 
-  `EMACS=...' $B$,>JN,$5$l$k$H!"(BEmacs=emacs $B$,;H$o$l$^$9!#(B
+  `EMACS=...' が省略されると、Emacs=emacs が使われます。
 
-  Emacs Lisp $B%W%m%0%i%`$N$?$a$N%G%#%l%/%H%j!<LZ$N@\F,<-(B (prefix) $B$r;X(B
-  $BDj$9$k$3$H$,$G$-$^$9!#Nc$($P!"(B
+  Emacs Lisp プログラムのためのディレクトリー木の接頭辞 (prefix) を指
+  定することができます。例えば、
 
 	% make install PREFIX=~/
 
-  `PREFIX=...' $B$,>JN,$5$l$k$H!";XDj$5$l$?(B emacs $B%3%^%s%I$N%G%#%l%/%H%j!<(B
-  $BLZ$N@\F,<-$,;HMQ$5$l$^$9(B ($B$*$=$i$/(B /usr/local $B$G$9(B)$B!#(B
+  `PREFIX=...' が省略されると、指定された emacs コマンドのディレクトリー
+  木の接頭辞が使用されます (おそらく /usr/local です)。
 
-  $BNc$($P!"(BPREFIX=/usr/local $B$H(B Emacs 20.7 $B$,;XDj$5$l$l$P!"0J2<$N%G%#%l(B
-  $B%/%H%j!<LZ$,:n@.$5$l$^$9!#(B
+  例えば、PREFIX=/usr/local と Emacs 20.7 が指定されれば、以下のディレ
+  クトリー木が作成されます。
 
 	/usr/local/share/emacs/site-lisp/flim/	--- FLIM
 	/usr/local/share/emacs/20.7/site-lisp/flim/	--- FLIM
 
-  Emacs Lisp $B%W%m%0%i%`$N$?$a$N(B lisp $B%G%#%l%/%H%j!<$r;XDj$9$k$3$H$,$G(B
-  $B$-$^$9!#Nc$($P!"(B:
+  Emacs Lisp プログラムのための lisp ディレクトリーを指定することがで
+  きます。例えば、:
 
     % make install LISPDIR=~/share/emacs/elisp
 
-  `LISPDIR=...' $B$,>JN,$5$l$k$H!";XDj$5$l$?(B emacs $B$N%3%^%s%I$N(B
-  site-lisp $B%G%#%l%/%H%j!<$,;H$o$l$^$9(B ($B$*$=$i$/(B
-  /usr/local/share/emacs/site-lisp $B$+(B /usr/local/lib/xemacs/site-lisp)
-  $B$G$9!#(B
+  `LISPDIR=...' が省略されると、指定された emacs のコマンドの
+  site-lisp ディレクトリーが使われます (おそらく
+  /usr/local/share/emacs/site-lisp か /usr/local/lib/xemacs/site-lisp)
+  です。
 
-  emu $B%b%8%e!<%k(B (APEL $B%Q%C%1!<%8$KF~$C$F$$$^$9(B) $B$,I8=`$G$J$$%G%#%l%/(B
-  $B%H%j!<$KF3F~$5$l$F$$$k>l9g$O!"$=$l$i$N$"$k>l=j$r;XDj$9$kI,MW(B
-  $B$,$"$j$^$9!#Nc$($P!'(B
+  emu モジュール (APEL パッケージに入っています) が標準でないディレク
+  トリーに導入されている場合は、それらのある場所を指定する必要
+  があります。例えば：
 
     % make install VERSION_SPECIFIC_LISPDIR=~/elisp
 
-  $B$I$N%U%!%$%k$,(B emu $B%b%8%e!<%k$+(B APEL $B%b%8%e!<%k$N0lIt$J$N$+!"$=$l$i(B
-  $B$,$I$3$KF3F~$5$l$k$+$rCN$j$?$$$H$-$O!"<!$N$h$&$J%3%^%s%I$rF~(B
-  $BNO$9$k$3$H$,$G$-$^$9!#(B
+  どのファイルが emu モジュールか APEL モジュールの一部なのか、それら
+  がどこに導入されるかを知りたいときは、次のようなコマンドを入
+  力することができます。
 
     % make what-where LISPDIR=~/elisp VERSION_SPECIFIC_LISPDIR=~/elisp
 
-  $B$^$?!"(BFLIM-CFG $B%U%!%$%k$rJT=8$9$k$3$H$GB>$NA*Br2DG=$J@_Dj$r;XDj$9$k(B
-  $B$3$H$,$G$-$^$9!#$=$N>\:Y$K4X$7$F$O(B FLIM-CFG $B%U%!%$%k$NCm<a(B (comment) 
-  $B$rFI$s$G$/$@$5$$!#(B
+  また、FLIM-CFG ファイルを編集することで他の選択可能な設定を指定する
+  ことができます。その詳細に関しては FLIM-CFG ファイルの注釈 (comment) 
+  を読んでください。
 
-(1-c) XEmacs $B$N%Q%C%1!<%8$H$7$FF3F~$9$k(B
+(1-c) XEmacs のパッケージとして導入する
 
-  XEmacs $B$N%Q%C%1!<%8!&%G%#%l%/%H%j!<$KF3F~$9$k>l9g$O!"(B
+  XEmacs のパッケージ・ディレクトリーに導入する場合は、
 
 	% make install-package
 
-  $B$r<B9T$7$F$/$@$5$$!#(B
+  を実行してください。
 
-  XEmacs $B$N%3%^%s%IL>$r;XDj$9$k$3$H$,$G$-$^$9!#Nc!'(B
+  XEmacs のコマンド名を指定することができます。例：
 
 	% make install-package XEMACS=xemacs-21
 
-  `XEMACS=...' $B$,>JN,$5$l$k$H!"(BXEMACS=xemacs $B$,;HMQ$5$l$^$9!#(B
+  `XEMACS=...' が省略されると、XEMACS=xemacs が使用されます。
 
-  $B%Q%C%1!<%8!&%G%#%l%/%H%j!<$r;XDj$9$k$3$H$,$G$-$^$9!#Nc!'(B
+  パッケージ・ディレクトリーを指定することができます。例：
 
 	% make install PACKAGEDIR=~/.xemacs
 
-  `PACKAGEDIR=...' $B$,>JN,$5$l$k$H!"B8:_$9$k%Q%C%1!<%8!&%G%#%l%/%H%j!<(B
-  $B$N:G=i$N$b$N$,;H$o$l$^$9!#(B
+  `PACKAGEDIR=...' が省略されると、存在するパッケージ・ディレクトリー
+  の最初のものが使われます。
 
-  $B!NCm0U!O(BXEmacs $B$N%Q%C%1!<%8!&%7%9%F%`$O(B XEmacs 21.0 $B$+$=$l0J9_$,I,MW(B
-	  $B$G$9!#(B
+  ［注意］XEmacs のパッケージ・システムは XEmacs 21.0 かそれ以降が必要
+	  です。
 
 
-$B%P%0Js9p(B
+バグ報告
 ========
 
-  $B%P%0Js9p$d2~A1$NDs0F$r=q$$$?$H$-$O!"@'Hs(B Emacs-MIME $B%a!<%j%s%0%j%9%H(B
-  $B$KAw$C$F$/$@$5$$(B:
+  バグ報告や改善の提案を書いたときは、是非 Emacs-MIME メーリングリスト
+  に送ってください:
 
-	emacs-mime-ja@lists.chise.org	$B!JF|K\8l!K(B
-	emacs-mime-en@lists.chise.org	$B!J1Q8l!K(B
+	emacs-mime-ja@lists.chise.org	（日本語）
+	emacs-mime-en@lists.chise.org	（英語）
 
-  Emacs-MIME ML $B$rDL$7$F!"(BFLIM $B$N%P%0$rJs9p$7$?$j!"(BFLIM $B$N:G?7$N%j%j!<(B
-  $B%9$r<hF@$7$?$j!"(BFLIM $B$N>-Mh$N3HD%$N5DO@$r$7$?$j$9$k$3$H$,$G$-$^$9!#(B
-  Emacs-MIME ML $B$K;22C$7$?$$J}$O!"0J2<$NJG$N5-=R$r8+$F9XFI<jB3$-$r9T$C(B
-  $B$F$/$@$5$$!'(B
+  Emacs-MIME ML を通して、FLIM のバグを報告したり、FLIM の最新のリリー
+  スを取得したり、FLIM の将来の拡張の議論をしたりすることができます。
+  Emacs-MIME ML に参加したい方は、以下の頁の記述を見て購読手続きを行っ
+  てください：
 
-      http://lists.chise.org/mailman/listinfo/emacs-mime-ja $B!JF|K\8l!K(B
-      http://lists.chise.org/mailman/listinfo/emacs-mime-en $B!J1Q8l!K(B
+      http://lists.chise.org/mailman/listinfo/emacs-mime-ja （日本語）
+      http://lists.chise.org/mailman/listinfo/emacs-mime-en （英語）
