@@ -1,3 +1,7 @@
+2020-08-24  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* mime-def.el: Change product name to 'FLIM-LB'.
+
 2020-08-19  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
 
 	Change non-ASCII text files's coding-system to UTF-8
