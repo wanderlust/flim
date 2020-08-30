@@ -1,0 +1,39 @@
+-*- outline -*-
+
+[README for FLIM-LB]
+
+
+* What's FLIM-LB?
+
+FLIM-LB is a variant of FLIM.  The most remarkable feature is that it
+uses lexical binding and supports only Emacs 24.5 and later.  See
+README.[en|ja] for details of original FLIM.
+
+
+* GitHub
+
+Development of FLIM-LB uses Git.  The latest developing version is
+available at the following Git repository:
+
+  % git clone https://github.com/wanderlust/flim.git
+
+Or you can view the FLIM-LB repository via WWW at:
+
+    https://github.com/wanderlust/flim
+
+We hope you will join the open development.
+
+
+* Bug reports
+
+If you write bug-reports and/or suggestions for improvement, please
+send them to the Wanderlust Mailing List.  See
+https://wanderlust.github.io/wl-docs/wl.html#Wanderlust-Mailing-List
+for details.
+
+Alternatively, You can also use GitHub.  If you send a pull request,
+please embed unindented ChangeLog entries in commit messages like
+Emacs's.  See "Commit messages" section of Emacs's CONTRIBUTE
+file.
+
+https://git.savannah.gnu.org/cgit/emacs.git/plain/CONTRIBUTE
