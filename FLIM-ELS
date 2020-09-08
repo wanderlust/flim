@@ -27,4 +27,6 @@
 (when (module-installed-p 'oauth2)
   (setq flim-modules (append flim-modules '(sasl-xoauth2))))
 
+(setq flim-modules (nconc hmac-modules flim-modules))
+
 ;;; FLIM-ELS ends here
