@@ -64,7 +64,6 @@
 ;;; Code:
 
 (eval-when-compile (require 'hmac-def))
-(require 'sha1)				; expects (sha1 STRING)
 
 (defun sha1-binary (string)
   "Return the SHA1 of STRING in binary form."
