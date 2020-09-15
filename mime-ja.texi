@@ -3,30 +3,31 @@
 @setfilename mime-ja.info
 @documentlanguage ja
 @documentencoding utf-8
-@settitle FLIM 1.14 MIME 機能説明書
+@settitle FLIM-LB 1.14 MIME 機能説明書
 @dircategory GNU Emacs Lisp
 @direntry
-* FLIM (ja): (mime-ja).         Internet message library.
+* FLIM-LB (ja): (mime-ja).         Internet message library.
 @end direntry
 @titlepage
-@title FLIM 1.14 MIME 機能説明書
+@title FLIM-LB 1.14 MIME 機能説明書
 @author 守岡 知彦 <morioka@@jaist.ac.jp>
-@subtitle 1999-01-27
+@author 伊藤 和博
+@subtitle 2020-09-17
 @end titlepage
 @node Top, Introduction, (dir), (dir)
-@top FLIM 1.14 MIME 機能説明書
+@top FLIM-LB 1.14 MIME 機能説明書
 
 @ifinfo
 
-This file documents MIME features of FLIM, a fundamental library to
+This file documents MIME features of FLIM-LB, a fundamental library to
 process Internet Messages for GNU Emacsen.@refill
 
-GNU Emacsen 用の Internet Message 処理のための基礎 library である FLIM 
+GNU Emacsen 用の Internet Message 処理のための基礎 library である FLIM-LB
 の MIME 機能に関して説明します。
 @end ifinfo
 
 @menu
-* Introduction::                FLIM って何？
+* Introduction::                FLIM-LB って何？
 * How to use::                  FLIM の MIME 機能の使い方
 * Entity::                      Message と Entity
 * Content-Type::                Content-Type 欄の情報
@@ -41,10 +42,12 @@ GNU Emacsen 用の Internet Message 処理のための基礎 library である F
 @end menu
 
 @node Introduction, How to use, Top, Top
-@chapter FLIM って何？
+@chapter FLIM-LB って何？
 
 FLIM は Internet Message の表現や符号化に関する基礎的な機能を提供する
 ための library です。
+FLIM-LB は FLIM のバリアントの一つで、
+最新バージョンの Emacs への対応などを特徴とします。
 
 
 @node How to use, Entity, Introduction, Top
@@ -1045,7 +1048,7 @@ MIME 関連機能に関する group.@refill
 @menu
 * Glossary::                    用語
 * Bug report::                  bug 報告の仕方
-* CVS::                         CVS による開発
+* GitHub::                      GitHub による開発
 * History::                     歴史
 @end menu
 
@@ -1485,80 +1488,75 @@ Internet message における標準の符号化文字集合 (@ref{Coded characte
 また、RFC 822 (@ref{RFC 822}) における @strong{ASCII} は us-ascii である。
 
 
-@node Bug report, CVS, Glossary, Appendix
+@node Bug report, GitHub, Glossary, Appendix
 @section bug 報告の仕方
 
-FLIM のバグを見つけたら、以下の address に mail を送ってください：
+FLIM-LB に関する議論は以下のメーリングリストで行われます。
+最新バージョンのアナウンスもこちらに流れます。
 
-@itemize @bullet
-@item
- 英語 <emacs-mime-en@@m17n.org>
-@item
- 日本語 <emacs-mime-ja@@m17n.org>
-@end itemize
+@display
+Wanderlust Mailing List @t{<wl@@ml.gentei.org>}
+@end display
 
+ここでは主に日本語での議論が行われています。また、英語専用のリストとして
+
+@display
+Wanderlust List in English @t{<wl-en@@ml.gentei.org>}
+@end display
+
+もあります(こちらに投稿されたメッセージは前者にも配送されます)。
+
+これらのメーリングリストのガイドを得るには、@t{wl-ctl@@ml.gentei.org} 宛
+(英語の方は @t{wl-en-ctl@@ml.gentei.org} 宛) で、本文に
+
+@example
+# guide
+@end example
+
+@noindent
+と書いたメールを送って下さい。
+
+バグ報告やパッチの送付もこれらのメーリングリストへ送ってください。メーリ
+ングリストへの送信はメンバになる必要があります。
 
 但し、あまりにも古い版に関する報告は歓迎されません。古い版の bug は、新
 しい版では治っているかもしれません。まず、最新版で確認してみましょう。
 @refill
 
-それから、適切な報告をしましょう。単に「うまく動かない」と言われてもどう
-いう状況なのかはさっぱり判りません。最低限、OS, emacs, APEL, FLIM, SEMI, 
-使っている MUA の種類および版、設定を書く必要があります。また、error が
-起っている場合は backtrace を送ることも重要です。(cf. @ref{(emacs)Bugs})
+それから、適切な報告をしましょう。単に「うまく動かない」と言われてもど
+ういう状況なのかはさっぱり判りません。最低限、OS, emacs, APEL, FLIM,
+SEMI, 使っている MUA の種類および版、設定を書く必要があります。また、
+error が起っている場合は backtrace を送ることも重要です。
+(cf. @ref{Bugs,Reporting Bugs ,Reporting Bugs, emacs, GNU Emacs
+Manual})
 
 また、bug は大抵複数の人が遭遇するものです（そうでなければ、bug ではな
 い可能性があります）。だから、作者に直接 mail を送ると作者は同じ mail
 を何通も書く羽目になります。だから、必ず bug 報告は上記の address に送っ
 てください。
 
-EMACS-MIME ML では FLIM のバグ情報の交換や最新版の配布、FLIM の改良に
-関する議論を行なっています。EMACS-MIME ML に参加したい方は
 
-@itemize @bullet
-@item
- 英語 <emacs-mime-en-ctl@@m17n.org>
-@item
- 日本語 <emacs-mime-ja-ctl@@m17n.org>
-@end itemize
+@node GitHub, History, Bug report, Appendix
+@section GitHub による開発
 
-@noindent
-に空の mail を送って下さい。
-
-
-@node CVS, History, Bug report, Appendix
-@section CVS による開発
-
-FLIM の file は CVS を使って管理されています。このため、以下の方法で最
-新の FLIM を入手することができます：
+FLIM-LB のリポジトリは GitHub で公開されています。
 
 @example
-(0) cvs login
-
-    % cvs -d :pserver:anonymous@@cvs.m17n.org:/cvs/root login
-
-    CVS password: [CR] # NULL string
-
-(1) checkout
-
-    % cvs -d :pserver:anonymous@@cvs.m17n.org:/cvs/root checkout
-	checkout [-r TAG] flim
+@uref{https://github.com/wanderlust/flim}
 @end example
 
+プルリクエストを送る場合は、Emacs の様に、コミットメッセージに従来の
+@file{ChangeLog} エントリに相当する内容をインデントせずに入力して下さい。
+Emacs の @file{CONTRIBUTE} ファイル
+@footnote{@uref{https://git.savannah.gnu.org/cgit/emacs.git/plain/CONTRIBUTE}}
+にある @cite{Commit messages} セクションを参照して下さい。
 
-CVS を用いた開発に参加したい方は
-
-@itemize @bullet
-@item
- <cvs@@cvs.m17n.org>
-@end itemize
-
-@noindent
-まで、アカウント名と ssh の公開鍵を送ってください。ssh 経由では、
-cvsroot は :ext:cvs@@cvs.m17n.org:/cvs/root となります。
+また、バグ報告の場合はバックトレースを取って添付すると原因究明しやすくな
+ります。 @footnote{バックトレースの取り方は
+@uref{http://www.jpl.org/elips/BUGS-ja.html}が参考になります。}
 
 
-@node History,  , CVS, Appendix
+@node History,  , GitHub, Appendix
 @section 歴史
 
 FLIM の code の最古の部分は 榎並 嗣智 氏が書いた @file{mime.el} に起源し

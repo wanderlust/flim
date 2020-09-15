@@ -1,29 +1,30 @@
 \input texinfo-ja @c -*-texinfo -*- coding: utf-8 -*-
 @c Generated automatically from mime-en.sgml by sinfo 3.7.
 @setfilename mime-en.info
-@settitle FLIM 1.14 Reference Manual about MIME Features
+@settitle FLIM-LB 1.14 Reference Manual about MIME Features
 @documentencoding utf-8
 @documentlanguage en
 @dircategory GNU Emacs Lisp
 @direntry
-* FLIM (en): (mime-en).         Internet message library.
+* FLIM-LB (en): (mime-en).         Internet message library.
 @end direntry
 @titlepage
-@title FLIM 1.14 Reference Manual about MIME Features
+@title FLIM-LB 1.14 Reference Manual about MIME Features
 @author MORIOKA Tomohiko <morioka@@jaist.ac.jp>
-@subtitle 1999-01-27
+@author Kazuhiro Ito
+@subtitle 2020-09-17
 @end titlepage
 @node Top, Introduction, (dir), (dir)
-@top FLIM 1.14 Reference Manual about MIME Features
+@top FLIM-LB 1.14 Reference Manual about MIME Features
 
 @ifinfo
 
-This file documents MIME features of FLIM, a fundamental library to
+This file documents MIME features of FLIM-LB, a fundamental library to
 process Internet Messages for GNU Emacsen.
 @end ifinfo
 
 @menu
-* Introduction::                What is FLIM?
+* Introduction::                What is FLIM-LB?
 * How to use::                  How to use MIME features
 * Entity::                      Message and Entity
 * Content-Type::                Information of Content-Type field
@@ -38,10 +39,11 @@ process Internet Messages for GNU Emacsen.
 @end menu
 
 @node Introduction, How to use, Top, Top
-@chapter What is FLIM?
+@chapter What is FLIM-LB?
 
 FLIM is a library to provide basic features about message
-representation or encoding.
+representation or encoding.  FLIM-LB is a variant of FLIM, which
+features supports to latest Emacs.
 
 
 @node How to use, Entity, Introduction, Top
@@ -1056,7 +1058,7 @@ It belongs to @code{mail} and @code{news}.
 @menu
 * Glossary::                    
 * Bug report::                  How to report bugs
-* CVS::                         CVS based development
+* GitHub::                      GitHub based development
 * History::                     History of FLIM
 @end menu
 
@@ -1487,82 +1489,73 @@ In addition, @strong{ASCII} of RFC 822 (@ref{RFC 822}) should be
 interpreted as us-ascii.
 
 
-@node Bug report, CVS, Glossary, Appendix
+@node Bug report, GitHub, Glossary, Appendix
 @section How to report bugs
 @cindex good bug report
 
-If you write bug-reports and/or suggestions for improvement, please
-send them to the EMACS-MIME Mailing List:
+Topics related to FLIM-LB are discussed in following mailing lists.
+The latest version is also announced there.
 
-@itemize @bullet
-@item
- English <emacs-mime-en@@m17n.org>
-@item
- Japanese <emacs-mime-ja@@m17n.org>
-@end itemize
+@display
+Wanderlust Mailing List @t{<wl@@ml.gentei.org>}
+@end display
 
+In this list Japanese is mainly used for discussion. We also have a list
+for discussion in English:
+
+@display
+Wanderlust List in English @t{<wl-en@@ml.gentei.org>}
+@end display
+(Messages posted to this list are also forwarded to the former one.)
+
+A guide can be obtained automatically by sending mail to
+@t{wl-ctl@@ml.gentei.org} (or to @t{wl-en-ctl@@ml.gentei.org} for
+the English one) with the body
+
+@example
+# guide
+@end example
+
+Please send bug reports or patches to one of those lists.  You have to
+subscribe the mailing list to post a message.
 
 Notice that, we do not welcome bug reports about too old version.  Bugs
 in old version might be fixed.  So please try latest version at
 first.@refill
 
 You should write @strong{good bug report}.  If you write only ``FLIM
-does not work'', we can not find such situations.  At least, you should
-write name, type, variants and version of OS, emacs, APEL, FLIM, SEMI
-and MUA, and setting.  In addition, if error occurs, to send backtrace
-is very important. (cf. @ref{(emacs)Bugs}) @refill
+does not work'', we can not find such situations.  At least, you
+should write name, type, variants and version of OS, emacs, APEL,
+FLIM, SEMI and MUA, and setting.  In addition, if error occurs, to
+send backtrace is very important. (cf. @ref{Bugs,Reporting Bugs
+,Reporting Bugs, emacs, GNU Emacs Manual}) @refill
 
 Bug may not appear only your environment, but also in a lot of
 environment (otherwise it might not bug).  Therefor if you send mail
 to author directly, we must write a lot of mails.  So please send mail
 to address for EMACS-MIME Mailing List instead of author.
 
-Via the EMACS-MIME ML, you can report FLIM bugs, obtain the latest
-release of FLIM, and discuss future enhancements to FLIM.  To join the
-EMACS-MIME ML, send an empty e-mail to:
 
-@itemize @bullet
-@item
- English  <emacs-mime-en-ctl@@m17n.org>
-@item
- Japanese <emacs-mime-ja-ctl@@m17n.org>
-@end itemize
+@node GitHub, History, Bug report, Appendix
+@section GitHub based development
 
-
-
-@node CVS, History, Bug report, Appendix
-@section CVS based development
-
-Files in FLIM are managed under CVS. Therefore you can obtain the
-newest FLIM by the following method.
+FLIM-LB's repository is published in GitHub.
 
 @example
-(0) cvs login
-
-    % cvs -d :pserver:anonymous@@cvs.m17n.org:/cvs/root login
-
-    CVS password: [CR] # NULL string
-
-(1) checkout
-
-    % cvs -d :pserver:anonymous@@cvs.m17n.org:/cvs/root checkout
-	checkout [-r TAG] flim
+@uref{https://github.com/wanderlust/flim}
 @end example
 
+If you send a pull request, please embed unindented @file{ChangeLog}
+entries in commit message like Emacs's.  See @cite{Commit messages}
+section of Emacs's CONTRIBUTE file
+@footnote{@uref{https://git.savannah.gnu.org/cgit/emacs.git/plain/CONTRIBUTE}}.
 
-If you would like to join CVS based development, please send mail to
-
-@itemize @bullet
-@item
- <cvs@@cvs.m17n.org>
-@end itemize
-
-@noindent
-with your account name and your public key for ssh.
-cvsroot is :ext:cvs@@cvs.m17n.org:/cvs/root.
+If you send a bug report, please attach Backtrace with it.
+@footnote{@uref{http://www.jpl.org/elips/BUGS-ja.html} describes how to
+in Japanese.}
 
 
-@node History,  , CVS, Appendix
+@node History,  , GitHub, Appendix
 @section History of FLIM
 
 FLIM の code の最古の部分は 榎並 嗣智 氏が書いた @file{mime.el} に起源し
