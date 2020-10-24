@@ -29,8 +29,6 @@ ARC_DIR_PREFIX = /home/kanji/tomo/public_html/lemi/dist
 ARC_DIR = $(ARC_DIR_PREFIX)/flim/flim-$(API)
 SEMI_ARC_DIR = $(ARC_DIR_PREFIX)/semi/semi-1.14-for-flim-$(API)
 
-CVS_HOST = cvs.m17n.org
-
 elc:
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
 		$(VERSION_SPECIFIC_LISPDIR)
@@ -52,21 +50,6 @@ install-package:	package
 
 clean:
 	-$(RM) $(GOMI)
-
-
-tar:
-	cvs commit
-	sh -c 'cvs tag -R $(PACKAGE)-`echo $(VERSION) | tr . _`; \
-	cd /tmp; \
-	cvs -d :pserver:anonymous@$(CVS_HOST):/cvs/root \
-		export -d $(PACKAGE)-$(VERSION) \
-		-r $(PACKAGE)-`echo $(VERSION) | tr . _` \
-		flim'
-	cd /tmp; $(RM) $(PACKAGE)-$(VERSION)/ftp.in ; \
-		$(TAR) cvzf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
-	cd /tmp; $(RM) -r $(PACKAGE)-$(VERSION)
-	sed "s/VERSION/$(VERSION)/" < ftp.in | sed "s/API/$(API)/" \
-		| sed "s/PACKAGE/$(PACKAGE)/" > ftp
 
 release:
 	-$(RM) $(ARC_DIR)/$(PACKAGE)-$(VERSION).tar.gz
