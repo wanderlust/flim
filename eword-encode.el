@@ -113,17 +113,6 @@ MODE is allows `text', `comment', `phrase' or nil.  Default value is
 (defmacro ew-rword-type (rword)
   `(car (cdr (cdr (cdr ,rword)))))
 
-(unless (and (boundp 'mule-version)
-	     (null (string< mule-version "6.0"))
-	     (fboundp 'detect-mime-charset-string))
-(defun ew-find-charset-rule (charsets)
-  (if charsets
-      (let* ((charset (find-mime-charset-by-charsets charsets))
-	     (encoding
-	      (cdr (or (assq charset mime-header-charset-encoding-alist)
-		       (cons charset mime-header-default-charset-encoding)))))
-	(list charset encoding)))))
-
 (defun ew-find-string-rule (string)
   (let ((charset (detect-mime-charset-string string)))
     (list charset

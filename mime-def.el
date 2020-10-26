@@ -129,9 +129,6 @@ If method is nil, this field will not be encoded."
 (defsubst regexp-or (&rest args)
   (concat "\\(" (mapconcat (function identity) args "\\|") "\\)"))
 
-(or (fboundp 'char-int)
-    (defalias 'char-int 'identity))
-
 
 ;;; @ MIME constants
 ;;;
@@ -383,14 +380,7 @@ variable and (nth 1 (car (last ARGS))) is name of backend (encoding)."
        (define-function ,function
 	 (intern ,class ,(intern (format "%s-obarray" name)))))))
 
-(defvar base64-dl-module
-  (if (and (fboundp 'base64-encode-string)
-	   (subrp (symbol-function 'base64-encode-string)))
-      nil
-    (if (fboundp 'dynamic-link)
-	(let ((path (expand-file-name "base64.so" exec-directory)))
-	  (and (file-exists-p path)
-	       path)))))
+(defvar base64-dl-module nil)
 
 (defsubst mime-charset-decode-string (string charset &optional lbt)
   "Decode the STRING as MIME CHARSET.

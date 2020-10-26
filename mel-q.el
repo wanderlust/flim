@@ -27,11 +27,7 @@
 
 (require 'mime-def)
 (require 'path-util)
-(eval-when-compile
-  ;; XXX: should provide char-list instead of string-to-char-list.
-  ;; XXx: and also the macro `as-binary-process' should be provided
-  ;; XXx: by the module "pces" which will be loaded by way of "poem".
-  (require 'pces))
+(require 'pces)
 
 
 ;;; @ Quoted-Printable encoder

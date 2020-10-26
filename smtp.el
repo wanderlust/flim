@@ -98,8 +98,7 @@ don't define this value."
   :type 'boolean
   :group 'smtp-extensions)
 
-(defcustom smtp-use-gnutls (and (fboundp 'gnutls-available-p)
-				(gnutls-available-p))
+(defcustom smtp-use-gnutls (gnutls-available-p)
   "If non-nil, use built-in GnuTLS for STARTTLS."
   :type 'boolean
   :group 'smtp-extensions)

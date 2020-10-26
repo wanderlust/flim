@@ -252,7 +252,7 @@ be the result."
                                  (concat mime-attribute-char-regexp "+")))
                (goto-char (match-end 0)))
              (not (eobp)))
-      (insert (prog1 (format "%%%02X" (char-int (following-char)))
+      (insert (prog1 (format "%%%02X" (following-char))
                 (delete-region (point)(1+ (point))))))
     (buffer-string)))
 

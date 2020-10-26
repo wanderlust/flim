@@ -79,7 +79,7 @@
     nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil))
 
 (defconst mel-ccl-16-to-256-table
-  (mapcar 'char-int "0123456789ABCDEF"))
+  (string-to-list "0123456789ABCDEF"))
 
 (defconst mel-ccl-high-table
   (vconcat
@@ -95,23 +95,21 @@
 
 (defconst mel-ccl-u-raw
   (mapcar
-   'char-int
+   'identity
    "0123456789\
 ABCDEFGHIJKLMNOPQRSTUVWXYZ\
 abcdefghijklmnopqrstuvwxyz\
 !@#$%&'()*+,-./:;<>@[\\]^`{|}~"))
 
 (defconst mel-ccl-c-raw
-  (mapcar
-   'char-int
+  (string-to-list
    "0123456789\
 ABCDEFGHIJKLMNOPQRSTUVWXYZ\
 abcdefghijklmnopqrstuvwxyz\
 !@#$%&'*+,-./:;<>@[]^`{|}~"))
 
 (defconst mel-ccl-p-raw
-  (mapcar
-   'char-int
+  (string-to-list
    "0123456789\
 ABCDEFGHIJKLMNOPQRSTUVWXYZ\
 abcdefghijklmnopqrstuvwxyz\
@@ -150,9 +148,9 @@ abcdefghijklmnopqrstuvwxyz\
        ,@(mapcar
           (lambda (r0)
             (cond
-             ((= r0 (char-int ?_))
+             ((= r0 ?_)
               `(write-repeat ?\s))
-             ((= r0 (char-int ?=))
+             ((= r0 ?=)
               `((loop
                  (read-branch
                   r1
@@ -295,7 +293,7 @@ abcdefghijklmnopqrstuvwxyz\
 	      (lambda (r0)
 		(let ((tmp (aref mel-ccl-qp-table r0)))
 		  (cond
-		   ((eq r0 (char-int ?F))
+		   ((eq r0 ?F)
 		    `(if (,column == 0)
 			 (,(mel-ccl-set-eof-block '((write "F") (end)))
 			  (read-if (r0 == ?r)
@@ -320,7 +318,7 @@ abcdefghijklmnopqrstuvwxyz\
 			     (write-repeat "F"))))
 		       ((,type = ,type-raw) (break)) ; RAW
 		       ))
-		   ((eq r0 (char-int ?.))
+		   ((eq r0 ?.)
 		    `(if (,column == 0)
 			 ,(mel-ccl-try-to-read-crlf
 			    input-crlf 'r0
@@ -589,7 +587,7 @@ abcdefghijklmnopqrstuvwxyz\
             (let ((tmp (aref mel-ccl-qp-table r0)))
               (cond
                ((eq tmp 'raw) `(write-read-repeat r0))
-               ((eq tmp 'wsp) (if (eq r0 (char-int ?\s))
+               ((eq tmp 'wsp) (if (eq r0 ?\s)
                                   `(r1 = 1)
                                 `(r1 = 0)))
                ((eq tmp 'cr)
@@ -626,7 +624,7 @@ abcdefghijklmnopqrstuvwxyz\
                       '((write ?\r)
                         (write-read-repeat r0))
                     '(write-read-repeat r0))))
-               ((eq r0 (char-int ?=))
+               ((eq r0 ?=)
                 ;; r0='='
                 `((read r0)
                   ;; '=' r0
@@ -648,7 +646,7 @@ abcdefghijklmnopqrstuvwxyz\
                    ,@(mapcar
                       (lambda (r0)
                         (cond
-                         ((eq r0 (char-int ?\r))
+                         ((eq r0 ?\r)
                           (if input-crlf
                               ;; '=' [\t ]* r0='\r'
                               `((read r0)
@@ -669,7 +667,7 @@ abcdefghijklmnopqrstuvwxyz\
                             `((write ?=)
                               (read r0)
                               (repeat))))
-                         ((eq r0 (char-int ?\n))
+                         ((eq r0 ?\n)
                           (if input-crlf
                               ;; '=' [\t ]* r0='\n'
                               ;; invalid input (bare LF found) -> 
