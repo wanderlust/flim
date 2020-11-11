@@ -58,17 +58,14 @@ The buffer is expected to be narrowed to just the headers of the message."
 
 ;;;###autoload
 (defun std11-narrow-to-header (&optional boundary)
-  "Narrow to the message header.
+  "Narrow to the message header when needed.
 If BOUNDARY is not nil, it is used as message header separator."
-  (narrow-to-region
-   (goto-char (point-min))
-   (if (re-search-forward
-	(if boundary
-	    (concat "^\\(" (regexp-quote boundary) "\\)?$")
-	  "^$")
-	nil t)
-       (match-beginning 0)
-     (point-max))))
+  (goto-char (point-min))
+  (when (re-search-forward
+	 (if boundary (concat "^\\(" (regexp-quote boundary) "\\)?$")
+	   "^$")
+	 nil t)
+    (narrow-to-region (point-min) (point))))
 
 ;;;###autoload
 (defun std11-field-body (name &optional boundary)
