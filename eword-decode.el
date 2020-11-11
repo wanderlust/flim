@@ -750,18 +750,17 @@ It is like std11-lexical-analyze, but it decodes non us-ascii
 characters encoded as encoded-words or invalid \"raw\" format.
 \"Raw\" non us-ascii characters are regarded as variable
 `default-mime-charset'."
-  (let ((key (substring string (or start 0)))
+  (let ((key (substring-no-properties string start))
 	ret cell)
-    (set-text-properties 0 (length key) nil key)
     (if (setq ret (assoc key eword-lexical-analyze-cache))
 	(cdr ret)
-      (setq ret (eword-lexical-analyze-internal key 0 must-unfold))
-      (setq eword-lexical-analyze-cache
+      (setq ret (eword-lexical-analyze-internal key 0 must-unfold)
+	    eword-lexical-analyze-cache
 	    (cons (cons key ret)
 		  eword-lexical-analyze-cache))
-      (if (cdr (setq cell (nthcdr eword-lexical-analyze-cache-max
-				  eword-lexical-analyze-cache)))
-	  (setcdr cell nil))
+      (when (cdr (setq cell (nthcdr eword-lexical-analyze-cache-max
+				    eword-lexical-analyze-cache)))
+	(setcdr cell nil))
       ret)))
 
 (defun eword-decode-token (token)
