@@ -218,6 +218,9 @@ The optional 5th BODY is the body of the method."
 ;;; @ instance (entity)
 ;;;
 
+(defvar luna-next-methods nil)
+(defvar luna-current-method-arguments nil)
+
 (defmacro luna-class-name (entity)
   "Return class-name of the ENTITY."
   `(aref ,entity 0))
@@ -267,10 +270,6 @@ ARGUMENTS is arguments of the MESSAGE."
 				    'luna-method-qualifier) :around))
 		    t))))
     luna-previous-return-value))
-
-(eval-when-compile
-  (defvar luna-next-methods nil)
-  (defvar luna-current-method-arguments nil))
 
 (defun luna-call-next-method ()
   "Call the next method in the current method function.
