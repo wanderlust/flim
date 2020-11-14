@@ -24,11 +24,10 @@
 
 ;;; Code:
 
+(require 'mcharset)
+(require 'std11)
 (require 'luna)
-
-(eval-when-compile
-  (require 'eword-decode) ; mime-find-field-presentation-method
-  )
+(require 'eword-decode)
 
 
 ;;; @ MIME entity

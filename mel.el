@@ -257,6 +257,9 @@ Read text is decoded as CODING-SYSTEM."
 (mel-use-module 'mel-g '("x-gzip64"))
 (mel-use-module 'mel-u '("x-uue" "x-uuencode"))
 
+(declare-function module-installed-p "path-util"
+		  (module &optional paths))
+
 (defvar mel-q-ccl-module
   (progn
     (require 'path-util)

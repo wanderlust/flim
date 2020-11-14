@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'alist)
+(require 'luna)
 (require 'std11)
 (require 'mime-def)
 (require 'eword-decode)

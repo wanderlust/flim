@@ -26,7 +26,6 @@
 ;;; Code:
 
 (require 'mime-def)
-(require 'path-util)
 (require 'pces)
 
 
@@ -108,6 +107,9 @@
       (while (re-search-forward "\r$" nil t)
 	(replace-match "")))))
 
+
+(declare-function exec-installed-p "path-util"
+		  (file &optional paths suffixes))
 
 (defvar quoted-printable-internal-encoding-limit
   (progn
