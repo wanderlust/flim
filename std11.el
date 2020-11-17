@@ -65,7 +65,7 @@ If BOUNDARY is not nil, it is used as message header separator."
 	 (if boundary (concat "^\\(" (regexp-quote boundary) "\\)?$")
 	   "^$")
 	 nil t)
-    (narrow-to-region (point-min) (point))))
+    (narrow-to-region (point-min) (match-beginning 0))))
 
 ;;;###autoload
 (defun std11-field-body (name &optional boundary)
