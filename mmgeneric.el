@@ -111,19 +111,20 @@
 ;; mechanism.  Please discuss in the emacs-mime mailing lists.
 
 (defun mime-visible-field-p (field-name visible-fields invisible-fields)
-  (or (catch 'found
-	(while visible-fields
-	  (let ((regexp (car visible-fields)))
-	    (if (string-match regexp field-name)
-		(throw 'found t)))
-	  (setq visible-fields (cdr visible-fields))))
-      (catch 'found
-	(while invisible-fields
-	  (let ((regexp (car invisible-fields)))
-	    (if (string-match regexp field-name)
-		(throw 'found nil)))
-	  (setq invisible-fields (cdr invisible-fields)))
-	t)))
+  (let ((case-fold-search t))
+    (or (catch 'found
+	  (while visible-fields
+	    (let ((regexp (car visible-fields)))
+	      (if (string-match regexp field-name)
+		  (throw 'found t)))
+	    (setq visible-fields (cdr visible-fields))))
+	(catch 'found
+	  (while invisible-fields
+	    (let ((regexp (car invisible-fields)))
+	      (if (string-match regexp field-name)
+		  (throw 'found nil)))
+	    (setq invisible-fields (cdr invisible-fields)))
+	  t))))
 
 (defun mime-insert-header-from-buffer (buffer start end
 					      &optional invisible-fields
