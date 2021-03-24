@@ -63,19 +63,37 @@
 
 (defcustom sasl-xoauth2-host-url-table
   '(;; Gmail
-    ("gmail\\.com$"
+    ("\\.gmail\\.com$"
      "https://accounts.google.com/o/oauth2/v2/auth"
      "https://www.googleapis.com/oauth2/v4/token"
      "https://mail.google.com/"
      nil)
     ;; Outlook.com
-    ("outlook\\.com$"
+    ("\\.outlook\\.com$"
      "https://login.live.com/oauth20_authorize.srf"
      "https://login.live.com/oauth20_token.srf"
      "wl.offline_access wl.imap"
      ;; You need register redirect URL at Application Registration Portal
      ;; https://apps.dev.microsoft.com/
-     "http://localhost/result"))
+     "http://localhost/result")
+    ;; office365
+    ("\\.office365\\.com$"
+     "https://login.microsoftonline.com/common/oauth2/v2.0/authorize"
+     "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+     "https://outlook.office365.com/IMAP.AccessAsUser.All https://outlook.office365.com/POP.AccessAsUser.All https://outlook.office365.com/SMTP.Send offline_access"
+     nil)
+    ;; yahoo.com
+    ("\\.yahoo\\.com$"
+     "https://api.login.yahoo.com/oauth2/request_auth"
+     "https://api.login.yahoo.com/oauth2/get_token"
+     "mail-w"
+     nil)
+    ;; aol.com
+    ("\\.aol\\.com$"
+     "https://api.login.aol.com/oauth2/request_auth"
+     "https://api.login.aol.com/oauth2/get_token"
+     "mail-w"
+     nil))
   "List of OAuth 2.0 URLs.  Each element of list is regexp for host, auth-url, token-url, scope and redirect-uri (optional)."
       :type '(repeat (list
 		      (regexp :tag "Regexp for Host")
