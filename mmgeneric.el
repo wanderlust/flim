@@ -112,51 +112,47 @@
 
 (defun mime-visible-field-p (field-name visible-fields invisible-fields)
   (let ((case-fold-search t))
-    (or (catch 'found
-	  (while visible-fields
-	    (let ((regexp (car visible-fields)))
-	      (if (string-match regexp field-name)
-		  (throw 'found t)))
-	    (setq visible-fields (cdr visible-fields))))
-	(catch 'found
-	  (while invisible-fields
-	    (let ((regexp (car invisible-fields)))
-	      (if (string-match regexp field-name)
-		  (throw 'found nil)))
-	    (setq invisible-fields (cdr invisible-fields)))
-	  t))))
+    (catch 'found
+      (while visible-fields
+	(when (string-match (car visible-fields) field-name)
+	  (throw 'found t))
+	(setq visible-fields (cdr visible-fields)))
+      (while invisible-fields
+	(when (string-match (car invisible-fields) field-name)
+	  (throw 'found nil))
+	(setq invisible-fields (cdr invisible-fields)))
+      t)))
 
 (defun mime-insert-header-from-buffer (buffer start end
 					      &optional invisible-fields
 					      visible-fields)
-  (let ((the-buf (current-buffer))
-	(mode-obj (mime-find-field-presentation-method 'wide))
-	field-decoder
-	f-b p f-e field-name len field field-body)
+  (let ((mode-obj (mime-find-field-presentation-method 'wide))
+	field-decoder f-b p field-name field-body result)
     (with-current-buffer buffer
-      (save-restriction
-	(narrow-to-region start end)
-	(goto-char start)
-	(while (re-search-forward std11-field-head-regexp nil t)
-	  (setq f-b (match-beginning 0)
-		p (match-end 0)
-		field-name (buffer-substring f-b p)
-		len (string-width field-name)
-		f-e (std11-field-end))
-	  (when (mime-visible-field-p field-name
-				      visible-fields invisible-fields)
-	    (setq field (intern
-			 (capitalize (buffer-substring f-b (1- p))))
-		  field-body (buffer-substring p f-e)
-		  field-decoder (inline (mime-find-field-decoder-internal
-					 field mode-obj)))
-	    (with-current-buffer the-buf
-	      (insert field-name)
-	      (insert (if field-decoder
-			  (funcall field-decoder field-body len)
-			;; Don't decode
-			field-body))
-	      (insert "\n"))))))))
+      (goto-char start)
+      (while (re-search-forward std11-field-head-regexp end t)
+	(setq f-b (match-beginning 0)
+	      p (match-end 0)
+	      field-name (buffer-substring f-b p))
+	(when (mime-visible-field-p field-name
+				    visible-fields invisible-fields)
+	  (setq	field-body (buffer-substring p (std11-field-end end))
+		field-decoder
+		(mime-find-field-decoder-internal
+		 (intern (capitalize
+			  (buffer-substring-no-properties f-b (1- p))))
+		 mode-obj)
+		result
+		(cons "\n"
+		      (cons (if field-decoder
+				(funcall field-decoder
+					 field-body
+					 (string-width field-name))
+			      ;; Don't decode
+			      field-body)
+			    (cons field-name result)))))))
+    (when result
+      (apply #'insert (nreverse result)))))
 
 
 ;;; @ end
