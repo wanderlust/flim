@@ -162,7 +162,8 @@
   "Specify CCL-program symbol for `mime-lexical-analyze'.
 When nil, do not use CCL.
 See docstring of `std11-ccl-lexical-analyzer' for details of CCL-program.
-If you modify `mime-lexical-analyzer', set this variable to nil or prepare corresponding CCL-program."
+If you modify `mime-lexical-analyzer', set this variable to nil
+or prepare corresponding CCL-program."
   :group 'mime
   :type '(choice symbol (const :tag "Do not use CCL." nil)))
 

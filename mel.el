@@ -156,7 +156,9 @@ Read text is decoded as CODING-SYSTEM."
 (defvar mel-b-builtin t)
 
 (defcustom mel-b-builtin-garbage-strategy 'asis
-  "When non-nil, base64 decoder functions handle non-encoded garbage.  When value is asis decoders keep garbage and when value is discard decoders delete garbage."
+"When non-nil, base64 decoder functions handle non-encoded
+garbage.  When value is asis decoders keep garbage and when value
+is discard decoders delete garbage."
   :group 'mime
   :type '(choice (const :tag "Keep as is" asis)
 		 (const :tag "Discard" discard)
