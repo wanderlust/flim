@@ -170,7 +170,9 @@ is discard decoders delete garbage."
 (mel-define-method-function (mime-encode-string string (nil "base64"))
 			      'base64-encode-string)
 (defun mel-b-builtin-decode-string (string)
-  "Decode base64 encoded STRING with garbage handling.  Garbage handling strategy is decided by `mel-b-builtin-garbage-strategy'.  Return decoded string."
+  "Decode base64 encoded STRING with garbage handling.
+Garbage handling strategy is decided by `mel-b-builtin-garbage-strategy'.
+Return decoded string."
   (if (null mel-b-builtin-garbage-strategy)
       (base64-decode-string string)
     (condition-case error
@@ -197,7 +199,8 @@ is discard decoders delete garbage."
 (mel-define-method-function (mime-encode-region start end (nil "base64"))
 			    'base64-encode-region)
 (defun mel-b-builtin-decode-region (start end)
-  "Decode base64 encoded region between START and END with garbage handling.  Garbage handling strategy is decided by `mel-b-builtin-garbage-strategy'."
+  "Decode base64 encoded region between START and END with garbage handling.
+Garbage handling strategy is decided by `mel-b-builtin-garbage-strategy'."
   (if (null mel-b-builtin-garbage-strategy)
       (base64-decode-region start end)
     (condition-case error
