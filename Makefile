@@ -18,6 +18,7 @@ PREFIX = NONE
 LISPDIR = NONE
 PACKAGEDIR = NONE
 VERSION_SPECIFIC_LISPDIR = NONE
+PACKAGE_LISPDIR = package-user-dir
 
 GOMI	= *.elc \
 	  *.cp *.cps *.ky *.kys *.fn *.fns *.vr *.vrs \
@@ -31,15 +32,15 @@ SEMI_ARC_DIR = $(ARC_DIR_PREFIX)/semi/semi-1.14-for-flim-$(API)
 
 elc:
 	$(EMACS) $(FLAGS) -f compile-flim $(PREFIX) $(LISPDIR) \
-		$(VERSION_SPECIFIC_LISPDIR)
+		$(VERSION_SPECIFIC_LISPDIR) $(PACKAGE_LISPDIR)
 
 check:
 	$(EMACS) $(FLAGS) -f check-flim $(PREFIX) $(LISPDIR) \
-		$(VERSION_SPECIFIC_LISPDIR)
+		$(VERSION_SPECIFIC_LISPDIR) $(PACKAGE_LISPDIR)
 
 install:	elc
 	$(EMACS) $(FLAGS) -f install-flim $(PREFIX) $(LISPDIR) \
-		$(VERSION_SPECIFIC_LISPDIR)
+		$(VERSION_SPECIFIC_LISPDIR) $(PACKAGE_LISPDIR)
 
 
 package:
