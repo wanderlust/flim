@@ -94,7 +94,8 @@
      "https://api.login.aol.com/oauth2/get_token"
      "mail-w"
      nil))
-  "List of OAuth 2.0 URLs.  Each element of list is regexp for host, auth-url, token-url, scope and redirect-uri (optional)."
+  "List of OAuth 2.0 URLs.  Each element of list is regexp for host,
+auth-url, token-url, scope and redirect-uri (optional)."
       :type '(repeat (list
 		      (regexp :tag "Regexp for Host")
 		      (string :tag "Auth-URL")
@@ -105,14 +106,8 @@
 
 (defcustom sasl-xoauth2-host-user-id-table
   nil
-  "List of OAuth 2.0 Client IDs.  Each element of list is regexp for host, regexp for User ID, client ID and client secret (optional).
-Below is example to use Thunderbird's client ID and secret (not recommended, just an expample).
-
-(setq sasl-xoauth2-host-user-id-table
-      '((\"\\\\.gmail\\\\.com$\"
-	 \".\"
-	 \"91623021742-ud877vhta8ch9llegih22bc7er6589ar.apps.googleusercontent.com\"
-	 \"iBn5rLbhbm_qoPbdGkgX81Dj\"))
+  "List of OAuth 2.0 Client IDs.  Each element of list is regexp for
+host, regexp for User ID, client ID and client secret (optional).
 "
   :type '(repeat (list
 		  (regexp :tag "Regexp for Host")
