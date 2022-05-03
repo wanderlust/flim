@@ -42,13 +42,6 @@ install:	elc
 	$(EMACS) $(FLAGS) -f install-flim $(PREFIX) $(LISPDIR) \
 		$(VERSION_SPECIFIC_LISPDIR) $(PACKAGE_LISPDIR)
 
-
-package:
-	$(XEMACS) $(FLAGS) -f compile-flim-package $(PACKAGEDIR)
-
-install-package:	package
-	$(XEMACS) $(FLAGS) -f install-flim-package $(PACKAGEDIR)
-
 clean:
 	-$(RM) $(GOMI)
 
