@@ -6,8 +6,9 @@
 * What's FLIM-LB?
 
 FLIM-LB is a variant of FLIM.  The most remarkable feature is that it
-uses lexical binding and supports only Emacs 24.5 and later.  See
-README.[en|ja] for details of original FLIM.
+uses lexical binding and supports only Emacs 24.5 and later.
+Furthermore, wide int feature is required on 32-bit machines.
+See README.[en|ja] for details of original FLIM.
 
 
 * GitHub
