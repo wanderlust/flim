@@ -577,7 +577,7 @@ Return value is an alist of MIME parameter values."
 (defun mime-parse-parameters (tokens)
   "Parse TOKENS as MIME parameter values.
 Return a property list, which is a list of the form
-\(PARAMETER-NAME1 VALUE1 PARAMETER-NAME2 VALUE2...)."
+(PARAMETER-NAME1 VALUE1 PARAMETER-NAME2 VALUE2...)."
   (let (params attribute)
     (while (and tokens
 		(eq (car (car tokens)) 'tspecials)

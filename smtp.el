@@ -142,8 +142,8 @@ The function will be called with the same four arguments as
 `open-network-stream' and should return a process object.
 Here is an example:
 
-\(setq smtp-open-connection-function
-      #'(lambda (name buffer host service)
+(setq smtp-open-connection-function
+      #\\='(lambda (name buffer host service)
 	  (let ((process-connection-type nil))
 	    (start-process name buffer \"ssh\" \"-C\" host
 			   \"nc\" host service))))

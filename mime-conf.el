@@ -190,9 +190,9 @@ view-command.
 SITUATION is an association-list about information of entity.  Its key
 may be:
 
-	'type		primary media-type
-	'subtype	media-subtype
-	'filename	filename
+	\\='type		primary media-type
+	\\='subtype	media-subtype
+	\\='filename	filename
 	STRING		parameter of Content-Type field"
   (let ((i 0)
 	(len (length mtext))
