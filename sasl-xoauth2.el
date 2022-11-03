@@ -67,7 +67,8 @@
      "https://accounts.google.com/o/oauth2/v2/auth"
      "https://www.googleapis.com/oauth2/v4/token"
      "https://mail.google.com/"
-     nil)
+     ;; redirect URI is required
+     "http://localhost/result")
     ;; Outlook.com
     ("\\.outlook\\.com$"
      "https://login.live.com/oauth20_authorize.srf"
