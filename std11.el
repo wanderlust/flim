@@ -285,13 +285,13 @@ mainly added by incorrect folding."
 		      r0
 		      ,@(let* ((count (1+ (max tag ?\\)))
 			       (result (make-vector count '(write-repeat r0))))
-			  (aset result tag '(break))
 			  (aset result ?\\ `((write "\\\\")
 					     (read r0)
 					     ,wrt
 					     (repeat)))
 			  (aset result ?\" '((write "\\\"")
 					     (repeat)))
+			  (aset result tag '(break))
 			  (mapcar 'identity result)))
 		     (write-repeat r0))
 		    (write "\")")
