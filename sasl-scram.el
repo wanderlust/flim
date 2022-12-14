@@ -88,9 +88,9 @@
     (if no-security-layer
 	(aset csecinfo 0 (logior (aref csecinfo 0) 1))
       (aset csecinfo 1
-	    (lsh (logand buffer-size (lsh 255 16)) -16))
+	    (ash (logand buffer-size (ash 255 16)) -16))
       (aset csecinfo 2
-	    (lsh (logand buffer-size (lsh 255 8)) -8))
+	    (ash (logand buffer-size (ash 255 8)) -8))
       (aset csecinfo 3 (logand buffer-size 255)))
     csecinfo))
 
