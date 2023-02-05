@@ -130,13 +130,16 @@ host, regexp for User ID, client ID and client secret (optional).
 (defun sasl-xoauth2-refresh-access (token)
   "Refresh OAuth access TOKEN.
 TOKEN should be obtained with `oauth2-request-access'."
-  (let ((response
-	 (oauth2-make-access-request
-          (oauth2-token-token-url token)
-          (concat "client_id=" (oauth2-token-client-id token)
-                  "&client_secret=" (oauth2-token-client-secret token)
-                  "&refresh_token=" (oauth2-token-refresh-token token)
-                  "&grant_type=refresh_token"))))
+  ;; url package would fail on Windows without EOL conversion.
+  (let* ((inhibit-eol-conversion nil)
+	 (coding-system-for-read nil)
+	 (response
+	  (oauth2-make-access-request
+           (oauth2-token-token-url token)
+           (concat "client_id=" (oauth2-token-client-id token)
+                   "&client_secret=" (oauth2-token-client-secret token)
+                   "&refresh_token=" (oauth2-token-refresh-token token)
+                   "&grant_type=refresh_token"))))
     (setf (oauth2-token-access-token token)
           (cdr (assq 'access_token response)))
     ;; Update authorization time.
@@ -202,6 +205,9 @@ TOKEN should be obtained with `oauth2-request-access'."
 (defun sasl-xoauth2-response (client _step &optional _retry)
   (let ((host (sasl-client-server client))
 	(user (sasl-client-name client))
+	;; url package would fail on Windows without EOL conversion.
+	(inhibit-eol-conversion nil)
+	(coding-system-for-read nil)
 	info access-token oauth2-token
 	auth-url token-url client-id scope redirect-uri client-secret)
     (setq info (sasl-xoauth2-resolve-urls host user)
