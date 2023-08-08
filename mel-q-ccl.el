@@ -957,8 +957,7 @@ MODE allows `text', `comment', `phrase' or nil.  Default value is
    'mel-ccl-uq-rev))
 
 (defun q-encoding-ccl-encoded-length (string &optional mode)
-  (let ((status [nil nil nil nil nil nil nil nil nil]))
-    (fillarray status nil)		; XXX: Is this necessary?
+  (let ((status (make-vector 9 nil)))
     (ccl-execute-on-string
      (cond
       ((eq mode 'text) 'mel-ccl-count-uq)
