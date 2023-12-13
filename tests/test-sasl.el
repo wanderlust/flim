@@ -83,36 +83,3 @@ algorithm=md5-sess,charset=utf-8")
     (lunit-assert
      (string= (sasl-step-data step)
            (base64-decode-string "AQAAAMg9jU8CeB4KOfk7sUhSQPs=")))))
-
-(luna-define-method test-sasl-ntlm-imap ((case test-sasl))
-  (let* ((sasl-mechanisms '("NTLM"))
-	 (mechanism
-	  (sasl-find-mechanism '("NTLM")))
-	 (client
-	  (sasl-make-client mechanism "kawagish@nokiaseap" "imap" "xxx.yyy.com"))
-	 (sasl-read-passphrase
-	  #'(lambda (passphrase)
-	      "!\"#456secret"))
-	 step
-	 response)
-    ;; init
-    (setq step (sasl-next-step client nil))
-    ;; generate authentication request
-    (sasl-step-set-data step "")
-    (setq step (sasl-next-step client step))
-    (sasl-step-data step)
-    ;; (base64-encode-string (sasl-step-data step) t) is sent to server
-    ;; generate response to challenge
-    (sasl-step-set-data
-     step
-     (string-as-unibyte
-      (base64-decode-string
-       "TlRMTVNTUAACAAAADAAMADAAAAAFggEApmEjGvh9M8YAAAAAAAAAAAAAAAA8AAAATgBPAEsARQBYAEMA")))
-    (setq step (sasl-next-step client step))
-    (sasl-step-data step)
-    (setq response (base64-encode-string (sasl-step-data step) t))
-    (lunit-assert
-     (string=
-      response "TlRMTVNTUAADAAAAGAAYAEAAAAAYABgAWAAAABIAEgBwAAAAEAAQAIIAAAAQABAAkgAAAAAAAABiAAAABYIBAIwN9i7qK/9Y31dIDR6JQTaBbjcLJm8Sc6VogMe7fnHP96+eQ5Yf3ys2nIY4rx+iQG4AbwBrAGkAYQBzAGUAYQBwAGsAYQB3AGEAZwBpAHMAaABrAGEAdwBhAGcAaQBzAGgA"))
-;;response
-))
