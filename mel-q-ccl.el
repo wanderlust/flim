@@ -233,8 +233,8 @@ abcdefghijklmnopqrstuvwxyz\
 
 (eval-when-compile
 
-(defvar eof-block-branches)
-(defvar eof-block-reg)
+(defvar eof-block-branches nil)
+(defvar eof-block-reg nil)
 (defun mel-ccl-set-eof-block (branch)
   (let ((p (assoc branch eof-block-branches)))
     (unless p
