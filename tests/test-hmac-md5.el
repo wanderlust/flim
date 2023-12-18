@@ -19,7 +19,7 @@
   (lunit-assert
    (string=
     (encode-hex-string
-     (hmac-md5 (string-make-unibyte  (make-string 50 ?\xdd))
+     (hmac-md5 (apply #'unibyte-string (make-list 50 ?\xdd))
 	       (apply #'unibyte-string (make-list 16 ?\xaa))))
     "56be34521d144c88dbb8c733f0e8b3f6")))
 
@@ -28,7 +28,7 @@
    (string=
     (encode-hex-string
      (hmac-md5
-      (string-make-unibyte (make-string 50 ?\xcd))
+      (apply #'unibyte-string (make-list 50 ?\xcd))
       (decode-hex-string "0102030405060708090a0b0c0d0e0f10111213141516171819")))
     "697eaf0aca3a3aea3a75164746ffaa79")))
 
@@ -52,7 +52,7 @@
     (encode-hex-string
      (hmac-md5
       "Test Using Larger Than Block-Size Key - Hash Key First"
-      (string-make-unibyte (make-string 80 ?\xaa))))
+      (apply #'unibyte-string (make-list 80 ?\xaa))))
     "6b1ab7fe4bd7bf8f0b62e6ce61b9d0cd")))
 
 (luna-define-method test-hmac-md5-8 ((case test-hmac-md5))
@@ -61,5 +61,5 @@
     (encode-hex-string
      (hmac-md5
       "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data"
-      (string-make-unibyte (make-string 80 ?\xaa))))
+      (apply #'unibyte-string (make-list 80 ?\xaa))))
     "6f630fad67cda0ee1fb1f562db3aa53e")))
