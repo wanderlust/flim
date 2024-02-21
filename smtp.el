@@ -229,9 +229,7 @@ to connect to.  SERVICE is name of the service desired."
   "Close the CONNECTION to server.")
 
 (luna-define-method smtp-connection-opened ((connection smtp-connection))
-  (let ((process (smtp-connection-process-internal connection)))
-    (if (memq (process-status process) '(open run))
-	t)))
+  (process-live-p (smtp-connection-process-internal connection)))
 
 (luna-define-method smtp-close-connection ((connection smtp-connection))
   (let ((process (smtp-connection-process-internal connection)))
@@ -281,8 +279,7 @@ of the host to connect to.  SERVICE is name of the service desired."
 	    smtp-open-connection-function))
 	  "SMTP" buffer server service))
 	connection)
-    (unless (and (processp process)
-		 (memq (process-status process) '(open run)))
+    (unless (process-live-p process)
       (error "Open SMTP connection function to %s:%s failed"
 	     server (if (integerp service) (format "%d" service) service)))
     (when process
@@ -549,7 +546,7 @@ BUFFER may be a buffer or a buffer name which contains mail message."
     (setq response (smtp-read-response connection))
     (if (/= (car response) 220)
 	(smtp-response-error response))
-    (if (memq (process-status process) '(run stop exit signal))
+    (if (eq (process-type process) 'real)
 	(starttls-negotiate process)
       (gnutls-negotiate
        :process process
